@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>AI Коуч</title>
+    <!-- Подключаем Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
+    <style>
+        /* ----- Базовые стили и тёмная тема ----- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a2e;
+            color: #eee;
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        /* Заголовок с именем пользователя (Telegram) */
+        .header {
+            background: #16213e;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #2a2a4a;
+            font-size: 14px;
+        }
+        .header .user { opacity: 0.7; }
+        .container { flex: 1; max-width: 600px; margin: 0 auto; width: 100%; padding: 12px; }
+        /* Навигация */
+        .nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            background: #16213e;
+            border-radius: 16px;
+            padding: 10px;
+            margin-bottom: 16px;
+        }
+        .nav button {
+            flex: 1 0 auto;
+            background: transparent;
+            border: none;
+            color: #aaa;
+            padding: 8px 6px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+        .nav button.active { background: #4f46e5; color: #fff; }
+        .nav button:hover { background: #2a2a4a; color: #fff; }
+
+        /* Карточки */
+        .card {
+            background: #16213e;
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .card h2 { font-size: 18px; margin-bottom: 10px; font-weight: 600; }
+        .card p, .card div { font-size: 14px; line-height: 1.5; }
+
+        /* Кнопки */
+        .btn {
+            display: inline-block;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #fff;
+        }
+        .btn-primary { background: #4f46e5; }
+        .btn-primary:hover { background: #6366f1; }
+        .btn-success { background: #22c55e; }
+        .btn-success:hover { background: #4ade80; }
+        .btn-danger { background: #ef4444; }
+        .btn-danger:hover { background: #f87171; }
+        .btn-warning { background: #eab308; color: #000; }
+        .btn-warning:hover { background: #facc15; }
+        .btn-outline { background: transparent; border: 1px solid #4b5563; }
+        .btn-outline:hover { background: #374151; }
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+        /* Поля ввода */
+        input, select, textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 1px solid #374151;
+            background: #1f2937;
+            color: #eee;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        textarea { resize: vertical; min-height: 60px; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #4f46e5; }
+        label { font-size: 13px; opacity: 0.8; display: block; margin-bottom: 4px; }
+
+        /* Списки задач / блоков */
+        .item-list { display: flex; flex-direction: column; gap: 8px; }
+        .item {
+            background: #1f2937;
+            padding: 10px 14px;
+            border-radius: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .item .title { font-weight: 500; }
+        .item .meta { font-size: 12px; opacity: 0.6; margin-left: 8px; }
+        .item .actions { display: flex; gap: 6px; margin-top: 4px; }
+
+        /* Таймер */
+        .timer-display { font-size: 32px; font-weight: bold; text-align: center; padding: 10px; }
+        .timer-controls { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+
+        /* Чат */
+        .chat-box {
+            background: #111827;
+            border-radius: 16px;
+            padding: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .chat-msg {
+            padding: 8px 14px;
+            border-radius: 16px;
+            max-width: 80%;
+            word-break: break-word;
+        }
+        .chat-msg.user { align-self: flex-end; background: #4f46e5; }
+        .chat-msg.coach { align-self: flex-start; background: #374151; }
+        .chat-msg .timer-suggest { color: #4ade80; font-size: 12px; }
+        .chat-msg .next-step { color: #facc15; font-size: 12px; }
+
+        /* Скрытие */
+        .hidden { display: none !important; }
+
+        /* Адаптив */
+        @media (max-width: 480px) {
+            .nav button { font-size: 10px; padding: 6px 4px; }
+            .card { padding: 12px; }
+            .timer-display { font-size: 28px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Шапка -->
+    <div class="header">
+        <span>🤖 AI Коуч</span>
+        <span class="user" id="username">Гость</span>
+    </div>
+
+    <!-- Основной контейнер -->
+    <div class="container" id="app">
+        <!-- Навигация -->
+        <nav class="nav" id="nav">
+            <button data-page="today" class="active">Сегодня</button>
+            <button data-page="schedule">Расписание</button>
+            <button data-page="tasks">Задачи</button>
+            <button data-page="timer">Таймер</button>
+            <button data-page="tracking">Учёт</button>
+            <button data-page="notes">Заметки</button>
+            <button data-page="coach">Коуч</button>
+            <button data-page="report">Отчёт</button>
+            <button data-page="settings">Настройки</button>
+        </nav>
+
+        <!-- Страницы -->
+        <div id="page-today" class="page"></div>
+        <div id="page-schedule" class="page hidden"></div>
+        <div id="page-tasks" class="page hidden"></div>
+        <div id="page-timer" class="page hidden"></div>
+        <div id="page-tracking" class="page hidden"></div>
+        <div id="page-notes" class="page hidden"></div>
+        <div id="page-coach" class="page hidden"></div>
+        <div id="page-report" class="page hidden"></div>
+        <div id="page-settings" class="page hidden"></div>
+    </div>
+
+    <script>
+        // ============================================================
+        // 1. ИНИЦИАЛИЗАЦИЯ TELEGRAM WEBAPP
+        // ============================================================
+        const tg = window.Telegram?.WebApp;
+        if (tg) {
+            tg.expand(); // растягиваем на весь экран
+            tg.ready();
+            const user = tg.initDataUnsafe?.user;
+            if (user) {
+                document.getElementById('username').textContent = user.first_name || user.username || 'Пользователь';
+            }
+            // Тёмная тема от Telegram (уже есть)
+            if (tg.colorScheme === 'dark') {
+                document.body.style.background = '#1a1a2e';
+            }
+        } else {
+            // Для локальной разработки
+            document.getElementById('username').textContent = 'Тест';
+        }
+
+        // ============================================================
+        // 2. ХРАНИЛИЩЕ (localStorage)
+        // ============================================================
+        const STORAGE_KEY = 'ai_coach_data';
+
+        function loadData() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) {
+                    const data = JSON.parse(raw);
+                    // Если есть миграции, можно добавить
+                    return data;
+                }
+            } catch (e) {}
+            // Данные по умолчанию
+            return {
+                tasks: [],
+                schedule: [],
+                timerSessions: [],
+                notes: [],
+                settings: {},
+                // Для теста добавим пару примеров
+            };
+        }
+
+        function saveData(data) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        let appData = loadData();
+
+        // Вспомогательные функции
+        function generateId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+        function nowISO() { return new Date().toISOString(); }
+        function todayISO() { return new Date().toISOString().slice(0,10); }
+
+        // ============================================================
+        // 3. РЕНДЕРИНГ СТРАНИЦ
+        // ============================================================
+        const pages = {};
+
+        // ----- 3.1 СЕГОДНЯ -----
+        function renderToday() {
+            const container = document.getElementById('page-today');
+            const now = new Date();
+            const currentBlock = appData.schedule.find(b => b.start_time <= now.toISOString() && b.end_time >= now.toISOString());
+            const nextBlock = appData.schedule.find(b => b.start_time > now.toISOString());
+            const totalTasks = appData.tasks.length;
+            const completed = appData.tasks.filter(t => t.status === 'completed').length;
+
+            container.innerHTML = `
+                <div class="card">
+                    <h2>📌 Текущий блок</h2>
+                    ${currentBlock ? `<p>${currentBlock.title} (${currentBlock.start_time.slice(11,16)} – ${currentBlock.end_time.slice(11,16)})</p>` : '<p>Нет активного блока</p>'}
+                </div>
+                <div class="card">
+                    <h2>⏳ Следующая задача</h2>
+                    ${nextBlock ? `<p>${nextBlock.title} в ${nextBlock.start_time.slice(11,16)}</p>` : '<p>На сегодня всё запланировано</p>'}
+                </div>
+                <div class="card">
+                    <h2>📊 Прогресс</h2>
+                    <p>Задач: ${totalTasks} (выполнено ${completed})</p>
+                    <div style="background:#1f2937; height:6px; border-radius:3px; margin-top:6px;">
+                        <div style="background:#4f46e5; height:6px; border-radius:3px; width:${totalTasks? (completed/totalTasks*100).toFixed(0) : 0}%;"></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <h2>🚀 Быстрый старт</h2>
+                    <button class="btn btn-primary" onclick="switchPage('coach')">💬 Спросить коуча</button>
+                </div>
+            `;
+        }
+
+        // ----- 3.2 РАСПИСАНИЕ -----
+        function renderSchedule() {
+            const container = document.getElementById('page-schedule');
+            let html = `<div class="card"><h2>📅 Расписание</h2><div class="item-list">`;
+            if (appData.schedule.length === 0) html += `<p>Нет запланированных блоков</p>`;
+            appData.schedule.sort((a,b)=> a.start_time.localeCompare(b.start_time));
+            appData.schedule.forEach(b => {
+                html += `
+                    <div class="item">
+                        <div><span class="title">${b.title}</span> <span class="meta">${b.start_time.slice(11,16)} – ${b.end_time.slice(11,16)}</span></div>
+                        <div class="actions">
+                            <button class="btn btn-danger btn-sm" onclick="deleteSchedule('${b.id}')">✕</button>
+                        </div>
+                    </div>
+                `;
+            });
+            html += `</div></div>`;
+
+            html += `
+                <div class="card">
+                    <h2>➕ Добавить блок</h2>
+                    <input type="text" id="schedule-title" placeholder="Название" />
+                    <input type="datetime-local" id="schedule-start" />
+                    <input type="datetime-local" id="schedule-end" />
+                    <button class="btn btn-success" onclick="addSchedule()">Добавить</button>
+                </div>
+            `;
+            container.innerHTML = html;
+        }
+
+        window.addSchedule = function() {
+            const title = document.getElementById('schedule-title').value.trim();
+            const start = document.getElementById('schedule-start').value;
+            const end = document.getElementById('schedule-end').value;
+            if (!title || !start || !end) { alert('Заполните все поля'); return; }
+            if (start >= end) { alert('Время начала должно быть раньше окончания'); return; }
+            const block = {
+                id: generateId(),
+                title,
+                start_time: new Date(start).toISOString(),
+                end_time: new Date(end).toISOString(),
+                is_fixed: false,
+                task_id: null
+            };
+            appData.schedule.push(block);
+            saveData(appData);
+            renderSchedule();
+        };
+
+        window.deleteSchedule = function(id) {
+            if (!confirm('Удалить блок?')) return;
+            appData.schedule = appData.schedule.filter(b => b.id !== id);
+            saveData(appData);
+            renderSchedule();
+        };
+
+        // ----- 3.3 ЗАДАЧИ -----
+        function renderTasks() {
+            const container = document.getElementById('page-tasks');
+            let html = `<div class="card"><h2>📋 Задачи</h2><div class="item-list">`;
+            if (appData.tasks.length === 0) html += `<p>Нет задач</p>`;
+            appData.tasks.forEach(t => {
+                html += `
+                    <div class="item">
+                        <div><span class="title">${t.title}</span> <span class="meta">${t.category} | ${t.planned_time} мин</span></div>
+                        <div class="actions">
+                            <button class="btn btn-success btn-sm" onclick="completeTask('${t.id}')">✓</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteTask('${t.id}')">✕</button>
+                        </div>
+                    </div>
+                `;
+            });
+            html += `</div></div>`;
+
+            html += `
+                <div class="card">
+                    <h2>➕ Новая задача</h2>
+                    <input type="text" id="task-title" placeholder="Название" />
+                    <input type="text" id="task-desc" placeholder="Описание (необязательно)" />
+                    <select id="task-category">
+                        <option value="work">Работа</option>
+                        <option value="learning">Обучение</option>
+                        <option value="reading">Чтение</option>
+                        <option value="english">Английский</option>
+                        <option value="rehearsal">Репетиция</option>
+                        <option value="planning">Планирование</option>
+                        <option value="chores">Бытовые дела</option>
+                        <option value="rest">Отдых</option>
+                        <option value="social">Соцсети</option>
+                        <option value="buffer">Буфер</option>
+                        <option value="movie">Фильм</option>
+                    </select>
+                    <input type="number" id="task-planned" placeholder="Плановое время (мин)" value="30" />
+                    <button class="btn btn-success" onclick="addTask()">Добавить задачу</button>
+                </div>
+            `;
+            container.innerHTML = html;
+        }
+
+        window.addTask = function() {
+            const title = document.getElementById('task-title').value.trim();
+            const desc = document.getElementById('task-desc').value.trim();
+            const category = document.getElementById('task-category').value;
+            const planned = parseFloat(document.getElementById('task-planned').value) || 0;
+            if (!title) { alert('Введите название'); return; }
+            const task = {
+                id: generateId(),
+                title,
+                description: desc,
+                category,
+                planned_time: planned,
+                actual_time: 0,
+                status: 'pending',
+                priority: 0,
+                due_date: null,
+                gadget: null,
+                tags: '',
+                notes: '',
+                created_at: nowISO(),
+                updated_at: nowISO()
+            };
+            appData.tasks.push(task);
+            saveData(appData);
+            renderTasks();
+        };
+
+        window.deleteTask = function(id) {
+            if (!confirm('Удалить задачу?')) return;
+            appData.tasks = appData.tasks.filter(t => t.id !== id);
+            saveData(appData);
+            renderTasks();
+        };
+
+        window.completeTask = function(id) {
+            const task = appData.tasks.find(t => t.id === id);
+            if (task) {
+                task.status = 'completed';
+                task.actual_time = task.planned_time; // упрощённо
+                saveData(appData);
+                renderTasks();
+            }
+        };
+
+        // ----- 3.4 ТАЙМЕР -----
+        let timerInterval = null;
+        let timerSeconds = 0;
+        let activeTimerId = null;
+
+        function renderTimer() {
+            const container = document.getElementById('page-timer');
+            // Находим активную сессию
+            const active = appData.timerSessions.find(s => s.is_active === true);
+            let html = `<div class="card"><h2>⏱ Таймер</h2>`;
+
+            if (active) {
+                // Рассчёт прошедшего времени
+                let elapsed = 0;
+                if (active.last_resume_time) {
+                    const start = new Date(active.start_time);
+                    const now = new Date();
+                    elapsed = Math.floor((now - start) / 1000) - active.paused_time;
+                }
+                const mins = Math.floor(elapsed / 60);
+                const secs = elapsed % 60;
+                html += `
+                    <div class="timer-display">${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}</div>
+                    <div class="timer-controls">
+                        ${active.is_active ? `<button class="btn btn-warning" onclick="pauseTimer()">⏸ Пауза</button>` :
+                            `<button class="btn btn-primary" onclick="resumeTimer()">▶ Продолжить</button>`}
+                        <button class="btn btn-danger" onclick="stopTimer()">⏹ Завершить</button>
+                        <button class="btn btn-outline" onclick="cancelTimer()">✕ Отменить</button>
+                    </div>
+                    <p style="margin-top:8px; font-size:12px; opacity:0.6;">Задача: ${active.task_title || 'без задачи'}</p>
+                `;
+                // Запускаем обновление таймера, если ещё не запущено
+                if (!timerInterval && active.is_active) {
+                    timerInterval = setInterval(() => {
+                        renderTimer(); // обновляем отображение
+                    }, 1000);
+                }
+            } else {
+                html += `
+                    <p>Нет активной сессии</p>
+                    <hr style="margin:12px 0; border-color:#374151;" />
+                    <label>Название задачи</label>
+                    <input type="text" id="timer-task" placeholder="Что делаем?" />
+                    <label>Категория</label>
+                    <select id="timer-category">
+                        <option value="work">Работа</option>
+                        <option value="learning">Обучение</option>
+                        <option value="reading">Чтение</option>
+                        <option value="english">Английский</option>
+                        <option value="rehearsal">Репетиция</option>
+                        <option value="planning">Планирование</option>
+                        <option value="chores">Бытовые дела</option>
+                        <option value="rest">Отдых</option>
+                        <option value="social">Соцсети</option>
+                        <option value="buffer">Буфер</option>
+                        <option value="movie">Фильм</option>
+                    </select>
+                    <button class="btn btn-success" onclick="startTimer()">▶ Старт</button>
+                `;
+            }
+
+            // История сессий
+            html += `<hr style="margin:16px 0; border-color:#374151;" /><h3 style="font-size:16px;">История</h3>`;
+            const recent = appData.timerSessions.slice(-5).reverse();
+            if (recent.length === 0) html += `<p style="opacity:0.5;">Пока нет записей</p>`;
+            recent.forEach(s => {
+                const dur = s.end_time ? Math.floor((new Date(s.end_time) - new Date(s.start_time)) / 60000) : '…';
+                html += `<div style="font-size:13px; padding:4px 0; border-bottom:1px solid #1f2937;">${s.task_title || 'Без названия'} — ${dur} мин (${s.category})</div>`;
+            });
+
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        window.startTimer = function() {
+            const taskTitle = document.getElementById('timer-task').value.trim() || 'Без названия';
+            const category = document.getElementById('timer-category').value;
+            const session = {
+                id: generateId(),
+                task_id: null,
+                task_title: taskTitle,
+                category: category,
+                start_time: nowISO(),
+                end_time: null,
+                paused_time: 0,
+                is_active: true,
+                last_resume_time: nowISO(),
+                note: '',
+                created_at: nowISO()
+            };
+            appData.timerSessions.push(session);
+            saveData(appData);
+            renderTimer();
+            // Запускаем обновление
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => { renderTimer(); }, 1000);
+        };
+
+        window.pauseTimer = function() {
+            const active = appData.timerSessions.find(s => s.is_active === true);
+            if (!active) return;
+            const now = new Date();
+            const last = new Date(active.last_resume_time);
+            active.paused_time += Math.floor((now - last) / 1000);
+            active.is_active = false;
+            active.last_resume_time = null;
+            saveData(appData);
+            if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+            renderTimer();
+        };
+
+        window.resumeTimer = function() {
+            const active = appData.timerSessions.find(s => s.is_active === false && s.end_time === null);
+            if (!active) return;
+            active.is_active = true;
+            active.last_resume_time = nowISO();
+            saveData(appData);
+            renderTimer();
+            if (!timerInterval) {
+                timerInterval = setInterval(() => { renderTimer(); }, 1000);
+            }
+        };
+
+        window.stopTimer = function() {
+            const active = appData.timerSessions.find(s => s.is_active === true || (s.is_active === false && s.end_time === null));
+            if (!active) return;
+            const msg = prompt('Что сделано? (необязательно)');
+            const now = new Date();
+            if (active.is_active && active.last_resume_time) {
+                const last = new Date(active.last_resume_time);
+                active.paused_time += Math.floor((now - last) / 1000);
+            }
+            active.is_active = false;
+            active.end_time = nowISO();
+            active.note = msg || '';
+            // Добавляем фактическое время к задаче, если есть привязка (упрощённо не делаем)
+            saveData(appData);
+            if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+            renderTimer();
+        };
+
+        window.cancelTimer = function() {
+            const active = appData.timerSessions.find(s => s.is_active === true || (s.is_active === false && s.end_time === null));
+            if (!active) return;
+            if (!confirm('Отменить сессию?')) return;
+            appData.timerSessions = appData.timerSessions.filter(s => s.id !== active.id);
+            saveData(appData);
+            if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+            renderTimer();
+        };
+
+        // ----- 3.5 УЧЁТ ВРЕМЕНИ -----
+        function renderTracking() {
+            const container = document.getElementById('page-tracking');
+            // Простая статистика за сегодня
+            const today = todayISO();
+            const tasksToday = appData.tasks.filter(t => t.created_at && t.created_at.slice(0,10) === today);
+            const planned = tasksToday.reduce((sum,t)=> sum + t.planned_time, 0);
+            const actual = tasksToday.reduce((sum,t)=> sum + (t.status === 'completed' ? t.actual_time : 0), 0);
+            const diff = actual - planned;
+            const failed = tasksToday.filter(t => t.status === 'pending' || t.status === 'in_progress').length;
+
+            // Неделя
+            const weekAgo = new Date(Date.now() - 7*24*60*60*1000).toISOString();
+            const tasksWeek = appData.tasks.filter(t => t.created_at && t.created_at >= weekAgo);
+            const plannedW = tasksWeek.reduce((sum,t)=> sum + t.planned_time, 0);
+            const actualW = tasksWeek.reduce((sum,t)=> sum + (t.status === 'completed' ? t.actual_time : 0), 0);
+
+            container.innerHTML = `
+                <div class="card">
+                    <h2>📊 Учёт времени</h2>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                        <div>
+                            <h3 style="font-size:16px;">Сегодня</h3>
+                            <p>План: ${planned.toFixed(0)} мин</p>
+                            <p>Факт: ${actual.toFixed(0)} мин</p>
+                            <p>Разница: ${diff.toFixed(0)} мин</p>
+                            <p>Провалено: ${failed}</p>
+                        </div>
+                        <div>
+                            <h3 style="font-size:16px;">Неделя</h3>
+                            <p>План: ${plannedW.toFixed(0)} мин</p>
+                            <p>Факт: ${actualW.toFixed(0)} мин</p>
+                            <p>Разница: ${(actualW - plannedW).toFixed(0)} мин</p>
+                        </div>
+                    </div>
+                    <hr style="margin:12px 0; border-color:#374151;" />
+                    <h3 style="font-size:16px;">По гаджетам (заглушка)</h3>
+                    <p>Телефон: 0 мин</p>
+                    <p>Планшет: 0 мин</p>
+                    <p>Ноутбук: 0 мин</p>
+                    <p>VR: 0 мин</p>
+                </div>
+            `;
+        }
+
+        // ----- 3.6 ЗАМЕТКИ -----
+        function renderNotes() {
+            const container = document.getElementById('page-notes');
+            let html = `<div class="card"><h2>📝 Заметки</h2><div class="item-list">`;
+            if (appData.notes.length === 0) html += `<p>Нет заметок</p>`;
+            appData.notes.slice().reverse().forEach(n => {
+                html += `
+                    <div class="item">
+                        <div><span class="title">${n.title}</span> <span class="meta">${n.category || ''}</span></div>
+                        <div class="actions">
+                            <button class="btn btn-danger btn-sm" onclick="deleteNote('${n.id}')">✕</button>
+                        </div>
+                    </div>
+                `;
+            });
+            html += `</div></div>`;
+
+            html += `
+                <div class="card">
+                    <h2>➕ Новая заметка</h2>
+                    <input type="text" id="note-title" placeholder="Заголовок" />
+                    <textarea id="note-content" placeholder="Содержание (Markdown)"></textarea>
+                    <input type="text" id="note-category" placeholder="Категория (необязательно)" />
+                    <input type="text" id="note-tags" placeholder="Теги через запятую" />
+                    <button class="btn btn-success" onclick="addNote()">Сохранить</button>
+                </div>
+            `;
+            container.innerHTML = html;
+        }
+
+        window.addNote = function() {
+            const title = document.getElementById('note-title').value.trim();
+            const content = document.getElementById('note-content').value.trim();
+            const category = document.getElementById('note-category').value.trim();
+            const tags = document.getElementById('note-tags').value.trim();
+            if (!title || !content) { alert('Заполните заголовок и содержание'); return; }
+            const note = {
+                id: generateId(),
+                title,
+                content,
+                category,
+                tags,
+                source: '',
+                links: '',
+                created_at: nowISO(),
+                updated_at: nowISO()
+            };
+            appData.notes.push(note);
+            saveData(appData);
+            renderNotes();
+        };
+
+        window.deleteNote = function(id) {
+            if (!confirm('Удалить заметку?')) return;
+            appData.notes = appData.notes.filter(n => n.id !== id);
+            saveData(appData);
+            renderNotes();
+        };
+
+        // ----- 3.7 КОУЧ (ЗАГЛУШКА) -----
+        function renderCoach() {
+            const container = document.getElementById('page-coach');
+            const messages = appData.coachMessages || [];
+            let html = `<div class="card"><h2>💬 Чат с коучем</h2>`;
+            html += `<div class="chat-box" id="chat-box">`;
+            if (messages.length === 0) {
+                html += `<div style="opacity:0.5; text-align:center; padding:16px;">Напишите свою проблему</div>`;
+            } else {
+                messages.forEach(m => {
+                    html += `<div class="chat-msg ${m.role}">${m.text}`;
+                    if (m.timer) html += `<div class="timer-suggest">⏱ ${m.timer} мин</div>`;
+                    if (m.next) html += `<div class="next-step">➡ ${m.next}</div>`;
+                    html += `</div>`;
+                });
+            }
+            html += `</div>`;
+            html += `
+                <div style="display:flex; gap:8px; margin-top:8px;">
+                    <input type="text" id="coach-input" placeholder="Что вас беспокоит?" style="flex:1;" />
+                    <button class="btn btn-primary" onclick="sendCoach()">Отправить</button>
+                </div>
+            `;
+            html += `</div>`;
+            container.innerHTML = html;
+            // Прокрутка вниз
+            const box = document.getElementById('chat-box');
+            if (box) box.scrollTop = box.scrollHeight;
+        }
+
+        window.sendCoach = function() {
+            const input = document.getElementById('coach-input');
+            const msg = input.value.trim();
+            if (!msg) return;
+            // Добавляем сообщение пользователя
+            if (!appData.coachMessages) appData.coachMessages = [];
+            appData.coachMessages.push({ role: 'user', text: msg });
+            // Генерируем ответ (заглушка)
+            const reply = generateCoachReply(msg);
+            appData.coachMessages.push({ role: 'coach', text: reply.reply, timer: reply.timer, next: reply.next });
+            saveData(appData);
+            input.value = '';
+            renderCoach();
+        };
+
+        function generateCoachReply(userMsg) {
+            const lower = userMsg.toLowerCase();
+            if (lower.includes('не могу начать')) {
+                return {
+                    reply: 'Задача неясна, слишком большая или ты устал? Давай разберёмся. Предлагаю разбить на микро-задачи.',
+                    timer: 10,
+                    next: 'Запиши первую микро-задачу и выполни её за 10 минут.'
+                };
+            } else if (lower.includes('прокрастинация') || lower.includes('отвлекаюсь')) {
+                return {
+                    reply: 'Похоже, ты отвлекаешься. Попробуй метод Pomodoro: 25 минут работы, 5 отдыха. Что скажешь?',
+                    timer: 25,
+                    next: 'Запусти таймер на 25 минут и сфокусируйся на одной задаче.'
+                };
+            } else {
+                return {
+                    reply: 'Расскажи подробнее, и я помогу тебе найти решение. В чём именно проблема?',
+                    timer: null,
+                    next: null
+                };
+            }
+        }
+
+        // ----- 3.8 ОТЧЁТ -----
+        function renderReport() {
+            const container = document.getElementById('page-report');
+            const today = todayISO();
+            const tasksToday = appData.tasks.filter(t => t.created_at && t.created_at.slice(0,10) === today);
+            const planned = tasksToday.filter(t => t.status !== 'cancelled');
+            const completed = tasksToday.filter(t => t.status === 'completed');
+            const failed = tasksToday.filter(t => t.status === 'pending' || t.status === 'in_progress');
+            const overrun = completed.filter(t => t.actual_time > t.planned_time);
+            const totalP = planned.reduce((s,t)=> s + t.planned_time, 0);
+            const totalA = completed.reduce((s,t)=> s + t.actual_time, 0);
+            const diff = totalA - totalP;
+            const mainProblem = failed.length ? `Не выполнены: ${failed.map(t=>t.title).join(', ')}` : 'Нет проблем';
+            const improvement = failed.length ? 'Попробуй разбивать большие задачи на мелкие.' : 'Отлично, продолжай в том же духе!';
+
+            // Неделя
+            const weekAgo = new Date(Date.now() - 7*24*60*60*1000).toISOString();
+            const tasksWeek = appData.tasks.filter(t => t.created_at && t.created_at >= weekAgo);
+            const plannedW = tasksWeek.reduce((s,t)=> s + t.planned_time, 0);
+            const actualW = tasksWeek.reduce((s,t)=> s + (t.status === 'completed' ? t.actual_time : 0), 0);
+
+            container.innerHTML = `
+                <div class="card">
+                    <h2>🌙 Вечерний отчёт</h2>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                        <div>
+                            <p><strong>Планировалось:</strong> ${totalP.toFixed(0)} мин</p>
+                            <p><strong>Выполнено:</strong> ${totalA.toFixed(0)} мин</p>
+                            <p><strong>Перерасход:</strong> ${overrun.length ? overrun.map(t=>t.title).join(', ') : 'Нет'}</p>
+                            <p><strong>Сорвались:</strong> ${failed.length ? failed.map(t=>t.title).join(', ') : 'Нет'}</p>
+                        </div>
+                        <div>
+                            <p><strong>Главная проблема:</strong> ${mainProblem}</p>
+                            <p><strong>Улучшение на завтра:</strong> ${improvement}</p>
+                        </div>
+                    </div>
+                    <hr style="margin:12px 0; border-color:#374151;" />
+                    <h3 style="font-size:16px;">Недельный итог</h3>
+                    <p>План: ${plannedW.toFixed(0)} мин, Факт: ${actualW.toFixed(0)} мин</p>
+                    <p>Разница: ${(actualW - plannedW).toFixed(0)} мин</p>
+                </div>
+            `;
+        }
+
+        // ----- 3.9 НАСТРОЙКИ (заглушка) -----
+        function renderSettings() {
+            const container = document.getElementById('page-settings');
+            container.innerHTML = `
+                <div class="card">
+                    <h2>⚙️ Настройки</h2>
+                    <p>Здесь будут настройки приложения (заглушка).</p>
+                    <p style="margin-top:12px; font-size:12px; opacity:0.5;">Данные хранятся локально в вашем браузере.</p>
+                    <button class="btn btn-danger" onclick="if(confirm('Удалить все данные?')){ localStorage.removeItem('${STORAGE_KEY}'); location.reload(); }">Сбросить все данные</button>
+                </div>
+            `;
+        }
+
+        // ============================================================
+        // 4. ПЕРЕКЛЮЧЕНИЕ СТРАНИЦ
+        // ============================================================
+        const pageRenderers = {
+            today: renderToday,
+            schedule: renderSchedule,
+            tasks: renderTasks,
+            timer: renderTimer,
+            tracking: renderTracking,
+            notes: renderNotes,
+            coach: renderCoach,
+            report: renderReport,
+            settings: renderSettings
+        };
+
+        let currentPage = 'today';
+
+        window.switchPage = function(page) {
+            if (currentPage === page) return;
+            // Скрываем все страницы
+            document.querySelectorAll('.page').forEach(el => el.classList.add('hidden'));
+            // Показываем нужную
+            const target = document.getElementById('page-'+page);
+            if (target) target.classList.remove('hidden');
+            // Обновляем навигацию
+            document.querySelectorAll('.nav button').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.page === page);
+            });
+            currentPage = page;
+            // Рендерим
+            if (pageRenderers[page]) pageRenderers[page]();
+        };
+
+        // Обработчики навигации
+        document.querySelectorAll('.nav button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                switchPage(btn.dataset.page);
+            });
+        });
+
+        // ============================================================
+        // 5. ИНИЦИАЛИЗАЦИЯ
+        // ============================================================
+        // Проверяем, есть ли данные, если нет — добавим тестовые
+        if (appData.tasks.length === 0 && appData.schedule.length === 0) {
+            const now = new Date();
+            const todayStr = now.toISOString().slice(0,10);
+            const start1 = new Date(now);
+            start1.setHours(9,0,0,0);
+            const end1 = new Date(now);
+            end1.setHours(10,0,0,0);
+            const start2 = new Date(now);
+            start2.setHours(10,0,0,0);
+            const end2 = new Date(now);
+            end2.setHours(10,30,0,0);
+            appData.schedule = [
+                { id: generateId(), title: 'Работа над проектом', start_time: start1.toISOString(), end_time: end1.toISOString(), is_fixed: false, task_id: null },
+                { id: generateId(), title: 'Английский', start_time: start2.toISOString(), end_time: end2.toISOString(), is_fixed: false, task_id: null }
+            ];
+            appData.tasks = [
+                { id: generateId(), title: 'Завершить отчёт', description: '', category: 'work', planned_time: 45, actual_time: 0, status: 'pending', priority: 0, due_date: null, gadget: null, tags: '', notes: '', created_at: nowISO(), updated_at: nowISO() },
+                { id: generateId(), title: 'Повторить 10 слов', description: '', category: 'english', planned_time: 15, actual_time: 0, status: 'pending', priority: 0, due_date: null, gadget: null, tags: '', notes: '', created_at: nowISO(), updated_at: nowISO() }
+            ];
+            appData.notes = [];
+            appData.coachMessages = [];
+            appData.timerSessions = [];
+            saveData(appData);
+        }
+
+        // Показываем страницу "Сегодня"
+        switchPage('today');
+
+        // Обновление таймера в фоне (если есть активная сессия)
+        setInterval(() => {
+            const active = appData.timerSessions.find(s => s.is_active === true);
+            if (active && currentPage === 'timer') {
+                renderTimer();
+            }
+        }, 2000);
+    </script>
+</body>
+</html>
