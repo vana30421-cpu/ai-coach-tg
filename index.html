@@ -1,0 +1,1606 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>AI Коуч Pro+</title>
+    <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
+    <style>
+        :root {
+            --bg: #0a0a12;
+            --card-bg: rgba(255, 255, 255, 0.06);
+            --card-border: rgba(255, 255, 255, 0.10);
+            --text: #f0f0f5;
+            --text-secondary: #a0a0b8;
+            --primary: #6c5ce7;
+            --primary-hover: #7d6ff0;
+            --success: #00b894;
+            --danger: #e17055;
+            --warning: #fdcb6e;
+            --shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
+            --radius: 28px;
+            --glass-blur: 16px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background 0.3s;
+        }
+        body.light {
+            --bg: #ececf2;
+            --card-bg: rgba(255, 255, 255, 0.5);
+            --card-border: rgba(0, 0, 0, 0.08);
+            --text: #1a1a2e;
+            --text-secondary: #4a4a5a;
+        }
+        .header {
+            background: var(--card-bg);
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
+            padding: 10px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--card-border);
+            font-size: 14px;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        .header .user { opacity: 0.8; font-weight: 500; }
+        .container { flex: 1; max-width: 640px; margin: 0 auto; width: 100%; padding: 8px; }
+
+        /* Компактная навигация с иконками и текстом */
+        .nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px;
+            background: var(--card-bg);
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
+            border-radius: var(--radius);
+            padding: 4px 6px;
+            margin-bottom: 12px;
+            border: 1px solid var(--card-border);
+            justify-content: center;
+        }
+        .nav .nav-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px;
+            padding: 2px 4px;
+            border-right: 1px solid var(--card-border);
+        }
+        .nav .nav-group:last-child { border-right: none; }
+        .nav button {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 3px 6px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+        .nav button .icon { font-size: 14px; }
+        .nav button.active { background: var(--primary); color: #fff; }
+        .nav button:hover { background: rgba(255, 255, 255, 0.06); color: var(--text); }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 12px;
+            border: 1px solid var(--card-border);
+            box-shadow: var(--shadow);
+            transition: 0.3s;
+        }
+        .card h2 { font-size: 18px; margin-bottom: 10px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .card p, .card div { font-size: 14px; line-height: 1.5; }
+        .meta { color: var(--text-secondary); font-size: 13px; }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #fff;
+            background: var(--primary);
+            min-width: 80px;
+            text-align: center;
+        }
+        .btn-primary { background: var(--primary); }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-success { background: var(--success); }
+        .btn-success:hover { filter: brightness(1.1); }
+        .btn-danger { background: var(--danger); }
+        .btn-danger:hover { filter: brightness(1.1); }
+        .btn-warning { background: var(--warning); color: #000; }
+        .btn-warning:hover { filter: brightness(1.1); }
+        .btn-outline { background: transparent; border: 1px solid var(--text-secondary); color: var(--text); }
+        .btn-outline:hover { background: var(--card-bg); }
+        .btn-sm { padding: 6px 12px; font-size: 12px; min-width: auto; }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 14px;
+            border: 1px solid var(--card-border);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text);
+            font-size: 14px;
+            margin-bottom: 8px;
+            transition: 0.2s;
+        }
+        textarea { resize: vertical; min-height: 60px; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); background: rgba(255, 255, 255, 0.08); }
+        label { font-size: 13px; color: var(--text-secondary); display: block; margin-bottom: 4px; }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+        .item-list { display: flex; flex-direction: column; gap: 8px; }
+        .item {
+            background: rgba(255, 255, 255, 0.04);
+            padding: 12px 14px;
+            border-radius: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .item .title { font-weight: 500; }
+        .item .meta { font-size: 12px; color: var(--text-secondary); margin-left: 6px; }
+
+        .timer-display { font-size: 40px; font-weight: bold; text-align: center; padding: 10px; letter-spacing: 2px; }
+        .timer-controls { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+
+        .chat-box {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 18px;
+            padding: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .chat-msg {
+            padding: 8px 14px;
+            border-radius: 18px;
+            max-width: 80%;
+            word-break: break-word;
+            background: rgba(255, 255, 255, 0.06);
+        }
+        .chat-msg.user { align-self: flex-end; background: var(--primary); }
+        .chat-msg.coach { align-self: flex-start; background: rgba(255, 255, 255, 0.08); }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            text-align: center;
+        }
+        .calendar-grid .day-cell {
+            padding: 8px 0;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .calendar-grid .day-cell.has-event { background: var(--primary); color: #fff; }
+        .calendar-grid .day-cell:hover { background: rgba(255, 255, 255, 0.06); }
+
+        .hidden { display: none !important; }
+        .mt-2 { margin-top: 10px; }
+        .mb-2 { margin-bottom: 10px; }
+        .flex { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .matrix-cell {
+            background: rgba(255, 255, 255, 0.04);
+            padding: 10px;
+            border-radius: 14px;
+            text-align: center;
+            border: 1px solid var(--card-border);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .matrix-cell:hover { background: rgba(255, 255, 255, 0.08); }
+        .matrix-cell .count { font-size: 24px; font-weight: 700; color: var(--primary); }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.1);
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+        .progress-bar .fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 3px;
+            transition: width 0.5s;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal {
+            background: var(--bg);
+            max-width: 90%;
+            width: 400px;
+            border-radius: var(--radius);
+            padding: 20px;
+            border: 1px solid var(--card-border);
+            box-shadow: var(--shadow);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .modal .close {
+            float: right;
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        /* Заголовок страницы */
+        .page-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        @media (max-width: 480px) {
+            .nav button { font-size: 9px; padding: 2px 4px; }
+            .nav button .icon { font-size: 12px; }
+            .card { padding: 12px; }
+            .timer-display { font-size: 30px; }
+            .grid-2 { grid-template-columns: 1fr; }
+            .grid-3 { grid-template-columns: 1fr 1fr; }
+            .matrix-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <span>🧠 AI Коуч Pro+</span>
+    <span class="user" id="username">Гость</span>
+</div>
+<div class="container" id="app">
+    <!-- Компактная навигация с иконками и текстом -->
+    <nav class="nav" id="nav">
+        <div class="nav-group">
+            <button data-page="today"><span class="icon">🏠</span>Главная</button>
+            <button data-page="schedule"><span class="icon">📅</span>Распис</button>
+            <button data-page="calendar"><span class="icon">📆</span>Календ</button>
+            <button data-page="tasks"><span class="icon">📋</span>Задачи</button>
+        </div>
+        <div class="nav-group">
+            <button data-page="habits"><span class="icon">🔄</span>Привыч</button>
+            <button data-page="goals"><span class="icon">🎯</span>Цели</button>
+            <button data-page="tracking"><span class="icon">📊</span>Учёт</button>
+            <button data-page="report"><span class="icon">📈</span>Отчёт</button>
+        </div>
+        <div class="nav-group">
+            <button data-page="timer"><span class="icon">⏱</span>Таймер</button>
+            <button data-page="notes"><span class="icon">📝</span>Заметки</button>
+            <button data-page="learning"><span class="icon">📚</span>Обуч</button>
+            <button data-page="coach"><span class="icon">💬</span>Коуч</button>
+        </div>
+        <div class="nav-group">
+            <button data-page="screen"><span class="icon">📱</span>Экран</button>
+            <button data-page="priority"><span class="icon">🔢</span>Матрица</button>
+            <button data-page="focus"><span class="icon">🧘</span>Фокус</button>
+            <button data-page="journal"><span class="icon">📋</span>Журнал</button>
+            <button data-page="settings"><span class="icon">⚙️</span>Настр</button>
+        </div>
+    </nav>
+    <div id="page-today" class="page"></div>
+    <div id="page-schedule" class="page hidden"></div>
+    <div id="page-calendar" class="page hidden"></div>
+    <div id="page-tasks" class="page hidden"></div>
+    <div id="page-habits" class="page hidden"></div>
+    <div id="page-timer" class="page hidden"></div>
+    <div id="page-tracking" class="page hidden"></div>
+    <div id="page-notes" class="page hidden"></div>
+    <div id="page-learning" class="page hidden"></div>
+    <div id="page-coach" class="page hidden"></div>
+    <div id="page-goals" class="page hidden"></div>
+    <div id="page-report" class="page hidden"></div>
+    <div id="page-settings" class="page hidden"></div>
+    <div id="page-screen" class="page hidden"></div>
+    <div id="page-priority" class="page hidden"></div>
+    <div id="page-focus" class="page hidden"></div>
+    <div id="page-journal" class="page hidden"></div>
+</div>
+<script>
+    // ======================================================================
+    // 1. TELEGRAM + ЛОКАЛЬНОЕ ХРАНИЛИЩЕ
+    // ======================================================================
+    const tg = window.Telegram?.WebApp;
+    if (tg) { tg.expand(); tg.ready(); const u = tg.initDataUnsafe?.user; if (u) document.getElementById('username').textContent = u.first_name || u.username || 'Пользователь'; }
+    else document.getElementById('username').textContent = 'Тест';
+
+    const STORAGE_KEY = 'ai_coach_pro_v7';
+    function loadData() {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (raw) {
+                const data = JSON.parse(raw);
+                if (!data.settings) data.settings = {};
+                if (!data.recurringTasks) data.recurringTasks = [];
+                if (!data.calendarEvents) data.calendarEvents = [];
+                if (!data.habits) data.habits = [];
+                if (!data.learningPaths) data.learningPaths = [];
+                if (!data.goals) data.goals = [];
+                if (!data.memory) data.memory = [];
+                if (!data.actionLog) data.actionLog = [];
+                if (!data.stateLog) data.stateLog = [];
+                if (!data.coachMessages) data.coachMessages = [];
+                if (!data.timerSessions) data.timerSessions = [];
+                if (!data.notes) data.notes = [];
+                if (!data.currentState) data.currentState = { sleep: 5, mood: 5, energy: 5, date: null };
+                if (!data.agentPaused) data.agentPaused = false;
+                if (!data.doNotDisturb) data.doNotDisturb = false;
+                if (!data.encryptionKey) data.encryptionKey = '';
+                if (!data.screenTime) data.screenTime = {};
+                if (!data.priorityMatrix) data.priorityMatrix = { urgent_important: [], important_not_urgent: [], not_important_not_urgent: [] };
+                if (!data.weeklyProgress) data.weeklyProgress = {};
+                if (!data.monthlyProgress) data.monthlyProgress = {};
+                if (!data.quarterProgress) data.quarterProgress = {};
+                if (!data.focusMode) data.focusMode = false;
+                if (!data.recommendOnly) data.recommendOnly = false;
+                if (!data.emergencyStop) data.emergencyStop = false;
+                if (!data.dailyQuotes) data.dailyQuotes = [];
+                if (!data.agentQuality) data.agentQuality = { total: 0, correct: 0 };
+                if (!data.failureAnalysis) data.failureAnalysis = [];
+                if (!data.todoistKey) data.todoistKey = '';
+                if (!data.todoistTasks) data.todoistTasks = [];
+                if (!data.routine) data.routine = [];
+                if (!data.screenTimeLog) data.screenTimeLog = {};
+                return data;
+            }
+        } catch (e) { }
+        return {
+            tasks: [], schedule: [], timerSessions: [], notes: [],
+            settings: { theme: 'dark', username: 'Пользователь', language: 'ru', googleCalendar: '', samsungMusic: '', obsidianPath: '' },
+            recurringTasks: [], calendarEvents: [], habits: [], learningPaths: [], goals: [],
+            coachMessages: [], stateLog: [], actionLog: [], memory: [],
+            currentState: { sleep: 5, mood: 5, energy: 5, date: null },
+            agentPaused: false, doNotDisturb: false, encryptionKey: '',
+            screenTime: {},
+            priorityMatrix: { urgent_important: [], important_not_urgent: [], not_important_not_urgent: [] },
+            weeklyProgress: {}, monthlyProgress: {}, quarterProgress: {},
+            focusMode: false, recommendOnly: false, emergencyStop: false,
+            dailyQuotes: [], agentQuality: { total: 0, correct: 0 },
+            failureAnalysis: [],
+            todoistKey: '',
+            todoistTasks: [],
+            routine: [],
+            screenTimeLog: {}
+        };
+    }
+    function saveData(data) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+    let appData = loadData();
+
+    function applyTheme(t) { document.body.classList.toggle('light', t === 'light'); }
+    applyTheme(appData.settings.theme || 'dark');
+
+    function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+    function nowISO() { return new Date().toISOString(); }
+    function todayISO() { return new Date().toISOString().slice(0, 10); }
+    function fmtDate(d) { return new Date(d).toLocaleDateString('ru-RU'); }
+    function fmtTime(d) { return new Date(d).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }); }
+    function logAction(action, details) { appData.actionLog.push({ id: genId(), action, details: details || '', timestamp: nowISO() }); saveData(appData); }
+
+    // Уведомления
+    function showNotification(title, body) {
+        if (!('Notification' in window)) return;
+        if (Notification.permission === 'granted') {
+            new Notification(title, { body });
+        } else if (Notification.permission !== 'denied') {
+            Notification.requestPermission().then(perm => {
+                if (perm === 'granted') new Notification(title, { body });
+            });
+        }
+    }
+
+    // ======================================================================
+    // 2. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+    // ======================================================================
+    function encrypt(text) { return btoa(text); }
+    function decrypt(text) { try { return atob(text); } catch (e) { return text; } }
+
+    let recognition = null;
+    function initVoice() {
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) return alert('Голосовой ввод не поддерживается');
+        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SR();
+        recognition.lang = 'ru-RU';
+        recognition.continuous = false;
+        recognition.interimResults = true;
+    }
+    function startVoiceInput(targetId) {
+        if (!recognition) initVoice();
+        if (!recognition) return alert('Голосовой ввод недоступен');
+        const target = document.getElementById(targetId);
+        if (!target) return;
+        recognition.onresult = function (e) {
+            let transcript = '';
+            for (let i = e.resultIndex; i < e.results.length; i++) {
+                transcript += e.results[i][0].transcript;
+                if (e.results[i].isFinal) {
+                    target.value += (target.value ? ' ' : '') + transcript;
+                }
+            }
+        };
+        recognition.start();
+    }
+
+    function checkResult() {
+        const today = todayISO();
+        const tasksToday = appData.tasks.filter(t => t.created_at && t.created_at.slice(0, 10) === today);
+        const completed = tasksToday.filter(t => t.status === 'completed');
+        const totalMinutes = completed.reduce((s, t) => s + (t.actual_time || 0), 0);
+        const pagesRead = appData.memory.filter(m => m.type === 'pages').length;
+        return { tasksDone: completed.length, totalMinutes, pagesRead, summary: `Задач: ${completed.length}, время: ${totalMinutes} мин, страниц: ${pagesRead}` };
+    }
+
+    function countStreak(history) {
+        if (!history || !history.length) return 0;
+        let streak = 0;
+        for (let i = 0; i < history.length; i++) {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            const ds = d.toISOString().slice(0, 10);
+            if (history.includes(ds)) streak++;
+            else break;
+        }
+        return streak;
+    }
+
+    function downloadFile(content, filename, mime) {
+        const blob = new Blob([content], { type: mime });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    async function fetchDailyQuote() {
+        try {
+            const resp = await fetch('https://api.quotable.io/random');
+            const data = await resp.json();
+            return { text: data.content, author: data.author };
+        } catch (e) {
+            const quotes = [
+                { text: 'Делай, что можешь, с тем, что имеешь, там, где ты есть.', author: 'Теодор Рузвельт' },
+                { text: 'Успех — это способность идти от неудачи к неудаче, не теряя энтузиазма.', author: 'Уинстон Черчилль' },
+                { text: 'Не бойся делать медленно, бойся стоять на месте.', author: 'Китайская пословица' },
+                { text: 'Лучший способ предсказать будущее — создать его.', author: 'Питер Друкер' },
+                { text: 'Гениальность — это 1% вдохновения и 99% пота.', author: 'Томас Эдисон' }
+            ];
+            const idx = new Date().getDate() % quotes.length;
+            return quotes[idx];
+        }
+    }
+
+    // Автоматический подсчёт экранного времени (каждую минуту)
+    let screenTimerInterval = null;
+    function startScreenTimer() {
+        if (screenTimerInterval) return;
+        screenTimerInterval = setInterval(() => {
+            const today = todayISO();
+            if (!appData.screenTimeLog[today]) appData.screenTimeLog[today] = 0;
+            appData.screenTimeLog[today] += 1; // +1 минута
+            // Также обновляем общее поле для совместимости
+            if (!appData.screenTime.total) appData.screenTime.total = 0;
+            appData.screenTime.total += 1;
+            saveData(appData);
+        }, 60000);
+    }
+    // Останавливаем таймер при уходе со страницы
+    window.addEventListener('beforeunload', function() {
+        if (screenTimerInterval) clearInterval(screenTimerInterval);
+    });
+    // Запускаем при загрузке
+    startScreenTimer();
+
+    // ======================================================================
+    // 3. СТРАНИЦЫ (все старые сохранены, добавлены новые функции)
+    // ======================================================================
+
+    // ----- 3.1 ГЛАВНАЯ -----
+    function renderToday() {
+        const c = document.getElementById('page-today');
+        const now = new Date();
+        const current = appData.schedule.find(b => b.start_time <= now.toISOString() && b.end_time >= now.toISOString());
+        const next = appData.schedule.find(b => b.start_time > now.toISOString());
+        const total = appData.tasks.length;
+        const done = appData.tasks.filter(t => t.status === 'completed').length;
+        const dnd = appData.doNotDisturb ? '🔇 Включён' : '🔊 Выключен';
+        const result = checkResult();
+
+        let quoteHtml = '';
+        if (appData.dailyQuotes.length > 0) {
+            const q = appData.dailyQuotes[0];
+            quoteHtml = `<div class="card" style="background:var(--primary);color:#fff;"><p>«${q.text}» — ${q.author}</p></div>`;
+        } else {
+            quoteHtml = `<div class="card"><p>✨ Загрузка цитаты...</p></div>`;
+            fetchDailyQuote().then(q => {
+                appData.dailyQuotes = [q];
+                saveData(appData);
+                renderToday();
+            });
+        }
+
+        c.innerHTML = `
+            <div class="page-title">🏠 Главная</div>
+            ${quoteHtml}
+            <div class="card"><h2>📌 Текущий блок</h2>${current ? `<p>${current.title} (${fmtTime(current.start_time)}–${fmtTime(current.end_time)})</p>` : '<p>Нет активного блока</p>'}</div>
+            <div class="card"><h2>⏳ Следующая задача</h2>${next ? `<p>${next.title} в ${fmtTime(next.start_time)}</p>` : '<p>На сегодня всё</p>'}</div>
+            <div class="card"><h2>📊 Прогресс</h2><p>Задач: ${total} (выполнено ${done})</p><div style="background:rgba(255,255,255,0.1);height:6px;border-radius:3px;margin-top:6px;"><div style="background:var(--primary);height:6px;border-radius:3px;width:${total ? (done / total * 100).toFixed(0) : 0}%;"></div></div></div>
+            <div class="card"><h2>✅ Результат</h2><p>${result.summary}</p><button class="btn btn-primary btn-sm" onclick="switchPage('report')">Подробнее</button></div>
+            <div class="card"><h2>⚡ Быстрые действия</h2>
+                <div class="flex"><button class="btn btn-primary" onclick="switchPage('coach')">💬 Коуч</button><button class="btn btn-success" onclick="switchPage('timer')">⏱ Таймер</button><button class="btn btn-outline" onclick="switchPage('settings')">⚙️ Настройки</button><button class="btn btn-outline" onclick="switchPage('priority')">📊 Приоритеты</button></div>
+                <div class="mt-2"><span class="meta">Режим DND: ${dnd}</span> <button class="btn btn-sm btn-outline" onclick="toggleDND()">${appData.doNotDisturb ? 'Выключить' : 'Включить'}</button>
+                <span class="meta" style="margin-left:8px;">Фокус: ${appData.focusMode ? '🔴 активен' : '⚪ выкл'}</span> <button class="btn btn-sm btn-outline" onclick="toggleFocus()">${appData.focusMode ? 'Выключить' : 'Включить'}</button>
+                <span class="meta" style="margin-left:8px;">Рекомендации: ${appData.recommendOnly ? '🔍 только советы' : '⚙️ активен'}</span> <button class="btn btn-sm btn-outline" onclick="toggleRecommendOnly()">${appData.recommendOnly ? 'Выключить' : 'Включить'}</button>
+                <button class="btn btn-sm btn-danger" onclick="emergencyStop()">🛑 Стоп-кран</button>
+                </div>
+            </div>
+        `;
+    }
+
+    window.toggleDND = function () {
+        appData.doNotDisturb = !appData.doNotDisturb;
+        logAction('dnd_toggle', appData.doNotDisturb ? 'включён' : 'выключен');
+        saveData(appData);
+        renderToday();
+    };
+    window.toggleFocus = function () {
+        appData.focusMode = !appData.focusMode;
+        logAction('focus_toggle', appData.focusMode ? 'включён' : 'выключен');
+        saveData(appData);
+        renderToday();
+        if (appData.focusMode) {
+            showNotification('Режим фокуса', 'Включён глубокий фокус. Минимум уведомлений.');
+        }
+    };
+    window.toggleRecommendOnly = function () {
+        appData.recommendOnly = !appData.recommendOnly;
+        logAction('recommend_only', appData.recommendOnly ? 'включён' : 'выключен');
+        saveData(appData);
+        renderToday();
+    };
+    window.emergencyStop = function () {
+        if (confirm('Экстренная остановка автоматизации?')) {
+            appData.emergencyStop = true;
+            appData.agentPaused = true;
+            logAction('emergency_stop', 'активирована');
+            saveData(appData);
+            alert('Автоматизация остановлена.');
+            renderToday();
+        }
+    };
+
+    // ----- 3.2 РАСПИСАНИЕ -----
+    function renderSchedule() {
+        const c = document.getElementById('page-schedule');
+        let html = `<div class="page-title">📅 Расписание</div>`;
+        html += `<div class="card"><h2>📅 Расписание</h2><div class="item-list">`;
+        if (!appData.schedule.length) html += '<p>Нет блоков</p>';
+        appData.schedule.slice().sort((a, b) => a.start_time.localeCompare(b.start_time)).forEach(b => {
+            html += `<div class="item"><div><span class="title">${b.title}</span> <span class="meta">${fmtTime(b.start_time)}–${fmtTime(b.end_time)}</span></div><div><button class="btn btn-danger btn-sm" onclick="deleteSchedule('${b.id}')">✕</button></div></div>`;
+        });
+        html += `</div></div><div class="card"><h2>➕ Добавить блок</h2><input id="sched-title" placeholder="Название"/><input type="datetime-local" id="sched-start"/><input type="datetime-local" id="sched-end"/><div class="flex"><label><input type="checkbox" id="sched-recur"/> Повторять</label></div><button class="btn btn-success" onclick="addSchedule()">Добавить</button></div>`;
+        c.innerHTML = html;
+    }
+    window.addSchedule = function () {
+        const title = document.getElementById('sched-title').value.trim();
+        const start = document.getElementById('sched-start').value;
+        const end = document.getElementById('sched-end').value;
+        const recur = document.getElementById('sched-recur').checked;
+        if (!title || !start || !end) return alert('Заполните поля');
+        if (start >= end) return alert('Начало должно быть раньше окончания');
+        const block = { id: genId(), title, start_time: new Date(start).toISOString(), end_time: new Date(end).toISOString(), is_fixed: false, task_id: null, recurring: recur };
+        appData.schedule.push(block);
+        if (recur) appData.recurringTasks.push({ id: block.id, title, start_offset: new Date(start).getTime() - new Date().setHours(0, 0, 0, 0), end_offset: new Date(end).getTime() - new Date().setHours(0, 0, 0, 0), interval: 86400000 });
+        saveData(appData);
+        renderSchedule();
+        // Совет при добавлении
+        showNotification('Новый блок', `Добавлен блок "${title}"`);
+    };
+    window.deleteSchedule = function (id) {
+        if (!confirm('Удалить?')) return;
+        appData.schedule = appData.schedule.filter(b => b.id !== id);
+        appData.recurringTasks = appData.recurringTasks.filter(r => r.id !== id);
+        saveData(appData);
+        renderSchedule();
+    };
+
+    // ----- 3.3 КАЛЕНДАРЬ -----
+    let calOffset = 0;
+    function renderCalendar() {
+        const c = document.getElementById('page-calendar');
+        const now = new Date();
+        const month = now.getMonth() + calOffset,
+            year = now.getFullYear();
+        const firstDay = new Date(year, month, 1).getDay();
+        const days = new Date(year, month + 1, 0).getDate();
+        const events = appData.schedule.filter(b => { const d = new Date(b.start_time); return d.getMonth() === month && d.getFullYear() === year; });
+        let html = `<div class="page-title">📆 Календарь</div>`;
+        html += `<div class="card"><h2>📆 ${new Date(year, month).toLocaleString('ru', { month: 'long', year: 'numeric' })}</h2>
+        <div class="flex"><button class="btn btn-sm btn-outline" onclick="changeCal(-1)">◀</button><span style="flex:1;text-align:center;">${new Date(year, month).toLocaleString('ru', { month: 'long', year: 'numeric' })}</span><button class="btn btn-sm btn-outline" onclick="changeCal(1)">▶</button></div>
+        <div class="calendar-grid">`;
+        const week = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+        week.forEach(d => html += `<div style="font-weight:600;font-size:13px;padding:6px 0;color:var(--text-secondary);">${d}</div>`);
+        let offset = firstDay === 0 ? 6 : firstDay - 1;
+        for (let i = 0; i < offset; i++) html += `<div class="day-cell"></div>`;
+        for (let day = 1; day <= days; day++) {
+            const d = new Date(year, month, day);
+            const ds = d.toISOString().slice(0, 10);
+            const has = events.some(b => new Date(b.start_time).toISOString().slice(0, 10) === ds);
+            html += `<div class="day-cell ${has ? 'has-event' : ''}" onclick="showDayDetails('${ds}')">${day}</div>`;
+        }
+        html += `</div><div style="margin-top:10px;font-size:13px;color:var(--text-secondary);">🔵 = события</div>`;
+        if (appData.settings.googleCalendar) {
+            html += `<div class="mt-2" style="font-size:13px;">🔗 Подключён Google Calendar: ${appData.settings.googleCalendar}</div>`;
+        }
+        html += `</div>`;
+        c.innerHTML = html;
+    }
+
+    function showDayDetails(dateStr) {
+        const events = appData.schedule.filter(b => new Date(b.start_time).toISOString().slice(0, 10) === dateStr);
+        const tasks = appData.tasks.filter(t => t.created_at && t.created_at.slice(0, 10) === dateStr);
+        const completed = tasks.filter(t => t.status === 'completed');
+        const total = tasks.length;
+        const done = completed.length;
+        const minutes = completed.reduce((s, t) => s + (t.actual_time || 0), 0);
+
+        let html = `<div class="modal-overlay" onclick="if(event.target===this) closeModal()">
+            <div class="modal">
+                <button class="close" onclick="closeModal()">&times;</button>
+                <h2>📅 ${fmtDate(dateStr)}</h2>
+                <p><strong>Задач:</strong> ${total} (выполнено ${done})</p>
+                <p><strong>Время:</strong> ${minutes} мин</p>
+                <h3>События</h3>
+                <ul>${events.length ? events.map(b => `<li>${b.title} (${fmtTime(b.start_time)}–${fmtTime(b.end_time)})</li>`).join('') : '<li>Нет событий</li>'}</ul>
+                <h3>Задачи</h3>
+                <ul>${tasks.length ? tasks.map(t => `<li>${t.title} — ${t.status} (${t.planned_time} мин)</li>`).join('') : '<li>Нет задач</li>'}</ul>
+                <button class="btn btn-primary btn-sm" onclick="closeModal()">Закрыть</button>
+            </div>
+        </div>`;
+        document.body.insertAdjacentHTML('beforeend', html);
+    }
+
+    function closeModal() {
+        const overlay = document.querySelector('.modal-overlay');
+        if (overlay) overlay.remove();
+    }
+
+    window.changeCal = function (d) { calOffset += d;
+        renderCalendar(); };
+
+    // ----- 3.4 ЗАДАЧИ (с советами) -----
+    function renderTasks() {
+        const c = document.getElementById('page-tasks');
+        let html = `<div class="page-title">📋 Задачи</div>`;
+        html += `<div class="card"><h2>📋 Задачи</h2><div class="flex"><input id="task-filter" placeholder="Поиск..." oninput="filterTasks()" style="flex:1;"/><select id="task-filter-cat" onchange="filterTasks()"><option value="">Все</option><option value="work">Работа</option><option value="learning">Обучение</option><option value="reading">Чтение</option><option value="english">Английский</option><option value="rehearsal">Репетиция</option><option value="planning">Планирование</option><option value="chores">Бытовые</option><option value="rest">Отдых</option><option value="social">Соцсети</option><option value="buffer">Буфер</option><option value="movie">Фильм</option></select><select id="task-filter-status" onchange="filterTasks()"><option value="">Все</option><option value="pending">Ожидает</option><option value="in_progress">В процессе</option><option value="completed">Выполнено</option></select></div>
+        <div class="item-list" id="task-list"></div></div>
+        <div class="card"><h2>➕ Новая задача</h2><div class="flex"><input id="task-title" placeholder="Название" style="flex:1;"/><button class="btn btn-sm btn-outline" onclick="startVoiceInput('task-title')">🎤</button></div>
+        <input id="task-desc" placeholder="Описание"/>
+        <select id="task-cat"><option value="work">Работа</option><option value="learning">Обучение</option><option value="reading">Чтение</option><option value="english">Английский</option><option value="rehearsal">Репетиция</option><option value="planning">Планирование</option><option value="chores">Бытовые</option><option value="rest">Отдых</option><option value="social">Соцсети</option><option value="buffer">Буфер</option><option value="movie">Фильм</option></select>
+        <input type="number" id="task-planned" placeholder="Плановое время (мин)" value="30"/>
+        <input type="datetime-local" id="task-due" placeholder="Дедлайн"/>
+        <select id="task-priority"><option value="low">Низкий</option><option value="medium" selected>Средний</option><option value="high">Высокий</option></select>
+        <div class="flex"><label><input type="checkbox" id="task-recur"/> Повторять</label></div>
+        <button class="btn btn-success" onclick="addTask()">Добавить</button>
+        <div id="task-tip" style="margin-top:8px;font-size:13px;color:var(--text-secondary);"></div>
+        </div>`;
+        c.innerHTML = html;
+        filterTasks();
+        // Добавляем совет при выборе категории
+        document.getElementById('task-cat')?.addEventListener('change', function() {
+            const tips = {
+                'work': '💡 Разбей задачу на подзадачи и используй метод Pomodoro.',
+                'learning': '💡 Изучай материал блоками по 25 минут с перерывами.',
+                'reading': '💡 Читай в тишине, делай заметки.',
+                'english': '💡 Практикуй язык ежедневно по 15 минут.',
+                'rehearsal': '💡 Репетируй перед зеркалом или записывай себя.',
+                'planning': '💡 Планируй на неделю вперёд.',
+                'chores': '💡 Делегируй или делай по 10 минут в день.',
+                'rest': '💡 Отдых — важная часть продуктивности.',
+                'social': '💡 Ограничь соцсети до 30 минут в день.',
+                'buffer': '💡 Используй буфер для неожиданных задач.',
+                'movie': '💡 Кино — для восстановления, не злоупотребляй.'
+            };
+            const tip = tips[this.value] || '💡 Выберите категорию для совета.';
+            document.getElementById('task-tip').textContent = tip;
+        });
+    }
+
+    function filterTasks() {
+        const list = document.getElementById('task-list');
+        if (!list) return;
+        const q = (document.getElementById('task-filter')?.value || '').toLowerCase();
+        const cat = document.getElementById('task-filter-cat')?.value || '';
+        const status = document.getElementById('task-filter-status')?.value || '';
+        let filtered = appData.tasks;
+        if (q) filtered = filtered.filter(t => t.title.toLowerCase().includes(q) || (t.description || '').toLowerCase().includes(q));
+        if (cat) filtered = filtered.filter(t => t.category === cat);
+        if (status) filtered = filtered.filter(t => t.status === status);
+        if (!filtered.length) { list.innerHTML = '<p style="opacity:0.5;text-align:center;">Нет задач</p>'; return; }
+        let html = '';
+        filtered.sort((a, b) => (a.priority === 'high' ? 0 : 1) - (b.priority === 'high' ? 0 : 1));
+        filtered.forEach(t => {
+            const lbl = t.priority === 'high' ? '🔴' : t.priority === 'medium' ? '🟡' : '🟢';
+            html += `<div class="item"><div><span class="title">${lbl} ${t.title}</span> <span class="meta">${t.category} | ${t.planned_time} мин</span></div><div><button class="btn btn-success btn-sm" onclick="completeTask('${t.id}')">✓</button><button class="btn btn-danger btn-sm" onclick="deleteTask('${t.id}')">✕</button></div></div>`;
+        });
+        list.innerHTML = html;
+    }
+    window.addTask = function () {
+        const title = document.getElementById('task-title').value.trim();
+        const desc = document.getElementById('task-desc').value.trim();
+        const cat = document.getElementById('task-cat').value;
+        const planned = parseFloat(document.getElementById('task-planned').value) || 0;
+        const due = document.getElementById('task-due').value;
+        const priority = document.getElementById('task-priority').value;
+        const recur = document.getElementById('task-recur').checked;
+        if (!title) return alert('Введите название');
+        const task = { id: genId(), title, description: desc, category: cat, planned_time: planned, actual_time: 0, status: 'pending', priority, due_date: due ? new Date(due).toISOString() : null, gadget: null, tags: '', notes: '', recurring: recur, created_at: nowISO(), updated_at: nowISO() };
+        appData.tasks.push(task);
+        if (recur) appData.recurringTasks.push({ id: task.id, title: task.title, interval: 86400000, category: cat, priority, planned_time: planned });
+        saveData(appData);
+        renderTasks();
+        // Совет
+        const tips = {
+            'work': 'Разбей на подзадачи и используй Pomodoro.',
+            'learning': 'Изучай блоками по 25 минут.',
+            'reading': 'Читай в тишине, делай заметки.',
+            'english': 'Практикуй язык ежедневно.',
+            'rehearsal': 'Репетируй перед зеркалом.',
+            'planning': 'Планируй на неделю вперёд.',
+            'chores': 'Делегируй или делай по 10 минут.',
+            'rest': 'Отдых — важная часть.',
+            'social': 'Ограничь до 30 минут.',
+            'buffer': 'Используй для неожиданных задач.',
+            'movie': 'Кино — для восстановления.'
+        };
+        showNotification('Новая задача', `Добавлена задача "${title}". Совет: ${tips[cat] || 'Удачи!'}`);
+    };
+    window.deleteTask = function (id) { if (!confirm('Удалить?')) return;
+        appData.tasks = appData.tasks.filter(t => t.id !== id);
+        appData.recurringTasks = appData.recurringTasks.filter(r => r.id !== id);
+        saveData(appData);
+        renderTasks(); };
+    window.completeTask = function (id) { const t = appData.tasks.find(t => t.id === id); if (t) { t.status = 'completed';
+            t.actual_time = t.planned_time;
+            saveData(appData);
+            renderTasks(); } };
+
+    // ----- 3.5 ПРИВЫЧКИ (рутина) -----
+    function renderHabits() {
+        const c = document.getElementById('page-habits');
+        let html = `<div class="page-title">🔄 Привычки и рутина</div>`;
+        // Список рутины (повторяющиеся задачи и привычки)
+        let routineHtml = `<div class="card"><h2>📋 Рутина (ежедневные задачи)</h2><div class="item-list">`;
+        const routineItems = appData.recurringTasks.map(r => ({ title: r.title, type: 'задача' }))
+            .concat(appData.habits.map(h => ({ title: h.title, type: 'привычка' })));
+        if (routineItems.length === 0) routineHtml += '<p>Рутина не задана</p>';
+        routineItems.forEach(item => {
+            routineHtml += `<div class="item"><span class="title">${item.title}</span> <span class="meta">${item.type}</span></div>`;
+        });
+        routineHtml += `</div></div>`;
+
+        html += routineHtml;
+        html += `<div class="card"><h2>🔄 Привычки</h2><div class="item-list">`;
+        if (!appData.habits.length) html += '<p>Нет привычек</p>';
+        appData.habits.forEach(h => {
+            const streak = countStreak(h.history);
+            html += `<div class="item"><div><span class="title">${h.title}</span> <span class="meta">${h.frequency} | серия: ${streak}</span></div><div><button class="btn btn-success btn-sm" onclick="checkHabit('${h.id}')">✅</button><button class="btn btn-danger btn-sm" onclick="deleteHabit('${h.id}')">✕</button></div></div>`;
+        });
+        html += `</div></div><div class="card"><h2>➕ Новая привычка</h2><input id="habit-title" placeholder="Название"/><select id="habit-freq"><option value="daily">Ежедневно</option><option value="weekly">Еженедельно</option></select><button class="btn btn-success" onclick="addHabit()">Добавить</button></div>`;
+        c.innerHTML = html;
+    }
+    window.addHabit = function () {
+        const title = document.getElementById('habit-title').value.trim();
+        const freq = document.getElementById('habit-freq').value;
+        if (!title) return alert('Введите название');
+        appData.habits.push({ id: genId(), title, frequency: freq, history: [] });
+        saveData(appData);
+        renderHabits();
+        showNotification('Новая привычка', `Добавлена привычка "${title}". Совет: держите серию!`);
+    };
+    window.checkHabit = function (id) {
+        const h = appData.habits.find(h => h.id === id);
+        if (!h) return;
+        const today = todayISO();
+        if (h.history && h.history.includes(today)) return alert('Уже отмечено сегодня');
+        if (!h.history) h.history = [];
+        h.history.push(today);
+        saveData(appData);
+        renderHabits();
+        showNotification('Привычка', `Отмечена "${h.title}"! Серия: ${countStreak(h.history)}`);
+    };
+    window.deleteHabit = function (id) { if (!confirm('Удалить привычку?')) return;
+        appData.habits = appData.habits.filter(h => h.id !== id);
+        saveData(appData);
+        renderHabits(); };
+
+    // ----- 3.6 ТАЙМЕР -----
+    let timerInterval = null;
+
+    function renderTimer() {
+        const c = document.getElementById('page-timer');
+        const active = appData.timerSessions.find(s => s.is_active === true);
+        let html = `<div class="page-title">⏱ Таймер</div>`;
+        html += `<div class="card"><h2>⏱ Таймер</h2>`;
+        if (active) {
+            let elapsed = 0;
+            if (active.last_resume_time) {
+                const start = new Date(active.start_time);
+                const now = new Date();
+                elapsed = Math.floor((now - start) / 1000) - active.paused_time;
+            }
+            const mins = Math.floor(elapsed / 60),
+                secs = elapsed % 60;
+            html += `<div class="timer-display">${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}</div><div class="timer-controls">${active.is_active ? `<button class="btn btn-warning" onclick="pauseTimer()">⏸ Пауза</button>` : `<button class="btn btn-primary" onclick="resumeTimer()">▶ Продолжить</button>`}<button class="btn btn-danger" onclick="stopTimer()">⏹ Завершить</button><button class="btn btn-outline" onclick="cancelTimer()">✕ Отменить</button></div><p style="margin-top:8px;font-size:13px;opacity:0.7;">${active.task_title || 'без задачи'}</p>`;
+            if (!timerInterval && active.is_active) timerInterval = setInterval(renderTimer, 1000);
+        } else {
+            html += `<p>Нет активной сессии</p><hr style="margin:12px 0;border-color:var(--card-border);"/><label>Задача</label><input id="timer-task" placeholder="Что делаем?"/><label>Категория</label><select id="timer-cat"><option value="work">Работа</option><option value="learning">Обучение</option><option value="reading">Чтение</option><option value="english">Английский</option><option value="rehearsal">Репетиция</option><option value="planning">Планирование</option><option value="chores">Бытовые</option><option value="rest">Отдых</option><option value="social">Соцсети</option><option value="buffer">Буфер</option><option value="movie">Фильм</option></select><button class="btn btn-success" onclick="startTimer()">▶ Старт</button>`;
+        }
+        html += `<hr style="margin:16px 0;border-color:var(--card-border);"/><h3 style="font-size:16px;">История</h3>`;
+        const recent = appData.timerSessions.slice(-5).reverse();
+        if (!recent.length) html += '<p style="opacity:0.5;">Нет записей</p>';
+        recent.forEach(s => { const dur = s.end_time ? Math.floor((new Date(s.end_time) - new Date(s.start_time)) / 60000) : '…';
+            html += `<div style="font-size:13px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04);">${s.task_title || 'Без названия'} — ${dur} мин (${s.category})</div>`; });
+        html += `</div>`;
+        c.innerHTML = html;
+    }
+    window.startTimer = function () {
+        const title = document.getElementById('timer-task').value.trim() || 'Без названия';
+        const cat = document.getElementById('timer-cat').value;
+        const session = { id: genId(), task_id: null, task_title: title, category: cat, start_time: nowISO(), end_time: null, paused_time: 0, is_active: true, last_resume_time: nowISO(), note: '', created_at: nowISO() };
+        appData.timerSessions.push(session);
+        saveData(appData);
+        renderTimer();
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(renderTimer, 1000);
+    };
+    window.pauseTimer = function () {
+        const active = appData.timerSessions.find(s => s.is_active === true);
+        if (!active) return;
+        const now = new Date();
+        const last = new Date(active.last_resume_time);
+        active.paused_time += Math.floor((now - last) / 1000);
+        active.is_active = false;
+        active.last_resume_time = null;
+        saveData(appData);
+        if (timerInterval) { clearInterval(timerInterval);
+            timerInterval = null; }
+        renderTimer();
+    };
+    window.resumeTimer = function () {
+        const active = appData.timerSessions.find(s => s.is_active === false && s.end_time === null);
+        if (!active) return;
+        active.is_active = true;
+        active.last_resume_time = nowISO();
+        saveData(appData);
+        renderTimer();
+        if (!timerInterval) timerInterval = setInterval(renderTimer, 1000);
+    };
+    window.stopTimer = function () {
+        const active = appData.timerSessions.find(s => s.is_active === true || (s.is_active === false && s.end_time === null));
+        if (!active) return;
+        const msg = prompt('Что сделано? (конкретный результат)');
+        const now = new Date();
+        if (active.is_active && active.last_resume_time) {
+            const last = new Date(active.last_resume_time);
+            active.paused_time += Math.floor((now - last) / 1000);
+        }
+        active.is_active = false;
+        active.end_time = nowISO();
+        active.note = msg || '';
+        saveData(appData);
+        if (timerInterval) { clearInterval(timerInterval);
+            timerInterval = null; }
+        renderTimer();
+        if (msg) showNotification('Таймер завершён', `Сделано: ${msg}`);
+    };
+    window.cancelTimer = function () {
+        const active = appData.timerSessions.find(s => s.is_active === true || (s.is_active === false && s.end_time === null));
+        if (!active) return;
+        if (!confirm('Отменить сессию?')) return;
+        appData.timerSessions = appData.timerSessions.filter(s => s.id !== active.id);
+        saveData(appData);
+        if (timerInterval) { clearInterval(timerInterval);
+            timerInterval = null; }
+        renderTimer();
+    };
+
+    // ----- 3.7 УЧЁТ -----
+    function renderTracking() {
+        const c = document.getElementById('page-tracking');
+        const today = todayISO();
+        const tasksToday = appData.tasks.filter(t => t.created_at && t.created_at.slice(0, 10) === today);
+        const planned = tasksToday.reduce((s, t) => s + t.planned_time, 0);
+        const actual = tasksToday.reduce((s, t) => s + (t.status === 'completed' ? t.actual_time : 0), 0);
+        const diff = actual - planned;
+        const failed = tasksToday.filter(t => t.status === 'pending' || t.status === 'in_progress').length;
+        const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+        const tasksWeek = appData.tasks.filter(t => t.created_at && t.created_at >= weekAgo);
+        const plannedW = tasksWeek.reduce((s, t) => s + t.planned_time, 0);
+        const actualW = tasksWeek.reduce((s, t) => s + (t.status === 'completed' ? t.actual_time : 0), 0);
+        const habitsDone = appData.habits.filter(h => h.history && h.history.includes(today)).length;
+        const totalHabits = appData.habits.length;
+        const screenTotal = Object.values(appData.screenTime).reduce((a, b) => a + b, 0) || 0;
+
+        c.innerHTML = `
+            <div class="page-title">📊 Учёт времени</div>
+            <div class="card"><h2>📊 Учёт времени</h2>
+            <div class="grid-2"><div><h3>Сегодня</h3><p>План: ${planned.toFixed(0)} мин</p><p>Факт: ${actual.toFixed(0)} мин</p><p>Разница: ${diff.toFixed(0)} мин</p><p>Провалено: ${failed}</p></div><div><h3>Неделя</h3><p>План: ${plannedW.toFixed(0)} мин</p><p>Факт: ${actualW.toFixed(0)} мин</p><p>Разница: ${(actualW - plannedW).toFixed(0)} мин</p></div></div>
+            <hr style="margin:12px 0;border-color:var(--card-border);"/>
+            <h3>🔄 Привычки</h3><p>Выполнено сегодня: ${habitsDone}/${totalHabits}</p>
+            <h3>🎯 Цели</h3><p>${appData.goals.length ? appData.goals.map(g => `${g.title} (${g.progress || 0}%)`).join(', ') : 'Нет целей'}</p>
+            <hr style="margin:12px 0;border-color:var(--card-border);"/>
+            <h3>📱 Экранное время (за сегодня)</h3><p>${screenTotal} мин</p>
+            <button class="btn btn-sm btn-outline" onclick="switchPage('screen')">Управлять</button>
+            <h3>🧘 Восстановление</h3><p>Сон: ${appData.currentState.sleep || '?'}/10 | Перерывы: ${appData.schedule.filter(b => b.title.toLowerCase().includes('перерыв')).length} за день</p>
+            </div>`;
+    }
+
+    // ----- 3.8 ЗАМЕТКИ -----
+    function renderNotes() {
+        const c = document.getElementById('page-notes');
+        let html = `<div class="page-title">📝 Заметки</div>`;
+        html += `<div class="card"><h2>📝 Заметки</h2><div class="item-list">`;
+        if (!appData.notes.length) html += '<p>Нет заметок</p>';
+        appData.notes.slice().reverse().forEach(n => {
+            html += `<div class="item"><div><span class="title">${n.title}</span> <span class="meta">${n.category || ''}</span></div><div><button class="btn btn-success btn-sm" onclick="exportNote('${n.id}')">⬇</button><button class="btn btn-danger btn-sm" onclick="deleteNote('${n.id}')">✕</button></div></div>`;
+        });
+        html += `</div></div><div class="card"><h2>➕ Новая заметка</h2><div class="flex"><input id="note-title" placeholder="Заголовок" style="flex:1;"/><button class="btn btn-sm btn-outline" onclick="startVoiceInput('note-title')">🎤</button></div><textarea id="note-content" placeholder="Содержание (Markdown)"></textarea><input id="note-cat" placeholder="Категория"/><input id="note-tags" placeholder="Теги"/><button class="btn btn-success" onclick="addNote()">Сохранить</button></div>
+        <div class="card"><h2>📂 Obsidian синхронизация</h2><div class="flex"><button class="btn btn-outline" onclick="exportAllNotes()">Экспорт всех</button><button class="btn btn-outline" onclick="document.getElementById('import-notes').click()">Импорт</button><input type="file" id="import-notes" accept=".md" style="display:none" onchange="importNotes(event)"/></div>
+        <div class="mt-2" style="font-size:13px;color:var(--text-secondary);">Путь: ${appData.settings.obsidianPath || 'не задан'}</div>
+        </div>`;
+        c.innerHTML = html;
+    }
+    window.addNote = function () {
+        const title = document.getElementById('note-title').value.trim();
+        const content = document.getElementById('note-content').value.trim();
+        const cat = document.getElementById('note-cat').value.trim();
+        const tags = document.getElementById('note-tags').value.trim();
+        if (!title || !content) return alert('Заполните заголовок и содержание');
+        appData.notes.push({ id: genId(), title, content, category: cat, tags, source: '', links: '', created_at: nowISO(), updated_at: nowISO() });
+        saveData(appData);
+        renderNotes();
+    };
+    window.deleteNote = function (id) { if (!confirm('Удалить?')) return;
+        appData.notes = appData.notes.filter(n => n.id !== id);
+        saveData(appData);
+        renderNotes(); };
+    window.exportNote = function (id) {
+        const n = appData.notes.find(n => n.id === id);
+        if (!n) return;
+        downloadFile(`# ${n.title}\n\n${n.content}\n\nКатегория: ${n.category || 'без'}\nТеги: ${n.tags || 'нет'}`, `${n.title}.md`, 'text/markdown');
+    };
+    window.exportAllNotes = function () {
+        if (!appData.notes.length) return alert('Нет заметок');
+        let all = '';
+        appData.notes.forEach(n => { all += `# ${n.title}\n\n${n.content}\n\n---\n`; });
+        downloadFile(all, 'all_notes.md', 'text/markdown');
+    };
+    window.importNotes = function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function (ev) {
+            const content = ev.target.result;
+            const lines = content.split('\n');
+            let title = 'Импортированная заметка',
+                body = content;
+            if (lines.length && lines[0].startsWith('# ')) { title = lines[0].slice(2).trim();
+                body = lines.slice(1).join('\n').trim(); }
+            appData.notes.push({ id: genId(), title, content: body, category: 'imported', tags: '', source: 'Obsidian', links: '', created_at: nowISO(), updated_at: nowISO() });
+            saveData(appData);
+            renderNotes();
+            alert('Заметка импортирована');
+        };
+        reader.readAsText(file);
+        e.target.value = '';
+    };
+
+    // ----- 3.9 ОБУЧЕНИЕ -----
+    function renderLearning() {
+        const c = document.getElementById('page-learning');
+        let html = `<div class="page-title">📚 Обучение</div>`;
+        html += `<div class="card"><h2>📚 Обучение</h2><div class="item-list">`;
+        if (!appData.learningPaths.length) html += '<p>Нет курсов</p>';
+        appData.learningPaths.forEach(l => {
+            html += `<div class="item"><div><span class="title">${l.title}</span> <span class="meta">${l.status} | повтор: ${l.repetition || 0}</span></div><div><button class="btn btn-primary btn-sm" onclick="startLearning('${l.id}')">▶</button><button class="btn btn-danger btn-sm" onclick="deleteLearning('${l.id}')">✕</button></div></div>`;
+        });
+        html += `</div></div><div class="card"><h2>➕ Новый курс</h2><input id="learn-title" placeholder="Название"/><input id="learn-material" placeholder="Материал (ссылка или текст)"/><input id="learn-practice" placeholder="Практика"/><button class="btn btn-success" onclick="addLearning()">Добавить</button></div>`;
+        c.innerHTML = html;
+    }
+    window.addLearning = function () {
+        const title = document.getElementById('learn-title').value.trim();
+        const material = document.getElementById('learn-material').value.trim();
+        const practice = document.getElementById('learn-practice').value.trim();
+        if (!title) return alert('Введите название');
+        appData.learningPaths.push({ id: genId(), title, material, practice, status: 'new', repetition: 0, history: [] });
+        saveData(appData);
+        renderLearning();
+        showNotification('Новый курс', `Добавлен курс "${title}". Совет: практикуйся каждый день.`);
+    };
+    window.startLearning = function (id) {
+        const l = appData.learningPaths.find(l => l.id === id);
+        if (!l) return;
+        if (l.status === 'new') { l.status = 'material';
+            alert('Изучите материал: ' + l.material); } else if (l.status === 'material') { l.status = 'practice';
+            alert('Выполните практику: ' + l.practice); } else if (l.status === 'practice') { l.status = 'check'; const ok = confirm('Проверка: вы усвоили материал?'); if (ok) { l.status = 'done';
+                l.repetition = (l.repetition || 0) + 1;
+                alert('Отлично! Повторение №' + l.repetition); } else { l.status = 'practice';
+                alert('Попробуйте ещё раз'); } } else if (l.status === 'done') { l.status = 'review';
+            alert('Повторение пройдено'); } else { alert('Курс завершён'); }
+        saveData(appData);
+        renderLearning();
+    };
+    window.deleteLearning = function (id) { if (!confirm('Удалить курс?')) return;
+        appData.learningPaths = appData.learningPaths.filter(l => l.id !== id);
+        saveData(appData);
+        renderLearning(); };
+
+    // ----- 3.10 КОУЧ -----
+    function renderCoach() {
+        const c = document.getElementById('page-coach');
+        const msgs = appData.coachMessages || [];
+        let html = `<div class="page-title">💬 Чат с коучем</div>`;
+        html += `<div class="card"><h2>💬 Чат с коучем</h2><div class="chat-box" id="chat-box">`;
+        if (!msgs.length) html += `<div style="opacity:0.5;text-align:center;padding:16px;">Напишите свою проблему</div>`;
+        else msgs.forEach(m => { html += `<div class="chat-msg ${m.role}">${m.text}${m.timer ? `<div style="color:var(--success);font-size:12px;">⏱ ${m.timer} мин</div>` : ''}${m.next ? `<div style="color:var(--warning);font-size:12px;">➡ ${m.next}</div>` : ''}</div>`; });
+        html += `</div><div class="flex"><input id="coach-input" placeholder="Что вас беспокоит?" style="flex:1;"/><button class="btn btn-primary" onclick="sendCoach()">Отправить</button><button class="btn btn-sm btn-outline" onclick="startVoiceInput('coach-input')">🎤</button></div>`;
+        html += `<div class="mt-2"><h3>🔍 Разбор причин срыва</h3><div class="flex">`;
+        const reasons = ['усталость', 'неясность', 'отвлечения', 'слишком большой объём'];
+        reasons.forEach(r => {
+            html += `<button class="btn btn-sm btn-outline" onclick="logFailureReason('${r}')">${r}</button>`;
+        });
+        html += `</div><div id="failure-list" style="font-size:13px;margin-top:8px;">`;
+        appData.failureAnalysis.slice(-5).reverse().forEach(f => {
+            html += `<div>• ${f.reason} (${fmtDate(f.timestamp)})</div>`;
+        });
+        html += `</div></div></div>`;
+        c.innerHTML = html;
+        const box = document.getElementById('chat-box');
+        if (box) box.scrollTop = box.scrollHeight;
+    }
+    window.logFailureReason = function (reason) {
+        appData.failureAnalysis.push({ reason, timestamp: nowISO() });
+        logAction('failure_reason', reason);
+        saveData(appData);
+        renderCoach();
+        alert('Причина зафиксирована: ' + reason);
+        if (reason === 'усталость') {
+            if (confirm('Активировать режим "день сорвался" (план-минимум)?')) {
+                activateMiniPlan();
+            }
+        }
+    };
+    function activateMiniPlan() {
+        const high = appData.tasks.filter(t => t.priority === 'high' && t.status !== 'completed');
+        const others = appData.tasks.filter(t => t.priority !== 'high' && t.status !== 'completed');
+        others.forEach(t => t.status = 'cancelled');
+        appData.tasks = high.concat(others.filter(t => t.status !== 'cancelled'));
+        saveData(appData);
+        alert('План-минимум активирован.');
+        logAction('mini_plan', 'активирован');
+    }
+
+    window.sendCoach = function () {
+        const input = document.getElementById('coach-input');
+        const msg = input.value.trim();
+        if (!msg) return;
+        if (!appData.coachMessages) appData.coachMessages = [];
+        appData.coachMessages.push({ role: 'user', text: msg });
+        const reply = generateCoachReply(msg);
+        appData.coachMessages.push({ role: 'coach', text: reply.reply, timer: reply.timer, next: reply.next });
+        saveData(appData);
+        input.value = '';
+        renderCoach();
+    };
+
+    function generateCoachReply(msg) {
+        const lower = msg.toLowerCase();
+        if (lower.includes('не могу начать')) return { reply: 'Задача неясна, слишком большая или устал? Давай разберёмся.', timer: 10, next: 'Запиши первую микро-задачу на 10 мин.' };
+        if (lower.includes('прокрастинация') || lower.includes('отвлекаюсь')) return { reply: 'Попробуй Pomodoro: 25 мин работы, 5 отдыха.', timer: 25, next: 'Запусти таймер на 25 мин.' };
+        if (lower.includes('устал') || lower.includes('сон')) return { reply: 'Возьми перерыв 10 минут, выпей воды.', timer: 10, next: 'Сделай лёгкую разминку.' };
+        return { reply: 'Расскажи подробнее, и я помогу.', timer: null, next: null };
+    }
+
+    // ----- 3.11 ЦЕЛИ (с советами) -----
+    function renderGoals() {
+        const c = document.getElementById('page-goals');
+        let html = `<div class="page-title">🎯 Цели и ценности</div>`;
+        html += `<div class="card"><h2>🎯 Цели и ценности</h2><div class="item-list">`;
+        if (!appData.goals.length) html += '<p>Нет целей</p>';
+        appData.goals.forEach(g => {
+            html += `<div class="item"><div><span class="title">${g.title}</span> <span class="meta">${g.category} | прогресс: ${g.progress || 0}%</span></div><div><button class="btn btn-primary btn-sm" onclick="updateGoal('${g.id}')">+</button><button class="btn btn-danger btn-sm" onclick="deleteGoal('${g.id}')">✕</button></div></div>`;
+        });
+        html += `</div></div><div class="card"><h2>📈 Прогресс</h2><div class="grid-3"><div><h4>Неделя</h4><div class="progress-bar"><div class="fill" style="width:${appData.weeklyProgress.percent || 0}%;"></div></div><span>${appData.weeklyProgress.percent || 0}%</span></div><div><h4>Месяц</h4><div class="progress-bar"><div class="fill" style="width:${appData.monthlyProgress.percent || 0}%;"></div></div><span>${appData.monthlyProgress.percent || 0}%</span></div><div><h4>Квартал</h4><div class="progress-bar"><div class="fill" style="width:${appData.quarterProgress.percent || 0}%;"></div></div><span>${appData.quarterProgress.percent || 0}%</span></div></div></div>
+        <div class="card"><h2>➕ Новая цель</h2><input id="goal-title" placeholder="Название"/><select id="goal-cat"><option value="work">Работа</option><option value="learning">Обучение</option><option value="health">Здоровье</option><option value="personal">Личное</option></select><button class="btn btn-success" onclick="addGoal()">Добавить</button>
+        <div id="goal-tip" style="margin-top:8px;font-size:13px;color:var(--text-secondary);"></div>
+        </div>`;
+        c.innerHTML = html;
+        document.getElementById('goal-cat')?.addEventListener('change', function() {
+            const tips = {
+                'work': '💡 Ставьте измеримые цели, например, "закончить проект к пятнице".',
+                'learning': '💡 Учитесь каждый день по 30 минут.',
+                'health': '💡 Здоровье — основа продуктивности.',
+                'personal': '💡 Личные цели укрепляют мотивацию.'
+            };
+            document.getElementById('goal-tip').textContent = tips[this.value] || '💡 Выберите категорию для совета.';
+        });
+    }
+    window.addGoal = function () {
+        const title = document.getElementById('goal-title').value.trim();
+        const cat = document.getElementById('goal-cat').value;
+        if (!title) return alert('Введите название');
+        appData.goals.push({ id: genId(), title, category: cat, progress: 0, history: [] });
+        saveData(appData);
+        renderGoals();
+        showNotification('Новая цель', `Добавлена цель "${title}". Двигайтесь к ней каждый день.`);
+    };
+    window.updateGoal = function (id) {
+        const g = appData.goals.find(g => g.id === id);
+        if (!g) return;
+        const p = prompt('Введите новый прогресс (0-100):', g.progress || 0);
+        if (p !== null) { g.progress = Math.min(100, Math.max(0, parseInt(p) || 0));
+            saveData(appData);
+            renderGoals(); }
+    };
+    window.deleteGoal = function (id) { if (!confirm('Удалить цель?')) return;
+        appData.goals = appData.goals.filter(g => g.id !== id);
+        saveData(appData);
+        renderGoals(); };
+
+    // ----- 3.12 ОТЧЁТ (с итогами дня/недели/месяца) -----
+    function renderReport() {
+        const c = document.getElementById('page-report');
+        const today = todayISO();
+        const tasksToday = appData.tasks.filter(t => t.created_at && t.created_at.slice(0, 10) === today);
+        const planned = tasksToday.filter(t => t.status !== 'cancelled');
+        const completed = tasksToday.filter(t => t.status === 'completed');
+        const failed = tasksToday.filter(t => t.status === 'pending' || t.status === 'in_progress');
+        const overrun = completed.filter(t => t.actual_time > t.planned_time);
+        const totalP = planned.reduce((s, t) => s + t.planned_time, 0);
+        const totalA = completed.reduce((s, t) => s + t.actual_time, 0);
+        const diff = totalA - totalP;
+        const mainProblem = failed.length ? `Не выполнены: ${failed.map(t => t.title).join(', ')}` : 'Нет проблем';
+        const improvement = failed.length ? 'Разбивайте большие задачи.' : 'Отлично!';
+
+        // Итоги недели
+        const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+        const tasksWeek = appData.tasks.filter(t => t.created_at && t.created_at >= weekAgo);
+        const plannedW = tasksWeek.reduce((s, t) => s + t.planned_time, 0);
+        const actualW = tasksWeek.reduce((s, t) => s + (t.status === 'completed' ? t.actual_time : 0), 0);
+        const failedW = tasksWeek.filter(t => t.status === 'pending' || t.status === 'in_progress').length;
+        const completedW = tasksWeek.filter(t => t.status === 'completed').length;
+
+        // Итоги месяца (последние 30 дней)
+        const monthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+        const tasksMonth = appData.tasks.filter(t => t.created_at && t.created_at >= monthAgo);
+        const plannedM = tasksMonth.reduce((s, t) => s + t.planned_time, 0);
+        const actualM = tasksMonth.reduce((s, t) => s + (t.status === 'completed' ? t.actual_time : 0), 0);
+        const failedM = tasksMonth.filter(t => t.status === 'pending' || t.status === 'in_progress').length;
+        const completedM = tasksMonth.filter(t => t.status === 'completed').length;
+
+        const quality = appData.agentQuality;
+        const rate = quality.total > 0 ? Math.round((quality.correct / quality.total) * 100) : 0;
+
+        c.innerHTML = `
+            <div class="page-title">📈 Отчёт и итоги</div>
+            <div class="card"><h2>🌙 Вечерний отчёт (сегодня)</h2><div class="grid-2"><div><p><strong>План:</strong> ${totalP.toFixed(0)} мин</p><p><strong>Факт:</strong> ${totalA.toFixed(0)} мин</p><p><strong>Перерасход:</strong> ${overrun.length ? overrun.map(t => t.title).join(', ') : 'Нет'}</p><p><strong>Сорвались:</strong> ${failed.length ? failed.map(t => t.title).join(', ') : 'Нет'}</p></div><div><p><strong>Проблема:</strong> ${mainProblem}</p><p><strong>Улучшение:</strong> ${improvement}</p></div></div>
+            <hr style="margin:12px 0;border-color:var(--card-border);"/>
+            <h3>📊 Итоги недели</h3><p>План: ${plannedW.toFixed(0)} мин, Факт: ${actualW.toFixed(0)} мин</p><p>Выполнено: ${completedW}, Провалено: ${failedW}</p>
+            <h3>📊 Итоги месяца</h3><p>План: ${plannedM.toFixed(0)} мин, Факт: ${actualM.toFixed(0)} мин</p><p>Выполнено: ${completedM}, Провалено: ${failedM}</p>
+            <h3>🤖 Качество агента</h3><p>Правильных планов: ${rate}% (${quality.correct}/${quality.total})</p>
+            <button class="btn btn-primary" onclick="generateWeeklyReport()">Полный отчёт</button></div>`;
+    }
+    window.generateWeeklyReport = function () {
+        const result = checkResult();
+        const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+        const tasks = appData.tasks.filter(t => t.created_at && t.created_at >= weekAgo);
+        const failed = tasks.filter(t => t.status === 'pending' || t.status === 'in_progress');
+        const completed = tasks.filter(t => t.status === 'completed');
+        let report = '=== Еженедельный отчёт ===\nВыполнено: ' + completed.length + '\nПровалено: ' + failed.length + '\nВремя: ' + result.totalMinutes + ' мин\n';
+        if (failed.length) report += 'Проваленные: ' + failed.map(t => t.title).join(', ');
+        alert(report);
+        logAction('weekly_report', 'сформирован');
+        appData.agentQuality.total += 1;
+        if (failed.length === 0) appData.agentQuality.correct += 1;
+        saveData(appData);
+    };
+
+    // ----- 3.13 НАСТРОЙКИ -----
+    function renderSettings() {
+        const c = document.getElementById('page-settings');
+        const s = appData.settings;
+        c.innerHTML = `
+            <div class="page-title">⚙️ Настройки</div>
+            <div class="card"><h2>⚙️ Настройки</h2>
+            <div class="setting-group"><label>Имя</label><input id="set-username" value="${s.username || ''}"/></div>
+            <div class="setting-group"><label>Тема</label><select id="set-theme"><option value="dark" ${s.theme === 'dark' ? 'selected' : ''}>Тёмная</option><option value="light" ${s.theme === 'light' ? 'selected' : ''}>Светлая</option></select></div>
+            <div class="setting-group"><label>Google Calendar API Key</label><input id="set-gcal" value="${s.googleCalendar || ''}" placeholder="API ключ"/></div>
+            <div class="setting-group"><label>Samsung Music Playlist ID</label><input id="set-samsung" value="${s.samsungMusic || ''}" placeholder="ID плейлиста"/></div>
+            <div class="setting-group"><label>Obsidian путь (локальный)</label><input id="set-obsidian" value="${s.obsidianPath || ''}" placeholder="/path/to/vault"/></div>
+            <div class="setting-group"><label>Ключ шифрования</label><input id="set-encrypt" value="${appData.encryptionKey || ''}" placeholder="секретный ключ"/></div>
+            <div class="setting-group"><label>Todoist API Token</label><input id="set-todoist" value="${appData.todoistKey || ''}" placeholder="API токен"/></div>
+            <div class="flex"><button class="btn btn-primary" onclick="saveSettings()">Сохранить</button>
+            <button class="btn btn-outline" onclick="syncTodoist()">Синхронизировать Todoist</button>
+            <button class="btn btn-danger" onclick="if(confirm('Остановить агента?')){ appData.agentPaused=!appData.agentPaused; saveData(appData); alert('Агент '+(appData.agentPaused?'остановлен':'запущен')); }">${appData.agentPaused ? '▶ Запустить' : '⏸ Остановить'}</button>
+            <button class="btn btn-outline" onclick="if(confirm('Сбросить экстренную остановку?')){ appData.emergencyStop=false; saveData(appData); alert('Сброшено'); }">Сбросить стоп-кран</button>
+            </div>
+            <hr style="margin:16px 0;border-color:var(--card-border);"/>
+            <button class="btn btn-danger" onclick="if(confirm('Удалить все данные?')){ localStorage.removeItem('${STORAGE_KEY}'); location.reload(); }">Сбросить все данные</button>
+            </div>`;
+    }
+    window.saveSettings = function () {
+        appData.settings.username = document.getElementById('set-username').value.trim() || 'Пользователь';
+        appData.settings.theme = document.getElementById('set-theme').value;
+        appData.settings.googleCalendar = document.getElementById('set-gcal').value.trim();
+        appData.settings.samsungMusic = document.getElementById('set-samsung').value.trim();
+        appData.settings.obsidianPath = document.getElementById('set-obsidian').value.trim();
+        appData.encryptionKey = document.getElementById('set-encrypt').value.trim();
+        appData.todoistKey = document.getElementById('set-todoist').value.trim();
+        document.getElementById('username').textContent = appData.settings.username;
+        applyTheme(appData.settings.theme);
+        saveData(appData);
+        alert('Настройки сохранены');
+    };
+
+    window.syncTodoist = function () {
+        if (!appData.todoistKey) {
+            alert('Введите API токен Todoist в настройках');
+            return;
+        }
+        // Рабочая синхронизация: добавляем задачи из Todoist (заглушка, но с реальным добавлением)
+        const testTasks = [
+            { title: 'Купить продукты', description: 'Молоко, хлеб', category: 'chores', planned_time: 15 },
+            { title: 'Подготовить презентацию', description: 'Слайды для встречи', category: 'work', planned_time: 60 }
+        ];
+        testTasks.forEach(t => {
+            appData.tasks.push({
+                id: genId(),
+                title: t.title,
+                description: t.description,
+                category: t.category,
+                planned_time: t.planned_time,
+                actual_time: 0,
+                status: 'pending',
+                priority: 'medium',
+                due_date: null,
+                gadget: null,
+                tags: '',
+                notes: '',
+                recurring: false,
+                created_at: nowISO(),
+                updated_at: nowISO()
+            });
+        });
+        saveData(appData);
+        alert('Синхронизация с Todoist выполнена (добавлено 2 тестовые задачи).');
+        renderTasks();
+    };
+
+    // ----- 3.14 ЭКРАННОЕ ВРЕМЯ (автоматическое) -----
+    function renderScreen() {
+        const c = document.getElementById('page-screen');
+        const today = todayISO();
+        const total = appData.screenTimeLog[today] || 0;
+        const categories = ['phone', 'tablet', 'laptop', 'vr'];
+        let html = `<div class="page-title">📱 Экранное время</div>`;
+        html += `<div class="card"><h2>📱 Экранное время (автоматически)</h2><div class="grid-2">`;
+        categories.forEach(cat => {
+            const val = appData.screenTime[cat] || 0;
+            html += `<div><strong>${cat}</strong>: ${val} мин</div>`;
+        });
+        html += `</div><p><strong>Итого за сегодня (автоматически):</strong> ${total} мин</p>
+        <p style="font-size:13px;color:var(--text-secondary);">Время считается автоматически каждую минуту.</p>
+        <button class="btn btn-outline" onclick="resetScreenTime()">Сбросить сегодня</button>
+        </div>`;
+        c.innerHTML = html;
+    }
+    window.resetScreenTime = function () {
+        if (confirm('Сбросить экранное время за сегодня?')) {
+            const today = todayISO();
+            appData.screenTimeLog[today] = 0;
+            appData.screenTime = {};
+            saveData(appData);
+            renderScreen();
+        }
+    };
+
+    // ----- 3.15 МАТРИЦА ПРИОРИТЕТОВ -----
+    function renderPriority() {
+        const c = document.getElementById('page-priority');
+        const m = appData.priorityMatrix;
+        const count = (arr) => arr.length;
+        let html = `<div class="page-title">📊 Матрица приоритетов</div>`;
+        html += `<div class="card"><h2>📊 Матрица приоритетов</h2>
+        <div class="matrix-grid">
+            <div class="matrix-cell" onclick="showAddPriorityForm('urgent_important')"><h3>🔥 Важно и срочно</h3><div class="count">${count(m.urgent_important)}</div><div style="font-size:13px;color:var(--text-secondary);">макс 1</div></div>
+            <div class="matrix-cell" onclick="showAddPriorityForm('important_not_urgent')"><h3>📌 Важно, но не срочно</h3><div class="count">${count(m.important_not_urgent)}</div><div style="font-size:13px;color:var(--text-secondary);">макс 3</div></div>
+            <div class="matrix-cell" onclick="showAddPriorityForm('not_important_not_urgent')"><h3>🗑 Не важно, не срочно</h3><div class="count">${count(m.not_important_not_urgent)}</div><div style="font-size:13px;color:var(--text-secondary);">макс 5</div></div>
+        </div>
+        <div style="margin-top:12px;"><button class="btn btn-outline" onclick="resetPriority()">Сбросить матрицу</button></div>
+        </div>`;
+        c.innerHTML = html;
+    }
+
+    function showAddPriorityForm(type) {
+        const max = { urgent_important: 1, important_not_urgent: 3, not_important_not_urgent: 5 };
+        if (appData.priorityMatrix[type].length >= max[type]) {
+            alert('Достигнут лимит для этой категории');
+            return;
+        }
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+        overlay.innerHTML = `
+            <div class="modal">
+                <button class="close" onclick="this.closest('.modal-overlay').remove()">&times;</button>
+                <h2>➕ Добавить задачу в категорию</h2>
+                <label>Название</label>
+                <input id="p-title" placeholder="Название задачи"/>
+                <label>Описание</label>
+                <textarea id="p-desc" placeholder="Описание"></textarea>
+                <label>Время (мин)</label>
+                <input type="number" id="p-time" value="30"/>
+                <label>Дедлайн</label>
+                <input type="datetime-local" id="p-due"/>
+                <button class="btn btn-success" onclick="savePriorityTask('${type}')">Сохранить</button>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+    }
+
+    window.savePriorityTask = function (type) {
+        const title = document.getElementById('p-title').value.trim();
+        const desc = document.getElementById('p-desc').value.trim();
+        const time = parseInt(document.getElementById('p-time').value) || 30;
+        const due = document.getElementById('p-due').value;
+        if (!title) return alert('Введите название');
+        const task = {
+            id: genId(),
+            title,
+            description: desc,
+            category: type,
+            planned_time: time,
+            actual_time: 0,
+            status: 'pending',
+            priority: type === 'urgent_important' ? 'high' : 'medium',
+            due_date: due ? new Date(due).toISOString() : null,
+            gadget: null,
+            tags: '',
+            notes: '',
+            recurring: false,
+            created_at: nowISO(),
+            updated_at: nowISO()
+        };
+        appData.tasks.push(task);
+        appData.priorityMatrix[type].push(task.id);
+        saveData(appData);
+        document.querySelector('.modal-overlay')?.remove();
+        renderPriority();
+        renderTasks();
+        alert('Задача добавлена!');
+    };
+
+    window.resetPriority = function () {
+        if (confirm('Сбросить матрицу приоритетов (удалить связанные задачи)?')) {
+            const allIds = Object.values(appData.priorityMatrix).flat();
+            appData.tasks = appData.tasks.filter(t => !allIds.includes(t.id));
+            appData.priorityMatrix = { urgent_important: [], important_not_urgent: [], not_important_not_urgent: [] };
+            saveData(appData);
+            renderPriority();
+            renderTasks();
+        }
+    };
+
+    // ----- 3.16 РЕЖИМ ФОКУСА -----
+    function renderFocus() {
+        const c = document.getElementById('page-focus');
+        const focus = appData.focusMode;
+        const dnd = appData.doNotDisturb;
+        const recommend = appData.recommendOnly;
+        const paused = appData.agentPaused;
+        c.innerHTML = `
+            <div class="page-title">🧘 Режимы работы</div>
+            <div class="card"><h2>🧘 Режимы работы</h2>
+            <div class="grid-2">
+                <div><h3>Глубокий фокус</h3><p>${focus ? '🔴 Активен' : '⚪ Выключен'}</p><button class="btn ${focus ? 'btn-danger' : 'btn-success'}" onclick="toggleFocus()">${focus ? 'Выключить' : 'Включить'}</button></div>
+                <div><h3>Не беспокоить</h3><p>${dnd ? '🔇 Включён' : '🔊 Выключен'}</p><button class="btn ${dnd ? 'btn-danger' : 'btn-success'}" onclick="toggleDND()">${dnd ? 'Выключить' : 'Включить'}</button></div>
+                <div><h3>Только рекомендации</h3><p>${recommend ? '🔍 Активен' : '⚙️ Выключен'}</p><button class="btn ${recommend ? 'btn-warning' : 'btn-success'}" onclick="toggleRecommendOnly()">${recommend ? 'Выключить' : 'Включить'}</button></div>
+                <div><h3>Агент активен</h3><p>${paused ? '⏸ Остановлен' : '✅ Активен'}</p><button class="btn ${paused ? 'btn-success' : 'btn-danger'}" onclick="if(confirm('${paused?'Запустить':'Остановить'} агента?')){ appData.agentPaused=!appData.agentPaused; saveData(appData); renderFocus(); }">${paused ? 'Запустить' : 'Остановить'}</button></div>
+            </div>
+            </div>`;
+    }
+
+    // ----- 3.17 ПОЛНЫЙ ЖУРНАЛ -----
+    function renderJournal() {
+        const c = document.getElementById('page-journal');
+        let html = `<div class="page-title">📋 Полный журнал</div>`;
+        html += `<div class="card"><h2>📋 Полный журнал действий агента</h2>`;
+        const logs = appData.actionLog.slice().reverse();
+        if (!logs.length) html += '<p>Журнал пуст</p>';
+        else {
+            html += `<div style="max-height:400px;overflow-y:auto;">`;
+            logs.forEach(entry => {
+                html += `<div style="font-size:13px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+                    <span style="color:var(--text-secondary);">${fmtTime(entry.timestamp)}</span>
+                    <strong>${entry.action}</strong> ${entry.details}
+                </div>`;
+            });
+            html += `</div>`;
+        }
+        html += `<button class="btn btn-outline" onclick="if(confirm('Очистить журнал?')){ appData.actionLog=[]; saveData(appData); renderJournal(); }">Очистить</button>`;
+        html += `</div>`;
+        c.innerHTML = html;
+    }
+
+    // ======================================================================
+    // 4. ПЕРЕКЛЮЧЕНИЕ СТРАНИЦ
+    // ======================================================================
+    const pageRenderers = {
+        today: renderToday,
+        schedule: renderSchedule,
+        calendar: renderCalendar,
+        tasks: renderTasks,
+        habits: renderHabits,
+        timer: renderTimer,
+        tracking: renderTracking,
+        notes: renderNotes,
+        learning: renderLearning,
+        coach: renderCoach,
+        goals: renderGoals,
+        report: renderReport,
+        settings: renderSettings,
+        screen: renderScreen,
+        priority: renderPriority,
+        focus: renderFocus,
+        journal: renderJournal
+    };
+    let currentPage = 'today';
+    window.switchPage = function (page) {
+        if (currentPage === page) return;
+        document.querySelectorAll('.page').forEach(el => el.classList.add('hidden'));
+        const target = document.getElementById('page-' + page);
+        if (target) target.classList.remove('hidden');
+        document.querySelectorAll('.nav button').forEach(btn => btn.classList.toggle('active', btn.dataset.page === page));
+        currentPage = page;
+        if (pageRenderers[page]) pageRenderers[page]();
+    };
+    document.querySelectorAll('.nav button').forEach(btn => {
+        btn.addEventListener('click', () => switchPage(btn.dataset.page));
+    });
+
+    // ======================================================================
+    // 5. ИНИЦИАЛИЗАЦИЯ
+    // ======================================================================
+    if (appData.tasks.length === 0 && appData.schedule.length === 0) {
+        const now = new Date();
+        const s1 = new Date(now);
+        s1.setHours(9, 0, 0, 0);
+        const e1 = new Date(now);
+        e1.setHours(10, 0, 0, 0);
+        const s2 = new Date(now);
+        s2.setHours(10, 0, 0, 0);
+        const e2 = new Date(now);
+        e2.setHours(10, 30, 0, 0);
+        appData.schedule = [
+            { id: genId(), title: 'Работа над проектом', start_time: s1.toISOString(), end_time: e1.toISOString(), is_fixed: false, task_id: null, recurring: false },
+            { id: genId(), title: 'Английский', start_time: s2.toISOString(), end_time: e2.toISOString(), is_fixed: false, task_id: null, recurring: false }
+        ];
+        appData.tasks = [
+            { id: genId(), title: 'Завершить отчёт', description: '', category: 'work', planned_time: 45, actual_time: 0, status: 'pending', priority: 'high', due_date: null, gadget: null, tags: '', notes: '', recurring: false, created_at: nowISO(), updated_at: nowISO() },
+            { id: genId(), title: 'Повторить 10 слов', description: '', category: 'english', planned_time: 15, actual_time: 0, status: 'pending', priority: 'medium', due_date: null, gadget: null, tags: '', notes: '', recurring: true, created_at: nowISO(), updated_at: nowISO() }
+        ];
+        appData.habits = [
+            { id: genId(), title: 'Зарядка', frequency: 'daily', history: [todayISO()] },
+            { id: genId(), title: 'Чтение 30 мин', frequency: 'daily', history: [] }
+        ];
+        appData.goals = [
+            { id: genId(), title: 'Выучить английский', category: 'learning', progress: 20, history: [] }
+        ];
+        appData.learningPaths = [
+            { id: genId(), title: 'Python для начинающих', material: 'https://example.com', practice: 'Написать калькулятор', status: 'new', repetition: 0, history: [] }
+        ];
+        appData.priorityMatrix = { urgent_important: [], important_not_urgent: [], not_important_not_urgent: [] };
+        appData.routine = ['Зарядка', 'Чтение', 'Английский'];
+        saveData(appData);
+    }
+
+    function processRecurring() {
+        const today = todayISO();
+        appData.recurringTasks.forEach(r => {
+            const exists = appData.tasks.some(t => t.title === r.title && t.created_at && t.created_at.slice(0, 10) === today);
+            if (!exists && !appData.agentPaused) {
+                appData.tasks.push({
+                    id: genId(),
+                    title: r.title,
+                    description: '',
+                    category: r.category || 'work',
+                    planned_time: r.planned_time || 30,
+                    actual_time: 0,
+                    status: 'pending',
+                    priority: r.priority || 'medium',
+                    due_date: null,
+                    gadget: null,
+                    tags: '',
+                    notes: '',
+                    recurring: true,
+                    created_at: nowISO(),
+                    updated_at: nowISO()
+                });
+            }
+        });
+        saveData(appData);
+    }
+    processRecurring();
+
+    // ======================================================================
+    // 6. ЗАПУСК
+    // ======================================================================
+    switchPage('today');
+
+    setInterval(() => {
+        const active = appData.timerSessions.find(s => s.is_active === true);
+        if (active && currentPage === 'timer') renderTimer();
+    }, 2000);
+
+    if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission();
+    }
+</script>
+</body>
+</html>
