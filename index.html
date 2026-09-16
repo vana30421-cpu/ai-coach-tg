@@ -3,1004 +3,397 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#0a0a12">
-<title>AI Коуч Pro+</title>
+<meta name="theme-color" content="#07070d">
+<title>AI Коуч Pro+ v9</title>
 <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 <style>
-/* ==================== DESIGN SYSTEM ==================== */
 :root {
-  --bg-0: #07070d;
-  --bg-1: #0d0d16;
-  --bg-2: #14141f;
-  --surface: rgba(255,255,255,0.04);
-  --surface-2: rgba(255,255,255,0.07);
-  --surface-3: rgba(255,255,255,0.11);
-  --border: rgba(255,255,255,0.08);
-  --border-strong: rgba(255,255,255,0.14);
-  --text: #f5f5fa;
-  --text-2: #a4a4b8;
-  --text-3: #6b6b80;
-  --brand: #7c5cff;
-  --brand-2: #a78bfa;
-  --brand-glow: rgba(124,92,255,0.35);
-  --success: #10b981;
-  --warning: #f59e0b;
-  --danger: #ef4444;
-  --info: #3b82f6;
-  --radius-sm: 10px;
-  --radius: 16px;
-  --radius-lg: 24px;
-  --radius-xl: 32px;
-  --shadow-sm: 0 2px 8px rgba(0,0,0,0.25);
-  --shadow: 0 8px 32px rgba(0,0,0,0.4);
+  --bg-0: #07070d; --bg-1: #0d0d16; --surface: rgba(255,255,255,0.04);
+  --surface-2: rgba(255,255,255,0.07); --surface-3: rgba(255,255,255,0.11);
+  --border: rgba(255,255,255,0.08); --border-strong: rgba(255,255,255,0.14);
+  --text: #f5f5fa; --text-2: #a4a4b8; --text-3: #6b6b80;
+  --brand: #7c5cff; --brand-2: #a78bfa; --brand-glow: rgba(124,92,255,0.35);
+  --success: #10b981; --warning: #f59e0b; --danger: #ef4444; --info: #3b82f6;
+  --radius-sm: 10px; --radius: 16px; --radius-lg: 24px; --radius-xl: 32px;
   --shadow-lg: 0 16px 64px rgba(0,0,0,0.55);
-  --header-h: 56px;
-  --nav-h: 68px;
+  --header-h: 56px; --nav-h: 68px;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
-
 body.light {
-  --bg-0: #f4f4f8;
-  --bg-1: #ffffff;
-  --bg-2: #fafafc;
-  --surface: rgba(0,0,0,0.03);
-  --surface-2: rgba(0,0,0,0.05);
-  --surface-3: rgba(0,0,0,0.08);
-  --border: rgba(0,0,0,0.07);
-  --border-strong: rgba(0,0,0,0.12);
-  --text: #0f0f1a;
-  --text-2: #55556a;
-  --text-3: #9090a0;
-  --shadow: 0 8px 32px rgba(0,0,0,0.08);
-  --shadow-lg: 0 16px 64px rgba(0,0,0,0.12);
+  --bg-0: #f4f4f8; --bg-1: #ffffff; --surface: rgba(0,0,0,0.03);
+  --surface-2: rgba(0,0,0,0.05); --surface-3: rgba(0,0,0,0.08);
+  --border: rgba(0,0,0,0.07); --border-strong: rgba(0,0,0,0.12);
+  --text: #0f0f1a; --text-2: #55556a; --text-3: #9090a0;
 }
-
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-html, body {
-  height: 100%;
-  overscroll-behavior-y: none;
-}
-
+html, body { height: 100%; overscroll-behavior-y: none; }
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'Segoe UI', Roboto, sans-serif;
-  background: var(--bg-0);
-  color: var(--text);
-  font-size: 15px;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  transition: background 0.3s var(--ease), color 0.3s var(--ease);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
+  background: var(--bg-0); color: var(--text); font-size: 15px; line-height: 1.5;
+  -webkit-font-smoothing: antialiased; transition: background 0.3s var(--ease);
   overflow-x: hidden;
 }
-
 body::before {
-  content: '';
-  position: fixed;
-  top: -20%;
-  left: -20%;
-  width: 60%;
-  height: 60%;
+  content: ''; position: fixed; top: -20%; left: -20%; width: 60%; height: 60%;
   background: radial-gradient(circle, var(--brand-glow) 0%, transparent 70%);
-  filter: blur(80px);
-  opacity: 0.5;
-  pointer-events: none;
-  z-index: 0;
+  filter: blur(80px); opacity: 0.5; pointer-events: none; z-index: 0;
 }
-
-/* ==================== SCROLLBAR ==================== */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 3px; }
 
-/* ==================== HEADER ==================== */
+/* HEADER */
 .app-header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  height: var(--header-h);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  position: sticky; top: 0; z-index: 100; height: var(--header-h);
+  display: flex; align-items: center; justify-content: space-between;
   padding: 0 16px;
   background: color-mix(in srgb, var(--bg-0) 75%, transparent);
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
   border-bottom: 1px solid var(--border);
 }
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-weight: 700;
-  font-size: 17px;
-  letter-spacing: -0.3px;
-}
-
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 17px; letter-spacing: -0.3px; }
 .brand-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
+  width: 32px; height: 32px; border-radius: 10px;
   background: linear-gradient(135deg, var(--brand), var(--brand-2));
-  display: grid;
-  place-items: center;
-  font-size: 18px;
+  display: grid; place-items: center; font-size: 18px;
   box-shadow: 0 4px 12px var(--brand-glow);
 }
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
+.header-actions { display: flex; align-items: center; gap: 8px; }
 .user-chip {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 100px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-2);
-  max-width: 140px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  padding: 6px 12px; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 100px; font-size: 13px; font-weight: 600; color: var(--text-2);
+  max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-
 .icon-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 12px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  color: var(--text);
-  font-size: 16px;
-  cursor: pointer;
-  display: grid;
-  place-items: center;
-  transition: all 0.2s var(--ease);
+  width: 36px; height: 36px; border-radius: 12px; background: var(--surface);
+  border: 1px solid var(--border); color: var(--text); font-size: 16px;
+  cursor: pointer; display: grid; place-items: center; transition: all 0.2s var(--ease);
 }
-
 .icon-btn:active { transform: scale(0.92); background: var(--surface-2); }
 
-/* ==================== MAIN ==================== */
+/* MAIN */
 .app-main {
-  position: relative;
-  z-index: 1;
-  max-width: 720px;
-  margin: 0 auto;
-  width: 100%;
-  padding: 16px;
-  padding-bottom: calc(var(--nav-h) + 24px);
+  position: relative; z-index: 1; max-width: 720px; margin: 0 auto;
+  width: 100%; padding: 16px; padding-bottom: calc(var(--nav-h) + 24px);
   min-height: calc(100vh - var(--header-h));
 }
-
 .page { animation: fadeUp 0.35s var(--ease); }
 .page.hidden { display: none; }
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+@keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 
-/* ==================== BOTTOM NAV ==================== */
+/* BOTTOM NAV */
 .bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  height: var(--nav-h);
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; height: var(--nav-h);
   padding: 0 8px calc(env(safe-area-inset-bottom, 0));
   background: color-mix(in srgb, var(--bg-0) 85%, transparent);
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
   border-top: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  gap: 2px;
+  display: flex; align-items: center; justify-content: space-around; gap: 2px;
 }
-
 .nav-btn {
-  flex: 1;
-  height: 56px;
-  background: transparent;
-  border: none;
-  color: var(--text-3);
-  font-size: 10px;
-  font-weight: 600;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  border-radius: 14px;
-  cursor: pointer;
-  transition: all 0.2s var(--ease);
-  position: relative;
-  padding: 4px 2px;
-  min-width: 0;
+  flex: 1; height: 56px; background: transparent; border: none;
+  color: var(--text-3); font-size: 10px; font-weight: 600;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 3px; border-radius: 14px; cursor: pointer;
+  transition: all 0.2s var(--ease); position: relative;
+  padding: 4px 2px; min-width: 0;
 }
-
-.nav-btn .nav-icon {
-  font-size: 20px;
-  line-height: 1;
-  transition: transform 0.2s var(--ease);
-}
-
-.nav-btn .nav-label {
-  font-size: 10px;
-  letter-spacing: -0.2px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
-}
-
-.nav-btn.active {
-  color: var(--brand-2);
-}
-
-.nav-btn.active .nav-icon {
-  transform: translateY(-2px) scale(1.1);
-}
-
+.nav-btn .nav-icon { font-size: 20px; line-height: 1; transition: transform 0.2s var(--ease); }
+.nav-btn .nav-label { font-size: 10px; letter-spacing: -0.2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.nav-btn.active { color: var(--brand-2); }
+.nav-btn.active .nav-icon { transform: translateY(-2px) scale(1.1); }
 .nav-btn.active::before {
-  content: '';
-  position: absolute;
-  top: 4px;
-  width: 32px;
-  height: 3px;
+  content: ''; position: absolute; top: 4px; width: 32px; height: 3px;
   background: linear-gradient(90deg, var(--brand), var(--brand-2));
-  border-radius: 3px;
-  box-shadow: 0 0 12px var(--brand-glow);
+  border-radius: 3px; box-shadow: 0 0 12px var(--brand-glow);
 }
-
 .nav-btn:active { transform: scale(0.94); }
 
-/* ==================== CARDS ==================== */
+/* CARDS */
 .card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 18px;
-  margin-bottom: 12px;
-  transition: all 0.2s var(--ease);
-  position: relative;
-  overflow: hidden;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 18px; margin-bottom: 12px;
+  transition: all 0.2s var(--ease); position: relative; overflow: hidden;
 }
+.card h2 { font-size: 16px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; letter-spacing: -0.3px; }
+.card h3 { font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.5px; }
 
-.card-elevated {
-  background: linear-gradient(145deg, var(--surface), var(--surface-2));
-  box-shadow: var(--shadow-sm);
-}
-
-.card h2 {
-  font-size: 16px;
-  font-weight: 700;
-  margin-bottom: 12px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  letter-spacing: -0.3px;
-}
-
-.card h3 {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 8px;
-  color: var(--text-2);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.card-hero {
-  background: linear-gradient(135deg, var(--brand) 0%, #5b3fd9 100%);
-  color: #fff;
-  border: none;
-  box-shadow: 0 12px 32px var(--brand-glow);
-}
-
-.card-hero h2 { color: #fff; }
-.card-hero p { color: rgba(255,255,255,0.9); }
-
-/* ==================== PAGE TITLE ==================== */
-.page-title {
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: -0.6px;
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  line-height: 1.2;
-}
-
+.page-title { font-size: 26px; font-weight: 800; letter-spacing: -0.6px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; line-height: 1.2; }
 .page-title .emoji { font-size: 28px; }
 
-/* ==================== BENTO GRID ==================== */
-.bento {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.bento-item {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px;
-  transition: all 0.2s var(--ease);
-}
-
+/* BENTO */
+.bento { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.bento-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
 .bento-item.wide { grid-column: span 2; }
+.bento-label { font-size: 11px; font-weight: 700; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 6px; }
+.bento-value { font-size: 24px; font-weight: 800; letter-spacing: -0.6px; }
+.bento-sub { font-size: 12px; color: var(--text-2); margin-top: 4px; }
 
-.bento-label {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--text-3);
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-  margin-bottom: 6px;
-}
-
-.bento-value {
-  font-size: 24px;
-  font-weight: 800;
-  letter-spacing: -0.6px;
-  color: var(--text);
-}
-
-.bento-sub {
-  font-size: 12px;
-  color: var(--text-2);
-  margin-top: 4px;
-}
-
-/* ==================== BUTTONS ==================== */
+/* BUTTONS */
 .btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 12px 20px;
-  border: none;
-  border-radius: 100px;
-  font-size: 14px;
-  font-weight: 600;
-  font-family: inherit;
-  cursor: pointer;
-  transition: all 0.2s var(--ease);
-  color: #fff;
-  background: var(--brand);
-  white-space: nowrap;
-  user-select: none;
-  position: relative;
-  overflow: hidden;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 12px 20px; border: none; border-radius: 100px;
+  font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer;
+  transition: all 0.2s var(--ease); color: #fff; background: var(--brand);
+  white-space: nowrap; user-select: none; position: relative; overflow: hidden;
 }
-
 .btn:active { transform: scale(0.96); }
 .btn:hover { filter: brightness(1.1); }
-
 .btn-primary { background: var(--brand); box-shadow: 0 4px 16px var(--brand-glow); }
 .btn-success { background: var(--success); }
 .btn-warning { background: var(--warning); color: #000; }
 .btn-danger { background: var(--danger); }
-.btn-ghost {
-  background: var(--surface);
-  color: var(--text);
-  border: 1px solid var(--border);
-  box-shadow: none;
-}
+.btn-ghost { background: var(--surface); color: var(--text); border: 1px solid var(--border); box-shadow: none; }
 .btn-ghost:hover { background: var(--surface-2); }
-
 .btn-sm { padding: 8px 14px; font-size: 13px; }
 .btn-xs { padding: 6px 10px; font-size: 12px; }
 .btn-block { width: 100%; }
+.btn-icon { width: 36px; height: 36px; padding: 0; border-radius: 50%; font-size: 16px; }
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
 
-.btn-icon {
-  width: 36px;
-  height: 36px;
-  padding: 0;
-  border-radius: 50%;
-  font-size: 16px;
+/* INPUTS */
+.field { margin-bottom: 12px; }
+.field label { display: block; font-size: 12px; font-weight: 600; color: var(--text-2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px; }
+input[type="text"], input[type="number"], input[type="datetime-local"], input[type="password"], input[type="url"], select, textarea {
+  width: 100%; padding: 12px 14px; background: var(--surface);
+  border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  color: var(--text); font-size: 15px; font-family: inherit;
+  transition: all 0.2s var(--ease); -webkit-appearance: none;
 }
-
-.btn-row {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-/* ==================== INPUTS ==================== */
-.field {
-  margin-bottom: 12px;
-}
-
-.field label {
-  display: block;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-2);
-  margin-bottom: 6px;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-}
-
-.input, input[type="text"], input[type="number"], input[type="datetime-local"],
-input[type="password"], select, textarea {
-  width: 100%;
-  padding: 12px 14px;
-  background: var(--surface);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  color: var(--text);
-  font-size: 15px;
-  font-family: inherit;
-  transition: all 0.2s var(--ease);
-  -webkit-appearance: none;
-}
-
-.input:focus, input:focus, select:focus, textarea:focus {
-  outline: none;
-  border-color: var(--brand);
-  background: var(--surface-2);
+input:focus, select:focus, textarea:focus {
+  outline: none; border-color: var(--brand); background: var(--surface-2);
   box-shadow: 0 0 0 3px var(--brand-glow);
 }
-
 textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
-
 select {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a4a4b8' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 14px center;
-  padding-right: 36px;
+  background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px;
 }
 
-.input-with-btn {
-  position: relative;
-}
-
-.input-with-btn input { padding-right: 48px; }
-
-.input-with-btn .input-btn {
-  position: absolute;
-  right: 6px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: var(--surface-2);
-  border: none;
-  color: var(--text);
-  cursor: pointer;
-  display: grid;
-  place-items: center;
-  font-size: 16px;
-}
-
-/* ==================== ITEMS / LISTS ==================== */
+/* ITEMS */
 .list { display: flex; flex-direction: column; gap: 8px; }
-
 .item {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 14px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  transition: all 0.2s var(--ease);
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px;
+  display: flex; align-items: center; gap: 12px;
 }
-
-.item:active { transform: scale(0.99); }
-
 .item-body { flex: 1; min-width: 0; }
+.item-title { font-weight: 600; font-size: 14px; margin-bottom: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.item-meta { font-size: 12px; color: var(--text-2); display: flex; gap: 8px; flex-wrap: wrap; }
+.item-actions { display: flex; gap: 6px; flex-shrink: 0; }
 
-.item-title {
-  font-weight: 600;
-  font-size: 14px;
-  margin-bottom: 2px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.item-meta {
-  font-size: 12px;
-  color: var(--text-2);
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.item-actions {
-  display: flex;
-  gap: 6px;
-  flex-shrink: 0;
-}
-
-/* ==================== BADGES / CHIPS ==================== */
+/* BADGES */
 .badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 10px;
-  border-radius: 100px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.3px;
-  text-transform: uppercase;
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px; border-radius: 100px; font-size: 11px;
+  font-weight: 700; letter-spacing: 0.3px; text-transform: uppercase;
 }
-
 .badge-brand { background: var(--brand-glow); color: var(--brand-2); }
 .badge-success { background: rgba(16,185,129,0.15); color: var(--success); }
 .badge-warning { background: rgba(245,158,11,0.15); color: var(--warning); }
 .badge-danger { background: rgba(239,68,68,0.15); color: var(--danger); }
 .badge-muted { background: var(--surface-2); color: var(--text-2); }
 
-/* ==================== PROGRESS ==================== */
-.progress {
-  height: 8px;
-  background: var(--surface-2);
-  border-radius: 100px;
-  overflow: hidden;
-  margin-top: 8px;
-}
-
+/* PROGRESS */
+.progress { height: 8px; background: var(--surface-2); border-radius: 100px; overflow: hidden; margin-top: 8px; }
 .progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--brand), var(--brand-2));
-  border-radius: 100px;
-  transition: width 0.6s var(--ease);
+  height: 100%; background: linear-gradient(90deg, var(--brand), var(--brand-2));
+  border-radius: 100px; transition: width 0.6s var(--ease);
   box-shadow: 0 0 12px var(--brand-glow);
 }
 
-.progress-ring {
-  width: 60px;
-  height: 60px;
-  transform: rotate(-90deg);
-}
-
-.progress-ring circle {
-  fill: none;
-  stroke-width: 6;
-  stroke-linecap: round;
-}
-
-.progress-ring .track { stroke: var(--surface-2); }
-.progress-ring .fill {
-  stroke: var(--brand);
-  stroke-dasharray: 157;
-  stroke-dashoffset: 157;
-  transition: stroke-dashoffset 0.8s var(--ease);
-}
-
-/* ==================== TIMER ==================== */
-.timer-hero {
-  text-align: center;
-  padding: 24px 16px;
-}
-
+/* TIMER */
+.timer-hero { text-align: center; padding: 24px 16px; }
 .timer-time {
-  font-size: 64px;
-  font-weight: 800;
-  letter-spacing: -2px;
+  font-size: 64px; font-weight: 800; letter-spacing: -2px;
   font-variant-numeric: tabular-nums;
   background: linear-gradient(135deg, var(--brand-2), var(--brand));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  line-height: 1;
-  margin: 16px 0;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; line-height: 1; margin: 16px 0;
 }
+.timer-controls { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 
-.timer-controls {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-/* ==================== CHAT ==================== */
+/* CHAT */
 .chat {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  max-height: 360px;
-  overflow-y: auto;
-  padding: 4px;
+  display: flex; flex-direction: column; gap: 12px;
+  max-height: 60vh; min-height: 300px; overflow-y: auto; padding: 4px;
 }
-
 .msg {
-  max-width: 82%;
-  padding: 12px 16px;
-  border-radius: 18px;
-  font-size: 14px;
-  line-height: 1.5;
-  word-wrap: break-word;
+  max-width: 88%; padding: 12px 16px; border-radius: 18px;
+  font-size: 14px; line-height: 1.55; word-wrap: break-word;
   animation: msgIn 0.3s var(--ease);
 }
-
-@keyframes msgIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
+@keyframes msgIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 .msg-user {
   align-self: flex-end;
   background: linear-gradient(135deg, var(--brand), #5b3fd9);
-  color: #fff;
-  border-bottom-right-radius: 4px;
+  color: #fff; border-bottom-right-radius: 4px;
 }
-
 .msg-bot {
-  align-self: flex-start;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-bottom-left-radius: 4px;
+  align-self: flex-start; background: var(--surface-2);
+  border: 1px solid var(--border); border-bottom-left-radius: 4px;
 }
-
-.msg-meta {
-  font-size: 11px;
-  margin-top: 6px;
-  opacity: 0.85;
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
+.msg-bot p { margin: 0 0 8px 0; }
+.msg-bot p:last-child { margin-bottom: 0; }
+.msg-bot strong { color: var(--brand-2); font-weight: 700; }
+.msg-bot em { color: var(--text-2); font-style: italic; }
+.msg-bot code {
+  background: var(--surface-3); padding: 2px 6px; border-radius: 4px;
+  font-family: 'SF Mono', Monaco, monospace; font-size: 12px;
+}
+.msg-bot ul { margin: 6px 0; padding-left: 18px; }
+.msg-bot li { margin: 3px 0; }
+.msg-meta { font-size: 11px; margin-top: 6px; opacity: 0.85; display: flex; gap: 8px; flex-wrap: wrap; }
+.msg-mode {
+  display: inline-block; padding: 2px 8px; border-radius: 100px;
+  background: var(--brand-glow); color: var(--brand-2);
+  font-size: 10px; font-weight: 700; letter-spacing: 0.4px;
+  text-transform: uppercase; margin-bottom: 6px;
 }
 
 .typing {
-  display: flex;
-  gap: 4px;
-  padding: 14px 18px;
-  align-self: flex-start;
-  background: var(--surface-2);
-  border-radius: 18px;
+  display: flex; gap: 4px; padding: 14px 18px;
+  align-self: flex-start; background: var(--surface-2); border-radius: 18px;
 }
-
 .typing span {
-  width: 6px; height: 6px;
-  background: var(--text-3);
-  border-radius: 50%;
-  animation: typing 1.2s infinite;
+  width: 6px; height: 6px; background: var(--text-3);
+  border-radius: 50%; animation: typing 1.2s infinite;
 }
-
 .typing span:nth-child(2) { animation-delay: 0.15s; }
 .typing span:nth-child(3) { animation-delay: 0.3s; }
-
 @keyframes typing {
   0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
   30% { transform: translateY(-4px); opacity: 1; }
 }
 
-/* ==================== MODAL ==================== */
+/* QUICK CHIPS */
+.chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.chip {
+  padding: 6px 12px; border-radius: 100px; background: var(--surface);
+  border: 1px solid var(--border); color: var(--text-2);
+  font-size: 12px; font-weight: 500; cursor: pointer;
+  transition: all 0.2s var(--ease); font-family: inherit;
+}
+.chip:hover { background: var(--surface-2); color: var(--text); }
+.chip:active { transform: scale(0.95); }
+
+/* MODAL */
 .overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.65);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  z-index: 1000;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
+  position: fixed; inset: 0; background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  z-index: 1000; display: flex; align-items: flex-end; justify-content: center;
   animation: fadeIn 0.2s var(--ease);
 }
-
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
 .modal {
-  background: var(--bg-1);
-  width: 100%;
-  max-width: 480px;
-  max-height: 88vh;
+  background: var(--bg-1); width: 100%; max-width: 480px; max-height: 88vh;
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-  padding: 20px;
-  overflow-y: auto;
-  animation: slideUp 0.3s var(--ease);
+  padding: 20px; overflow-y: auto; animation: slideUp 0.3s var(--ease);
   border-top: 1px solid var(--border-strong);
 }
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.modal-handle { width: 40px; height: 4px; background: var(--surface-3); border-radius: 100px; margin: 0 auto 16px; }
+.modal h2 { font-size: 20px; font-weight: 700; margin-bottom: 16px; letter-spacing: -0.4px; }
 
-@keyframes slideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
-}
-
-.modal-handle {
-  width: 40px;
-  height: 4px;
-  background: var(--surface-3);
-  border-radius: 100px;
-  margin: 0 auto 16px;
-}
-
-.modal h2 {
-  font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 16px;
-  letter-spacing: -0.4px;
-}
-
-/* ==================== TOASTS ==================== */
+/* TOASTS */
 .toast-container {
-  position: fixed;
-  top: calc(var(--header-h) + 12px);
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 2000;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  pointer-events: none;
-  width: 90%;
-  max-width: 400px;
+  position: fixed; top: calc(var(--header-h) + 12px); left: 50%;
+  transform: translateX(-50%); z-index: 2000;
+  display: flex; flex-direction: column; gap: 8px;
+  pointer-events: none; width: 90%; max-width: 400px;
 }
-
 .toast {
-  background: var(--bg-1);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius);
-  padding: 12px 16px;
-  box-shadow: var(--shadow-lg);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 14px;
-  font-weight: 500;
-  animation: toastIn 0.3s var(--ease);
+  background: var(--bg-1); border: 1px solid var(--border-strong);
+  border-radius: var(--radius); padding: 12px 16px;
+  box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 10px;
+  font-size: 14px; font-weight: 500; animation: toastIn 0.3s var(--ease);
   pointer-events: auto;
 }
-
 .toast.success { border-left: 4px solid var(--success); }
 .toast.error { border-left: 4px solid var(--danger); }
 .toast.info { border-left: 4px solid var(--info); }
 .toast.warning { border-left: 4px solid var(--warning); }
+@keyframes toastIn { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
 
-@keyframes toastIn {
-  from { opacity: 0; transform: translateY(-16px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ==================== EMPTY STATE ==================== */
-.empty {
-  text-align: center;
-  padding: 32px 16px;
-  color: var(--text-3);
-}
-
-.empty-icon {
-  font-size: 48px;
-  margin-bottom: 8px;
-  opacity: 0.5;
-}
-
+/* EMPTY */
+.empty { text-align: center; padding: 32px 16px; color: var(--text-3); }
+.empty-icon { font-size: 48px; margin-bottom: 8px; opacity: 0.5; }
 .empty-text { font-size: 14px; }
 
-/* ==================== CALENDAR ==================== */
-.cal-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
-  text-align: center;
-}
-
-.cal-weekday {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--text-3);
-  text-transform: uppercase;
-  padding: 8px 0;
-  letter-spacing: 0.5px;
-}
-
+/* CALENDAR */
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
+.cal-weekday { font-size: 11px; font-weight: 700; color: var(--text-3); text-transform: uppercase; padding: 8px 0; letter-spacing: 0.5px; }
 .cal-day {
-  aspect-ratio: 1;
-  display: grid;
-  place-items: center;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s var(--ease);
-  background: transparent;
-  border: none;
-  color: var(--text);
-  font-family: inherit;
-  position: relative;
+  aspect-ratio: 1; display: grid; place-items: center; border-radius: 12px;
+  font-size: 14px; font-weight: 500; cursor: pointer;
+  transition: all 0.15s var(--ease); background: transparent;
+  border: none; color: var(--text); font-family: inherit; position: relative;
 }
-
 .cal-day:hover { background: var(--surface-2); }
-.cal-day.today {
-  background: var(--brand-glow);
-  color: var(--brand-2);
-  font-weight: 700;
-}
+.cal-day.today { background: var(--brand-glow); color: var(--brand-2); font-weight: 700; }
 .cal-day.has-event::after {
-  content: '';
-  position: absolute;
-  bottom: 4px;
-  width: 4px;
-  height: 4px;
-  background: var(--brand);
-  border-radius: 50%;
-}
-.cal-day.other-month { color: var(--text-3); opacity: 0.4; }
-
-/* ==================== MATRIX ==================== */
-.matrix {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  content: ''; position: absolute; bottom: 4px; width: 4px; height: 4px;
+  background: var(--brand); border-radius: 50%;
 }
 
-.matrix-cell {
-  background: var(--surface);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px;
-  cursor: pointer;
-  transition: all 0.2s var(--ease);
-  text-align: center;
-}
+/* STATS */
+.stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.stat-item { text-align: center; padding: 12px 8px; background: var(--surface); border-radius: var(--radius-sm); }
+.stat-value { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+.stat-label { font-size: 11px; color: var(--text-3); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; }
 
-.matrix-cell:hover { border-color: var(--brand); background: var(--surface-2); }
-.matrix-cell:active { transform: scale(0.97); }
-
-.matrix-cell .cell-title {
-  font-size: 13px;
-  font-weight: 700;
-  margin-bottom: 8px;
-  color: var(--text-2);
-}
-
-.matrix-cell .cell-count {
-  font-size: 32px;
-  font-weight: 800;
-  color: var(--brand-2);
-  letter-spacing: -1px;
-  line-height: 1;
-}
-
-.matrix-cell .cell-limit {
-  font-size: 11px;
-  color: var(--text-3);
-  margin-top: 4px;
-}
-
-/* ==================== SETTINGS ==================== */
-.setting-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--border);
-}
-
-.setting-row:last-child { border-bottom: none; }
-
-.setting-label {
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.setting-desc {
-  font-size: 12px;
-  color: var(--text-3);
-  margin-top: 2px;
-}
-
-/* ==================== SWITCH ==================== */
+/* SWITCH */
 .switch {
-  position: relative;
-  width: 48px;
-  height: 28px;
-  background: var(--surface-3);
-  border-radius: 100px;
-  cursor: pointer;
-  transition: background 0.2s var(--ease);
-  flex-shrink: 0;
-  border: none;
+  position: relative; width: 48px; height: 28px; background: var(--surface-3);
+  border-radius: 100px; cursor: pointer; transition: background 0.2s var(--ease);
+  flex-shrink: 0; border: none;
 }
-
 .switch::after {
-  content: '';
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 22px;
-  height: 22px;
-  background: #fff;
-  border-radius: 50%;
-  transition: transform 0.25s var(--ease);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  content: ''; position: absolute; top: 3px; left: 3px;
+  width: 22px; height: 22px; background: #fff; border-radius: 50%;
+  transition: transform 0.25s var(--ease); box-shadow: 0 2px 6px rgba(0,0,0,0.3);
 }
-
 .switch.on { background: var(--brand); }
 .switch.on::after { transform: translateX(20px); }
 
-/* ==================== STATS GRID ==================== */
-.stat-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+.setting-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);
 }
+.setting-row:last-child { border-bottom: none; }
+.setting-label { font-size: 14px; font-weight: 500; }
+.setting-desc { font-size: 12px; color: var(--text-3); margin-top: 2px; }
 
-.stat-item {
-  text-align: center;
-  padding: 12px 8px;
-  background: var(--surface);
-  border-radius: var(--radius-sm);
-}
-
-.stat-value {
-  font-size: 20px;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  color: var(--text);
-}
-
-.stat-label {
-  font-size: 11px;
-  color: var(--text-3);
-  margin-top: 2px;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  font-weight: 600;
-}
-
-/* ==================== UTILS ==================== */
+/* UTILS */
 .hidden { display: none !important; }
 .mt-1 { margin-top: 6px; } .mt-2 { margin-top: 12px; } .mt-3 { margin-top: 20px; }
 .mb-1 { margin-bottom: 6px; } .mb-2 { margin-bottom: 12px; } .mb-3 { margin-bottom: 20px; }
 .flex { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .flex-col { display: flex; flex-direction: column; gap: 8px; }
 .justify-between { justify-content: space-between; }
-.text-2 { color: var(--text-2); }
-.text-3 { color: var(--text-3); }
-.text-sm { font-size: 13px; }
-.text-xs { font-size: 11px; }
+.text-2 { color: var(--text-2); } .text-3 { color: var(--text-3); }
+.text-sm { font-size: 13px; } .text-xs { font-size: 11px; }
 .text-center { text-align: center; }
 .font-bold { font-weight: 700; }
 .divider { height: 1px; background: var(--border); margin: 12px 0; }
 
-/* ==================== RESPONSIVE ==================== */
 @media (max-width: 480px) {
   .app-main { padding: 12px; }
   .page-title { font-size: 22px; }
-  .page-title .emoji { font-size: 24px; }
   .timer-time { font-size: 48px; }
-  .bento-value { font-size: 20px; }
-  .nav-label { font-size: 9px; }
-  .nav-btn .nav-icon { font-size: 18px; }
+  .msg { max-width: 92%; }
 }
-
 @media (min-width: 768px) {
-  .bottom-nav {
-    max-width: 720px;
-    margin: 0 auto;
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-    border: 1px solid var(--border);
-    border-bottom: none;
-  }
-  .modal {
-    border-radius: var(--radius-xl);
-    margin-bottom: 5vh;
-  }
+  .bottom-nav { max-width: 720px; margin: 0 auto; border-radius: var(--radius-lg) var(--radius-lg) 0 0; border: 1px solid var(--border); border-bottom: none; }
+  .modal { border-radius: var(--radius-xl); margin-bottom: 5vh; }
   .overlay { align-items: center; }
 }
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <header class="app-header">
   <div class="brand">
     <div class="brand-icon">🧠</div>
@@ -1012,13 +405,8 @@ select {
   </div>
 </header>
 
-<!-- MAIN -->
 <main class="app-main" id="app"></main>
-
-<!-- BOTTOM NAV -->
 <nav class="bottom-nav" id="bottomNav"></nav>
-
-<!-- TOASTS -->
 <div class="toast-container" id="toasts"></div>
 
 <script>
@@ -1029,87 +417,286 @@ select {
    ====================================================================== */
 const tg = window.Telegram?.WebApp;
 if (tg) {
-  tg.expand();
-  tg.ready();
+  tg.expand(); tg.ready();
   tg.setHeaderColor?.('#07070d');
   const u = tg.initDataUnsafe?.user;
-  if (u) {
-    const name = u.first_name || u.username || 'Пользователь';
-    document.getElementById('userChip').textContent = name;
-  }
+  if (u) document.getElementById('userChip').textContent = u.first_name || u.username || 'Пользователь';
 } else {
   document.getElementById('userChip').textContent = 'Тест';
 }
 
 /* ======================================================================
+   AI COACH SYSTEM PROMPT — встроен полностью
+   ====================================================================== */
+const COACH_SYSTEM_PROMPT = `Ты — AI-Коуч МАКСИМАЛЬНОГО УРОВНЯ. Твоя личность — синтез лучших практик мировых коучей, психологов, нейробиологов и философов.
+
+═══════════════════════════════════════════════════════════════
+🧠 МЕТОДОЛОГИЧЕСКАЯ БАЗА (все известные школы коучинга):
+═══════════════════════════════════════════════════════════════
+
+1. МЕТОД GROW (Джон Уитмор, Тим Голлви) — Goal → Reality → Options → Will
+2. ВНУТРЕННЯЯ ИГРА (Тимоти Голви) — "Противник внутри тебя"
+3. CO-ACTIVE COACHING (Лаура Уитворт) — "Человек целостен, ресурсен и креативен"
+4. ТРАНСТЕОРЕТИЧЕСКАЯ МОДЕЛЬ (Джеймс Прохазка) — стадии изменений
+5. ТЕОРИЯ САМОДЕТЕРМИНАЦИИ (Деси, Райан) — Автономия + Компетентность + Связанность
+6. ПОТОК (Михай Чиксентмихайи) — Баланс сложности и навыка
+7. SMART-ЦЕЛИ (Дорана, Друкер) — Specific, Measurable, Achievable, Relevant, Time-bound
+8. ПИРАМИДА ДИЛТСА — Окружение → Поведение → Способности → Убеждения → Идентичность → Миссия
+9. OKR (Гроув, Дорр) — Objectives + Key Results
+10. КАЙЗЕН (Масааки Имаи) — Непрерывное улучшение
+11. ПОМОДОРО (Чирилло) — 25/5, 50/10
+12. ЭЙЗЕНХАУЭР-МАТРИЦА — Важное/Срочное
+13. EAT THAT FROG (Трейси) — Самое сложное первым
+14. DEEP WORK (Кэл Ньюпорт) — Глубокая работа
+15. АТОМНЫЕ ПРИВЫЧКИ (Джеймс Клир) — Cue → Craving → Response → Reward
+16. ПРАВИЛО 2 МИНУТ (Дэвид Аллен, GTD)
+17. БУЛЕТ-ЖУРНАЛ (Райдер Кэрролл)
+18. ИКИГАЙ — что люблю + что умею + за что платят + что нужно миру
+19. СТОИЦИЗМ (Марк Аврелий, Сенека, Эпиктет) — дихотомия контроля
+20. ЭКЗИСТЕНЦИАЛЬНАЯ ПСИХОЛОГИЯ (Виктор Франкл) — логотерапия, "зачем" важнее "как"
+
+🌟 ЛИЧНОСТИ-ОРИЕНТИРЫ: Тони Роббинс, Брайан Трейси, Стивен Кови, Джим Рон, Экхарт Толле, Брендон Берчард, Мел Роббинс, Саймон Синек, Ангела Дакворт, Кэрол Дуэк, Адам Грант, Даниэль Канеман, Нассим Талеб, Рэй Далио, Чарли Мангер, Навал Равикант, Джордан Питерсон, Райан Холидей, Дэвид Гоггинс, Байрон Кейти, Маршалл Голдсмит, Майкл Бангей, Брене Браун, Сьюзен Джефферс, Джо Диспенза, Эндрю Хуберман, Мэттью Уокер, Марк Аврелий, Сенека, Эпиктет, Лао-Цзы, Конфуций, Будда, Сократ, Платон, Аристотель, Ницше, Виктор Франкл, Карл Юнг, Маслоу, Роджерс, Селигман, Милтон Эриксон, Ричард Бендлер, Джон Гриндер.
+
+🎯 ТВОЯ РОЛЬ: ДИАГНОСТ, СТРАТЕГ, ПРОВОКАТОР, ПОДДЕРЖКА, ЭКСПЕРТ, МОТИВАТОР, ФИЛОСОФ, ТРЕНЕР.
+
+ТВОЙ СТИЛЬ:
+• Прямой, но тёплый. Без воды и клише.
+• 1 мысль = 1-2 предложения. Разбивай на абзацы.
+• Задавай 1-2 вопроса за раз, не допрашивай.
+• Используй метафоры, истории, аналогии.
+• Признавай ограничения: "Я не знаю, но давай разберёмся".
+• Никогда не давай медицинских/юридических/финансовых советов.
+• При признаках кризиса (суицид, самоповреждение) — сразу давай контакты: 8-800-2000-122 (РФ), https://findahelpline.com
+
+🔄 АЛГОРИТМ ОТВЕТА (каждый раз):
+ШАГ 1. ОТРАЖЕНИЕ — "Если я правильно понял, ты..."
+ШАГ 2. ДИАГНОСТИКА — 1-2 вопроса, определи корень (страх/ресурс/ясность/система) и стадию по Прохазке
+ШАГ 3. ИНСАЙТ — неожиданный угол, методика, автор
+ШАГ 4. ДЕЙСТВИЕ — микро-шаг на 5-25 минут, конкретно
+ШАГ 5. РЕФЛЕКСИЯ — 1 вопрос
+
+📊 РЕЖИМЫ: УТРЕННИЙ, ДЕНЬ, ВЕЧЕР, КРИЗИС, ВЫГОРАНИЕ, ВЫБОР, СТРАХ, ПРОКРАСТИНАЦИЯ, ЦЕЛЬ.
+
+⚠️ КРАСНЫЕ ФЛАГИ: суицид → контакты помощи, депрессия → психотерапевт, паника → 5-4-3-2-1, насилие → кризисные центры, зависимости → специалисты.
+
+💎 ФИЛОСОФИЯ:
+"Люди не ленивы. Люди либо устали, либо не видят смысла, либо боятся."
+"Не решай за человека. Помоги ему самому найти ответ." — Сократ
+"Коучинг — это не про то, чтобы дать ответ. Это про то, чтобы задать правильный вопрос." — Майкл Бангей
+"Единственный человек, которого ты можешь изменить — это ты сам." — Виктор Франкл
+
+ОТВЕЧАЙ КРАТКО (150-250 слов максимум). Используй Markdown для структуры. Будь живым собеседником, не роботом с чек-листом.`;
+
+/* ======================================================================
+   AI PROVIDERS
+   ====================================================================== */
+const AI_PROVIDERS = {
+  openai: {
+    name: 'OpenAI (GPT-4o)',
+    url: 'https://api.openai.com/v1/chat/completions',
+    model: 'gpt-4o-mini',
+    buildRequest: (messages, key) => ({
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+      body: JSON.stringify({ model: 'gpt-4o-mini', messages, temperature: 0.8, max_tokens: 700 })
+    }),
+    parseResponse: (data) => data.choices?.[0]?.message?.content
+  },
+  anthropic: {
+    name: 'Anthropic (Claude)',
+    url: 'https://api.anthropic.com/v1/messages',
+    model: 'claude-3-5-sonnet-20241022',
+    buildRequest: (messages, key) => {
+      const system = messages.find(m => m.role === 'system')?.content || '';
+      const rest = messages.filter(m => m.role !== 'system');
+      return {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': key,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({ model: 'claude-3-5-sonnet-20241022', system, messages: rest, max_tokens: 700 })
+      };
+    },
+    parseResponse: (data) => data.content?.[0]?.text
+  },
+  gemini: {
+    name: 'Google (Gemini)',
+    url: (key) => `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`,
+    buildRequest: (messages, key) => {
+      const system = messages.find(m => m.role === 'system')?.content || '';
+      const rest = messages.filter(m => m.role !== 'system');
+      return {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: system }] },
+          contents: rest.map(m => ({
+            role: m.role === 'assistant' ? 'model' : 'user',
+            parts: [{ text: m.content }]
+          })),
+          generationConfig: { temperature: 0.8, maxOutputTokens: 700 }
+        })
+      };
+    },
+    parseResponse: (data) => data.candidates?.[0]?.content?.parts?.[0]?.text
+  },
+  openrouter: {
+    name: 'OpenRouter',
+    url: 'https://openrouter.ai/api/v1/chat/completions',
+    buildRequest: (messages, key) => ({
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${key}`,
+        'HTTP-Referer': location.origin,
+        'X-Title': 'AI Coach Pro'
+      },
+      body: JSON.stringify({ model: 'anthropic/claude-3.5-sonnet', messages, temperature: 0.8, max_tokens: 700 })
+    }),
+    parseResponse: (data) => data.choices?.[0]?.message?.content
+  }
+};
+
+async function callAI(messages) {
+  const { provider, apiKey } = state.settings;
+  if (!apiKey || !provider || !AI_PROVIDERS[provider]) {
+    return { text: fallbackCoachReply(messages[messages.length - 1].content), fallback: true };
+  }
+  try {
+    const cfg = AI_PROVIDERS[provider];
+    const url = typeof cfg.url === 'function' ? cfg.url(apiKey) : cfg.url;
+    const req = cfg.buildRequest(messages, apiKey);
+    const resp = await fetch(url, req);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+    const text = cfg.parseResponse(data);
+    if (!text) throw new Error('Пустой ответ');
+    return { text, fallback: false };
+  } catch (e) {
+    console.error('AI error:', e);
+    toast(`Ошибка AI: ${e.message}`, 'error');
+    return { text: fallbackCoachReply(messages[messages.length - 1].content), fallback: true };
+  }
+}
+
+/* ======================================================================
+   FALLBACK COACH ENGINE (без API)
+   ====================================================================== */
+function detectMode(text) {
+  const t = text.toLowerCase();
+  if (/суицид|умереть|не хочу жить|покончить/.test(t)) return 'crisis';
+  if (/выгор|истощ|нет сил|не могу больше/.test(t)) return 'burnout';
+  if (/боюсь|страх|тревог|паник/.test(t)) return 'fear';
+  if (/прокрастин|отклад|не могу начать|лень/.test(t)) return 'procrastination';
+  if (/выбор|решить|не знаю что/.test(t)) return 'choice';
+  if (/цель|хочу достичь|мечта/.test(t)) return 'goal';
+  const h = new Date().getHours();
+  if (h < 12) return 'morning';
+  if (h < 18) return 'day';
+  return 'evening';
+}
+
+function fallbackCoachReply(userMsg) {
+  const mode = detectMode(userMsg);
+  const replies = {
+    crisis: `🆘 **Важно.** То, что ты чувствуешь — серьёзно, и ты не один.\n\nПожалуйста, позвони прямо сейчас:\n• **8-800-2000-122** (РФ, бесплатно, круглосуточно)\n• **https://findahelpline.com** (международные)\n\nЯ рядом, но профессиональная помощь важнее. Ты важен. 💙`,
+    burnout: `**Если я правильно понял, ты на грани выгорания.**\n\nЭто не слабость — это сигнал тела, что ресурс исчерпан. Не "просто отдохни" — сначала микро-восстановление.\n\n**Сделай прямо сейчас (5 мин):**\n1. Выпей стакан воды\n2. Закрой глаза, дыши 4-7-8 (вдох 4, задержка 7, выдох 8) × 3 раза\n3. Посмотри в окно 2 минуты\n\n*По Тони Шварцу ("The Power of Full Engagement"), энергию надо восстанавливать ритмично, а не "когда-нибудь".*\n\nЧто съедает твой ресурс больше всего прямо сейчас?`,
+    fear: `**Слышу страх в твоих словах.**\n\nСтоики учили: раздели то, что в твоей власти, и то, что нет. 90% страха — про второе.\n\n**Ответь себе честно:**\n• Что самое худшее может случиться?\n• Если случится — что я буду делать?\n\n*Сьюзен Джефферс: "Feel the Fear and Do It Anyway". Страх не исчезает — с ним идут.*\n\nЧто пугает сильнее всего?`,
+    procrastination: `**Прокрастинация — это не лень. Это защита от боли.**\n\nЗадача кажется: слишком большой, слишком неясной или слишком страшной. Найдём настоящую причину.\n\n**Микро-шаг:** открой документ/файл и просто посмотри на него 2 минуты. Ничего не делай. Только смотри.\n\n*Джеймс Клир ("Атомные привычки"): сделай действие настолько маленьким, чтобы невозможно было отказаться.*\n\nЧто именно отталкивает: масштаб, неясность или страх провала?`,
+    choice: `**Выбор — это всегда про ценности, не про логику.**\n\nЛогика даст 2 равных варианта. Ответ — в том, что для тебя по-настоящему важно.\n\n**Техника 10/10/10:** как ты будешь чувствовать себя через 10 минут / 10 месяцев / 10 лет при каждом выборе?\n\n*Рэй Далио ("Принципы"): боль + рефлексия = прогресс.*\n\nЧто стоит на кону — что ты боишься потерять?`,
+    goal: `**Цель — это хорошо. Но давай проверим её на прочность.**\n\nЦель без "зачем" — это фантазия. Цель со смыслом — это топливо.\n\n**Проверь по SMART:** конкретна? измерима? достижима? релевантна? есть срок?\n\n*Саймон Синек ("Начни с Почему"): люди покупают не что ты делаешь, а почему.*\n\nЧто ты потеряешь, если НЕ достигнешь этой цели?`,
+    morning: `**Доброе утро. День закладывается в первые 30 минут.**\n\n*Тони Роббинс: priming — 10 мин дыхание, благодарность, визуализация.*\n\n**Сделай сейчас:**\n1. 3 глубоких вдоха\n2. Назови 3 вещи, за которые благодарен\n3. Определи MIT (Most Important Task) — одну задачу, которая сделает день успешным\n\nКакая твоя MIT на сегодня?`,
+    day: `**Середина дня — время проверить фокус.**\n\n*Кэл Ньюпорт ("Deep Work"): глубокая работа = 90 мин без отвлечений.*\n\n**Запусти Pomodoro:** 25 минут на одну задачу, телефон в другую комнату.\n\n*Брайан Трейси ("Eat That Frog"): самое сложное — первым.*\n\nЧто ты сейчас откладываешь?`,
+    evening: `**Вечер — время рефлексии, не продуктивности.**\n\n*Бенджамин Франклин: "Что я сделал хорошо? Что можно улучшить?"*\n\n**Булет-журнал (Райдер Кэрролл):**\n• 3 победы дня\n• 1 урок\n• 1 задача на завтра\n\nЗа что ты благодарен сегодня?`
+  };
+  return replies[mode] || `**Я слышу тебя.**\n\nРасскажи подробнее: что происходит и что ты уже пробовал?\n\n*"Не решай за человека. Помоги ему самому найти ответ." — Сократ*`;
+}
+
+/* ======================================================================
+   SIMPLE MARKDOWN RENDERER
+   ====================================================================== */
+function renderMarkdown(text) {
+  if (!text) return '';
+  let html = escapeHtml(text);
+  // Code blocks
+  html = html.replace(/```([\s\S]*?)```/g, '<pre style="background:var(--surface-3);padding:8px;border-radius:8px;overflow-x:auto;font-size:12px;"><code>$1</code></pre>');
+  // Inline code
+  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+  // Bold
+  html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  // Italic
+  html = html.replace(/(^|\s)\*([^*\n]+)\*(?=\s|$|[.,!?])/g, '$1<em>$2</em>');
+  // Headers
+  html = html.replace(/^### (.+)$/gm, '<h4 style="margin:8px 0 4px;font-size:14px;">$1</h4>');
+  html = html.replace(/^## (.+)$/gm, '<h3 style="margin:10px 0 6px;font-size:15px;">$1</h3>');
+  // Lists
+  html = html.replace(/^[•\-] (.+)$/gm, '<li>$1</li>');
+  html = html.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
+  html = html.replace(/(<li>[\s\S]*?<\/li>)(?!\s*<li>)/g, '<ul style="margin:6px 0;padding-left:18px;">$1</ul>');
+  // Line breaks
+  html = html.replace(/\n\n/g, '</p><p>');
+  html = html.replace(/\n/g, '<br>');
+  return `<p>${html}</p>`;
+}
+
+/* ======================================================================
    STORAGE
    ====================================================================== */
-const STORAGE_KEY = 'ai_coach_pro_v8';
+const STORAGE_KEY = 'ai_coach_pro_v9';
 const DEFAULT_STATE = () => ({
-  tasks: [],
-  schedule: [],
-  habits: [],
-  goals: [],
-  notes: [],
-  learning: [],
-  coachMessages: [],
-  timerSessions: [],
-  calendarEvents: [],
+  tasks: [], schedule: [], habits: [], goals: [], notes: [], learning: [],
+  coachMessages: [], timerSessions: [], actionLog: [], screenTimeLog: {},
   priorityMatrix: { q1: [], q2: [], q3: [] },
-  actionLog: [],
-  screenTime: {},
-  screenTimeLog: {},
-  state: { sleep: 5, mood: 5, energy: 5 },
   settings: {
     theme: 'dark',
     username: 'Пользователь',
+    provider: 'openai',
+    apiKey: '',
     googleCalendar: '',
-    obsidianPath: '',
-    todoistKey: ''
+    obsidianPath: ''
   },
-  flags: {
-    dnd: false,
-    focus: false,
-    recommendOnly: false,
-    agentPaused: false,
-    emergencyStop: false
-  },
-  dailyQuote: null,
-  stats: { totalCompleted: 0, totalMinutes: 0, streak: 0 }
+  flags: { dnd: false, focus: false, agentPaused: false },
+  stats: { totalCompleted: 0, totalMinutes: 0, streak: 0, lastActiveDay: null }
 });
 
 let state = (() => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return DEFAULT_STATE();
+    if (!raw) {
+      // Migrate from v8 if exists
+      const old = localStorage.getItem('ai_coach_pro_v8');
+      if (old) {
+        const parsed = JSON.parse(old);
+        const def = DEFAULT_STATE();
+        return {
+          ...def, ...parsed,
+          settings: { ...def.settings, ...(parsed.settings || {}) },
+          flags: { ...def.flags, ...(parsed.flags || {}) },
+          stats: { ...def.stats, ...(parsed.stats || {}) }
+        };
+      }
+      return DEFAULT_STATE();
+    }
     const parsed = JSON.parse(raw);
-    // Deep merge with defaults
     const def = DEFAULT_STATE();
     return {
-      ...def,
-      ...parsed,
+      ...def, ...parsed,
       settings: { ...def.settings, ...(parsed.settings || {}) },
       flags: { ...def.flags, ...(parsed.flags || {}) },
-      state: { ...def.state, ...(parsed.state || {}) },
-      priorityMatrix: { ...def.priorityMatrix, ...(parsed.priorityMatrix || {}) },
       stats: { ...def.stats, ...(parsed.stats || {}) }
     };
-  } catch (e) {
-    console.error('Load error:', e);
-    return DEFAULT_STATE();
-  }
+  } catch (e) { console.error(e); return DEFAULT_STATE(); }
 })();
 
 let saveTimeout = null;
 function save() {
   clearTimeout(saveTimeout);
   saveTimeout = setTimeout(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch (e) {
-      console.error('Save error:', e);
-      toast('Ошибка сохранения', 'error');
-    }
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+    catch (e) { toast('Ошибка сохранения', 'error'); }
   }, 150);
 }
 
@@ -1163,18 +750,15 @@ function applyTheme(theme) {
   const btn = document.querySelector('.icon-btn');
   if (btn) btn.textContent = theme === 'light' ? '☀️' : '🌙';
 }
-
 window.toggleTheme = function() {
   state.settings.theme = state.settings.theme === 'light' ? 'dark' : 'light';
   applyTheme(state.settings.theme);
-  save();
-  haptic('light');
+  save(); haptic('light');
 };
-
 applyTheme(state.settings.theme);
 
 /* ======================================================================
-   NAVIGATION CONFIG
+   NAV
    ====================================================================== */
 const PAGES = [
   { id: 'dashboard', icon: '🏠', label: 'Главная', render: renderDashboard },
@@ -1183,23 +767,21 @@ const PAGES = [
   { id: 'coach', icon: '💬', label: 'Коуч', render: renderCoach },
   { id: 'more', icon: '⋯', label: 'Ещё', render: renderMore }
 ];
-
 const SUB_PAGES = {
-  timer:      { icon: '⏱', label: 'Таймер', render: renderTimer },
-  habits:     { icon: '🔄', label: 'Привычки', render: renderHabits },
-  goals:      { icon: '🎯', label: 'Цели', render: renderGoals },
-  notes:      { icon: '📝', label: 'Заметки', render: renderNotes },
-  learning:   { icon: '📚', label: 'Обучение', render: renderLearning },
-  stats:      { icon: '📊', label: 'Статистика', render: renderStats },
-  matrix:     { icon: '🔢', label: 'Матрица', render: renderMatrix },
-  focus:      { icon: '🧘', label: 'Фокус', render: renderFocus },
-  schedule:   { icon: '📆', label: 'Расписание', render: renderSchedule },
-  journal:    { icon: '📋', label: 'Журнал', render: renderJournal },
-  settings:   { icon: '⚙️', label: 'Настройки', render: renderSettings }
+  timer:    { icon: '⏱', label: 'Таймер', render: renderTimer },
+  habits:   { icon: '🔄', label: 'Привычки', render: renderHabits },
+  goals:    { icon: '🎯', label: 'Цели', render: renderGoals },
+  notes:    { icon: '📝', label: 'Заметки', render: renderNotes },
+  learning: { icon: '📚', label: 'Обучение', render: renderLearning },
+  stats:    { icon: '📊', label: 'Статистика', render: renderStats },
+  matrix:   { icon: '🔢', label: 'Матрица', render: renderMatrix },
+  focus:    { icon: '🧘', label: 'Режимы', render: renderFocus },
+  schedule: { icon: '📆', label: 'Расписание', render: renderSchedule },
+  journal:  { icon: '📋', label: 'Журнал', render: renderJournal },
+  settings: { icon: '⚙️', label: 'Настройки', render: renderSettings }
 };
 
 let currentPage = 'dashboard';
-
 function renderNav() {
   const nav = document.getElementById('bottomNav');
   nav.innerHTML = PAGES.map(p => `
@@ -1209,30 +791,22 @@ function renderNav() {
     </button>
   `).join('');
   nav.querySelectorAll('.nav-btn').forEach(btn => {
-    btn.onclick = () => {
-      haptic('light');
-      navigate(btn.dataset.page);
-    };
+    btn.onclick = () => { haptic('light'); navigate(btn.dataset.page); };
   });
 }
-
 window.navigate = function(page) {
   if (currentPage === page) return;
   currentPage = page;
   renderNav();
   const main = document.getElementById('app');
   main.innerHTML = '';
-  main.style.animation = 'none';
-  requestAnimationFrame(() => {
-    main.style.animation = '';
-    const renderFn = PAGES.find(p => p.id === page)?.render || SUB_PAGES[page]?.render;
-    if (renderFn) renderFn();
-  });
+  const renderFn = PAGES.find(p => p.id === page)?.render || SUB_PAGES[page]?.render;
+  if (renderFn) renderFn();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
 /* ======================================================================
-   MODAL SYSTEM
+   MODAL
    ====================================================================== */
 window.openModal = function(html, onMount) {
   const overlay = document.createElement('div');
@@ -1244,14 +818,13 @@ window.openModal = function(html, onMount) {
   if (onMount) onMount(overlay);
   return overlay;
 };
-
 window.closeModal = function() {
   document.querySelectorAll('.overlay').forEach(o => o.remove());
   document.body.style.overflow = '';
 };
 
 /* ======================================================================
-   PAGE: DASHBOARD
+   DASHBOARD
    ====================================================================== */
 function renderDashboard() {
   const tasksTotal = state.tasks.length;
@@ -1261,23 +834,12 @@ function renderDashboard() {
   const todayDone = todayTasks.filter(t => t.status === 'completed').length;
   const todayPlanned = todayTasks.reduce((s, t) => s + (t.planned_time || 0), 0);
   const habitsToday = state.habits.filter(h => h.history?.includes(today())).length;
-  const habitsTotal = state.habits.length;
-
-  const currentBlock = state.schedule.find(b => {
-    const n = new Date();
-    return new Date(b.start_time) <= n && new Date(b.end_time) >= n;
-  });
-  const nextBlock = state.schedule
-    .filter(b => new Date(b.start_time) > new Date())
-    .sort((a, b) => new Date(a.start_time) - new Date(b.start_time))[0];
-
   const hour = new Date().getHours();
   const greeting = hour < 6 ? 'Доброй ночи' : hour < 12 ? 'Доброе утро' : hour < 18 ? 'Добрый день' : 'Добрый вечер';
 
   document.getElementById('app').innerHTML = `
     <div class="page">
       <div class="page-title"><span class="emoji">👋</span>${greeting}!</div>
-
       <div class="bento">
         <div class="bento-item wide" style="background:linear-gradient(135deg,var(--brand),#5b3fd9);color:#fff;border:none;">
           <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;">
@@ -1286,52 +848,38 @@ function renderDashboard() {
               <div style="font-size:36px;font-weight:800;letter-spacing:-1px;line-height:1;">${todayDone}/${todayTasks.length}</div>
               <div style="font-size:13px;opacity:0.9;margin-top:6px;">${todayPlanned} мин запланировано</div>
             </div>
-            <div style="text-align:center;">
-              <div style="font-size:44px;font-weight:800;letter-spacing:-1px;">${progress}%</div>
-              <div style="font-size:11px;opacity:0.85;text-transform:uppercase;letter-spacing:0.5px;">всего</div>
-            </div>
+            <div style="font-size:44px;font-weight:800;letter-spacing:-1px;">${progress}%</div>
           </div>
           <div class="progress" style="margin-top:14px;background:rgba(255,255,255,0.2);">
             <div class="progress-fill" style="width:${progress}%;background:#fff;box-shadow:0 0 12px rgba(255,255,255,0.6);"></div>
           </div>
         </div>
+        <div class="bento-item"><div class="bento-label">🔥 Streak</div><div class="bento-value">${state.stats.streak || 0}</div><div class="bento-sub">дней подряд</div></div>
+        <div class="bento-item"><div class="bento-label">🔄 Привычки</div><div class="bento-value">${habitsToday}/${state.habits.length}</div><div class="bento-sub">сегодня</div></div>
+      </div>
 
-        <div class="bento-item">
-          <div class="bento-label">🔥 Streak</div>
-          <div class="bento-value">${state.stats.streak || 0} дн.</div>
-          <div class="bento-sub">подряд</div>
+      <div class="card" style="background:linear-gradient(135deg,rgba(124,92,255,0.15),rgba(167,139,250,0.1));border-color:var(--brand-glow);">
+        <div class="flex" style="justify-content:space-between;align-items:flex-start;">
+          <div style="flex:1;">
+            <h2 style="margin-bottom:8px;">💬 AI Коуч</h2>
+            <p class="text-sm text-2">Поговори с коучем максимального уровня. Спроси совета, разбери проблему, получи план.</p>
+          </div>
         </div>
-
-        <div class="bento-item">
-          <div class="bento-label">🔄 Привычки</div>
-          <div class="bento-value">${habitsToday}/${habitsTotal}</div>
-          <div class="bento-sub">сегодня</div>
+        <div class="btn-row mt-2">
+          <button class="btn btn-primary" onclick="navigate('coach')">Открыть чат</button>
+          <button class="btn btn-ghost" onclick="quickCoachPrompt('Хочу спланировать день')">📋 План дня</button>
         </div>
-
-        ${currentBlock ? `
-        <div class="bento-item wide" style="border-left:3px solid var(--success);">
-          <div class="bento-label">▶ Сейчас идёт</div>
-          <div style="font-size:16px;font-weight:700;margin-top:2px;">${escapeHtml(currentBlock.title)}</div>
-          <div class="bento-sub">до ${fmtTime(currentBlock.end_time)}</div>
-        </div>` : nextBlock ? `
-        <div class="bento-item wide" style="border-left:3px solid var(--brand);">
-          <div class="bento-label">⏭ Далее</div>
-          <div style="font-size:16px;font-weight:700;margin-top:2px;">${escapeHtml(nextBlock.title)}</div>
-          <div class="bento-sub">в ${fmtTime(nextBlock.start_time)}</div>
-        </div>` : ''}
       </div>
 
       <div class="card">
         <h2>⚡ Быстрые действия</h2>
         <div class="btn-row">
-          <button class="btn btn-primary" onclick="navigate('coach')">💬 Коуч</button>
           <button class="btn btn-ghost" onclick="navigate('timer')">⏱ Таймер</button>
           <button class="btn btn-ghost" onclick="quickAddTask()">➕ Задача</button>
-          <button class="btn btn-ghost" onclick="navigate('focus')">🧘 Фокус</button>
+          <button class="btn btn-ghost" onclick="navigate('focus')">🧘 Режимы</button>
+          <button class="btn btn-ghost" onclick="navigate('stats')">📊 Статы</button>
         </div>
       </div>
-
-      ${renderQuoteCard()}
 
       <div class="card">
         <h2>📋 Ближайшие задачи</h2>
@@ -1352,33 +900,18 @@ function renderDashboard() {
   `;
 }
 
-function renderQuoteCard() {
-  const quotes = [
-    { text: 'Делай, что можешь, с тем, что имеешь, там, где ты есть.', author: 'Т. Рузвельт' },
-    { text: 'Успех — это способность идти от неудачи к неудаче, не теряя энтузиазма.', author: 'У. Черчилль' },
-    { text: 'Лучший способ предсказать будущее — создать его.', author: 'П. Друкер' },
-    { text: 'Гениальность — это 1% вдохновения и 99% пота.', author: 'Т. Эдисон' }
-  ];
-  const q = state.dailyQuote || quotes[new Date().getDate() % quotes.length];
-  return `
-    <div class="card" style="background:linear-gradient(135deg,rgba(124,92,255,0.15),rgba(167,139,250,0.1));border-color:var(--brand-glow);">
-      <p style="font-size:14px;line-height:1.6;font-style:italic;">«${escapeHtml(q.text)}»</p>
-      <p class="text-sm text-2" style="margin-top:8px;text-align:right;">— ${escapeHtml(q.author)}</p>
-    </div>`;
-}
+window.quickCoachPrompt = function(text) {
+  navigate('coach');
+  setTimeout(() => {
+    const input = document.getElementById('coachInput');
+    if (input) { input.value = text; sendCoachMsg(); }
+  }, 100);
+};
 
 window.quickAddTask = function() {
   openModal(`
     <h2>➕ Новая задача</h2>
     <div class="field"><label>Название</label><input type="text" id="qa-title" placeholder="Что нужно сделать?" autofocus/></div>
-    <div class="field"><label>Категория</label>
-      <select id="qa-cat">
-        <option value="work">💼 Работа</option>
-        <option value="learning">📚 Обучение</option>
-        <option value="personal">👤 Личное</option>
-        <option value="health">💪 Здоровье</option>
-      </select>
-    </div>
     <div class="field"><label>Время (мин)</label><input type="number" id="qa-time" value="30" min="5" step="5"/></div>
     <div class="field"><label>Приоритет</label>
       <select id="qa-priority"><option value="low">🟢 Низкий</option><option value="medium" selected>🟡 Средний</option><option value="high">🔴 Высокий</option></select>
@@ -1390,23 +923,18 @@ window.quickAddTask = function() {
 window.saveQuickTask = function() {
   const title = document.getElementById('qa-title').value.trim();
   if (!title) return toast('Введите название', 'error');
-  const task = {
-    id: uid(), title,
-    description: '',
-    category: document.getElementById('qa-cat').value,
+  state.tasks.unshift({
+    id: uid(), title, description: '',
+    category: 'work',
     planned_time: parseInt(document.getElementById('qa-time').value) || 30,
-    actual_time: 0,
-    status: 'pending',
+    actual_time: 0, status: 'pending',
     priority: document.getElementById('qa-priority').value,
-    created_at: nowISO(),
-    updated_at: nowISO()
-  };
-  state.tasks.unshift(task);
-  save();
-  closeModal();
-  toast('Задача добавлена', 'success');
-  haptic('success');
-  navigate('dashboard');
+    created_at: nowISO()
+  });
+  save(); closeModal();
+  toast('Задача добавлена', 'success'); haptic('success');
+  if (currentPage === 'dashboard') renderDashboard();
+  else if (currentPage === 'tasks') renderTasks();
 };
 
 window.completeTask = function(id) {
@@ -1414,37 +942,23 @@ window.completeTask = function(id) {
   if (!t) return;
   t.status = 'completed';
   t.actual_time = t.planned_time;
-  t.updated_at = nowISO();
   state.stats.totalCompleted = (state.stats.totalCompleted || 0) + 1;
-  state.stats.totalMinutes = (state.stats.totalMinutes || 0) + (t.planned_time || 0);
   save();
-  toast(`«${t.title}» выполнено!`, 'success');
-  haptic('success');
+  toast(`«${t.title}» выполнено!`, 'success'); haptic('success');
   const renderFn = PAGES.find(p => p.id === currentPage)?.render || SUB_PAGES[currentPage]?.render;
   if (renderFn) renderFn();
 };
 
 /* ======================================================================
-   PAGE: TASKS
+   TASKS
    ====================================================================== */
-let taskFilter = { status: 'all', category: 'all', query: '' };
-
+let taskFilter = { status: 'all', query: '' };
 function renderTasks() {
-  const filtered = state.tasks.filter(t => {
-    if (taskFilter.status !== 'all' && t.status !== taskFilter.status) return false;
-    if (taskFilter.category !== 'all' && t.category !== taskFilter.category) return false;
-    if (taskFilter.query && !t.title.toLowerCase().includes(taskFilter.query.toLowerCase())) return false;
-    return true;
-  });
-
   document.getElementById('app').innerHTML = `
     <div class="page">
       <div class="page-title"><span class="emoji">✅</span>Задачи</div>
-
       <div class="card">
-        <div class="input-with-btn">
-          <input type="text" placeholder="🔍 Поиск задач..." value="${escapeHtml(taskFilter.query)}" oninput="taskFilter.query=this.value;renderTasksList()"/>
-        </div>
+        <input type="text" placeholder="🔍 Поиск..." value="${escapeHtml(taskFilter.query)}" oninput="taskFilter.query=this.value;renderTasksList()"/>
         <div class="flex mt-2" style="gap:6px;">
           ${['all', 'pending', 'completed'].map(s => `
             <button class="btn ${taskFilter.status === s ? 'btn-primary' : 'btn-ghost'} btn-xs" onclick="taskFilter.status='${s}';renderTasks()">
@@ -1453,9 +967,7 @@ function renderTasks() {
           `).join('')}
         </div>
       </div>
-
       <div id="tasks-list"></div>
-
       <button class="btn btn-primary btn-block" onclick="quickAddTask()" style="position:fixed;bottom:calc(var(--nav-h) + 16px);left:50%;transform:translateX(-50%);z-index:50;max-width:300px;box-shadow:0 8px 32px var(--brand-glow);">
         ➕ Новая задача
       </button>
@@ -1470,15 +982,12 @@ function renderTasksList() {
     if (taskFilter.query && !t.title.toLowerCase().includes(taskFilter.query.toLowerCase())) return false;
     return true;
   });
-
   const list = document.getElementById('tasks-list');
   if (!list) return;
-
   if (!filtered.length) {
     list.innerHTML = `<div class="card"><div class="empty"><div class="empty-icon">📭</div><div class="empty-text">Задач не найдено</div></div></div>`;
     return;
   }
-
   list.innerHTML = `<div class="card">
     <h2>📋 ${filtered.length} задач</h2>
     <div class="list">
@@ -1487,9 +996,9 @@ function renderTasksList() {
           <div class="item-body">
             <div class="item-title" style="${t.status === 'completed' ? 'text-decoration:line-through;opacity:0.5;' : ''}">${escapeHtml(t.title)}</div>
             <div class="item-meta">
-              <span class="badge ${t.priority === 'high' ? 'badge-danger' : t.priority === 'medium' ? 'badge-warning' : 'badge-muted'}">${t.priority === 'high' ? '🔴 Высокий' : t.priority === 'medium' ? '🟡 Средний' : '🟢 Низкий'}</span>
+              <span class="badge ${t.priority === 'high' ? 'badge-danger' : t.priority === 'medium' ? 'badge-warning' : 'badge-muted'}">${t.priority === 'high' ? '🔴' : t.priority === 'medium' ? '🟡' : '🟢'} ${t.priority}</span>
               <span>${t.planned_time || 0} мин</span>
-              ${t.status === 'completed' ? '<span class="badge badge-success">✓ Готово</span>' : ''}
+              ${t.status === 'completed' ? '<span class="badge badge-success">✓</span>' : ''}
             </div>
           </div>
           <div class="item-actions">
@@ -1501,47 +1010,38 @@ function renderTasksList() {
     </div>
   </div>`;
 }
-
 window.deleteTask = function(id) {
   if (!confirm('Удалить задачу?')) return;
   state.tasks = state.tasks.filter(t => t.id !== id);
-  save();
-  toast('Задача удалена', 'info');
-  const renderFn = PAGES.find(p => p.id === currentPage)?.render || SUB_PAGES[currentPage]?.render;
-  if (renderFn) renderFn();
+  save(); toast('Удалено', 'info');
+  if (currentPage === 'tasks') renderTasks();
+  else if (currentPage === 'dashboard') renderDashboard();
 };
 
 /* ======================================================================
-   PAGE: CALENDAR
+   CALENDAR
    ====================================================================== */
 let calOffset = 0;
-
 function renderCalendar() {
   const now = new Date();
   const month = new Date(now.getFullYear(), now.getMonth() + calOffset, 1);
-  const year = month.getFullYear();
-  const m = month.getMonth();
-  const firstDay = (new Date(year, m, 1).getDay() + 6) % 7; // Mon = 0
+  const year = month.getFullYear(), m = month.getMonth();
+  const firstDay = (new Date(year, m, 1).getDay() + 6) % 7;
   const daysInMonth = new Date(year, m + 1, 0).getDate();
   const monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
   const weekdays = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
   const todayStr = today();
-
   const events = state.schedule.filter(b => {
     const d = new Date(b.start_time);
     return d.getMonth() === m && d.getFullYear() === year;
   });
-
   let gridHtml = weekdays.map(w => `<div class="cal-weekday">${w}</div>`).join('');
   for (let i = 0; i < firstDay; i++) gridHtml += `<div></div>`;
   for (let day = 1; day <= daysInMonth; day++) {
-    const d = new Date(year, m, day);
     const ds = `${year}-${String(m+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
     const hasEvent = events.some(b => new Date(b.start_time).toISOString().slice(0, 10) === ds);
-    const isToday = ds === todayStr;
-    gridHtml += `<button class="cal-day ${isToday ? 'today' : ''} ${hasEvent ? 'has-event' : ''}" onclick="showDayDetails('${ds}')">${day}</button>`;
+    gridHtml += `<button class="cal-day ${ds === todayStr ? 'today' : ''} ${hasEvent ? 'has-event' : ''}" onclick="showDayDetails('${ds}')">${day}</button>`;
   }
-
   document.getElementById('app').innerHTML = `
     <div class="page">
       <div class="page-title"><span class="emoji">📅</span>Календарь</div>
@@ -1552,28 +1052,22 @@ function renderCalendar() {
           <button class="btn btn-ghost btn-icon" onclick="calOffset++;renderCalendar()">▶</button>
         </div>
         <div class="cal-grid">${gridHtml}</div>
-        <div class="flex mt-2 text-xs text-2" style="gap:12px;">
-          <span><span style="display:inline-block;width:8px;height:8px;background:var(--brand);border-radius:50%;"></span> Есть события</span>
-          <span><span style="display:inline-block;width:8px;height:8px;background:var(--brand-glow);border-radius:50%;"></span> Сегодня</span>
-        </div>
       </div>
       <div class="card">
         <h2>➕ Добавить событие</h2>
-        <div class="field"><label>Название</label><input type="text" id="ev-title" placeholder="Например: Встреча"/></div>
-        <div class="field"><label>Начало</label><input type="datetime-local" id="ev-start"/></div>
-        <div class="field"><label>Окончание</label><input type="datetime-local" id="ev-end"/></div>
-        <button class="btn btn-primary btn-block" onclick="addEvent()">Добавить</button>
+        <input type="text" id="ev-title" placeholder="Название"/>
+        <input type="datetime-local" id="ev-start" style="margin-top:8px;"/>
+        <input type="datetime-local" id="ev-end" style="margin-top:8px;"/>
+        <button class="btn btn-primary btn-block mt-2" onclick="addEvent()">Добавить</button>
       </div>
     </div>
   `;
 }
-
 window.showDayDetails = function(dateStr) {
   const events = state.schedule.filter(b => new Date(b.start_time).toISOString().slice(0, 10) === dateStr);
   const tasks = state.tasks.filter(t => t.created_at?.slice(0, 10) === dateStr);
   const completed = tasks.filter(t => t.status === 'completed').length;
   const minutes = tasks.filter(t => t.status === 'completed').reduce((s, t) => s + (t.actual_time || 0), 0);
-
   openModal(`
     <h2>📅 ${fmtDate(dateStr)}</h2>
     <div class="stat-grid mb-2">
@@ -1582,72 +1076,75 @@ window.showDayDetails = function(dateStr) {
       <div class="stat-item"><div class="stat-value">${minutes}</div><div class="stat-label">Минут</div></div>
     </div>
     <h3>📆 События</h3>
-    ${events.length ? events.map(b => `
-      <div class="item mb-1">
-        <div class="item-body">
-          <div class="item-title">${escapeHtml(b.title)}</div>
-          <div class="item-meta">${fmtTime(b.start_time)} — ${fmtTime(b.end_time)}</div>
-        </div>
-      </div>
-    `).join('') : '<div class="empty"><div class="empty-text">Нет событий</div></div>'}
-    <h3 class="mt-2">✅ Задачи</h3>
-    ${tasks.length ? tasks.map(t => `
-      <div class="item mb-1">
-        <div class="item-body">
-          <div class="item-title">${escapeHtml(t.title)}</div>
-          <div class="item-meta">
-            <span class="badge ${t.status === 'completed' ? 'badge-success' : 'badge-muted'}">${t.status === 'completed' ? '✓ Готово' : 'Ожидает'}</span>
-          </div>
-        </div>
-      </div>
-    `).join('') : '<div class="empty"><div class="empty-text">Нет задач</div></div>'}
+    ${events.length ? events.map(b => `<div class="item mb-1"><div class="item-body"><div class="item-title">${escapeHtml(b.title)}</div><div class="item-meta">${fmtTime(b.start_time)} — ${fmtTime(b.end_time)}</div></div></div>`).join('') : '<div class="empty"><div class="empty-text">Нет событий</div></div>'}
     <button class="btn btn-ghost btn-block mt-2" onclick="closeModal()">Закрыть</button>
   `);
 };
-
 window.addEvent = function() {
   const title = document.getElementById('ev-title').value.trim();
   const start = document.getElementById('ev-start').value;
   const end = document.getElementById('ev-end').value;
-  if (!title || !start || !end) return toast('Заполните все поля', 'error');
-  if (new Date(start) >= new Date(end)) return toast('Начало раньше окончания', 'error');
-  state.schedule.push({
-    id: uid(), title,
-    start_time: new Date(start).toISOString(),
-    end_time: new Date(end).toISOString()
-  });
-  save();
-  toast('Событие добавлено', 'success');
-  haptic('success');
+  if (!title || !start || !end) return toast('Заполните поля', 'error');
+  if (new Date(start) >= new Date(end)) return toast('Неверный интервал', 'error');
+  state.schedule.push({ id: uid(), title, start_time: new Date(start).toISOString(), end_time: new Date(end).toISOString() });
+  save(); toast('Добавлено', 'success'); haptic('success');
   renderCalendar();
 };
 
 /* ======================================================================
-   PAGE: COACH
+   COACH — главная фича
    ====================================================================== */
 function renderCoach() {
+  const hasKey = !!(state.settings.apiKey && state.settings.provider);
+  const mode = detectMode('');
+  const modeLabels = {
+    morning: '🌅 Утро', day: '☀️ День', evening: '🌙 Вечер',
+    crisis: '🆘 Кризис', burnout: '🔥 Выгорание', fear: '😰 Страх',
+    procrastination: '⏳ Прокрастинация', choice: '🤔 Выбор', goal: '🎯 Цель'
+  };
+
   document.getElementById('app').innerHTML = `
     <div class="page">
       <div class="page-title"><span class="emoji">💬</span>AI Коуч</div>
-      <div class="card" style="padding:14px;">
-        <div class="chat" id="chatBox">
-          ${(state.coachMessages || []).map(m => `
-            <div class="msg msg-${m.role === 'user' ? 'user' : 'bot'}">
-              ${escapeHtml(m.text)}
-              ${m.timer ? `<div class="msg-meta">⏱ ${m.timer} мин</div>` : ''}
-            </div>
-          `).join('') || '<div class="empty"><div class="empty-icon">💭</div><div class="empty-text">Напишите, что вас беспокоит</div></div>'}
+
+      <div class="card" style="padding:12px 14px;">
+        <div class="flex justify-between">
+          <div class="flex" style="gap:6px;align-items:center;">
+            <span class="badge badge-brand">${modeLabels[mode] || '🤖 AI'}</span>
+            ${!hasKey ? '<span class="badge badge-warning">⚠️ Demo режим</span>' : '<span class="badge badge-success">✓ AI активен</span>'}
+          </div>
+          <button class="chip" onclick="openAISettings()">⚙️</button>
         </div>
       </div>
-      <div class="card">
-        <div class="flex">
-          <input type="text" id="coachInput" placeholder="Расскажите о проблеме..." style="flex:1;" onkeydown="if(event.key==='Enter')sendCoachMsg()"/>
-          <button class="btn btn-primary btn-icon" onclick="sendCoachMsg()">➤</button>
+
+      <div class="card" style="padding:14px;">
+        <div class="chat" id="chatBox">
+          ${(state.coachMessages || []).length ? state.coachMessages.map(m => `
+            <div class="msg msg-${m.role === 'user' ? 'user' : 'bot'}">
+              ${m.mode ? `<div class="msg-mode">${modeLabels[m.mode] || m.mode}</div>` : ''}
+              ${m.role === 'user' ? escapeHtml(m.text) : renderMarkdown(m.text)}
+            </div>
+          `).join('') : `
+            <div class="empty">
+              <div class="empty-icon">🧠</div>
+              <div class="empty-text">Привет! Я твой AI-коуч.<br>Расскажи, с чем пришёл сегодня?</div>
+            </div>
+          `}
         </div>
-        <div class="flex mt-2" style="gap:6px;">
-          <button class="btn btn-ghost btn-xs" onclick="quickCoach('Не могу начать')">😩 Не могу начать</button>
-          <button class="btn btn-ghost btn-xs" onclick="quickCoach('Прокрастинация')">⏰ Прокрастинация</button>
-          <button class="btn btn-ghost btn-xs" onclick="quickCoach('Устал')">😴 Устал</button>
+      </div>
+
+      <div class="card" style="padding:12px 14px;">
+        <div class="chips">
+          <button class="chip" onclick="quickCoachPrompt('Не могу начать задачу')">😩 Не могу начать</button>
+          <button class="chip" onclick="quickCoachPrompt('Постоянно отвлекаюсь')">📱 Отвлекаюсь</button>
+          <button class="chip" onclick="quickCoachPrompt('Чувствую выгорание')">🔥 Выгорание</button>
+          <button class="chip" onclick="quickCoachPrompt('Не могу выбрать между вариантами')">🤔 Выбор</button>
+          <button class="chip" onclick="quickCoachPrompt('Хочу спланировать неделю')">📋 План недели</button>
+          <button class="chip" onclick="quickCoachPrompt('Боюсь провала')">😰 Страх</button>
+        </div>
+        <div class="flex mt-2">
+          <input type="text" id="coachInput" placeholder="Напиши сообщение..." style="flex:1;" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendCoachMsg();}"/>
+          <button class="btn btn-primary btn-icon" onclick="sendCoachMsg()">➤</button>
         </div>
       </div>
     </div>
@@ -1656,17 +1153,55 @@ function renderCoach() {
   if (box) box.scrollTop = box.scrollHeight;
 }
 
-window.quickCoach = function(text) {
-  document.getElementById('coachInput').value = text;
-  sendCoachMsg();
+window.openAISettings = function() {
+  const s = state.settings;
+  openModal(`
+    <h2>⚙️ Настройки AI</h2>
+    <div class="field"><label>Провайдер</label>
+      <select id="ai-provider">
+        ${Object.entries(AI_PROVIDERS).map(([k, v]) => `<option value="${k}" ${s.provider === k ? 'selected' : ''}>${v.name}</option>`).join('')}
+      </select>
+    </div>
+    <div class="field"><label>API ключ</label>
+      <input type="password" id="ai-key" value="${escapeHtml(s.apiKey || '')}" placeholder="sk-... или ваш ключ"/>
+    </div>
+    <div class="text-xs text-3 mb-2">
+      💡 Ключ хранится только в вашем браузере. Не отправляется на наши серверы.<br>
+      Получить: <a href="https://platform.openai.com/api-keys" target="_blank" style="color:var(--brand-2);">OpenAI</a> •
+      <a href="https://console.anthropic.com/" target="_blank" style="color:var(--brand-2);">Anthropic</a> •
+      <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--brand-2);">Gemini</a>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="saveAISettings()">Сохранить</button>
+    ${s.apiKey ? `<button class="btn btn-ghost btn-block mt-2" onclick="clearAISettings()">🗑 Удалить ключ</button>` : ''}
+  `);
 };
 
-window.sendCoachMsg = function() {
+window.saveAISettings = function() {
+  state.settings.provider = document.getElementById('ai-provider').value;
+  state.settings.apiKey = document.getElementById('ai-key').value.trim();
+  save();
+  toast('AI настройки сохранены', 'success');
+  closeModal();
+  renderCoach();
+};
+
+window.clearAISettings = function() {
+  if (!confirm('Удалить API ключ?')) return;
+  state.settings.apiKey = '';
+  save();
+  toast('Ключ удалён', 'info');
+  closeModal();
+  renderCoach();
+};
+
+window.sendCoachMsg = async function() {
   const input = document.getElementById('coachInput');
   const text = input.value.trim();
   if (!text) return;
   input.value = '';
+  input.disabled = true;
 
+  const mode = detectMode(text);
   if (!state.coachMessages) state.coachMessages = [];
   state.coachMessages.push({ role: 'user', text, timestamp: nowISO() });
   save();
@@ -1680,45 +1215,61 @@ window.sendCoachMsg = function() {
   box.appendChild(typing);
   box.scrollTop = box.scrollHeight;
 
-  setTimeout(() => {
-    typing.remove();
-    const reply = generateCoachReply(text);
-    state.coachMessages.push({ role: 'coach', text: reply.text, timer: reply.timer, timestamp: nowISO() });
-    save();
-    renderCoach();
-    haptic('light');
-  }, 700);
+  // Build context with user data
+  const contextBlock = buildUserContext();
+  const messages = [
+    { role: 'system', content: COACH_SYSTEM_PROMPT + '\n\n' + contextBlock },
+    ...state.coachMessages.slice(-10).map(m => ({
+      role: m.role === 'user' ? 'user' : 'assistant',
+      content: m.text
+    }))
+  ];
+
+  const result = await callAI(messages);
+
+  typing.remove();
+  state.coachMessages.push({
+    role: 'coach',
+    text: result.text,
+    mode: result.fallback ? null : mode,
+    timestamp: nowISO()
+  });
+  save();
+  renderCoach();
+  haptic('light');
+  const newInput = document.getElementById('coachInput');
+  if (newInput) { newInput.disabled = false; newInput.focus(); }
 };
 
-function generateCoachReply(msg) {
-  const lower = msg.toLowerCase();
-  if (lower.includes('не могу начать') || lower.includes('начать'))
-    return { text: 'Понимаю. Обычно это из-за неясности или масштаба. Начнём с малого: какую одну микро-задачу (5–10 мин) можно сделать прямо сейчас?', timer: 10 };
-  if (lower.includes('прокрастинаци') || lower.includes('отвлека'))
-    return { text: 'Классика. Попробуй технику Pomodoro: 25 мин работы, 5 отдыха. Убери телефон в другую комнату и запусти таймер.', timer: 25 };
-  if (lower.includes('устал') || lower.includes('сон') || lower.includes('выгор'))
-    return { text: 'Это сигнал тела. Сделай паузу 15 минут: вода, разминка, свежий воздух. Не работай через силу — это снижает качество.', timer: 15 };
-  if (lower.includes('не хватает') || lower.includes('время'))
-    return { text: 'Давай разберём: что съедает время? Проверь экранное время и выдели 3 главных приоритета на сегодня.', timer: null };
-  return { text: 'Расскажи подробнее: что именно происходит и что ты уже пробовал? Я помогу разобраться.', timer: null };
+function buildUserContext() {
+  const tasksPending = state.tasks.filter(t => t.status === 'pending').slice(0, 5);
+  const habits = state.habits.map(h => `${h.title}${h.history?.includes(today()) ? ' ✓' : ''}`);
+  const goals = state.goals.map(g => `${g.title} (${g.progress || 0}%)`);
+  const hour = new Date().getHours();
+  return `КОНТЕКСТ ПОЛЬЗОВАТЕЛЯ:
+• Время: ${hour}:00, день недели: ${new Date().toLocaleDateString('ru-RU', { weekday: 'long' })}
+• Streak: ${state.stats.streak || 0} дней
+• Активные задачи: ${tasksPending.length ? tasksPending.map(t => `"${t.title}" (${t.priority}, ${t.planned_time}мин)`).join('; ') : 'нет'}
+• Привычки: ${habits.length ? habits.join(', ') : 'нет'}
+• Цели: ${goals.length ? goals.join(', ') : 'нет'}
+• Сегодня выполнено: ${state.tasks.filter(t => t.status === 'completed' && t.created_at?.slice(0,10) === today()).length} задач
+
+Используй этот контекст, чтобы давать персональные советы. НЕ перечисляй контекст в ответе — просто учитывай его.`;
 }
 
 /* ======================================================================
-   PAGE: MORE (sub-pages)
+   MORE
    ====================================================================== */
 function renderMore() {
   document.getElementById('app').innerHTML = `
     <div class="page">
       <div class="page-title"><span class="emoji">⋯</span>Все разделы</div>
       <div class="card">
-        <h2>🧭 Навигация</h2>
         <div class="list">
           ${Object.entries(SUB_PAGES).map(([key, p]) => `
             <div class="item" onclick="navigate('${key}')" style="cursor:pointer;">
               <div style="width:40px;height:40px;border-radius:12px;background:var(--surface-2);display:grid;place-items:center;font-size:20px;">${p.icon}</div>
-              <div class="item-body">
-                <div class="item-title">${p.label}</div>
-              </div>
+              <div class="item-body"><div class="item-title">${p.label}</div></div>
               <span style="color:var(--text-3);">›</span>
             </div>
           `).join('')}
@@ -1729,18 +1280,20 @@ function renderMore() {
 }
 
 /* ======================================================================
-   SUB-PAGE: TIMER
+   TIMER
    ====================================================================== */
 let timerTick = null;
-
+function computeElapsed(session) {
+  if (!session) return 0;
+  const start = new Date(session.start_time).getTime();
+  return Math.floor((Date.now() - start - (session.paused_time || 0)) / 1000);
+}
 function renderTimer() {
   const active = state.timerSessions.find(s => s.status === 'active' || s.status === 'paused');
   let timerHtml = '';
-
   if (active) {
     const elapsed = computeElapsed(active);
-    const mins = Math.floor(elapsed / 60);
-    const secs = elapsed % 60;
+    const mins = Math.floor(elapsed / 60), secs = elapsed % 60;
     timerHtml = `
       <div class="timer-hero">
         <div class="text-sm text-2">${escapeHtml(active.title || 'Без названия')}</div>
@@ -1755,18 +1308,9 @@ function renderTimer() {
   } else {
     timerHtml = `
       <div class="field"><label>Задача</label><input type="text" id="timerTitle" placeholder="Что делаем?"/></div>
-      <div class="field"><label>Категория</label>
-        <select id="timerCat">
-          <option value="work">💼 Работа</option>
-          <option value="learning">📚 Обучение</option>
-          <option value="personal">👤 Личное</option>
-        </select>
-      </div>
       <button class="btn btn-success btn-block" onclick="startTimer()">▶ Запустить</button>`;
   }
-
   const history = state.timerSessions.filter(s => s.status === 'done').slice(-5).reverse();
-
   document.getElementById('app').innerHTML = `
     <div class="page">
       <div class="page-title"><span class="emoji">⏱</span>Таймер</div>
@@ -1774,83 +1318,55 @@ function renderTimer() {
       <div class="card">
         <h2>📜 История</h2>
         ${history.length ? history.map(s => `
-          <div class="item mb-1">
-            <div class="item-body">
-              <div class="item-title">${escapeHtml(s.title)}</div>
-              <div class="item-meta">${Math.floor((s.total_time || 0) / 60)} мин • ${fmtDate(s.end_time)}</div>
-            </div>
-          </div>
+          <div class="item mb-1"><div class="item-body">
+            <div class="item-title">${escapeHtml(s.title)}</div>
+            <div class="item-meta">${Math.floor((s.total_time || 0) / 60)} мин • ${fmtDate(s.end_time)}</div>
+          </div></div>
         `).join('') : '<div class="empty"><div class="empty-text">Пока нет сессий</div></div>'}
       </div>
     </div>
   `;
-
   if (active?.status === 'active' && !timerTick) {
-    timerTick = setInterval(() => {
-      if (currentPage === 'timer') renderTimer();
-    }, 1000);
+    timerTick = setInterval(() => { if (currentPage === 'timer') renderTimer(); }, 1000);
   } else if (!active && timerTick) {
-    clearInterval(timerTick);
-    timerTick = null;
+    clearInterval(timerTick); timerTick = null;
   }
 }
-
-function computeElapsed(session) {
-  if (!session) return 0;
-  const start = new Date(session.start_time).getTime();
-  const now = Date.now();
-  const paused = session.paused_time || 0;
-  return Math.floor((now - start - paused) / 1000);
-}
-
 window.startTimer = function() {
   const title = document.getElementById('timerTitle').value.trim() || 'Без названия';
-  const cat = document.getElementById('timerCat').value;
-  state.timerSessions.push({
-    id: uid(), title, category: cat,
-    start_time: nowISO(),
-    paused_time: 0,
-    status: 'active'
-  });
-  save();
-  toast('Таймер запущен', 'success');
-  haptic('success');
-  renderTimer();
+  state.timerSessions.push({ id: uid(), title, start_time: nowISO(), paused_time: 0, status: 'active' });
+  save(); toast('Запущено', 'success'); haptic('success'); renderTimer();
 };
-
 window.pauseTimer = function() {
   const s = state.timerSessions.find(s => s.status === 'active');
   if (!s) return;
-  s.paused_time += (Date.now() - new Date(s.start_time).getTime() - s.paused_time);
-  s.status = 'paused';
-  save();
-  renderTimer();
+  s.paused_time += Date.now() - new Date(s.start_time).getTime() - s.paused_time;
+  s.status = 'paused'; save(); renderTimer();
 };
-
 window.resumeTimer = function() {
   const s = state.timerSessions.find(s => s.status === 'paused');
   if (!s) return;
-  s.start_time = nowISO();
-  s.status = 'active';
-  save();
-  renderTimer();
+  s.start_time = nowISO(); s.status = 'active'; save(); renderTimer();
 };
-
 window.stopTimer = function() {
   const s = state.timerSessions.find(s => s.status === 'active' || s.status === 'paused');
   if (!s) return;
-  const elapsed = computeElapsed(s);
-  s.total_time = elapsed;
-  s.status = 'done';
-  s.end_time = nowISO();
-  save();
-  toast(`Сессия: ${Math.floor(elapsed/60)} мин`, 'success');
-  renderTimer();
+  s.total_time = computeElapsed(s); s.status = 'done'; s.end_time = nowISO();
+  save(); toast(`Готово: ${Math.floor(s.total_time/60)} мин`, 'success'); renderTimer();
 };
 
 /* ======================================================================
-   SUB-PAGE: HABITS
+   HABITS
    ====================================================================== */
+function calcStreak(history) {
+  if (!history?.length) return 0;
+  let streak = 0; const d = new Date();
+  while (streak < 365) {
+    const ds = d.toISOString().slice(0, 10);
+    if (history.includes(ds)) { streak++; d.setDate(d.getDate() - 1); } else break;
+  }
+  return streak;
+}
 function renderHabits() {
   document.getElementById('app').innerHTML = `
     <div class="page">
@@ -1859,17 +1375,15 @@ function renderHabits() {
         <h2>📋 Мои привычки</h2>
         ${state.habits.length ? state.habits.map(h => {
           const done = h.history?.includes(today());
-          const streak = calcStreak(h.history || []);
           return `
             <div class="item mb-1">
               <button class="btn ${done ? 'btn-success' : 'btn-ghost'} btn-icon" onclick="toggleHabit('${h.id}')">${done ? '✓' : '○'}</button>
               <div class="item-body">
                 <div class="item-title">${escapeHtml(h.title)}</div>
-                <div class="item-meta">🔥 ${streak} дней</div>
+                <div class="item-meta">🔥 ${calcStreak(h.history || [])} дней</div>
               </div>
               <button class="btn btn-ghost btn-icon btn-sm" onclick="deleteHabit('${h.id}')">🗑</button>
-            </div>
-          `;
+            </div>`;
         }).join('') : '<div class="empty"><div class="empty-icon">🌱</div><div class="empty-text">Добавьте первую привычку</div></div>'}
       </div>
       <div class="card">
@@ -1880,69 +1394,39 @@ function renderHabits() {
     </div>
   `;
 }
-
-function calcStreak(history) {
-  if (!history.length) return 0;
-  let streak = 0;
-  const d = new Date();
-  while (true) {
-    const ds = d.toISOString().slice(0, 10);
-    if (history.includes(ds)) { streak++; d.setDate(d.getDate() - 1); }
-    else break;
-    if (streak > 365) break;
-  }
-  return streak;
-}
-
 window.toggleHabit = function(id) {
   const h = state.habits.find(h => h.id === id);
   if (!h) return;
   if (!h.history) h.history = [];
   const t = today();
-  if (h.history.includes(t)) {
-    h.history = h.history.filter(d => d !== t);
-    toast('Отменено', 'info');
-  } else {
-    h.history.push(t);
-    toast(`«${h.title}» — серия ${calcStreak(h.history)} 🔥`, 'success');
-    haptic('success');
-  }
-  save();
-  renderHabits();
+  if (h.history.includes(t)) { h.history = h.history.filter(d => d !== t); toast('Отменено', 'info'); }
+  else { h.history.push(t); toast(`Серия ${calcStreak(h.history)} 🔥`, 'success'); haptic('success'); }
+  save(); renderHabits();
 };
-
 window.addHabit = function() {
   const title = document.getElementById('habitTitle').value.trim();
   if (!title) return toast('Введите название', 'error');
   state.habits.push({ id: uid(), title, history: [], created_at: nowISO() });
-  save();
-  toast('Привычка добавлена', 'success');
-  renderHabits();
+  save(); toast('Добавлено', 'success'); renderHabits();
 };
-
 window.deleteHabit = function(id) {
-  if (!confirm('Удалить привычку?')) return;
-  state.habits = state.habits.filter(h => h.id !== id);
-  save();
-  renderHabits();
+  if (!confirm('Удалить?')) return;
+  state.habits = state.habits.filter(h => h.id !== id); save(); renderHabits();
 };
 
 /* ======================================================================
-   SUB-PAGE: GOALS
+   GOALS
    ====================================================================== */
 function renderGoals() {
   document.getElementById('app').innerHTML = `
     <div class="page">
       <div class="page-title"><span class="emoji">🎯</span>Цели</div>
       <div class="card">
-        <h2>🎯 Мои цели</h2>
         ${state.goals.length ? state.goals.map(g => `
           <div class="item mb-2">
             <div class="item-body">
               <div class="item-title">${escapeHtml(g.title)}</div>
-              <div class="progress" style="margin-top:6px;">
-                <div class="progress-fill" style="width:${g.progress || 0}%;"></div>
-              </div>
+              <div class="progress" style="margin-top:6px;"><div class="progress-fill" style="width:${g.progress || 0}%;"></div></div>
               <div class="item-meta mt-1"><span>${g.progress || 0}%</span></div>
             </div>
             <button class="btn btn-primary btn-icon btn-sm" onclick="updateGoal('${g.id}')">±</button>
@@ -1957,29 +1441,24 @@ function renderGoals() {
     </div>
   `;
 }
-
 window.addGoal = function() {
   const title = document.getElementById('goalTitle').value.trim();
   if (!title) return toast('Введите название', 'error');
   state.goals.push({ id: uid(), title, progress: 0, created_at: nowISO() });
-  save();
-  toast('Цель добавлена', 'success');
-  renderGoals();
+  save(); toast('Цель добавлена', 'success'); renderGoals();
 };
-
 window.updateGoal = function(id) {
   const g = state.goals.find(g => g.id === id);
   if (!g) return;
   const p = prompt('Прогресс (0-100):', g.progress || 0);
   if (p === null) return;
   g.progress = Math.max(0, Math.min(100, parseInt(p) || 0));
-  save();
-  renderGoals();
+  save(); renderGoals();
   if (g.progress === 100) toast('🎉 Цель достигнута!', 'success');
 };
 
 /* ======================================================================
-   SUB-PAGE: NOTES
+   NOTES
    ====================================================================== */
 function renderNotes() {
   document.getElementById('app').innerHTML = `
@@ -2005,70 +1484,56 @@ function renderNotes() {
     </div>
   `;
 }
-
 window.addNote = function() {
   const title = document.getElementById('noteTitle').value.trim();
   const content = document.getElementById('noteContent').value.trim();
-  if (!title || !content) return toast('Заполните все поля', 'error');
+  if (!title || !content) return toast('Заполните поля', 'error');
   state.notes.push({ id: uid(), title, content, created_at: nowISO() });
-  save();
-  toast('Заметка сохранена', 'success');
-  renderNotes();
+  save(); toast('Сохранено', 'success'); renderNotes();
 };
-
 window.deleteNote = function(id) {
-  if (!confirm('Удалить заметку?')) return;
-  state.notes = state.notes.filter(n => n.id !== id);
-  save();
-  renderNotes();
+  if (!confirm('Удалить?')) return;
+  state.notes = state.notes.filter(n => n.id !== id); save(); renderNotes();
 };
 
 /* ======================================================================
-   SUB-PAGE: LEARNING
+   LEARNING
    ====================================================================== */
 function renderLearning() {
   document.getElementById('app').innerHTML = `
     <div class="page">
       <div class="page-title"><span class="emoji">📚</span>Обучение</div>
       <div class="card">
-        <h2>📚 Курсы</h2>
         ${state.learning.length ? state.learning.map(l => `
-          <div class="item mb-1">
-            <div class="item-body">
-              <div class="item-title">${escapeHtml(l.title)}</div>
-              <div class="item-meta"><span class="badge badge-muted">${l.status}</span></div>
-            </div>
-          </div>
+          <div class="item mb-1"><div class="item-body">
+            <div class="item-title">${escapeHtml(l.title)}</div>
+            <div class="item-meta"><span class="badge badge-muted">${l.status}</span></div>
+          </div></div>
         `).join('') : '<div class="empty"><div class="empty-icon">📚</div><div class="empty-text">Нет курсов</div></div>'}
       </div>
       <div class="card">
         <h2>➕ Новый курс</h2>
-        <input type="text" id="learnTitle" placeholder="Название курса"/>
+        <input type="text" id="learnTitle" placeholder="Название"/>
         <button class="btn btn-primary btn-block mt-2" onclick="addLearning()">Добавить</button>
       </div>
     </div>
   `;
 }
-
 window.addLearning = function() {
   const title = document.getElementById('learnTitle').value.trim();
   if (!title) return toast('Введите название', 'error');
   state.learning.push({ id: uid(), title, status: 'new', created_at: nowISO() });
-  save();
-  toast('Курс добавлен', 'success');
-  renderLearning();
+  save(); toast('Курс добавлен', 'success'); renderLearning();
 };
 
 /* ======================================================================
-   SUB-PAGE: STATS
+   STATS
    ====================================================================== */
 function renderStats() {
   const todayTasks = state.tasks.filter(t => t.created_at?.slice(0, 10) === today());
   const completed = todayTasks.filter(t => t.status === 'completed');
   const minutes = completed.reduce((s, t) => s + (t.actual_time || 0), 0);
   const allCompleted = state.tasks.filter(t => t.status === 'completed').length;
-  const allMinutes = state.tasks.filter(t => t.status === 'completed').reduce((s, t) => s + (t.actual_time || 0), 0);
-
   document.getElementById('app').innerHTML = `
     <div class="page">
       <div class="page-title"><span class="emoji">📊</span>Статистика</div>
@@ -2084,78 +1549,54 @@ function renderStats() {
         <h2>🏆 За всё время</h2>
         <div class="stat-grid">
           <div class="stat-item"><div class="stat-value">${allCompleted}</div><div class="stat-label">Задач</div></div>
-          <div class="stat-item"><div class="stat-value">${Math.floor(allMinutes / 60)}ч</div><div class="stat-label">Время</div></div>
           <div class="stat-item"><div class="stat-value">${state.stats.streak || 0}</div><div class="stat-label">Streak</div></div>
+          <div class="stat-item"><div class="stat-value">${state.coachMessages?.filter(m => m.role === 'user').length || 0}</div><div class="stat-label">Коуч</div></div>
         </div>
-      </div>
-      <div class="card">
-        <h2>🔄 Привычки</h2>
-        ${state.habits.map(h => `
-          <div class="item mb-1">
-            <div class="item-body">
-              <div class="item-title">${escapeHtml(h.title)}</div>
-              <div class="item-meta">🔥 ${calcStreak(h.history || [])} дней</div>
-            </div>
-          </div>
-        `).join('') || '<div class="empty"><div class="empty-text">Нет привычек</div></div>'}
       </div>
     </div>
   `;
 }
 
 /* ======================================================================
-   SUB-PAGE: MATRIX
+   MATRIX
    ====================================================================== */
 function renderMatrix() {
   const m = state.priorityMatrix;
   document.getElementById('app').innerHTML = `
     <div class="page">
       <div class="page-title"><span class="emoji">🔢</span>Матрица Эйзенхауэра</div>
-      <div class="matrix">
-        <div class="matrix-cell" onclick="addToMatrix('q1')">
-          <div class="cell-title">🔥 Важно и срочно</div>
-          <div class="cell-count">${m.q1.length}</div>
-          <div class="cell-limit">Максимум 1</div>
-        </div>
-        <div class="matrix-cell" onclick="addToMatrix('q2')">
-          <div class="cell-title">📌 Важно, не срочно</div>
-          <div class="cell-count">${m.q2.length}</div>
-          <div class="cell-limit">Максимум 3</div>
-        </div>
-        <div class="matrix-cell" onclick="addToMatrix('q3')">
-          <div class="cell-title">🗑 Не важно, не срочно</div>
-          <div class="cell-count">${m.q3.length}</div>
-          <div class="cell-limit">Максимум 5</div>
-        </div>
-        <div class="matrix-cell" style="opacity:0.5;cursor:default;">
-          <div class="cell-title">❌ Не важно, срочно</div>
-          <div class="cell-count">—</div>
-          <div class="cell-limit">Делегировать</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        ${[
+          { key: 'q1', title: '🔥 Важно и срочно', limit: 1 },
+          { key: 'q2', title: '📌 Важно, не срочно', limit: 3 },
+          { key: 'q3', title: '🗑 Не важно', limit: 5 }
+        ].map(q => `
+          <div class="card" style="cursor:pointer;text-align:center;" onclick="addToMatrix('${q.key}')">
+            <div style="font-size:13px;font-weight:700;color:var(--text-2);margin-bottom:8px;">${q.title}</div>
+            <div style="font-size:32px;font-weight:800;color:var(--brand-2);">${m[q.key].length}</div>
+            <div class="text-xs text-3 mt-1">макс ${q.limit}</div>
+          </div>
+        `).join('')}
+        <div class="card" style="opacity:0.5;text-align:center;">
+          <div style="font-size:13px;font-weight:700;color:var(--text-2);margin-bottom:8px;">❌ Не важно, срочно</div>
+          <div style="font-size:32px;font-weight:800;color:var(--text-3);">—</div>
+          <div class="text-xs text-3 mt-1">Делегировать</div>
         </div>
       </div>
-      <div class="card mt-2">
+      <div class="card">
         <h2>📋 Задачи в матрице</h2>
         ${Object.entries(m).flatMap(([q, ids]) => ids.map(id => {
           const t = state.tasks.find(x => x.id === id);
           if (!t) return '';
-          return `
-            <div class="item mb-1">
-              <div class="item-body">
-                <div class="item-title">${escapeHtml(t.title)}</div>
-                <div class="item-meta"><span class="badge badge-brand">${q}</span></div>
-              </div>
-            </div>`;
+          return `<div class="item mb-1"><div class="item-body"><div class="item-title">${escapeHtml(t.title)}</div><div class="item-meta"><span class="badge badge-brand">${q}</span></div></div></div>`;
         })).join('') || '<div class="empty"><div class="empty-text">Матрица пуста</div></div>'}
       </div>
     </div>
   `;
 }
-
 window.addToMatrix = function(quadrant) {
   const limits = { q1: 1, q2: 3, q3: 5 };
-  if (state.priorityMatrix[quadrant].length >= limits[quadrant]) {
-    return toast('Достигнут лимит для этой категории', 'warning');
-  }
+  if (state.priorityMatrix[quadrant].length >= limits[quadrant]) return toast('Лимит категории', 'warning');
   openModal(`
     <h2>➕ Добавить в матрицу</h2>
     <div class="field"><label>Задача</label><input type="text" id="mx-title" placeholder="Название" autofocus/></div>
@@ -2163,29 +1604,23 @@ window.addToMatrix = function(quadrant) {
     <button class="btn btn-primary btn-block" onclick="saveMatrixTask('${quadrant}')">Добавить</button>
   `);
 };
-
 window.saveMatrixTask = function(quadrant) {
   const title = document.getElementById('mx-title').value.trim();
   if (!title) return toast('Введите название', 'error');
   const task = {
     id: uid(), title,
     planned_time: parseInt(document.getElementById('mx-time').value) || 30,
-    actual_time: 0,
-    status: 'pending',
+    actual_time: 0, status: 'pending',
     priority: quadrant === 'q1' ? 'high' : 'medium',
-    category: 'matrix',
-    created_at: nowISO()
+    category: 'matrix', created_at: nowISO()
   };
   state.tasks.push(task);
   state.priorityMatrix[quadrant].push(task.id);
-  save();
-  closeModal();
-  toast('Добавлено в матрицу', 'success');
-  renderMatrix();
+  save(); closeModal(); toast('Добавлено', 'success'); renderMatrix();
 };
 
 /* ======================================================================
-   SUB-PAGE: FOCUS
+   FOCUS
    ====================================================================== */
 function renderFocus() {
   const f = state.flags;
@@ -2193,50 +1628,29 @@ function renderFocus() {
     <div class="page">
       <div class="page-title"><span class="emoji">🧘</span>Режимы</div>
       <div class="card">
-        ${renderToggle('focus', '🎯 Глубокий фокус', 'Отключает уведомления и отвлекающие элементы', f.focus)}
-        ${renderToggle('dnd', '🔇 Не беспокоить', 'Скрывает все уведомления', f.dnd)}
-        ${renderToggle('recommendOnly', '💡 Только рекомендации', 'Агент даёт только советы', f.recommendOnly)}
-        ${renderToggle('agentPaused', '⏸ Пауза агента', 'Приостановить автоматизацию', f.agentPaused)}
-      </div>
-      <div class="card">
-        <h2>🛑 Экстренные действия</h2>
-        <button class="btn btn-danger btn-block" onclick="emergencyStop()">Стоп-кран</button>
+        ${renderToggle('focus', '🎯 Глубокий фокус', 'Меньше уведомлений', f.focus)}
+        ${renderToggle('dnd', '🔇 Не беспокоить', 'Тихий режим', f.dnd)}
+        ${renderToggle('agentPaused', '⏸ Пауза агента', 'Приостановить автодействия', f.agentPaused)}
       </div>
     </div>
   `;
 }
-
 function renderToggle(key, title, desc, on) {
   return `
     <div class="setting-row">
-      <div>
-        <div class="setting-label">${title}</div>
-        <div class="setting-desc">${desc}</div>
-      </div>
+      <div><div class="setting-label">${title}</div><div class="setting-desc">${desc}</div></div>
       <button class="switch ${on ? 'on' : ''}" onclick="toggleFlag('${key}')"></button>
-    </div>
-  `;
+    </div>`;
 }
-
 window.toggleFlag = function(key) {
   state.flags[key] = !state.flags[key];
-  save();
-  haptic('light');
+  save(); haptic('light');
   const renderFn = SUB_PAGES[currentPage]?.render;
   if (renderFn) renderFn();
 };
 
-window.emergencyStop = function() {
-  if (!confirm('Активировать стоп-кран? Все процессы будут остановлены.')) return;
-  state.flags.emergencyStop = true;
-  state.flags.agentPaused = true;
-  save();
-  toast('🛑 Стоп-кран активирован', 'error', 4000);
-  haptic('error');
-};
-
 /* ======================================================================
-   SUB-PAGE: SCHEDULE
+   SCHEDULE
    ====================================================================== */
 function renderSchedule() {
   const sorted = [...state.schedule].sort((a, b) => new Date(a.start_time) - new Date(b.start_time));
@@ -2244,7 +1658,6 @@ function renderSchedule() {
     <div class="page">
       <div class="page-title"><span class="emoji">📆</span>Расписание</div>
       <div class="card">
-        <h2>📆 Ближайшие блоки</h2>
         ${sorted.length ? sorted.map(b => `
           <div class="item mb-1">
             <div class="item-body">
@@ -2265,34 +1678,26 @@ function renderSchedule() {
     </div>
   `;
 }
-
 window.addScheduleItem = function() {
   const title = document.getElementById('sch-title').value.trim();
   const start = document.getElementById('sch-start').value;
   const end = document.getElementById('sch-end').value;
   if (!title || !start || !end) return toast('Заполните поля', 'error');
-  if (new Date(start) >= new Date(end)) return toast('Неверный интервал', 'error');
   state.schedule.push({ id: uid(), title, start_time: new Date(start).toISOString(), end_time: new Date(end).toISOString() });
-  save();
-  toast('Блок добавлен', 'success');
-  renderSchedule();
+  save(); toast('Добавлено', 'success'); renderSchedule();
 };
-
 window.deleteScheduleItem = function(id) {
-  state.schedule = state.schedule.filter(b => b.id !== id);
-  save();
-  renderSchedule();
+  state.schedule = state.schedule.filter(b => b.id !== id); save(); renderSchedule();
 };
 
 /* ======================================================================
-   SUB-PAGE: JOURNAL
+   JOURNAL
    ====================================================================== */
 function renderJournal() {
   document.getElementById('app').innerHTML = `
     <div class="page">
       <div class="page-title"><span class="emoji">📋</span>Журнал</div>
       <div class="card">
-        <h2>📋 История действий</h2>
         ${state.actionLog.length ? state.actionLog.slice(0, 100).map(l => `
           <div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;">
             <div class="flex justify-between">
@@ -2302,14 +1707,13 @@ function renderJournal() {
             ${l.details ? `<div class="text-2 text-xs mt-1">${escapeHtml(l.details)}</div>` : ''}
           </div>
         `).join('') : '<div class="empty"><div class="empty-text">Журнал пуст</div></div>'}
-        ${state.actionLog.length > 0 ? `<button class="btn btn-ghost btn-block mt-2" onclick="if(confirm('Очистить журнал?')){state.actionLog=[];save();renderJournal();}">Очистить</button>` : ''}
       </div>
     </div>
   `;
 }
 
 /* ======================================================================
-   SUB-PAGE: SETTINGS
+   SETTINGS
    ====================================================================== */
 function renderSettings() {
   const s = state.settings;
@@ -2328,51 +1732,44 @@ function renderSettings() {
         <button class="btn btn-primary btn-block" onclick="saveSettings()">Сохранить</button>
       </div>
       <div class="card">
-        <h2>🔗 Интеграции</h2>
-        <div class="field"><label>Google Calendar API Key</label><input type="text" id="set-gcal" value="${escapeHtml(s.googleCalendar || '')}" placeholder="Ключ API"/></div>
-        <div class="field"><label>Obsidian путь</label><input type="text" id="set-obsidian" value="${escapeHtml(s.obsidianPath || '')}" placeholder="/path/to/vault"/></div>
-        <div class="field"><label>Todoist API Token</label><input type="text" id="set-todoist" value="${escapeHtml(s.todoistKey || '')}" placeholder="Токен"/></div>
-        <button class="btn btn-primary btn-block" onclick="saveSettings()">Сохранить</button>
+        <h2>🤖 AI</h2>
+        <div class="setting-row">
+          <div><div class="setting-label">Провайдер</div><div class="setting-desc">${AI_PROVIDERS[s.provider]?.name || 'не выбран'}</div></div>
+          <button class="btn btn-ghost btn-sm" onclick="openAISettings()">Настроить</button>
+        </div>
+        <div class="setting-row">
+          <div><div class="setting-label">API ключ</div><div class="setting-desc">${s.apiKey ? '✓ Установлен' : 'не задан'}</div></div>
+        </div>
       </div>
       <div class="card">
         <h2>💾 Данные</h2>
         <div class="btn-row">
-          <button class="btn btn-ghost" onclick="exportData()">📤 Экспорт JSON</button>
+          <button class="btn btn-ghost" onclick="exportData()">📤 Экспорт</button>
           <button class="btn btn-ghost" onclick="document.getElementById('importFile').click()">📥 Импорт</button>
           <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)"/>
         </div>
-        <button class="btn btn-danger btn-block mt-2" onclick="if(confirm('Удалить ВСЕ данные?')){localStorage.removeItem('${STORAGE_KEY}');location.reload();}">🗑 Полный сброс</button>
+        <button class="btn btn-danger btn-block mt-2" onclick="if(confirm('Удалить ВСЕ данные?')){localStorage.removeItem('${STORAGE_KEY}');location.reload();}">🗑 Сброс</button>
       </div>
       <div class="card text-center text-3 text-sm">
-        AI Коуч Pro+ v8.0<br>Сделано с ❤️
+        AI Коуч Pro+ v9.0<br>Сделано с ❤️
       </div>
     </div>
   `;
 }
-
 window.saveSettings = function() {
   state.settings.username = document.getElementById('set-username').value.trim() || 'Пользователь';
   state.settings.theme = document.getElementById('set-theme').value;
-  state.settings.googleCalendar = document.getElementById('set-gcal')?.value.trim() || '';
-  state.settings.obsidianPath = document.getElementById('set-obsidian')?.value.trim() || '';
-  state.settings.todoistKey = document.getElementById('set-todoist')?.value.trim() || '';
-  save();
-  applyTheme(state.settings.theme);
+  save(); applyTheme(state.settings.theme);
   document.getElementById('userChip').textContent = state.settings.username;
-  toast('Настройки сохранены', 'success');
+  toast('Сохранено', 'success');
 };
-
 window.exportData = function() {
   const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url;
-  a.download = `ai-coach-backup-${today()}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-  toast('Экспорт готов', 'success');
+  a.href = url; a.download = `ai-coach-backup-${today()}.json`; a.click();
+  URL.revokeObjectURL(url); toast('Экспорт готов', 'success');
 };
-
 window.importData = function(e) {
   const file = e.target.files[0];
   if (!file) return;
@@ -2380,14 +1777,10 @@ window.importData = function(e) {
   reader.onload = (ev) => {
     try {
       const data = JSON.parse(ev.target.result);
-      if (!confirm('Заменить текущие данные?')) return;
+      if (!confirm('Заменить данные?')) return;
       state = { ...DEFAULT_STATE(), ...data };
-      save();
-      toast('Импорт успешен', 'success');
-      location.reload();
-    } catch (err) {
-      toast('Ошибка импорта', 'error');
-    }
+      save(); toast('Импорт успешен', 'success'); location.reload();
+    } catch (err) { toast('Ошибка импорта', 'error'); }
   };
   reader.readAsText(file);
 };
@@ -2396,7 +1789,6 @@ window.importData = function(e) {
    INIT
    ====================================================================== */
 function init() {
-  // Seed demo data if empty
   if (state.tasks.length === 0 && state.habits.length === 0) {
     state.tasks = [
       { id: uid(), title: 'Завершить отчёт', category: 'work', planned_time: 45, actual_time: 0, status: 'pending', priority: 'high', created_at: nowISO() },
@@ -2406,38 +1798,26 @@ function init() {
       { id: uid(), title: 'Зарядка утром', history: [today()], created_at: nowISO() },
       { id: uid(), title: 'Чтение 30 мин', history: [], created_at: nowISO() }
     ];
-    state.goals = [
-      { id: uid(), title: 'Выучить английский до B2', progress: 25, created_at: nowISO() }
-    ];
+    state.goals = [{ id: uid(), title: 'Выучить английский до B2', progress: 25, created_at: nowISO() }];
     save();
   }
-
   renderNav();
   renderDashboard();
-
-  // Screen time auto-tracking (1 min)
   setInterval(() => {
     const t = today();
     state.screenTimeLog[t] = (state.screenTimeLog[t] || 0) + 1;
     save();
   }, 60000);
-
-  // Daily streak update
   updateStreak();
-
-  // Request notifications
   if ('Notification' in window && Notification.permission === 'default') {
     Notification.requestPermission().catch(() => {});
   }
 }
-
 function updateStreak() {
   const t = today();
   if (state.stats.lastActiveDay === t) return;
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  const yStr = yesterday.toISOString().slice(0, 10);
-  if (state.stats.lastActiveDay === yStr) {
+  const y = new Date(); y.setDate(y.getDate() - 1);
+  if (state.stats.lastActiveDay === y.toISOString().slice(0, 10)) {
     state.stats.streak = (state.stats.streak || 0) + 1;
   } else {
     state.stats.streak = 1;
@@ -2445,7 +1825,6 @@ function updateStreak() {
   state.stats.lastActiveDay = t;
   save();
 }
-
 init();
 </script>
 </body>
