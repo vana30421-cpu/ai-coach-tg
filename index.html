@@ -5,187 +5,282 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>AI Health Ecosystem</title>
+<title>AI Health · One UI 9</title>
 <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 <style>
+/* ══════════════════════════════════════════════════════════════════
+   ONE UI 9 DESIGN SYSTEM (будущий Samsung, 2026)
+   ══════════════════════════════════════════════════════════════════ */
 :root {
-  --bg: #000;
-  --bg-1: #0a0a0f;
-  --bg-2: #131318;
-  --bg-3: #1c1c22;
-  --surface-2: rgba(255,255,255,0.06);
-  --surface-3: rgba(255,255,255,0.09);
-  --divider: rgba(255,255,255,0.07);
+  --bg: #000000;
+  --bg-1: #0b0b10;
+  --bg-2: #14141b;
+  --bg-3: #1e1e27;
+  --bg-4: #282833;
+  --surface-1: rgba(255,255,255,0.035);
+  --surface-2: rgba(255,255,255,0.065);
+  --surface-3: rgba(255,255,255,0.10);
+  --surface-4: rgba(255,255,255,0.145);
+  --glass-1: rgba(255,255,255,0.045);
+  --glass-2: rgba(255,255,255,0.08);
+  --divider: rgba(255,255,255,0.08);
+  --divider-strong: rgba(255,255,255,0.14);
   --text: #ffffff;
-  --text-2: rgba(255,255,255,0.72);
-  --text-3: rgba(255,255,255,0.5);
-  --brand: #4a9eff;
+  --text-2: rgba(255,255,255,0.74);
+  --text-3: rgba(255,255,255,0.52);
+  --text-4: rgba(255,255,255,0.34);
+  --brand: #5b9eff;
   --brand-2: #a78bfa;
-  --brand-glow: rgba(74,158,255,0.4);
-  --success: #34d399;
-  --warning: #ff9f43;
-  --danger: #ff5e57;
-  --coach: #a78bfa;
-  --psych: #22d3ee;
-  --doctor: #34d399;
-  --nutrition: #ff9f43;
-  --fitness: #ff6b9d;
+  --brand-3: #c4b5fd;
+  --brand-glow: rgba(91,158,255,0.45);
+  --success: #3ddc97;
+  --warning: #ffa940;
+  --danger: #ff6b6b;
+  --info: #4dd4ff;
+  --coach: #b394ff;
+  --psych: #4dd4ff;
+  --doctor: #3ddc97;
+  --nutrition: #ffa940;
+  --fitness: #ff7ba9;
   --lawyer: #c4b5fd;
-  --finance: #ffb84d;
-  --r-sm: 12px; --r-md: 18px; --r-lg: 22px; --r-xl: 26px; --r-full: 9999px;
-  --header-h: 56px; --tabbar-h: 68px;
+  --finance: #ffcc4d;
+  --r-xs: 12px;
+  --r-sm: 16px;
+  --r-md: 22px;
+  --r-lg: 28px;
+  --r-xl: 32px;
+  --r-2xl: 40px;
+  --r-3xl: 48px;
+  --r-full: 9999px;
+  --header-h: 60px;
+  --tabbar-h: 76px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 body.light {
-  --bg: #f4f4f8; --bg-1: #fff; --bg-2: #f8f8fc; --bg-3: #eeeef4;
-  --surface-2: rgba(0,0,0,0.05); --surface-3: rgba(0,0,0,0.08);
+  --bg: #f5f5fa;
+  --bg-1: #ffffff;
+  --bg-2: #f8f8fc;
+  --bg-3: #eeeef4;
+  --bg-4: #e5e5ec;
+  --surface-1: rgba(0,0,0,0.02);
+  --surface-2: rgba(0,0,0,0.045);
+  --surface-3: rgba(0,0,0,0.07);
+  --surface-4: rgba(0,0,0,0.10);
+  --glass-1: rgba(255,255,255,0.6);
+  --glass-2: rgba(255,255,255,0.8);
   --divider: rgba(0,0,0,0.08);
-  --text: #000; --text-2: rgba(0,0,0,0.66); --text-3: rgba(0,0,0,0.44);
+  --divider-strong: rgba(0,0,0,0.14);
+  --text: #000000;
+  --text-2: rgba(0,0,0,0.68);
+  --text-3: rgba(0,0,0,0.46);
+  --text-4: rgba(0,0,0,0.3);
 }
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html { height: 100%; }
+html { height: 100%; -webkit-text-size-adjust: 100%; }
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', system-ui, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Samsung One', 'Inter', system-ui, sans-serif;
   font-size: 16px; line-height: 1.45; color: var(--text); background: var(--bg);
-  -webkit-font-smoothing: antialiased; overscroll-behavior-y: none;
-  overflow-x: hidden; min-height: 100vh; min-height: 100dvh;
-  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior-y: none; overflow-x: hidden;
+  min-height: 100vh; min-height: 100dvh;
+  letter-spacing: -0.015em;
+  transition: background 0.35s var(--ease), color 0.35s var(--ease);
 }
 body::before {
   content: ''; position: fixed; inset: 0;
   background:
-    radial-gradient(ellipse 60% 40% at 20% 0%, rgba(74,158,255,0.08), transparent 60%),
-    radial-gradient(ellipse 50% 40% at 80% 100%, rgba(167,139,250,0.08), transparent 60%);
+    radial-gradient(ellipse 70% 45% at 15% 0%, rgba(91,158,255,0.10), transparent 60%),
+    radial-gradient(ellipse 55% 45% at 85% 100%, rgba(167,139,250,0.10), transparent 60%),
+    radial-gradient(ellipse 40% 35% at 50% 50%, rgba(61,220,151,0.04), transparent 60%);
   pointer-events: none; z-index: 0;
+  animation: auroraShift 25s ease-in-out infinite alternate;
 }
+@keyframes auroraShift {
+  0% { transform: scale(1) rotate(0deg); }
+  100% { transform: scale(1.15) rotate(2deg); }
+}
+body::after {
+  content: ''; position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.35'/%3E%3C/svg%3E");
+  opacity: 0.02; pointer-events: none; z-index: 1; mix-blend-mode: overlay;
+}
+
+/* ═══ ICON ═══ */
 .icon { width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .icon svg { width: 100%; height: 100%; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
+/* ═══ HEADER ═══ */
 .app-header {
   position: sticky; top: 0; z-index: 100;
   padding-top: var(--safe-top);
-  background: rgba(0,0,0,0.82);
-  backdrop-filter: saturate(180%) blur(24px);
-  -webkit-backdrop-filter: saturate(180%) blur(24px);
+  background: rgba(0,0,0,0.78);
+  backdrop-filter: saturate(200%) blur(30px);
+  -webkit-backdrop-filter: saturate(200%) blur(30px);
   border-bottom: 0.5px solid var(--divider);
 }
-body.light .app-header { background: rgba(244,244,248,0.85); }
+body.light .app-header { background: rgba(245,245,250,0.82); }
 .header-inner {
-  height: var(--header-h); display: flex; align-items: center;
-  justify-content: space-between; padding: 0 20px; gap: 12px;
+  height: var(--header-h);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 22px; gap: 12px;
 }
-.brand { display: flex; align-items: center; gap: 10px; font-size: 19px; font-weight: 700; letter-spacing: -0.02em; }
+.brand { display: flex; align-items: center; gap: 11px; font-size: 19px; font-weight: 700; letter-spacing: -0.03em; }
 .brand-logo {
-  width: 34px; height: 34px; border-radius: 10px;
+  width: 38px; height: 38px; border-radius: 12px;
   background: linear-gradient(135deg, var(--brand), var(--brand-2));
   display: grid; place-items: center; color: #fff;
-  box-shadow: 0 4px 12px var(--brand-glow);
+  box-shadow: 0 6px 20px var(--brand-glow), inset 0 1px 0 rgba(255,255,255,0.25);
+  position: relative; overflow: hidden;
 }
+.brand-logo::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.35) 50%, transparent 60%);
+  animation: shimmer 3.5s infinite;
+}
+@keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
 .header-actions { display: flex; align-items: center; gap: 8px; }
 .icon-btn {
-  width: 40px; height: 40px; border-radius: 50%;
-  background: var(--surface-2); border: none; color: var(--text);
-  cursor: pointer; display: grid; place-items: center;
+  width: 42px; height: 42px; border-radius: 50%;
+  background: var(--surface-2); border: none;
+  color: var(--text); cursor: pointer;
+  display: grid; place-items: center;
   transition: all 0.2s var(--ease);
 }
 .icon-btn:active { transform: scale(0.9); background: var(--surface-3); }
-.user-chip {
-  padding: 8px 14px; background: var(--surface-2);
-  border-radius: var(--r-full); font-size: 13px; font-weight: 600;
-  color: var(--text-2); max-width: 120px;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+.avatar-btn {
+  width: 42px; height: 42px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  display: grid; place-items: center; font-size: 20px;
+  cursor: pointer; box-shadow: 0 4px 12px var(--brand-glow);
+  border: none;
 }
+.avatar-btn:active { transform: scale(0.9); }
+
+/* ═══ MAIN ═══ */
 .app-main {
-  position: relative; z-index: 1;
-  max-width: 680px; margin: 0 auto; width: 100%;
-  padding: 20px;
-  padding-bottom: calc(var(--tabbar-h) + var(--safe-bottom) + 64px) !important;
+  position: relative; z-index: 2;
+  max-width: 700px; margin: 0 auto; width: 100%;
+  padding: 22px;
+  padding-bottom: calc(var(--tabbar-h) + var(--safe-bottom) + 72px) !important;
   min-height: calc(100dvh - var(--header-h) - var(--safe-top));
 }
-.page { animation: pageIn 0.35s var(--ease); }
-@keyframes pageIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-.tab-bar {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  z-index: 100; padding-bottom: var(--safe-bottom);
-  background: rgba(0,0,0,0.88);
-  backdrop-filter: saturate(180%) blur(24px);
-  -webkit-backdrop-filter: saturate(180%) blur(24px);
-  border-top: 0.5px solid var(--divider);
-  display: flex; height: calc(var(--tabbar-h) + var(--safe-bottom));
+.page { animation: pageIn 0.4s var(--ease-out); }
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-body.light .tab-bar { background: rgba(244,244,248,0.9); }
+
+/* ═══ FLOATING TAB BAR (One UI 9) ═══ */
+.tab-bar-wrap {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 0 16px calc(16px + var(--safe-bottom));
+  pointer-events: none;
+}
+.tab-bar {
+  background: rgba(20,20,27,0.88);
+  backdrop-filter: saturate(200%) blur(30px);
+  -webkit-backdrop-filter: saturate(200%) blur(30px);
+  border: 0.5px solid var(--divider-strong);
+  border-radius: 28px;
+  display: flex;
+  align-items: stretch;
+  height: 68px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);
+  max-width: 600px;
+  margin: 0 auto;
+  pointer-events: auto;
+  overflow: hidden;
+}
+body.light .tab-bar { background: rgba(255,255,255,0.92); box-shadow: 0 12px 40px rgba(0,0,0,0.12); }
 .tab-item {
   flex: 1; background: transparent; border: none;
   color: var(--text-3); font-family: inherit;
   font-size: 10px; font-weight: 600;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
-  gap: 4px; padding: 8px 2px 6px;
+  gap: 3px; padding: 8px 2px 6px;
   cursor: pointer; position: relative;
-  transition: color 0.2s var(--ease);
+  transition: all 0.25s var(--ease);
 }
+.tab-item .tab-icon { font-size: 22px; line-height: 1; transition: transform 0.3s var(--ease-bounce); }
 .tab-item.active { color: var(--brand); }
-.tab-item.active::after {
-  content: ''; position: absolute; top: 2px; left: 50%;
-  transform: translateX(-50%); width: 4px; height: 4px;
-  background: var(--brand); border-radius: 50%;
-  box-shadow: 0 0 8px var(--brand-glow);
-}
+.tab-item.active .tab-icon { transform: scale(1.15) translateY(-2px); }
 .tab-item:active { opacity: 0.6; }
+.tab-item.active::before {
+  content: ''; position: absolute; top: 4px; left: 50%;
+  transform: translateX(-50%);
+  width: 5px; height: 5px; background: var(--brand);
+  border-radius: 50%; box-shadow: 0 0 10px var(--brand-glow);
+}
 
-.title-xl { font-size: 32px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 24px; }
-.title-l { font-size: 26px; font-weight: 800; letter-spacing: -0.025em; margin-bottom: 16px; }
-.title-m { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 12px; }
+/* ═══ TYPOGRAPHY ═══ */
+.title-xl { font-size: 34px; font-weight: 800; letter-spacing: -0.035em; line-height: 1.12; margin-bottom: 26px; }
+.title-l { font-size: 27px; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 18px; }
+.title-m { font-size: 21px; font-weight: 700; letter-spacing: -0.025em; margin-bottom: 14px; }
 
+/* ═══ CARDS ═══ */
 .card {
-  background: var(--bg-2); border-radius: var(--r-xl);
-  padding: 20px; margin-bottom: 16px;
-  transition: all 0.2s var(--ease);
-  position: relative; overflow: hidden;
+  background: var(--bg-2);
+  border-radius: var(--r-xl);
+  padding: 22px;
+  margin-bottom: 16px;
+  transition: all 0.25s var(--ease);
+  position: relative;
+  overflow: hidden;
+  border: 0.5px solid var(--surface-1);
 }
 .card-gradient {
   background: linear-gradient(135deg, var(--brand), var(--brand-2));
-  color: #fff; box-shadow: 0 12px 40px var(--brand-glow);
+  color: #fff;
+  box-shadow: 0 16px 48px var(--brand-glow);
+  border: none;
 }
 .card-gradient h2 { color: #fff; }
 .card h2 {
   font-size: 20px; font-weight: 700; margin-bottom: 16px;
-  display: flex; align-items: center; gap: 8px;
+  display: flex; align-items: center; gap: 10px;
+  letter-spacing: -0.025em;
 }
 
+/* ═══ BUTTONS ═══ */
 .btn {
   display: inline-flex; align-items: center; justify-content: center;
-  gap: 8px; padding: 14px 20px; border-radius: var(--r-xl);
+  gap: 8px; padding: 14px 22px; border-radius: var(--r-full);
   border: none; font-family: inherit; font-size: 16px; font-weight: 700;
   cursor: pointer; transition: all 0.2s var(--ease);
   white-space: nowrap; -webkit-appearance: none;
+  letter-spacing: -0.01em;
 }
-.btn:active:not(:disabled) { transform: scale(0.96); opacity: 0.85; }
+.btn:active:not(:disabled) { transform: scale(0.95); opacity: 0.85; }
 .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-.btn-primary { background: var(--brand); color: #fff; box-shadow: 0 4px 16px var(--brand-glow); }
+.btn-primary { background: var(--brand); color: #fff; box-shadow: 0 8px 24px var(--brand-glow), inset 0 1px 0 rgba(255,255,255,0.2); }
 .btn-success { background: var(--success); color: #000; }
 .btn-warning { background: var(--warning); color: #000; }
 .btn-danger { background: var(--danger); color: #fff; }
-.btn-ghost { background: var(--surface-2); color: var(--text); }
-.btn-sm { padding: 10px 16px; font-size: 14px; border-radius: var(--r-md); }
-.btn-xs { padding: 7px 12px; font-size: 13px; border-radius: var(--r-sm); }
+.btn-ghost { background: var(--surface-2); color: var(--text); border: 0.5px solid var(--surface-3); }
+.btn-sm { padding: 10px 18px; font-size: 14px; }
+.btn-xs { padding: 7px 14px; font-size: 13px; }
 .btn-block { width: 100%; }
-.btn-icon { width: 42px; height: 42px; padding: 0; border-radius: 50%; }
-.btn-icon.btn-sm { width: 34px; height: 34px; }
+.btn-icon { width: 44px; height: 44px; padding: 0; border-radius: 50%; }
+.btn-icon.btn-sm { width: 36px; height: 36px; }
 .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
 
-.field { margin-bottom: 16px; }
+/* ═══ INPUTS ═══ */
+.field { margin-bottom: 18px; }
 .field-label {
   display: block; font-size: 13px; font-weight: 600;
   color: var(--text-2); margin-bottom: 8px;
+  text-transform: uppercase; letter-spacing: 0.04em;
 }
 input[type="text"], input[type="number"], input[type="datetime-local"],
 input[type="date"], input[type="time"], input[type="password"],
 input[type="email"], input[type="url"], input[type="search"], select, textarea {
-  width: 100%; padding: 14px 16px;
+  width: 100%; padding: 16px 18px;
   background: var(--surface-2);
   border: 1.5px solid transparent;
   border-radius: var(--r-lg);
@@ -196,127 +291,153 @@ input[type="email"], input[type="url"], input[type="search"], select, textarea {
 }
 input:focus, select:focus, textarea:focus {
   outline: none; background: var(--surface-3);
-  border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-glow);
+  border-color: var(--brand);
+  box-shadow: 0 0 0 4px var(--brand-glow);
 }
 input::placeholder, textarea::placeholder { color: var(--text-3); }
-textarea { resize: vertical; min-height: 96px; line-height: 1.5; font-family: inherit; }
+textarea { resize: vertical; min-height: 100px; line-height: 1.55; font-family: inherit; }
 select {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a78bfa' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 16px center;
-  padding-right: 40px;
+  background-repeat: no-repeat; background-position: right 18px center;
+  padding-right: 44px;
 }
 
+/* ═══ TASK ITEM ═══ */
 .task-item {
-  background: var(--bg-2); border-radius: var(--r-lg);
-  padding: 16px; margin-bottom: 8px;
-  display: flex; align-items: center; gap: 12px;
-  cursor: pointer; transition: all 0.2s var(--ease);
+  background: var(--bg-2);
+  border-radius: var(--r-lg);
+  padding: 16px 18px;
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 14px;
+  cursor: pointer; transition: all 0.25s var(--ease);
   border: 1.5px solid transparent;
 }
 .task-item:active { background: var(--surface-2); transform: scale(0.99); }
-.task-item.completed { opacity: 0.55; }
+.task-item.completed { opacity: 0.5; }
 .task-item.completed .task-title { text-decoration: line-through; }
 .task-checkbox {
-  width: 26px; height: 26px; border-radius: 50%;
+  width: 28px; height: 28px; border-radius: 50%;
   border: 2px solid var(--text-3); background: transparent;
   display: grid; place-items: center; cursor: pointer;
-  flex-shrink: 0; transition: all 0.3s var(--ease);
-  padding: 0; color: transparent; font-size: 14px; font-weight: 700;
+  flex-shrink: 0; transition: all 0.3s var(--ease-bounce);
+  padding: 0; color: transparent; font-size: 15px; font-weight: 700;
 }
 .task-checkbox.checked {
   background: var(--success); border-color: var(--success); color: #000;
+  transform: scale(1.05);
 }
 .task-content { flex: 1; min-width: 0; }
 .task-title {
   font-size: 16px; font-weight: 600; color: var(--text);
   margin-bottom: 3px; overflow: hidden;
   text-overflow: ellipsis; white-space: nowrap;
+  letter-spacing: -0.01em;
 }
 .task-meta { display: flex; gap: 8px; font-size: 12px; color: var(--text-2); align-items: center; flex-wrap: wrap; }
-.priority-bar { width: 4px; height: 32px; border-radius: 2px; flex-shrink: 0; }
-.priority-bar.high { background: var(--danger); }
+.priority-bar { width: 4px; height: 34px; border-radius: 2px; flex-shrink: 0; }
+.priority-bar.high { background: var(--danger); box-shadow: 0 0 8px var(--danger); }
 .priority-bar.medium { background: var(--warning); }
 .priority-bar.low { background: var(--success); }
 
+/* ═══ PROGRESS ═══ */
 .progress {
-  height: 6px; background: var(--surface-3);
+  height: 8px; background: var(--surface-3);
   border-radius: var(--r-full); overflow: hidden;
 }
 .progress-fill {
-  height: 100%; background: linear-gradient(90deg, var(--brand), var(--brand-2));
-  border-radius: var(--r-full); transition: width 0.5s var(--ease);
+  height: 100%;
+  background: linear-gradient(90deg, var(--brand), var(--brand-2));
+  border-radius: var(--r-full);
+  transition: width 0.6s var(--ease-out);
+  box-shadow: 0 0 12px var(--brand-glow);
 }
 
+/* ═══ MODAL ═══ */
 .overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.75);
-  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  position: fixed; inset: 0; background: rgba(0,0,0,0.78);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
   z-index: 1000; display: flex; align-items: flex-end; justify-content: center;
-  animation: fadeIn 0.2s var(--ease);
+  animation: fadeIn 0.25s var(--ease);
 }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 .modal {
-  background: var(--bg-1); width: 100%; max-width: 540px;
-  max-height: 92dvh; border-radius: 32px 32px 0 0;
-  padding: 20px; padding-bottom: calc(20px + var(--safe-bottom));
-  overflow-y: auto; animation: sheetUp 0.3s var(--ease);
+  background: var(--bg-1); width: 100%; max-width: 560px;
+  max-height: 92dvh; border-radius: 36px 36px 0 0;
+  padding: 20px;
+  padding-bottom: calc(24px + var(--safe-bottom));
+  overflow-y: auto;
+  animation: sheetUp 0.35s var(--ease-out);
+  box-shadow: 0 -16px 60px rgba(0,0,0,0.6);
 }
 @keyframes sheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.modal-handle {
+  width: 44px; height: 5px; background: var(--surface-4);
+  border-radius: 3px; margin: 0 auto 18px;
+}
 .modal-header {
   display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 20px; position: sticky; top: 0;
-  background: var(--bg-1); padding-top: 8px; padding-bottom: 8px; z-index: 1;
+  margin-bottom: 22px; position: sticky; top: 0;
+  background: var(--bg-1); padding-bottom: 8px; z-index: 1;
 }
-.modal-title { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; }
+.modal-title { font-size: 23px; font-weight: 800; letter-spacing: -0.03em; }
 .modal-close {
-  width: 36px; height: 36px; border-radius: 50%;
+  width: 38px; height: 38px; border-radius: 50%;
   background: var(--surface-2); border: none;
   color: var(--text-2); display: grid; place-items: center;
   cursor: pointer; font-size: 16px;
 }
 
+/* ═══ TOAST ═══ */
 .toast-container {
-  position: fixed; top: calc(var(--header-h) + var(--safe-top) + 12px);
+  position: fixed; top: calc(var(--header-h) + var(--safe-top) + 14px);
   left: 50%; transform: translateX(-50%); z-index: 2000;
-  display: flex; flex-direction: column; gap: 8px;
-  pointer-events: none; width: 90%; max-width: 400px;
+  display: flex; flex-direction: column; gap: 10px;
+  pointer-events: none; width: 90%; max-width: 420px;
 }
 .toast {
-  background: rgba(30,30,36,0.95); color: #fff;
-  backdrop-filter: blur(20px); border-radius: var(--r-xl);
-  padding: 16px 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  background: rgba(30,30,40,0.96); color: #fff;
+  backdrop-filter: blur(20px);
+  border-radius: var(--r-lg);
+  padding: 16px 22px;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.5);
   display: flex; align-items: center; gap: 12px;
   font-size: 14px; font-weight: 600;
-  animation: toastIn 0.3s var(--ease);
+  animation: toastIn 0.35s var(--ease-bounce);
   pointer-events: auto;
+  border: 0.5px solid rgba(255,255,255,0.1);
 }
-.toast.success { background: rgba(52,211,153,0.98); color: #000; }
-.toast.error { background: rgba(255,94,87,0.98); }
-.toast.warning { background: rgba(255,159,67,0.98); color: #000; }
+.toast.success { background: var(--success); color: #000; border: none; }
+.toast.error { background: var(--danger); }
+.toast.warning { background: var(--warning); color: #000; }
 @keyframes toastIn {
-  from { opacity: 0; transform: translate(-50%, -20px) scale(0.9); }
+  from { opacity: 0; transform: translate(-50%, -30px) scale(0.9); }
   to { opacity: 1; transform: translate(-50%, 0) scale(1); }
 }
 
+/* ═══ SEGMENTED ═══ */
 .segmented {
   display: flex; background: var(--surface-2);
-  border-radius: var(--r-xl); padding: 4px; gap: 2px;
+  border-radius: var(--r-full); padding: 5px; gap: 3px;
+  border: 0.5px solid var(--surface-3);
 }
 .segmented-item {
-  flex: 1; padding: 10px 12px; background: transparent;
-  border: none; border-radius: calc(var(--r-xl) - 4px);
+  flex: 1; padding: 11px 14px; background: transparent;
+  border: none; border-radius: var(--r-full);
   font-family: inherit; font-size: 14px; font-weight: 700;
   color: var(--text-2); cursor: pointer;
-  transition: all 0.2s var(--ease); white-space: nowrap;
+  transition: all 0.25s var(--ease); white-space: nowrap;
 }
 .segmented-item.active {
-  background: var(--bg-3); color: var(--text);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  background: var(--brand); color: #fff;
+  box-shadow: 0 4px 16px var(--brand-glow);
 }
 
+/* ═══ SEARCH ═══ */
 .search-bar {
-  display: flex; align-items: center; gap: 8px;
-  padding: 12px 16px; background: var(--surface-2);
-  border-radius: var(--r-lg); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 18px; background: var(--surface-2);
+  border-radius: var(--r-lg); margin-bottom: 14px;
+  border: 0.5px solid var(--surface-3);
 }
 .search-bar input {
   flex: 1; padding: 0; background: transparent;
@@ -324,21 +445,24 @@ select {
 }
 .search-bar input:focus { background: transparent; box-shadow: none; }
 
+/* ═══ PERSONA ═══ */
 .persona-bar {
-  display: flex; gap: 8px; padding: 8px;
+  display: flex; gap: 8px; padding: 6px;
   background: var(--surface-2); border-radius: var(--r-full);
-  margin-bottom: 16px; overflow-x: auto; scrollbar-width: none;
+  margin-bottom: 18px; overflow-x: auto; scrollbar-width: none;
+  border: 0.5px solid var(--surface-3);
 }
 .persona-bar::-webkit-scrollbar { display: none; }
 .persona-item {
   flex: 1; min-width: fit-content;
-  padding: 10px 16px; border-radius: var(--r-full);
+  padding: 11px 18px; border-radius: var(--r-full);
   border: none; background: transparent; color: var(--text-2);
   font-family: inherit; font-size: 13px; font-weight: 700;
-  cursor: pointer; transition: all 0.2s var(--ease);
-  display: flex; align-items: center; gap: 6px; white-space: nowrap;
+  cursor: pointer; transition: all 0.3s var(--ease);
+  display: flex; align-items: center; gap: 7px; white-space: nowrap;
+  letter-spacing: -0.01em;
 }
-.persona-item.active { color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+.persona-item.active { color: #fff; box-shadow: 0 6px 20px rgba(0,0,0,0.3); transform: scale(1.02); }
 .persona-item.active[data-p="coach"] { background: var(--coach); color: #000; }
 .persona-item.active[data-p="psych"] { background: var(--psych); color: #000; }
 .persona-item.active[data-p="doctor"] { background: var(--doctor); color: #000; }
@@ -347,95 +471,105 @@ select {
 .persona-item.active[data-p="lawyer"] { background: var(--lawyer); color: #000; }
 .persona-item.active[data-p="finance"] { background: var(--finance); color: #000; }
 
-.chat { display: flex; flex-direction: column; gap: 12px; padding: 8px 0; }
+/* ═══ CHAT ═══ */
+.chat { display: flex; flex-direction: column; gap: 14px; padding: 10px 0; }
 .msg {
-  max-width: 86%; padding: 12px 16px;
-  border-radius: 22px; font-size: 16px; line-height: 1.5;
-  word-wrap: break-word; animation: msgIn 0.3s var(--ease);
+  max-width: 86%; padding: 14px 18px;
+  border-radius: 24px; font-size: 16px; line-height: 1.55;
+  word-wrap: break-word; animation: msgIn 0.4s var(--ease-out);
+  letter-spacing: -0.01em;
 }
 @keyframes msgIn {
-  from { opacity: 0; transform: translateY(8px) scale(0.95); }
+  from { opacity: 0; transform: translateY(10px) scale(0.94); }
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 .msg-user {
   align-self: flex-end;
   background: linear-gradient(135deg, var(--brand), var(--brand-2));
-  color: #fff; border-bottom-right-radius: 6px;
+  color: #fff; border-bottom-right-radius: 8px;
+  box-shadow: 0 8px 24px var(--brand-glow);
 }
 .msg-bot {
   align-self: flex-start; background: var(--surface-2);
-  color: var(--text); border-bottom-left-radius: 6px;
+  color: var(--text); border-bottom-left-radius: 8px;
+  border: 0.5px solid var(--surface-3);
 }
 .msg-bot strong { color: var(--brand-2); font-weight: 700; }
-.msg-bot p { margin: 0 0 8px 0; }
+.msg-bot p { margin: 0 0 10px 0; }
 .msg-bot p:last-child { margin-bottom: 0; }
-.msg-bot ul { margin: 6px 0; padding-left: 20px; }
-.msg-bot li { margin: 3px 0; }
+.msg-bot ul { margin: 8px 0; padding-left: 22px; }
+.msg-bot li { margin: 4px 0; }
 .typing {
-  display: flex; gap: 5px; padding: 14px 18px;
+  display: flex; gap: 6px; padding: 16px 20px;
   align-self: flex-start; background: var(--surface-2);
-  border-radius: 22px; border-bottom-left-radius: 6px;
+  border-radius: 24px; border-bottom-left-radius: 8px;
 }
 .typing span {
-  width: 7px; height: 7px; background: var(--text-3);
-  border-radius: 50%; animation: typing 1.3s infinite;
+  width: 8px; height: 8px; background: var(--text-3);
+  border-radius: 50%; animation: typing 1.4s infinite;
 }
 .typing span:nth-child(2) { animation-delay: 0.15s; }
 .typing span:nth-child(3) { animation-delay: 0.3s; }
 @keyframes typing {
   0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-  30% { transform: translateY(-5px); opacity: 1; }
+  30% { transform: translateY(-6px); opacity: 1; }
 }
 
-.chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+/* ═══ CHIPS ═══ */
+.chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
 .chip {
-  padding: 8px 14px; border-radius: var(--r-full);
-  background: var(--surface-2); border: none;
+  padding: 9px 16px; border-radius: var(--r-full);
+  background: var(--surface-2); border: 0.5px solid var(--surface-3);
   color: var(--text); font-family: inherit;
   font-size: 13px; font-weight: 600; cursor: pointer;
   transition: all 0.2s var(--ease); white-space: nowrap;
 }
 .chip:active { transform: scale(0.94); }
 
+/* ═══ STATS ═══ */
 .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 .stat-item {
-  text-align: center; padding: 16px 8px;
-  background: var(--surface-2); border-radius: var(--r-lg);
+  text-align: center; padding: 18px 10px;
+  background: var(--surface-1); border-radius: var(--r-lg);
+  border: 0.5px solid var(--surface-2);
 }
 .stat-value {
-  font-size: 22px; font-weight: 800;
-  letter-spacing: -0.03em; line-height: 1;
-  margin-bottom: 6px;
+  font-size: 24px; font-weight: 800;
+  letter-spacing: -0.04em; line-height: 1;
+  margin-bottom: 7px;
 }
 .stat-label {
   font-size: 11px; color: var(--text-2);
-  text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700;
 }
 
+/* ═══ SWITCH ═══ */
 .switch {
-  position: relative; width: 52px; height: 32px;
+  position: relative; width: 54px; height: 33px;
   background: var(--surface-3); border-radius: var(--r-full);
   cursor: pointer; transition: background 0.3s var(--ease);
   flex-shrink: 0; border: none; padding: 0;
 }
 .switch::after {
   content: ''; position: absolute; top: 2px; left: 2px;
-  width: 28px; height: 28px; background: #fff; border-radius: 50%;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-  transition: transform 0.3s var(--ease);
+  width: 29px; height: 29px; background: #fff; border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+  transition: transform 0.3s var(--ease-bounce);
 }
 .switch.on { background: var(--brand); }
-.switch.on::after { transform: translateX(20px); }
+.switch.on::after { transform: translateX(21px); }
 
+/* ═══ LIST ROW ═══ */
 .list-row {
-  display: flex; align-items: center; gap: 14px;
-  padding: 16px; background: var(--bg-2);
-  border-radius: var(--r-lg); margin-bottom: 8px;
-  cursor: pointer; transition: all 0.2s var(--ease); min-height: 64px;
+  display: flex; align-items: center; gap: 16px;
+  padding: 16px 18px; background: var(--bg-2);
+  border-radius: var(--r-lg); margin-bottom: 10px;
+  cursor: pointer; transition: all 0.25s var(--ease);
+  min-height: 66px; border: 0.5px solid var(--surface-1);
 }
 .list-row:active { background: var(--surface-2); transform: scale(0.99); }
 .list-icon {
-  width: 44px; height: 44px; border-radius: 14px;
+  width: 46px; height: 46px; border-radius: 15px;
   display: grid; place-items: center; flex-shrink: 0;
   font-size: 22px;
 }
@@ -443,39 +577,152 @@ select {
 .list-title {
   font-size: 16px; font-weight: 600; color: var(--text);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  letter-spacing: -0.01em;
 }
 .list-subtitle {
-  font-size: 13px; color: var(--text-2); margin-top: 3px;
+  font-size: 13px; color: var(--text-2); margin-top: 4px;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .list-value { font-size: 16px; color: var(--text-2); font-weight: 600; flex-shrink: 0; }
-.list-chevron { color: var(--text-3); flex-shrink: 0; font-size: 20px; }
+.list-chevron { color: var(--text-4); flex-shrink: 0; font-size: 22px; }
 
-.empty { text-align: center; padding: 48px 20px; color: var(--text-2); }
-.empty-icon { font-size: 56px; opacity: 0.3; margin-bottom: 16px; }
-.empty-title { font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
-.empty-text { font-size: 14px; line-height: 1.5; }
+/* ═══ EMPTY ═══ */
+.empty { text-align: center; padding: 56px 24px; color: var(--text-2); }
+.empty-icon { font-size: 64px; opacity: 0.3; margin-bottom: 18px; }
+.empty-title { font-size: 21px; font-weight: 700; color: var(--text); margin-bottom: 10px; letter-spacing: -0.02em; }
+.empty-text { font-size: 14px; line-height: 1.55; }
 
+/* ═══ PROFILE ═══ */
+.profile-hero {
+  text-align: center;
+  padding: 36px 20px 28px;
+  background: linear-gradient(180deg, var(--surface-2), transparent);
+  border-radius: var(--r-2xl);
+  margin-bottom: 20px;
+  border: 0.5px solid var(--surface-2);
+  position: relative;
+  overflow: hidden;
+}
+.profile-hero::before {
+  content: '';
+  position: absolute; top: -60%; left: -20%;
+  width: 140%; height: 140%;
+  background: radial-gradient(circle, var(--brand-glow), transparent 55%);
+  opacity: 0.35;
+  pointer-events: none;
+}
+.profile-avatar {
+  width: 110px; height: 110px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  display: grid; place-items: center;
+  font-size: 54px;
+  margin: 0 auto 16px;
+  box-shadow: 0 12px 40px var(--brand-glow), inset 0 2px 0 rgba(255,255,255,0.25);
+  position: relative; z-index: 1;
+  border: 4px solid var(--bg-2);
+  cursor: pointer;
+}
+.profile-avatar:active { transform: scale(0.96); }
+.profile-name {
+  font-size: 26px; font-weight: 800;
+  letter-spacing: -0.03em; margin-bottom: 6px;
+  position: relative; z-index: 1;
+}
+.profile-sub {
+  font-size: 14px; color: var(--text-2);
+  position: relative; z-index: 1;
+}
+
+.achieve-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+}
+.achieve-item {
+  text-align: center; padding: 18px 8px;
+  background: var(--surface-1); border-radius: var(--r-lg);
+  border: 0.5px solid var(--surface-2);
+  transition: all 0.25s var(--ease);
+}
+.achieve-item.locked { opacity: 0.4; filter: grayscale(0.8); }
+.achieve-item.unlocked { border-color: var(--brand); box-shadow: 0 0 20px var(--brand-glow); }
+.achieve-icon { font-size: 32px; margin-bottom: 6px; }
+.achieve-name {
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.04em;
+  color: var(--text-2);
+}
+
+/* ═══ EMOJI PICKER ═══ */
+.emoji-grid {
+  display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px;
+}
+.emoji-pick {
+  aspect-ratio: 1; border-radius: 14px;
+  border: 2px solid transparent;
+  background: var(--surface-2);
+  font-size: 28px; cursor: pointer;
+  display: grid; place-items: center;
+  transition: all 0.2s var(--ease);
+}
+.emoji-pick:active { transform: scale(0.9); }
+.emoji-pick.selected {
+  border-color: var(--brand); background: var(--brand-glow);
+  box-shadow: 0 0 16px var(--brand-glow);
+}
+
+/* ═══ WELCOME ═══ */
+.welcome-screen {
+  position: fixed; inset: 0;
+  background: var(--bg);
+  z-index: 5000;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 32px;
+  text-align: center;
+  animation: fadeIn 0.5s var(--ease);
+}
+.welcome-logo {
+  width: 100px; height: 100px; border-radius: 28px;
+  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  display: grid; place-items: center;
+  font-size: 54px;
+  margin-bottom: 28px;
+  box-shadow: 0 20px 60px var(--brand-glow);
+}
+.welcome-title {
+  font-size: 32px; font-weight: 800;
+  letter-spacing: -0.03em; margin-bottom: 12px;
+}
+.welcome-sub {
+  font-size: 16px; color: var(--text-2);
+  margin-bottom: 40px; max-width: 340px; line-height: 1.55;
+}
+.welcome-input {
+  width: 100%; max-width: 340px;
+  text-align: center;
+  font-size: 20px !important; font-weight: 700 !important;
+}
+
+/* ═══ UTILS ═══ */
 .hidden { display: none !important; }
 .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .row-between { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-.divider { height: 0.5px; background: var(--divider); margin: 16px 0; }
+.divider { height: 0.5px; background: var(--divider); margin: 18px 0; }
 .text-secondary { color: var(--text-2); }
 .text-tertiary { color: var(--text-3); }
 .footnote { font-size: 13px; }
 .caption { font-size: 12px; }
 .subhead { font-size: 14px; }
 .headline { font-size: 17px; }
-.mt-1 { margin-top: 4px; } .mt-2 { margin-top: 8px; } .mt-3 { margin-top: 12px; } .mt-4 { margin-top: 16px; }
-.mb-2 { margin-bottom: 8px; } .mb-3 { margin-bottom: 12px; } .mb-4 { margin-bottom: 16px; }
+.mt-1 { margin-top: 4px; } .mt-2 { margin-top: 8px; } .mt-3 { margin-top: 12px; } .mt-4 { margin-top: 16px; } .mt-5 { margin-top: 20px; }
+.mb-2 { margin-bottom: 8px; } .mb-3 { margin-bottom: 12px; } .mb-4 { margin-bottom: 16px; } .mb-5 { margin-bottom: 20px; }
 
 @media (max-width: 480px) {
-  .app-main { padding: 16px; padding-bottom: calc(var(--tabbar-h) + var(--safe-bottom) + 56px) !important; }
-  .title-xl { font-size: 28px; }
+  .app-main { padding: 18px; padding-bottom: calc(var(--tabbar-h) + var(--safe-bottom) + 64px) !important; }
+  .title-xl { font-size: 30px; }
+  .profile-avatar { width: 96px; height: 96px; font-size: 46px; }
 }
 @media (min-width: 768px) {
-  .tab-bar { max-width: 680px; margin: 0 auto; border-radius: 28px 28px 0 0; border: 0.5px solid var(--divider); border-bottom: none; }
-  .modal { border-radius: 32px; margin-bottom: 4vh; }
+  .modal { border-radius: 36px; margin-bottom: 4vh; }
   .overlay { align-items: center; }
 }
 </style>
@@ -490,1901 +737,13 @@ select {
     </div>
     <div class="header-actions">
       <button class="icon-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
-      <div class="user-chip" id="userChip">Гость</div>
+      <button class="avatar-btn" id="headerAvatar" onclick="navigate('profile')">👤</button>
     </div>
   </div>
 </header>
 
 <main class="app-main" id="app"></main>
-<nav class="tab-bar" id="tabBar"></nav>
+<div class="tab-bar-wrap"><nav class="tab-bar" id="tabBar"></nav></div>
 <div class="toast-container" id="toasts"></div>
 
 <script>
-'use strict';
-
-/* ═══ TELEGRAM INIT ═══ */
-(function() {
-  try {
-    const tg = window.Telegram?.WebApp;
-    if (tg) {
-      tg.expand();
-      tg.ready();
-      try { tg.setHeaderColor?.('#000000'); } catch(e){}
-      try { tg.setBackgroundColor?.('#000000'); } catch(e){}
-      const u = tg.initDataUnsafe?.user;
-      if (u) {
-        const chip = document.getElementById('userChip');
-        if (chip) chip.textContent = u.first_name || u.username || 'Пользователь';
-      }
-    }
-  } catch(e) { console.warn('TG init error:', e); }
-})();
-
-/* ═══ UTILS ═══ */
-function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
-function nowISO() { return new Date().toISOString(); }
-function today() { return new Date().toISOString().slice(0, 10); }
-function fmtDate(d) { try { return new Date(d).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }); } catch(e) { return '—'; } }
-function fmtTime(d) { try { return new Date(d).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }); } catch(e) { return '—'; } }
-function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
-
-function toast(msg, type, duration) {
-  type = type || 'info';
-  duration = duration || 2500;
-  const c = document.getElementById('toasts');
-  if (!c) return;
-  const el = document.createElement('div');
-  el.className = 'toast ' + type;
-  el.textContent = msg;
-  c.appendChild(el);
-  setTimeout(function() {
-    el.style.opacity = '0';
-    el.style.transform = 'translate(-50%, -12px)';
-    el.style.transition = 'all 0.3s';
-    setTimeout(function() { el.remove(); }, 300);
-  }, duration);
-}
-
-function haptic(type) {
-  try {
-    const h = window.Telegram?.WebApp?.HapticFeedback;
-    if (!h) return;
-    if (type === 'success') h.notificationOccurred('success');
-    else if (type === 'error') h.notificationOccurred('error');
-    else if (type === 'warning') h.notificationOccurred('warning');
-    else h.impactOccurred(type || 'light');
-  } catch(e) {}
-}
-
-/* ═══ STATE ═══ */
-const STORAGE_KEY = 'ai_health_v16';
-
-function defaultState() {
-  return {
-    tasks: [], schedule: [], habits: [], goals: [], notes: [], learning: [],
-    timer: [], chats: [], mood: [], water: [], meds: [], workouts: [],
-    meditations: [], journal: [], media: [], finance: [], matrix: [],
-    settings: {
-      theme: 'dark',
-      username: 'Пользователь',
-      provider: 'openai',
-      apiKey: '',
-      activePersona: 'coach',
-      waterGoal: 8
-    },
-    flags: { dnd: false, focus: false },
-    stats: { streak: 0, lastActiveDay: null }
-  };
-}
-
-let state;
-try {
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if (raw) {
-    const parsed = JSON.parse(raw);
-    state = Object.assign(defaultState(), parsed);
-    state.settings = Object.assign(defaultState().settings, parsed.settings || {});
-    state.flags = Object.assign(defaultState().flags, parsed.flags || {});
-    state.stats = Object.assign(defaultState().stats, parsed.stats || {});
-  } else {
-    state = defaultState();
-  }
-} catch(e) {
-  console.error('Load error:', e);
-  state = defaultState();
-}
-
-function save() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-  catch(e) { console.error('Save error:', e); }
-}
-
-/* ═══ PERSONAS ═══ */
-const PERSONAS = {
-  coach: { name: 'Коуч', color: 'coach', label: 'Продуктивность', emoji: '💬',
-    prompt: 'Ты — AI-Коуч. Помогаешь с продуктивностью, целями, мотивацией. Методологии: GROW, SMART, Pomodoro, Deep Work, Атомные привычки. Отвечай кратко (150-220 слов). Markdown.' },
-  psych: { name: 'Психолог', color: 'psych', label: 'Эмоции', emoji: '🧠',
-    prompt: 'Ты — AI-Психолог. Валидируешь чувства, работаешь с КПТ, ACT, DBT. НЕ ставишь диагнозы. При кризисе → 8-800-2000-122. Отвечай тепло (150-220 слов).' },
-  doctor: { name: 'Врач', color: 'doctor', label: 'Здоровье', emoji: '⚕️',
-    prompt: 'Ты — AI-Врач-консультант. НЕ ставишь диагнозы. ВСЕГДА заканчивай дисклеймером. При острых симптомах → 103/112. 150-250 слов.' },
-  nutrition: { name: 'Нутрициолог', color: 'nutrition', label: 'Питание', emoji: '🥗',
-    prompt: 'Ты — AI-Нутрициолог. Средиземноморская диета, интервальное голодание, микробиом. НЕ назначай диеты при заболеваниях. 150-200 слов.' },
-  fitness: { name: 'Тренер', color: 'fitness', label: 'Фитнес', emoji: '🏋️',
-    prompt: 'Ты — AI-Фитнес-тренер. Силовые, кардио, HIIT, мобильность. Форма — сначала. 150-200 слов.' },
-  lawyer: { name: 'Юрист', color: 'lawyer', label: 'Право', emoji: '⚖️',
-    prompt: 'Ты — AI-Юрист. Образовательная информация. НЕ заменяешь адвоката. Всегда дисклеймер. 150-200 слов.' },
-  finance: { name: 'Финансист', color: 'finance', label: 'Финансы', emoji: '💰',
-    prompt: 'Ты — AI-Финансовый консультант. Бюджет, сбережения, инвестиции (базово). НЕ даёшь конкретных рекомендаций. 150-200 слов.' }
-};
-
-/* ═══ NAV ═══ */
-const TABS = [
-  { id: 'dashboard', emoji: '🏠', label: 'Главная' },
-  { id: 'tasks', emoji: '✅', label: 'Задачи' },
-  { id: 'ai', emoji: '✨', label: 'AI' },
-  { id: 'health', emoji: '❤️', label: 'Здоровье' },
-  { id: 'more', emoji: '⋯', label: 'Ещё' }
-];
-
-let currentPage = 'dashboard';
-
-function renderTabBar() {
-  const bar = document.getElementById('tabBar');
-  if (!bar) return;
-  let html = '';
-  for (let i = 0; i < TABS.length; i++) {
-    const t = TABS[i];
-    html += '<button class="tab-item ' + (t.id === currentPage ? 'active' : '') + '" onclick="navigate(\'' + t.id + '\')">';
-    html += '<span style="font-size:24px;line-height:1;">' + t.emoji + '</span>';
-    html += '<span>' + t.label + '</span>';
-    html += '</button>';
-  }
-  bar.innerHTML = html;
-}
-
-function navigate(page) {
-  if (!page || currentPage === page) return;
-  currentPage = page;
-  renderTabBar();
-  const main = document.getElementById('app');
-  main.innerHTML = '';
-  const renderers = {
-    dashboard: renderDashboard,
-    tasks: renderTasks,
-    ai: renderAI,
-    health: renderHealth,
-    more: renderMore,
-    calendar: renderCalendar,
-    stats: renderStats,
-    habits: renderHabits,
-    goals: renderGoals,
-    timer: renderTimer,
-    notes: renderNotes,
-    learning: renderLearning,
-    matrix: renderMatrix,
-    focus: renderFocus,
-    mood: renderMood,
-    water: renderWater,
-    meds: renderMeds,
-    workouts: renderWorkouts,
-    meditation: renderMeditation,
-    journal: renderJournal,
-    media: renderMedia,
-    finance: renderFinance,
-    history: renderHistory,
-    dbmanager: renderDBManager,
-    settings: renderSettings
-  };
-  const fn = renderers[page];
-  if (fn) {
-    try { fn(); }
-    catch(e) { console.error('Render error:', page, e); toast('Ошибка: ' + e.message, 'error'); }
-  }
-  window.scrollTo({ top: 0, behavior: 'auto' });
-}
-
-function openSheet(title, content) {
-  const overlay = document.createElement('div');
-  overlay.className = 'overlay';
-  overlay.innerHTML = '<div class="modal"><div class="modal-header"><div class="modal-title">' + esc(title) + '</div><button class="modal-close" onclick="closeSheet()">✕</button></div>' + content + '</div>';
-  overlay.onclick = function(e) { if (e.target === overlay) closeSheet(); };
-  document.body.appendChild(overlay);
-  document.body.style.overflow = 'hidden';
-}
-
-function closeSheet() {
-  document.querySelectorAll('.overlay').forEach(function(o) { o.remove(); });
-  document.body.style.overflow = '';
-}
-
-/* ═══ DASHBOARD ═══ */
-function renderDashboard() {
-  const todayTasks = state.tasks.filter(function(t) { return t.created_at && t.created_at.slice(0, 10) === today(); });
-  const doneToday = todayTasks.filter(function(t) { return t.status === 'completed'; }).length;
-  const habitsToday = state.habits.filter(function(h) { return h.history && h.history.indexOf(today()) >= 0; }).length;
-  const hour = new Date().getHours();
-  const greet = hour < 6 ? 'Доброй ночи' : hour < 12 ? 'Доброе утро' : hour < 18 ? 'Добрый день' : 'Добрый вечер';
-  const lastMood = state.mood.length ? state.mood[state.mood.length - 1] : null;
-  const waterEntry = state.water.find(function(w) { return w.date === today(); });
-  const waterToday = waterEntry ? waterEntry.count : 0;
-  const waterGoal = state.settings.waterGoal || 8;
-  const progress = todayTasks.length ? Math.round(doneToday / todayTasks.length * 100) : 0;
-
-  let html = '<div class="page">';
-  html += '<div class="title-xl">' + greet + '</div>';
-
-  html += '<div class="card card-gradient">';
-  html += '<div class="row-between" style="margin-bottom:12px;">';
-  html += '<div><div style="font-size:13px;opacity:0.85;font-weight:600;margin-bottom:6px;">Прогресс дня</div>';
-  html += '<div style="font-size:38px;font-weight:800;letter-spacing:-1.5px;line-height:1;">' + doneToday + '/' + todayTasks.length + '</div></div>';
-  html += '<div style="font-size:44px;font-weight:800;letter-spacing:-2px;">' + progress + '%</div>';
-  html += '</div>';
-  html += '<div class="progress" style="background:rgba(255,255,255,0.2);height:6px;"><div class="progress-fill" style="width:' + progress + '%;background:#fff;"></div></div>';
-  html += '</div>';
-
-  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">';
-  html += '<div class="card" style="margin:0;"><div style="font-size:11px;color:var(--text-2);text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Streak</div>';
-  html += '<div style="font-size:24px;font-weight:800;letter-spacing:-0.6px;">' + (state.stats.streak || 0) + '</div>';
-  html += '<div style="font-size:12px;color:var(--text-2);margin-top:4px;">дней подряд</div></div>';
-  html += '<div class="card" style="margin:0;"><div style="font-size:11px;color:var(--text-2);text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Привычки</div>';
-  html += '<div style="font-size:24px;font-weight:800;letter-spacing:-0.6px;">' + habitsToday + '/' + state.habits.length + '</div>';
-  html += '<div style="font-size:12px;color:var(--text-2);margin-top:4px;">сегодня</div></div>';
-  html += '</div>';
-
-  html += '<div class="card"><h2>✨ AI-специалисты</h2><div class="row" style="gap:8px;">';
-  ['coach', 'psych', 'doctor', 'nutrition'].forEach(function(k) {
-    const p = PERSONAS[k];
-    html += '<button class="btn btn-ghost btn-sm" onclick="openPersona(\'' + k + '\')">' + p.emoji + ' ' + p.name + '</button>';
-  });
-  html += '</div></div>';
-
-  html += '<div class="card"><h2>⚡ Быстрые действия</h2><div class="row" style="gap:8px;">';
-  html += '<button class="btn btn-ghost btn-sm" onclick="navigate(\'timer\')">⏱ Таймер</button>';
-  html += '<button class="btn btn-ghost btn-sm" onclick="addTask()">➕ Задача</button>';
-  html += '<button class="btn btn-ghost btn-sm" onclick="addWater()">💧 Вода</button>';
-  html += '<button class="btn btn-ghost btn-sm" onclick="quickMoodLog()">💭 Настроение</button>';
-  html += '</div></div>';
-
-  html += '<div class="card"><h2>❤️ Состояние</h2><div class="stat-grid">';
-  html += '<div class="stat-item"><div class="stat-value">' + (lastMood ? lastMood.score + '/10' : '—') + '</div><div class="stat-label">Настроение</div></div>';
-  html += '<div class="stat-item"><div class="stat-value">' + waterToday + '/' + waterGoal + '</div><div class="stat-label">Вода</div></div>';
-  html += '<div class="stat-item"><div class="stat-value">' + state.workouts.length + '</div><div class="stat-label">Тренировок</div></div>';
-  html += '</div></div>';
-
-  html += '<div class="card"><h2>📋 Задачи</h2>';
-  const pending = state.tasks.filter(function(t) { return t.status === 'pending'; }).slice(0, 5);
-  if (pending.length) {
-    for (let i = 0; i < pending.length; i++) html += taskRow(pending[i]);
-  } else {
-    html += '<div class="empty"><div class="empty-icon">✨</div><div class="empty-title">Всё выполнено</div><div class="empty-text">Отдохни</div></div>';
-  }
-  html += '</div></div>';
-  document.getElementById('app').innerHTML = html;
-}
-
-function taskRow(t) {
-  const pColors = { high: 'high', medium: 'medium', low: 'low' };
-  const checked = t.status === 'completed';
-  return '<div class="task-item ' + (checked ? 'completed' : '') + '" onclick="editTask(\'' + t.id + '\')">' +
-    '<div class="priority-bar ' + (pColors[t.priority] || 'medium') + '"></div>' +
-    '<button class="task-checkbox ' + (checked ? 'checked' : '') + '" onclick="event.stopPropagation();toggleTask(\'' + t.id + '\')">' + (checked ? '✓' : '') + '</button>' +
-    '<div class="task-content"><div class="task-title">' + esc(t.title) + '</div>' +
-    '<div class="task-meta"><span>' + (t.planned_time || 0) + ' мин</span>' + (t.category ? '<span>· ' + esc(t.category) + '</span>' : '') + '</div></div></div>';
-}
-
-function openPersona(p) {
-  state.settings.activePersona = p;
-  save();
-  navigate('ai');
-}
-
-function addWater() {
-  const t = today();
-  let entry = state.water.find(function(w) { return w.date === t; });
-  if (entry) entry.count += 1;
-  else {
-    entry = { id: uid(), date: t, count: 1, created_at: nowISO() };
-    state.water.push(entry);
-  }
-  save();
-  toast('💧 ' + entry.count, 'success');
-  haptic('success');
-  if (currentPage === 'dashboard') renderDashboard();
-  else if (currentPage === 'water') renderWater();
-}
-
-function quickMoodLog() {
-  const moods = ['😢','😔','😐','🙂','😊'];
-  let html = '<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;">';
-  for (let i = 0; i < moods.length; i++) {
-    html += '<button class="btn btn-ghost" style="font-size:32px;padding:20px 0;height:auto;" onclick="saveMood(' + ((i+1)*2) + ')">' + moods[i] + '</button>';
-  }
-  html += '</div><div class="footnote text-tertiary" style="text-align:center;margin-top:12px;">1 = плохо · 10 = отлично</div>';
-  openSheet('Как настроение?', html);
-}
-
-function saveMood(score) {
-  const t = today();
-  const existing = state.mood.find(function(m) { return m.date === t; });
-  if (existing) existing.score = score;
-  else state.mood.push({ id: uid(), date: t, score: score, created_at: nowISO() });
-  save();
-  closeSheet();
-  toast('Записано', 'success');
-  haptic('success');
-  if (currentPage === 'dashboard') renderDashboard();
-  else if (currentPage === 'mood') renderMood();
-}
-
-/* ═══ TASKS ═══ */
-let taskFilter = 'all';
-let taskSearch = '';
-
-function renderTasks() {
-  const counts = {
-    all: state.tasks.length,
-    pending: state.tasks.filter(function(t) { return t.status === 'pending'; }).length,
-    completed: state.tasks.filter(function(t) { return t.status === 'completed'; }).length
-  };
-  let filtered = state.tasks.slice();
-  if (taskFilter !== 'all') filtered = filtered.filter(function(t) { return t.status === taskFilter; });
-  if (taskSearch) {
-    const q = taskSearch.toLowerCase();
-    filtered = filtered.filter(function(t) { return t.title.toLowerCase().indexOf(q) >= 0; });
-  }
-
-  let html = '<div class="page">';
-  html += '<div class="row-between" style="margin-bottom:16px;"><div class="title-xl" style="margin:0;">Задачи</div>';
-  html += '<button class="btn btn-primary btn-sm" onclick="addTask()">+ Новая</button></div>';
-
-  html += '<div class="search-bar"><span style="color:var(--text-3);">🔍</span>';
-  html += '<input type="search" placeholder="Поиск..." value="' + esc(taskSearch) + '" oninput="taskSearch=this.value;renderTasks()"/></div>';
-
-  html += '<div class="segmented" style="margin-bottom:16px;">';
-  html += '<button class="segmented-item ' + (taskFilter === 'all' ? 'active' : '') + '" onclick="taskFilter=\'all\';renderTasks()">Все (' + counts.all + ')</button>';
-  html += '<button class="segmented-item ' + (taskFilter === 'pending' ? 'active' : '') + '" onclick="taskFilter=\'pending\';renderTasks()">Активные (' + counts.pending + ')</button>';
-  html += '<button class="segmented-item ' + (taskFilter === 'completed' ? 'active' : '') + '" onclick="taskFilter=\'completed\';renderTasks()">Готовые (' + counts.completed + ')</button>';
-  html += '</div>';
-
-  if (filtered.length) {
-    for (let i = 0; i < filtered.length; i++) html += taskRow(filtered[i]);
-  } else {
-    html += '<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">' + (taskSearch ? 'Ничего не найдено' : 'Нет задач') + '</div>';
-    html += '<div class="empty-text">' + (taskSearch ? 'Попробуй другой запрос' : 'Нажми "+ Новая"') + '</div></div>';
-  }
-  html += '</div>';
-  document.getElementById('app').innerHTML = html;
-}
-
-function addTask() {
-  openSheet('Новая задача',
-    '<div class="field"><input type="text" id="t-title" placeholder="Название" autofocus/></div>' +
-    '<div class="field"><textarea id="t-desc" placeholder="Описание (необязательно)" rows="2"></textarea></div>' +
-    '<div class="row" style="gap:8px;">' +
-    '<div style="flex:1;min-width:120px;"><label class="field-label">Время (мин)</label><input type="number" id="t-time" value="30" min="5" step="5"/></div>' +
-    '<div style="flex:1;min-width:120px;"><label class="field-label">Приоритет</label>' +
-    '<select id="t-priority"><option value="low">🟢 Низкий</option><option value="medium" selected>🟡 Средний</option><option value="high">🔴 Высокий</option></select></div>' +
-    '</div>' +
-    '<div class="field" style="margin-top:12px;"><label class="field-label">Категория</label>' +
-    '<select id="t-category"><option value="Работа">Работа</option><option value="Обучение">Обучение</option><option value="Личное">Личное</option><option value="Здоровье">Здоровье</option><option value="Бытовые">Бытовые</option></select></div>' +
-    '<button class="btn btn-primary btn-block" onclick="saveTask()">Добавить</button>'
-  );
-  setTimeout(function() { const el = document.getElementById('t-title'); if (el) el.focus(); }, 100);
-}
-
-function saveTask() {
-  const titleEl = document.getElementById('t-title');
-  const title = titleEl ? titleEl.value.trim() : '';
-  if (!title) return toast('Введите название', 'error');
-  state.tasks.unshift({
-    id: uid(), title: title,
-    description: (document.getElementById('t-desc') || {}).value || '',
-    planned_time: parseInt((document.getElementById('t-time') || {}).value) || 30,
-    actual_time: 0, status: 'pending',
-    priority: (document.getElementById('t-priority') || {}).value || 'medium',
-    category: (document.getElementById('t-category') || {}).value || 'Работа',
-    created_at: nowISO()
-  });
-  save();
-  closeSheet();
-  toast('Задача добавлена', 'success');
-  haptic('success');
-  if (currentPage === 'tasks') renderTasks();
-  else if (currentPage === 'dashboard') renderDashboard();
-}
-
-function toggleTask(id) {
-  const t = state.tasks.find(function(x) { return x.id === id; });
-  if (!t) return;
-  t.status = t.status === 'completed' ? 'pending' : 'completed';
-  t.actual_time = t.status === 'completed' ? (t.planned_time || 0) : 0;
-  save();
-  haptic('success');
-  if (t.status === 'completed') toast('✓ Выполнено', 'success');
-  if (currentPage === 'tasks') renderTasks();
-  else if (currentPage === 'dashboard') renderDashboard();
-}
-
-function editTask(id) {
-  const t = state.tasks.find(function(x) { return x.id === id; });
-  if (!t) return;
-  openSheet('Редактировать',
-    '<div class="field"><input type="text" id="e-title" value="' + esc(t.title) + '"/></div>' +
-    '<div class="field"><textarea id="e-desc" rows="2">' + esc(t.description || '') + '</textarea></div>' +
-    '<div class="row" style="gap:8px;">' +
-    '<div style="flex:1;"><label class="field-label">Время</label><input type="number" id="e-time" value="' + (t.planned_time || 30) + '"/></div>' +
-    '<div style="flex:1;"><label class="field-label">Приоритет</label><select id="e-priority">' +
-    '<option value="low"' + (t.priority === 'low' ? ' selected' : '') + '>Низкий</option>' +
-    '<option value="medium"' + (t.priority === 'medium' ? ' selected' : '') + '>Средний</option>' +
-    '<option value="high"' + (t.priority === 'high' ? ' selected' : '') + '>Высокий</option>' +
-    '</select></div></div>' +
-    '<button class="btn btn-primary btn-block mt-3" onclick="updateTask(\'' + id + '\')">Сохранить</button>' +
-    '<button class="btn btn-danger btn-block mt-2" onclick="deleteTask(\'' + id + '\')">Удалить</button>'
-  );
-}
-
-function updateTask(id) {
-  const t = state.tasks.find(function(x) { return x.id === id; });
-  if (!t) return;
-  t.title = (document.getElementById('e-title') || {}).value || t.title;
-  t.description = (document.getElementById('e-desc') || {}).value || '';
-  t.planned_time = parseInt((document.getElementById('e-time') || {}).value) || 30;
-  t.priority = (document.getElementById('e-priority') || {}).value || 'medium';
-  save();
-  closeSheet();
-  toast('Сохранено', 'success');
-  if (currentPage === 'tasks') renderTasks();
-  else if (currentPage === 'dashboard') renderDashboard();
-}
-
-function deleteTask(id) {
-  if (!confirm('Удалить задачу?')) return;
-  state.tasks = state.tasks.filter(function(t) { return t.id !== id; });
-  save();
-  closeSheet();
-  toast('Удалено', 'info');
-  if (currentPage === 'tasks') renderTasks();
-  else if (currentPage === 'dashboard') renderDashboard();
-}
-
-/* ═══ AI ═══ */
-function renderAI() {
-  const active = state.settings.activePersona || 'coach';
-  const persona = PERSONAS[active] || PERSONAS.coach;
-  const messages = state.chats.filter(function(c) { return c.persona === active; });
-  const hasKey = !!state.settings.apiKey;
-
-  const quick = {
-    coach: ['Не могу начать', 'Выгорание', 'План дня'],
-    psych: ['Тревога', 'Всё откладываю', 'Отношения'],
-    doctor: ['Плохо сплю', 'Болит голова', 'Усталость'],
-    nutrition: ['Что на завтрак', 'Похудеть'],
-    fitness: ['Начать бегать', 'Силовая'],
-    lawyer: ['Трудовой спор', 'Договор'],
-    finance: ['Бюджет', 'Накопления']
-  };
-
-  let html = '<div class="page">';
-  html += '<div class="title-xl">AI-Экосистема</div>';
-
-  html += '<div class="persona-bar">';
-  const keys = Object.keys(PERSONAS);
-  for (let i = 0; i < keys.length; i++) {
-    const k = keys[i];
-    const p = PERSONAS[k];
-    html += '<button class="persona-item ' + (active === k ? 'active' : '') + '" data-p="' + k + '" onclick="switchPersona(\'' + k + '\')">' + p.name + '</button>';
-  }
-  html += '</div>';
-
-  html += '<div class="card" style="padding:14px 16px;"><div class="row-between">';
-  html += '<div class="row" style="gap:10px;"><div style="font-size:26px;">' + persona.emoji + '</div>';
-  html += '<div><div style="font-weight:700;font-size:15px;">' + persona.name + '</div>';
-  html += '<div class="caption text-tertiary">' + persona.label + (hasKey ? '' : ' · Demo') + '</div></div></div>';
-  html += '<button class="btn btn-ghost btn-sm" onclick="openAISettings()">⚙️</button>';
-  html += '</div></div>';
-
-  html += '<div class="card" style="min-height:340px;max-height:60vh;overflow-y:auto;padding:16px;" id="chatBox"><div class="chat">';
-  if (messages.length) {
-    for (let i = 0; i < messages.length; i++) {
-      const m = messages[i];
-      html += '<div class="msg msg-' + (m.role === 'user' ? 'user' : 'bot') + '">' + (m.role === 'user' ? esc(m.text) : renderMd(m.text)) + '</div>';
-    }
-  } else {
-    html += '<div class="empty"><div class="empty-icon">' + persona.emoji + '</div>';
-    html += '<div class="empty-title">' + persona.name + '</div>';
-    html += '<div class="empty-text">Задай вопрос — начни диалог</div></div>';
-  }
-  html += '</div></div>';
-
-  html += '<div class="chips">';
-  const qs = quick[active] || [];
-  for (let i = 0; i < qs.length; i++) {
-    html += '<button class="chip" onclick="quickAsk(\'' + esc(qs[i]) + '\')">' + qs[i] + '</button>';
-  }
-  html += '</div>';
-
-  html += '<div class="row" style="margin-top:12px;">';
-  html += '<input type="text" id="chatInput" placeholder="Сообщение..." style="flex:1;" onkeydown="if(event.key===\'Enter\'){event.preventDefault();sendMsg();}"/>';
-  html += '<button class="btn btn-primary btn-icon" onclick="sendMsg()">➤</button>';
-  html += '</div></div>';
-
-  document.getElementById('app').innerHTML = html;
-  const box = document.getElementById('chatBox');
-  if (box) box.scrollTop = box.scrollHeight;
-}
-
-function switchPersona(p) {
-  state.settings.activePersona = p;
-  save();
-  haptic('light');
-  renderAI();
-}
-
-function quickAsk(text) {
-  const input = document.getElementById('chatInput');
-  if (input) input.value = text;
-  sendMsg();
-}
-
-async function sendMsg() {
-  const input = document.getElementById('chatInput');
-  if (!input) return;
-  const text = input.value.trim();
-  if (!text) return;
-  input.value = '';
-  input.disabled = true;
-
-  const persona = state.settings.activePersona || 'coach';
-  state.chats.push({ id: uid(), persona: persona, role: 'user', text: text, timestamp: nowISO() });
-  save();
-  renderAI();
-
-  const box = document.getElementById('chatBox');
-  const typing = document.createElement('div');
-  typing.className = 'typing';
-  typing.innerHTML = '<span></span><span></span><span></span>';
-  if (box) {
-    box.appendChild(typing);
-    box.scrollTop = box.scrollHeight;
-  }
-
-  let reply;
-  if (state.settings.apiKey) {
-    reply = await callAI(persona, text);
-  } else {
-    reply = fallbackReply(persona, text);
-  }
-
-  if (typing) typing.remove();
-  state.chats.push({ id: uid(), persona: persona, role: 'coach', text: reply, timestamp: nowISO() });
-  save();
-  renderAI();
-  haptic('light');
-  const ni = document.getElementById('chatInput');
-  if (ni) { ni.disabled = false; ni.focus(); }
-}
-
-async function callAI(persona, userText) {
-  const provider = state.settings.provider;
-  const apiKey = state.settings.apiKey;
-  const p = PERSONAS[persona];
-  const history = state.chats.filter(function(c) { return c.persona === persona; }).slice(-10);
-  const messages = [{ role: 'system', content: p.prompt }];
-  for (let i = 0; i < history.length; i++) {
-    messages.push({ role: history[i].role === 'user' ? 'user' : 'assistant', content: history[i].text });
-  }
-
-  try {
-    if (provider === 'openai') {
-      const resp = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
-        body: JSON.stringify({ model: 'gpt-4o-mini', messages: messages, temperature: 0.8, max_tokens: 800 })
-      });
-      if (!resp.ok) throw new Error('HTTP ' + resp.status);
-      const data = await resp.json();
-      return (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || fallbackReply(persona, userText);
-    } else if (provider === 'anthropic') {
-      const sys = p.prompt;
-      const rest = history.map(function(m) { return { role: m.role === 'user' ? 'user' : 'assistant', content: m.text }; });
-      const resp = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01',
-          'anthropic-dangerous-direct-browser-access': 'true'
-        },
-        body: JSON.stringify({ model: 'claude-3-5-sonnet-20241022', system: sys, messages: rest, max_tokens: 800 })
-      });
-      if (!resp.ok) throw new Error('HTTP ' + resp.status);
-      const data = await resp.json();
-      return (data.content && data.content[0] && data.content[0].text) || fallbackReply(persona, userText);
-    } else if (provider === 'gemini') {
-      const sys = p.prompt;
-      const rest = history.map(function(m) { return { role: m.role === 'user' ? 'user' : 'model', parts: [{ text: m.text }] }; });
-      const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + apiKey, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          system_instruction: { parts: [{ text: sys }] },
-          contents: rest,
-          generationConfig: { temperature: 0.8, maxOutputTokens: 800 }
-        })
-      });
-      if (!resp.ok) throw new Error('HTTP ' + resp.status);
-      const data = await resp.json();
-      return (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) || fallbackReply(persona, userText);
-    }
-  } catch(e) {
-    console.error('AI error:', e);
-    toast('AI: ' + e.message, 'error');
-    return fallbackReply(persona, userText);
-  }
-  return fallbackReply(persona, userText);
-}
-
-function fallbackReply(persona, text) {
-  text = text || '';
-  if (/суицид|покончить|не хочу жить|умереть/i.test(text)) {
-    return '🆘 Важно. Позвони прямо сейчас:\n• 8-800-2000-122 (РФ, 24/7)\n• 103 / 112\n• https://findahelpline.com\n\nТы важен. Ты не один. 💙';
-  }
-  if (persona === 'doctor') return 'Я — AI-консультант. Опиши симптомы (что, как давно, что предшествовало).\n\n*⚠️ Не заменяет врача. При острых симптомах — 103/112.*';
-  if (persona === 'psych') return 'Слышу тебя. Что происходит? Что ты уже пробовал?';
-  if (persona === 'nutrition') return 'Расскажи о питании и целях. Что хочешь изменить?';
-  if (persona === 'fitness') return 'Расскажи об уровне подготовки и целях.';
-  if (persona === 'lawyer') return 'Опиши ситуацию подробнее.\n\n*Не заменяет юриста.*';
-  if (persona === 'finance') return 'Расскажи о финансовой цели. Что беспокоит?';
-  return 'Слышу тебя. Расскажи подробнее — что происходит?';
-}
-
-function renderMd(text) {
-  if (!text) return '';
-  let h = esc(text);
-  h = h.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-  h = h.replace(/(^|\s)\*([^*\n]+)\*(?=\s|$|[.,!?])/g, '$1<em>$2</em>');
-  h = h.replace(/`([^`]+)`/g, '<code>$1</code>');
-  h = h.replace(/^[•\-] (.+)$/gm, '<li>$1</li>');
-  h = h.replace(/(<li>[\s\S]*?<\/li>)(?!\s*<li>)/g, '<ul>$1</ul>');
-  h = h.replace(/\n\n/g, '</p><p>');
-  h = h.replace(/\n/g, '<br>');
-  return '<p>' + h + '</p>';
-}
-
-function openAISettings() {
-  openSheet('Настройки AI',
-    '<div class="field"><label class="field-label">Провайдер</label><select id="ai-p">' +
-    '<option value="openai"' + (state.settings.provider === 'openai' ? ' selected' : '') + '>OpenAI GPT-4o</option>' +
-    '<option value="anthropic"' + (state.settings.provider === 'anthropic' ? ' selected' : '') + '>Anthropic Claude</option>' +
-    '<option value="gemini"' + (state.settings.provider === 'gemini' ? ' selected' : '') + '>Google Gemini</option>' +
-    '</select></div>' +
-    '<div class="field"><label class="field-label">API ключ</label><input type="password" id="ai-k" value="' + esc(state.settings.apiKey || '') + '" placeholder="sk-..."/></div>' +
-    '<div class="footnote text-tertiary mb-4" style="line-height:1.5;">Ключ хранится только в браузере.<br>' +
-    '<a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--brand);">Gemini (бесплатно)</a> · ' +
-    '<a href="https://platform.openai.com/api-keys" target="_blank" style="color:var(--brand);">OpenAI</a></div>' +
-    '<button class="btn btn-primary btn-block" onclick="saveAISettings()">Сохранить</button>'
-  );
-}
-
-function saveAISettings() {
-  state.settings.provider = (document.getElementById('ai-p') || {}).value || 'openai';
-  state.settings.apiKey = ((document.getElementById('ai-k') || {}).value || '').trim();
-  save();
-  closeSheet();
-  toast('Сохранено', 'success');
-  renderAI();
-}
-
-/* ═══ HEALTH ═══ */
-function renderHealth() {
-  const waterEntry = state.water.find(function(w) { return w.date === today(); });
-  const water = waterEntry ? waterEntry.count : 0;
-  const lastMood = state.mood.length ? state.mood[state.mood.length - 1] : null;
-  const waterGoal = state.settings.waterGoal || 8;
-
-  let html = '<div class="page"><div class="title-xl">Здоровье</div>';
-  html += '<div class="card"><h2>Сегодня</h2><div class="stat-grid">';
-  html += '<div class="stat-item" onclick="quickMoodLog()" style="cursor:pointer;"><div class="stat-value">' + (lastMood ? lastMood.score + '/10' : '—') + '</div><div class="stat-label">Настроение</div></div>';
-  html += '<div class="stat-item" onclick="addWater()" style="cursor:pointer;"><div class="stat-value">' + water + '/' + waterGoal + '</div><div class="stat-label">Вода</div></div>';
-  html += '<div class="stat-item"><div class="stat-value">' + state.workouts.length + '</div><div class="stat-label">Тренировок</div></div>';
-  html += '</div></div>';
-
-  html += '<div class="card"><h2>AI-специалисты</h2>';
-  const specs = ['doctor', 'nutrition', 'fitness'];
-  for (let i = 0; i < specs.length; i++) {
-    const k = specs[i];
-    const p = PERSONAS[k];
-    html += '<div class="list-row" onclick="openPersona(\'' + k + '\')">';
-    html += '<div class="list-icon" style="background:var(--' + p.color + ');color:#000;">' + p.emoji + '</div>';
-    html += '<div class="list-body"><div class="list-title">' + p.name + '</div><div class="list-subtitle">' + p.label + '</div></div>';
-    html += '<div class="list-chevron">›</div></div>';
-  }
-  html += '</div>';
-
-  html += '<div class="card"><h2>Трекинг</h2>';
-  const trackers = [
-    { k: 'mood', name: 'Настроение', color: 'psych', emoji: '💭' },
-    { k: 'workouts', name: 'Тренировки', color: 'fitness', emoji: '🏋️' },
-    { k: 'meds', name: 'Лекарства', color: 'danger', emoji: '💊' },
-    { k: 'meditation', name: 'Медитации', color: 'coach', emoji: '🧘' }
-  ];
-  for (let i = 0; i < trackers.length; i++) {
-    const x = trackers[i];
-    html += '<div class="list-row" onclick="navigate(\'' + x.k + '\')">';
-    html += '<div class="list-icon" style="background:var(--' + x.color + ');color:#000;">' + x.emoji + '</div>';
-    html += '<div class="list-body"><div class="list-title">' + x.name + '</div></div>';
-    html += '<div class="list-chevron">›</div></div>';
-  }
-  html += '</div></div>';
-  document.getElementById('app').innerHTML = html;
-}
-
-/* ═══ MORE ═══ */
-function renderMore() {
-  const items = [
-    { key: 'calendar', emoji: '📅', label: 'Календарь' },
-    { key: 'stats', emoji: '📊', label: 'Статистика' },
-    { key: 'habits', emoji: '🔄', label: 'Привычки' },
-    { key: 'goals', emoji: '🎯', label: 'Цели' },
-    { key: 'timer', emoji: '⏱', label: 'Таймер' },
-    { key: 'notes', emoji: '📝', label: 'Заметки' },
-    { key: 'learning', emoji: '📚', label: 'Обучение' },
-    { key: 'matrix', emoji: '🔢', label: 'Матрица' },
-    { key: 'focus', emoji: '🧘', label: 'Фокус' },
-    { key: 'mood', emoji: '💭', label: 'Настроение' },
-    { key: 'water', emoji: '💧', label: 'Вода' },
-    { key: 'meds', emoji: '💊', label: 'Лекарства' },
-    { key: 'workouts', emoji: '🏋️', label: 'Тренировки' },
-    { key: 'meditation', emoji: '🧘', label: 'Медитации' },
-    { key: 'journal', emoji: '📓', label: 'Дневник' },
-    { key: 'media', emoji: '📖', label: 'Медиатека' },
-    { key: 'finance', emoji: '💰', label: 'Финансы' },
-    { key: 'history', emoji: '📋', label: 'История' },
-    { key: 'dbmanager', emoji: '🗄', label: 'База данных' },
-    { key: 'settings', emoji: '⚙️', label: 'Настройки' }
-  ];
-  let html = '<div class="page"><div class="title-xl">Все разделы</div>';
-  for (let i = 0; i < items.length; i++) {
-    const it = items[i];
-    html += '<div class="list-row" onclick="navigate(\'' + it.key + '\')">';
-    html += '<div class="list-icon" style="background:var(--surface-2);">' + it.emoji + '</div>';
-    html += '<div class="list-body"><div class="list-title">' + it.label + '</div></div>';
-    html += '<div class="list-chevron">›</div></div>';
-  }
-  html += '</div>';
-  document.getElementById('app').innerHTML = html;
-}
-
-/* ═══ CALENDAR ═══ */
-let calOffset = 0;
-
-function renderCalendar() {
-  const now = new Date();
-  const month = new Date(now.getFullYear(), now.getMonth() + calOffset, 1);
-  const year = month.getFullYear();
-  const m = month.getMonth();
-  const firstDay = (new Date(year, m, 1).getDay() + 6) % 7;
-  const daysInMonth = new Date(year, m + 1, 0).getDate();
-  const monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-  const weekdays = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
-  const todayStr = today();
-
-  const events = state.schedule.filter(function(b) {
-    const d = new Date(b.start_time);
-    return d.getMonth() === m && d.getFullYear() === year;
-  });
-
-  let grid = '';
-  for (let i = 0; i < weekdays.length; i++) {
-    grid += '<div style="text-align:center;font-size:11px;font-weight:700;color:var(--text-3);padding:8px 0;text-transform:uppercase;">' + weekdays[i] + '</div>';
-  }
-  for (let i = 0; i < firstDay; i++) grid += '<div></div>';
-  for (let day = 1; day <= daysInMonth; day++) {
-    const ds = year + '-' + String(m+1).padStart(2,'0') + '-' + String(day).padStart(2,'0');
-    const dayEvents = events.filter(function(b) { return new Date(b.start_time).toISOString().slice(0, 10) === ds; });
-    const isToday = ds === todayStr;
-    grid += '<button style="aspect-ratio:1;border-radius:14px;border:none;background:' + (isToday ? 'var(--brand)' : 'transparent') + ';color:' + (isToday ? '#fff' : 'var(--text)') + ';font-family:inherit;font-size:14px;font-weight:' + (isToday ? '800' : '600') + ';cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px;" onclick="showDayDetails(\'' + ds + '\')">';
-    grid += '<span>' + day + '</span>';
-    if (dayEvents.length) {
-      grid += '<span style="display:flex;gap:1px;">';
-      for (let j = 0; j < Math.min(3, dayEvents.length); j++) {
-        grid += '<span style="width:3px;height:3px;border-radius:50%;background:' + (isToday ? '#fff' : 'var(--brand)') + ';"></span>';
-      }
-      grid += '</span>';
-    }
-    grid += '</button>';
-  }
-
-  let html = '<div class="page"><div class="title-xl">Календарь</div>';
-  html += '<div class="card">';
-  html += '<div class="row-between" style="margin-bottom:16px;">';
-  html += '<button class="icon-btn" onclick="calOffset--;renderCalendar()">‹</button>';
-  html += '<div class="title-m" style="margin:0;">' + monthNames[m] + ' ' + year + '</div>';
-  html += '<button class="icon-btn" onclick="calOffset++;renderCalendar()">›</button>';
-  html += '</div>';
-  html += '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;">' + grid + '</div>';
-  html += '</div>';
-
-  html += '<div class="card"><h2>➕ Новое событие</h2>';
-  html += '<div class="field"><input type="text" id="ev-title" placeholder="Название"/></div>';
-  html += '<div class="field"><input type="datetime-local" id="ev-start"/></div>';
-  html += '<div class="field"><input type="datetime-local" id="ev-end"/></div>';
-  html += '<button class="btn btn-primary btn-block" onclick="addEvent()">Создать</button></div>';
-
-  html += '<div class="card"><h2>📅 Предстоящие</h2>';
-  const upcoming = state.schedule.filter(function(b) { return new Date(b.start_time) >= new Date(); })
-    .sort(function(a,b) { return new Date(a.start_time) - new Date(b.start_time); }).slice(0, 8);
-  if (upcoming.length) {
-    for (let i = 0; i < upcoming.length; i++) {
-      const b = upcoming[i];
-      html += '<div class="list-row" onclick="editEvent(\'' + b.id + '\')">';
-      html += '<div style="width:4px;height:40px;border-radius:2px;background:var(--brand);flex-shrink:0;"></div>';
-      html += '<div class="list-body"><div class="list-title">' + esc(b.title) + '</div>';
-      html += '<div class="list-subtitle">' + fmtDate(b.start_time) + ' · ' + fmtTime(b.start_time) + '–' + fmtTime(b.end_time) + '</div></div>';
-      html += '<div class="list-chevron">›</div></div>';
-    }
-  } else {
-    html += '<div class="footnote text-tertiary">Нет событий</div>';
-  }
-  html += '</div></div>';
-  document.getElementById('app').innerHTML = html;
-}
-
-function addEvent() {
-  const titleEl = document.getElementById('ev-title');
-  const startEl = document.getElementById('ev-start');
-  const endEl = document.getElementById('ev-end');
-  const title = titleEl ? titleEl.value.trim() : '';
-  const start = startEl ? startEl.value : '';
-  const end = endEl ? endEl.value : '';
-  if (!title || !start || !end) return toast('Заполните поля', 'error');
-  if (new Date(start) >= new Date(end)) return toast('Неверный интервал', 'error');
-  state.schedule.push({
-    id: uid(), title: title,
-    start_time: new Date(start).toISOString(),
-    end_time: new Date(end).toISOString(),
-    created_at: nowISO()
-  });
-  save();
-  toast('Создано', 'success');
-  haptic('success');
-  renderCalendar();
-}
-
-function editEvent(id) {
-  const b = state.schedule.find(function(x) { return x.id === id; });
-  if (!b) return;
-  openSheet('Событие',
-    '<div class="field"><input type="text" id="ee-title" value="' + esc(b.title) + '"/></div>' +
-    '<div class="field"><input type="datetime-local" id="ee-start" value="' + new Date(b.start_time).toISOString().slice(0,16) + '"/></div>' +
-    '<div class="field"><input type="datetime-local" id="ee-end" value="' + new Date(b.end_time).toISOString().slice(0,16) + '"/></div>' +
-    '<button class="btn btn-primary btn-block" onclick="saveEvent(\'' + id + '\')">Сохранить</button>' +
-    '<button class="btn btn-danger btn-block mt-2" onclick="deleteEvent(\'' + id + '\')">Удалить</button>'
-  );
-}
-
-function saveEvent(id) {
-  const b = state.schedule.find(function(x) { return x.id === id; });
-  if (!b) return;
-  b.title = (document.getElementById('ee-title') || {}).value || b.title;
-  b.start_time = new Date((document.getElementById('ee-start') || {}).value).toISOString();
-  b.end_time = new Date((document.getElementById('ee-end') || {}).value).toISOString();
-  save();
-  closeSheet();
-  toast('Сохранено', 'success');
-  renderCalendar();
-}
-
-function deleteEvent(id) {
-  if (!confirm('Удалить?')) return;
-  state.schedule = state.schedule.filter(function(x) { return x.id !== id; });
-  save();
-  closeSheet();
-  toast('Удалено', 'info');
-  renderCalendar();
-}
-
-function showDayDetails(dateStr) {
-  const events = state.schedule.filter(function(b) { return new Date(b.start_time).toISOString().slice(0, 10) === dateStr; });
-  const tasks = state.tasks.filter(function(t) { return t.created_at && t.created_at.slice(0, 10) === dateStr; });
-  let html = '<div class="stat-grid mb-4">';
-  html += '<div class="stat-item"><div class="stat-value">' + tasks.length + '</div><div class="stat-label">Задач</div></div>';
-  html += '<div class="stat-item"><div class="stat-value">' + tasks.filter(function(t) { return t.status === 'completed'; }).length + '</div><div class="stat-label">Готово</div></div>';
-  html += '<div class="stat-item"><div class="stat-value">' + events.length + '</div><div class="stat-label">Событий</div></div>';
-  html += '</div><div class="headline mb-2">События</div>';
-  if (events.length) {
-    for (let i = 0; i < events.length; i++) {
-      const b = events[i];
-      html += '<div class="list-row" onclick="closeSheet();editEvent(\'' + b.id + '\')">';
-      html += '<div class="list-body"><div class="list-title">' + esc(b.title) + '</div>';
-      html += '<div class="list-subtitle">' + fmtTime(b.start_time) + '–' + fmtTime(b.end_time) + '</div></div></div>';
-    }
-  } else {
-    html += '<div class="footnote text-tertiary">Нет событий</div>';
-  }
-  openSheet(fmtDate(dateStr), html);
-}
-
-/* ═══ STATS ═══ */
-function renderStats() {
-  const total = state.tasks.length;
-  const done = state.tasks.filter(function(t) { return t.status === 'completed'; }).length;
-  const chats = state.chats.filter(function(c) { return c.role === 'user'; }).length;
-  const waterTotal = state.water.reduce(function(s, w) { return s + w.count; }, 0);
-
-  let html = '<div class="page"><div class="title-xl">Статистика</div>';
-  html += '<div class="stat-grid mb-4">';
-  html += '<div class="stat-item"><div class="stat-value">' + done + '</div><div class="stat-label">Задач</div></div>';
-  html += '<div class="stat-item"><div class="stat-value">' + (state.stats.streak || 0) + '</div><div class="stat-label">Streak</div></div>';
-  html += '<div class="stat-item"><div class="stat-value">' + chats + '</div><div class="stat-label">Диалогов</div></div>';
-  html += '</div>';
-  html += '<div class="card"><h2>Прогресс задач</h2>';
-  html += '<div class="row-between mb-2"><span class="subhead">Выполнено</span>';
-  html += '<span class="subhead text-secondary">' + done + ' из ' + total + '</span></div>';
-  html += '<div class="progress"><div class="progress-fill" style="width:' + (total ? (done/total*100) : 0) + '%;"></div></div></div>';
-  html += '<div class="card"><h2>Трекинг</h2>';
-  html += '<div class="list-row"><div class="list-icon" style="background:var(--psych);color:#000;">💧</div>';
-  html += '<div class="list-body"><div class="list-title">Вода всего</div></div>';
-  html += '<div class="list-value">' + waterTotal + ' ст.</div></div>';
-  html += '<div class="list-row"><div class="list-icon" style="background:var(--fitness);">🏋️</div>';
-  html += '<div class="list-body"><div class="list-title">Тренировок</div></div>';
-  html += '<div class="list-value">' + state.workouts.length + '</div></div>';
-  html += '</div></div>';
-  document.getElementById('app').innerHTML = html;
-}
-
-/* ═══ HABITS ═══ */
-function calcStreak(history) {
-  if (!history || !history.length) return 0;
-  let s = 0;
-  const d = new Date();
-  while (s < 365) {
-    const ds = d.toISOString().slice(0, 10);
-    if (history.indexOf(ds) >= 0) { s++; d.setDate(d.getDate() - 1); } else break;
-  }
-  return s;
-}
-
-function renderHabits() {
-  let html = '<div class="page"><div class="title-xl">Привычки</div>';
-  if (state.habits.length) {
-    html += '<div class="card">';
-    for (let i = 0; i < state.habits.length; i++) {
-      const h = state.habits[i];
-      const done = h.history && h.history.indexOf(today()) >= 0;
-      const streak = calcStreak(h.history || []);
-      html += '<div class="list-row">';
-      html += '<button class="task-checkbox ' + (done ? 'checked' : '') + '" onclick="event.stopPropagation();toggleHabit(\'' + h.id + '\')">' + (done ? '✓' : '') + '</button>';
-      html += '<div class="list-body"><div class="list-title">' + esc(h.title) + '</div>';
-      html += '<div class="list-subtitle">' + (streak > 0 ? '🔥 ' + streak + ' дней' : 'Начни серию') + '</div></div>';
-      html += '<button class="btn btn-icon btn-sm btn-ghost" onclick="event.stopPropagation();deleteHabit(\'' + h.id + '\')">🗑</button>';
-      html += '</div>';
-    }
-    html += '</div>';
-  } else {
-    html += '<div class="empty"><div class="empty-icon">🔄</div><div class="empty-title">Нет привычек</div><div class="empty-text">Начни с одной</div></div>';
-  }
-  html += '<div class="card"><h2>Новая привычка</h2>';
-  html += '<div class="field"><input type="text" id="h-title" placeholder="Например: Чтение 30 мин"/></div>';
-  html += '<button class="btn btn-primary btn-block" onclick="addHabit()">Добавить</button></div></div>';
-  document.getElementById('app').innerHTML = html;
-}
-
-function addHabit() {
-  const title = ((document.getElementById('h-title') || {}).value || '').trim();
-  if (!title) return toast('Введите название', 'error');
-  state.habits.push({ id: uid(), title: title, history: [], created_at: nowISO() });
-  save();
-  toast('Добавлено', 'success');
-  haptic('success');
-  renderHabits();
-}
-
-function toggleHabit(id) {
-  const h = state.habits.find(function(x) { return x.id === id; });
-  if (!h) return;
-  if (!h.history) h.history = [];
-  const t = today();
-  if (h.history.indexOf(t) >= 0) {
-    h.history = h.history.filter(function(d) { return d !== t; });
-    toast('Отменено', 'info');
-  } else {
-    h.history.push(t);
-    toast('Серия ' + calcStreak(h.history) + ' 🔥', 'success');
-    haptic('success');
-  }
-  save();
-  renderHabits();
-}
-
-function deleteHabit(id) {
-  if (!confirm('Удалить?')) return;
-  state.habits = state.habits.filter(function(h) { return h.id !== id; });
-  save();
-  renderHabits();
-}
-
-/* ═══ GOALS ═══ */
-function renderGoals() {
-  let html = '<div class="page"><div class="title-xl">Цели</div>';
-  if (state.goals.length) {
-    for (let i = 0; i < state.goals.length; i++) {
-      const g = state.goals[i];
-      html += '<div class="card"><div class="row-between mb-3">';
-      html += '<div style="font-weight:700;font-size:17px;">' + esc(g.title) + '</div>';
-      html += '<button class="btn btn-icon btn-sm btn-ghost" onclick="deleteGoal(\'' + g.id + '\')">🗑</button></div>';
-      html += '<div class="progress mb-2"><div class="progress-fill" style="width:' + (g.progress || 0) + '%;"></div></div>';
-      html += '<div class="row-between"><span class="footnote text-secondary">' + (g.progress || 0) + '%</span>';
-      html += '<button class="btn btn-sm btn-ghost" onclick="updateGoal(\'' + g.id + '\')">Изменить</button></div></div>';
-    }
-  } else {
-    html += '<div class="empty"><div class="empty-icon">🎯</div><div class="empty-title">Нет целей</div></div>';
-  }
-  html += '<div class="card"><h2>Новая цель</h2>';
-  html += '<div class="field"><input type="text" id="g-title" placeholder="Название"/></div>';
-  html += '<div class="field"><input type="number" id="g-progress" placeholder="Прогресс %" value="0" min="0" max="100"/></div>';
-  html += '<button class="btn btn-primary btn-block" onclick="addGoal()">Добавить</button></div></div>';
-  document.getElementById('app').innerHTML = html;
-}
-
-function addGoal() {
-  const title = ((document.getElementById('g-title') || {}).value || '').trim();
-  if (!title) return toast('Введите название', 'error');
-  state.goals.push({ id: uid(), title: title, progress: parseInt((document.getElementById('g-progress') || {}).value) || 0, created_at: nowISO() });
-  save();
-  toast('Цель добавлена', 'success');
-  haptic('success');
-  renderGoals();
-}
-
-function updateGoal(id) {
-  const g = state.goals.find(function(x) { return x.id === id; });
-  if (!g) return;
-  const p = prompt('Прогресс (0-100):', g.progress);
-  if (p === null) return;
-  g.progress = Math.max(0, Math.min(100, parseInt(p) || 0));
-  save();
-  renderGoals();
-  if (g.progress === 100) { toast('🎉 Цель достигнута!', 'success'); haptic('success'); }
-}
-
-function deleteGoal(id) {
-  if (!confirm('Удалить?')) return;
-  state.goals = state.goals.filter(function(g) { return g.id !== id; });
-  save();
-  renderGoals();
-}
-
-/* ═══ TIMER ═══ */
-let timerTick = null;
-
-function computeElapsed(s) {
-  if (!s) return 0;
-  return Math.floor((Date.now() - new Date(s.start_time).getTime() - (s.paused_time || 0)) / 1000);
-}
-
-function renderTimer() {
-  const active = state.timer.find(function(s) { return s.status === 'active' || s.status === 'paused'; });
-  let body = '';
-  if (active) {
-    const elapsed = computeElapsed(active);
-    const mins = Math.floor(elapsed / 60);
-    const secs = elapsed % 60;
-    body = '<div style="text-align:center;padding:32px 16px;">';
-    body += '<div class="subhead text-secondary mb-2">' + esc(active.title) + '</div>';
-    body += '<div style="font-size:72px;font-weight:800;letter-spacing:-3px;font-variant-numeric:tabular-nums;background:linear-gradient(135deg,var(--brand),var(--brand-2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin:20px 0;">' + String(mins).padStart(2,'0') + ':' + String(secs).padStart(2,'0') + '</div>';
-    body += '<div class="btn-row" style="justify-content:center;">';
-    if (active.status === 'active') body += '<button class="btn btn-warning" onclick="pauseTimer()">⏸ Пауза</button>';
-    else body += '<button class="btn btn-success" onclick="resumeTimer()">▶ Продолжить</button>';
-    body += '<button class="btn btn-danger" onclick="stopTimer()">⏹ Завершить</button></div></div>';
-  } else {
-    body = '<div class="field"><input type="text" id="tm-title" placeholder="Что делаем?"/></div>';
-    body += '<button class="btn btn-success btn-block" onclick="startTimer()">▶ Запустить</button>';
-  }
-  const history = state.timer.filter(function(s) { return s.status === 'done'; }).slice(-5).reverse();
-  let html = '<div class="page"><div class="title-xl">Таймер</div>';
-  html += '<div class="card">' + body + '</div>';
-  html += '<div class="card"><h2>История</h2>';
-  if (history.length) {
-    for (let i = 0; i < history.length; i++) {
-      const s = history[i];
-      html += '<div class="list-row"><div class="list-body">';
-      html += '<div class="list-title">' + esc(s.title) + '</div>';
-      html += '<div class="list-subtitle">' + Math.floor((s.total_time||0)/60) + ' мин · ' + fmtDate(s.end_time) + '</div></div></div>';
-    }
-  } else {
-    html += '<div class="footnote text-tertiary">Пока нет сессий</div>';
-  }
-  html += '</div></div>';
-  document.getElementById('app').innerHTML = html;
-  if (active && active.status === 'active' && !timerTick) {
-    timerTick = setInterval(function() { if (currentPage === 'timer') renderTimer(); }, 1000);
-  } else if (!active && timerTick) {
-    clearInterval(timerTick);
-    timerTick = null;
-  }
-}
-
-function startTimer() {
-  const title = ((document.getElementById('tm-title') || {}).value || '').trim() || 'Фокус-сессия';
-  state.timer.push({ id: uid(), title: title, start_time: nowISO(), paused_time: 0, status: 'active', created_at: nowISO() });
-  save();
-  toast('Запущено', 'success');
-  haptic('success');
-  renderTimer();
-}
-
-function pauseTimer() {
-  const s = state.timer.find(function(x) { return x.status === 'active'; });
-  if (!s) return;
-  s.paused_time += Date.now() - new Date(s.start_time).getTime() - s.paused_time;
-  s.status = 'paused';
-  save();
-  renderTimer();
-}
-
-function resumeTimer() {
-  const s = state.timer.find(function(x) { return x.status === 'paused'; });
-  if (!s) return;
-  s.start_time = nowISO();
-  s.status = 'active';
-  save();
-  renderTimer();
-}
-
-function stopTimer() {
-  const s = state.timer.find(function(x) { return x.status === 'active' || x.status === 'paused'; });
-  if (!s) return;
-  s.total_time = computeElapsed(s);
-  s.status = 'done';
-  s.end_time = nowISO();
-  save();
-  toast('Готово: ' + Math.floor(s.total_time/60) + ' мин', 'success');
-  haptic('success');
-  renderTimer();
-}
-
-/* ═══ NOTES ═══ */
-function renderNotes() {
-  let html = '<div class="page"><div class="title-xl">Заметки</div>';
-  if (state.notes.length) {
-    for (let i = state.notes.length - 1; i >= 0; i--) {
-      const n = state.notes[i];
-      html += '<div class="card" style="cursor:pointer;" onclick="editNote(\'' + n.id + '\')">';
-      html += '<div class="row-between mb-2"><div style="font-weight:700;font-size:17px;">' + esc(n.title) + '</div>';
-      html += '<span class="caption text-tertiary">' + fmtDate(n.created_at) + '</span></div>';
-      html += '<div class="footnote text-secondary" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">' + esc(n.content) + '</div></div>';
-    }
-  } else {
-    html += '<div class="empty"><div class="empty-icon">📝</div><div class="empty-title">Нет заметок</div></div>';
-  }
-  html += '<button class="btn btn-primary btn-block" onclick="addNote()">+ Новая заметка</button></div>';
-  document.getElementById('app').innerHTML = html;
-}
-
-function addNote() {
-  openSheet('Новая заметка',
-    '<div class="field"><input type="text" id="n-title" placeholder="Заголовок" autofocus/></div>' +
-    '<div class="field"><textarea id="n-content" placeholder="Содержание..." rows="6"></textarea></div>' +
-    '<button class="btn btn-primary btn-block" onclick="saveNote()">Сохранить</button>'
-  );
-}
-
-function saveNote() {
-  const title = ((document.getElementById('n-title') || {}).value || '').trim();
-  const content = ((document.getElementById('n-content') || {}).value || '').trim();
-  if (!title || !content) return toast('Заполните поля', 'error');
-  state.notes.push({ id: uid(), title: title, content: content, created_at: nowISO() });
-  save();
-  closeSheet();
-  toast('Сохранено', 'success');
-  haptic('success');
-  renderNotes();
-}
-
-function editNote(id) {
-  const n = state.notes.find(function(x) { return x.id === id; });
-  if (!n) return;
-  openSheet('Заметка',
-    '<div class="field"><input type="text" id="en-title" value="' + esc(n.title) + '"/></div>' +
-    '<div class="field"><textarea id="en-content" rows="8">' + esc(n.content) + '</textarea></div>' +
-    '<button class="btn btn-primary btn-block" onclick="updateNote(\'' + id + '\')">Сохранить</button>' +
-    '<button class="btn btn-danger btn-block mt-2" onclick="deleteNote(\'' + id + '\')">Удалить</button>'
-  );
-}
-
-function updateNote(id) {
-  const n = state.notes.find(function(x) { return x.id === id; });
-  if (!n) return;
-  n.title = ((document.getElementById('en-title') || {}).value || '').trim();
-  n.content = ((document.getElementById('en-content') || {}).value || '').trim();
-  save();
-  closeSheet();
-  toast('Сохранено', 'success');
-  renderNotes();
-}
-
-function deleteNote(id) {
-  if (!confirm('Удалить?')) return;
-  state.notes = state.notes.filter(function(n) { return n.id !== id; });
-  save();
-  closeSheet();
-  renderNotes();
-}
-
-/* ═══ LEARNING ═══ */
-function renderLearning() {
-  let html = '<div class="page"><div class="title-xl">Обучение</div>';
-  if (state.learning.length) {
-    for (let i = 0; i < state.learning.length; i++) {
-      const l = state.learning[i];
-      html += '<div class="card"><div class="row-between mb-2">';
-      html += '<div style="font-weight:700;font-size:17px;">' + esc(l.title) + '</div>';
-      html += '<span style="background:var(--surface-3);color:var(--text-2);padding:4px 10px;border-radius:100px;font-size:11px;font-weight:700;">' + (l.progress || 0) + '%</span></div>';
-      html += '<div class="progress mb-3"><div class="progress-fill" style="width:' + (l.progress || 0) + '%;"></div></div>';
-      html += '<div class="row-between"><button class="btn btn-sm btn-ghost" onclick="updateLearning(\'' + l.id + '\')">Прогресс</button>';
-      html += '<button class="btn btn-sm btn-ghost" onclick="deleteLearning(\'' + l.id + '\')">🗑</button></div></div>';
-    }
-  } else {
-    html += '<div class="empty"><div class="empty-icon">📚</div><div class="empty-title">Нет курсов</div></div>';
-  }
-  html += '<div class="card"><h2>Новый курс</h2>';
-  html += '<div class="field"><input type="text" id="l-title" placeholder="Название"/></div>';
-  html += '<div class="field"><input type="text" id="l-material" placeholder="Ссылка (необязательно)"/></div>';
-  html += '<button class="btn btn-primary btn-block" onclick="addLearning()">Добавить</button></div></div>';
-  document.getElementById('app').innerHTML = html;
-}
-
-function addLearning() {
-  const title = ((document.getElementById('l-title') || {}).value || '').trim();
-  if (!title) return toast('Введите название', 'error');
-  state.learning.push({ id: uid(), title: title, material: ((document.getElementById('l-material') || {}).value || '').trim(), progress: 0, created_at: nowISO() });
-  save();
-  toast('Добавлено', 'success');
-  haptic('success');
-  renderLearning();
-}
-
-function updateLearning(id) {
-  const l = state.learning.find(function(x) { return x.id === id; });
-  if (!l) return;
-  const p = prompt('Прогресс (0-100):', l.progress || 0);
-  if (p === null) return;
-  l.progress = Math.max(0, Math.min(100, parseInt(p) || 0));
-  save();
-  renderLearning();
-}
-
-function deleteLearning(id) {
-  if (!confirm('Удалить?')) return;
-  state.learning = state.learning.filter(function(l) { return l.id !== id; });
-  save();
-  renderLearning();
-}
-
-/* ═══ MATRIX ═══ */
-function renderMatrix() {
-  const m = { q1: [], q2: [], q3: [], q4: [] };
-  state.matrix.forEach(function(x) { if (m[x.quadrant]) m[x.quadrant].push(x); });
-  const qs = [
-    { key: 'q1', title: 'Важно и срочно', color: 'var(--danger)', emoji: '🔥' },
-    { key: 'q2', title: 'Важно, не срочно', color: 'var(--brand)', emoji: '📌' },
-    { key: 'q3', title: 'Не важно, срочно', color: 'var(--warning)', emoji: '⚡' },
-    { key: 'q4', title: 'Не важно, не срочно', color: 'var(--text-3)', emoji: '🗑' }
-  ];
-  let html = '<div class="page"><div class="title-xl">Матрица Эйзенхауэра</div>';
-  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">';
-  for (let i = 0; i < qs.length; i++) {
-    const q = qs[i];
-    html += '<div class="card" style="margin:0;cursor:pointer;border-top:3px solid ' + q.color + ';" onclick="addMatrixTask(\'' + q.key + '\')">';
-    html += '<div class="footnote text-secondary mb-2">' + q.emoji + ' ' + q.title + '</div>';
-    html += '<div style="font-size:32px;font-weight:800;color:' + q.color + ';letter-spacing:-1px;">' + m[q.key].length + '</div></div>';
-  }
-  html += '</div>';
-  html += '<div class="card mt-4"><h2>Задачи в матрице</h2>';
-  let hasAny = false;
-  for (let i = 0; i < qs.length; i++) {
-    const q = qs[i];
-    for (let j = 0; j < m[q.key].length; j++) {
-      hasAny = true;
-      const x = m[q.key][j];
-      html += '<div class="list-row"><div class="list-icon" style="background:' + q.color + ';">' + q.emoji + '</div>';
-      html += '<div class="list-body"><div class="list-title">' + esc(x.title) + '</div></div>';
-      html += '<button class="btn btn-icon btn-sm btn-ghost" onclick="event.stopPropagation();removeMatrixTask(\'' + x.id + '\')">🗑</button></div>';
-    }
-  }
-  if (!hasAny) html += '<div class="footnote text-tertiary">Матрица пуста</div>';
-  html += '</div></div>';
-  document.getElementById('app').innerHTML = html;
-}
-
-function addMatrixTask(quadrant) {
-  openSheet('Добавить в матрицу',
-    '<div class="field"><input type="text" id="mx-title" placeholder="Задача" autofocus/></div>' +
-    '<button class="btn btn-primary btn-block" onclick="saveMatrixTask(\'' + quadrant + '\')">Добавить</button>'
-  );
-}
-
-function saveMatrixTask(quadrant) {
-  const title = ((document.getElementById('mx-title') || {}).value || '').trim();
-  if (!title) return toast('Введите название', 'error');
-  state.matrix.push({ id: uid(), title: title, quadrant: quadrant, created_at: nowISO() });
-  save();
-  closeSheet();
-  toast('Добавлено', 'success');
-  haptic('success');
-  renderMatrix();
-}
-
-function removeMatrixTask(id) {
-  state.matrix = state.matrix.filter(function(x) { return x.id !== id; });
-  save();
-  renderMatrix();
-}
-
-/* ═══ FOCUS ═══ */
-function renderFocus() {
-  const f = state.flags;
-  let html = '<div class="page"><div class="title-xl">Фокус-режимы</div><div class="card">';
-  html += '<div class="list-row mb-2"><div class="list-icon" style="background:var(--brand);">🎯</div>';
-  html += '<div class="list-body"><div class="list-title">Глубокий фокус</div><div class="list-subtitle">Меньше уведомлений</div></div>';
-  html += '<button class="switch ' + (f.focus ? 'on' : '') + '" onclick="toggleFlag(\'focus\')"></button></div>';
-  html += '<div class="list-row"><div class="list-icon" style="background:var(--coach);color:#000;">🔇</div>';
-  html += '<div class="list-body"><div class="list-title">Не беспокоить</div><div class="list-subtitle">Тихий режим</div></div>';
-  html += '<button class="switch ' + (f.dnd ? 'on' : '') + '" onclick="toggleFlag(\'dnd\')"></button></div>';
-  html += '</div></div>';
-  document.getElementById('app').innerHTML = html;
-}
-
-function toggleFlag(key) {
-  state.flags[key] = !state.flags[key];
-  save();
-  haptic('light');
-  renderFocus();
-}
-
-/* ═══ MOOD ═══ */
-function renderMood() {
-  const mood = state.mood.slice(-30);
-  let html = '<div class="page"><div class="title-xl">Настроение</div>';
-  html += '<div class="card"><h2>Сегодня</h2>';
-  html += '<div style="font-size:48px;font-weight:800;text-align:center;padding:16px 0;letter-spacing:-2px;">' + (mood.length ? mood[mood.length-1].score + '/10' : '—') + '</div>';
-  html += '<button class="btn btn-primary btn-block" onclick="quickMoodLog()">Записать</button></div>';
-  if (mood.length) {
-    html += '<div class="card"><h2>Динамика · 30 дней</h2>';
-    html += '<div style="display:flex;gap:4px;align-items:end;height:120px;margin-top:12px;">';
-    for (let i = 0; i < mood.length; i++) {
-      html += '<div style="flex:1;height:' + (mood[i].score/10*100) + '%;background:linear-gradient(180deg,var(--brand-2),var(--brand));border-radius:6px 6px 0 0;min-height:4px;"></div>';
-    }
-    html += '</div></div>';
-  }
-  html += '</div>';
-  document.getElementById('app').innerHTML = html;
-}
-
-/* ═══ WATER ═══ */
-function renderWater() {
-  const t = today();
-  const entry = state.water.find(function(w) { return w.date === t; });
-  const count = entry ? entry.count : 0;
-  const goal = state.settings.waterGoal || 8;
-  let html = '<div class="page"><div class="title-xl">Вода</div>';
-  html += '<div class="card card-gradient" style="text-align:center;padding:32px 20px;">';
-  html += '<div style="font-size:64px;margin-bottom:16px;">💧</div>';
-  html += '<div style="font-size:56px;font-weight:800;letter-spacing:-3px;line-height:1;">' + count + '/' + goal + '</div>';
-  html += '<div style="opacity:0.9;font-size:14px;margin-top:8px;">стаканов</div>';
-  html += '<div class="progress" style="margin-top:20px;background:rgba(255,255,255,0.25);height:8px;">';
-  html += '<div class="progress-fill" style="width:' + Math.min(100, count/goal*100) + '%;background:#fff;"></div></div></div>';
-  html += '<button class="btn btn-primary btn-block mb-3" onclick="addWater()">+1 стакан</button>';
-  html += '<div class="card"><h2>Цель</h2>';
-  html += '<div class="field"><input type="number" id="w-goal" value="' + goal + '" min="1" max="20"/></div>';
-  html += '<button class="btn btn-primary btn-block" onclick="saveWaterGoal()">Сохранить</button></div></div>';
-  document.getElementById('app').innerHTML = html;
-}
-
-function saveWaterGoal() {
-  state.settings.waterGoal = parseInt((document.getElementById('w-goal') || {}).value) || 8;
-  save();
-  toast('Сохранено', 'success');
-  renderWater();
-}
-
-/* ═══ MEDS ═══ */
-function renderMeds() {
-  let html = '<div class="page"><div class="title-xl">Лекарства</div>';
-  if (state.meds.length) {
-    for (let i = 0; i < state.meds.length; i++) {
-      const m = state.meds[i];
-      html += '<div class="list-row"><div class="list-icon" style="background:var(--danger);">💊</div>';
-      html += '<div class="list-body"><div class="list-title">' + esc(m.name) + '</div>';
-      html += '<div class="list-subtitle">' + esc(m.dose || '') + (m.time ? ' · ' + m.time : '') + '</div></div>';
-      html += '<button class="btn btn-icon btn-sm btn-ghost" onclick="deleteMed(\'' + m.id + '\')">🗑</button></div>';
-    }
-  } else {
-    html += '<div class="empty"><div class="empty-icon">💊</div><div class="empty-title">Нет лекарств</div></div>';
-  }
-  html += '<div class="card"><h2>Добавить</h2>';
-  html += '<div class="field"><input type="text" id="m-name" placeholder="Название"/></div>';
-  html += '<div class="field"><input type="text" id="m-dose" placeholder="Дозировка"/></div>';
-  html += '<div class="field"><input type="time" id="m-time"/></div>';
-  html += '<button class="btn btn-primary btn-block" onclick="addMed()">Добавить</button></div>';
-  html += '<div class="footnote text-tertiary" style="text-align:center;margin-top:16px;">Не заменяет врача</div></div>';
-  document.getElementById('app').innerHTML = html;
-}
-
-function addMed() {
-  const name = ((document.getElementById('m-name') || {}).value || '').trim();
-  if (!name) return toast('Введите название', 'error');
-  state.meds.push({ id: uid(), name: name, dose: ((document.getElementById('m-dose') || {}).value || '').trim(), time: ((document.getElementById('m-time') || {}).value || ''), created_at: nowISO() });
-  save();
-  toast('Добавлено', 'success');
-  haptic('success');
-  renderMeds();
-}
-
-function deleteMed(id) {
-  state.meds = state.meds.filter(function(m) { return m.id !== id; });
-  save();
-  renderMeds();
-}
-
-/* ═══ WORKOUTS ═══ */
-function renderWorkouts() {
-  const total = state.workouts.reduce(function(s, w) { return s + (w.duration || 0); }, 0);
-  let html = '<div class="page"><div class="title-xl">Тренировки</div>';
-  html += '<div class="stat-grid mb-4">';
-  html += '<div class="stat-item"><div class="stat-value">' + state.workouts.length + '</div><div class="stat-label">Сессий</div></div>';
-  html += '<div class="stat-item"><div class="stat-value">' + total + '</div><div class="stat-label">Минут</div></div>';
-  html += '<div class="stat-item"><div class="stat-value">' + Math.floor(total/60) + 'ч</div><div class="stat-label">Часов</div></div>';
-  html += '</div>';
-  if (state.workouts.length) {
-    for (let i = state.workouts.length - 1; i >= 0 && i >= state.workouts.length - 10; i--) {
-      const w = state.workouts[i];
-      html += '<div class="list-row"><div class="list-icon" style="background:var(--fitness);">🏋️</div>';
-      html += '<div class="list-body"><div class="list-title">' + esc(w.type) + '</div>';
-      html += '<div class="list-subtitle">' + w.duration + ' мин · ' + fmtDate(w.timestamp) + '</div></div></div>';
-    }
-  } else {
-    html += '<div class="empty"><div class="empty-icon">🏋️</div><div class="empty-title">Нет тренировок</div></div>';
-  }
-  html += '<div class="card"><h2>Добавить</h2>';
-  html += '<div class="field"><select id="w-type"><option value="Кардио">Кардио</option><option value="Силовая">Силовая</option><option value="Йога">Йога</option><option value="Плавание">Плавание</option><option value="Прогулка">Прогулка</option></select></div>';
-  html += '<div class="field"><input type="number" id="w-duration" placeholder="Минут" value="30"/></div>';
-  html += '<button class="btn btn-primary btn-block" onclick="addWorkout()">Добавить</button></div></div>';
-  document.getElementById('app').innerHTML = html;
-}
-
-function addWorkout() {
-  state.workouts.push({
-    id: uid(),
-    type: ((document.getElementById('w-type') || {}).value || 'Кардио'),
-    duration: parseInt((document.getElementById('w-duration') || {}).value) || 30,
-    timestamp: nowISO(),
-    created_at: nowISO()
-  });
-  save();
-  toast('Записано', 'success');
-  haptic('success');
-  renderWorkouts();
-}
-
-/* ═══ MEDITATION ═══ */
-function renderMeditation() {
-  const practices = [
-    { name: 'Дыхание 4-7-8', duration: 5, desc: 'Успокоение нервной системы' },
-    { name: 'Сканирование тела', duration: 10, desc: 'Осознанность ощущений' },
-    { name: 'Любящая доброта', duration: 15, desc: 'Развитие сострадания' },
-    { name: 'Наблюдение за мыслями', duration: 10, desc: 'Отстранение от мыслей' },
-    { name: 'Заземление 5-4-3-2-1', duration: 3, desc: 'При тревоге' }
-  ];
-  let html = '<div class="page"><div class="title-xl">Медитации</div><div class="card"><h2>Практики</h2>';
-  for (let i = 0; i < practices.length; i++) {
-    const p = practices[i];
-    html += '<div class="list-row" onclick="startMeditation(\'' + p.name + '\', ' + p.duration + ')">';
-    html += '<div class="list-icon" style="background:var(--coach);color:#000;">🧘</div>';
-    html += '<div class="list-body"><div class="list-title">' + p.name + '</div>';
-    html += '<div class="list-subtitle">' + p.duration + ' мин · ' + p.desc + '</div></div>';
-    html += '<div class="list-chevron">›</div></div>';
-  }
-  html += '</div>';
-  if (state.meditations.length) {
-    html += '<div class="card"><h2>Мои сессии (' + state.meditations.length + ')</h2>';
-    for (let i = state.meditations.length - 1; i >= 0 && i >= state.meditations.length - 5; i--) {
-      const m = state.meditations[i];
-      html += '<div class="list-row"><div class="list-body">';
-      html += '<div class="list-title">' + esc(m.name) + '</div>';
-      html += '<div class="list-subtitle">' + m.duration + ' мин · ' + fmtDate(m.timestamp) + '</div></div></div>';
-    }
-    html += '</div>';
-  }
-  html += '</div>';
-  document.getElementById('app').innerHTML = html;
-}
-
-function startMeditation(name, duration) {
-  state.meditations.push({ id: uid(), name: name, duration: duration, timestamp: nowISO(), created_at: nowISO() });
-  save();
-  toast('🧘 ' + name + ' — записано', 'success');
-  haptic('success');
-  renderMeditation();
-}
-
-/* ═══ JOURNAL ═══ */
-function renderJournal() {
-  let html = '<div class="page"><div class="title-xl">Дневник</div>';
-  html += '<div class="card"><h2>Новая запись</h2>';
-  html += '<div class="field"><textarea id="j-text" placeholder="Что сегодня было важного?" rows="5"></textarea></div>';
-  html += '<button class="btn btn-primary btn-block" onclick="saveJournal()">Сохранить</button></div>';
-  if (state.journal.length) {
-    for (let i = state.journal.length - 1; i >= 0; i--) {
-      const j = state.journal[i];
-      html += '<div class="card"><div class="row-between mb-2">';
-      html += '<span class="caption text-tertiary">' + fmtDate(j.timestamp) + ' ' + fmtTime(j.timestamp) + '</span>';
-      html += '<button class="btn btn-icon btn-sm btn-ghost" onclick="deleteJournal(\'' + j.id + '\')">🗑</button></div>';
-      html += '<div style="white-space:pre-wrap;line-height:1.55;">' + esc(j.text) + '</div></div>';
-    }
-  }
-  html += '</div>';
-  document.getElementById('app').innerHTML = html;
-}
-
-function saveJournal() {
-  const text = ((document.getElementById('j-text') || {}).value || '').trim();
-  if (!text) return toast('Введите текст', 'error');
-  state.journal.push({ id: uid(), text: text, timestamp: nowISO(), created_at: nowISO() });
-  save();
-  toast('Сохранено', 'success');
-  haptic('success');
-  renderJournal();
-}
-
-function deleteJournal(id) {
-  if (!confirm('Удалить?')) return;
-  state.journal = state.journal.filter(function(j) { return j.id !== id; });
-  save();
-  renderJournal();
-}
-
-/* ═══ MEDIA ═══ */
-function renderMedia() {
-  let html = '<div class="page"><div class="title-xl">Медиатека</div>';
-  if (state.media.length) {
-    for (let i = 0; i < state.media.length; i++) {
-      const m = state.media[i];
-      html += '<div class="list-row"><div class="list-icon" style="background:var(--nutrition);color:#000;">📖</div>';
-      html += '<div class="list-body"><div class="list-title">' + esc(m.title) + '</div>';
-      html += '<div class="list-subtitle">' + esc(m.author || '') + ' · ' + m.type + '</div></div>';
-      html += '<button class="btn btn-icon btn-sm btn-ghost" onclick="deleteMedia(\'' + m.id + '\')">🗑</button></div>';
-    }
-  } else {
-    html += '<div class="empty"><div class="empty-icon">📖</div><div class="empty-title">Пусто</div></div>';
-  }
-  html += '<div class="card"><h2>Добавить</h2>';
-  html += '<div class="field"><input type="text" id="md-title" placeholder="Название"/></div>';
-  html += '<div class="field"><input type="text" id="md-author" placeholder="Автор"/></div>';
-  html += '<div class="field"><select id="md-type"><option value="Книга">Книга</option><option value="Подкаст">Подкаст</option><option value="Статья">Статья</option><option value="Курс">Курс</option><option value="Фильм">Фильм</option></select></div>';
-  html += '<button class="btn btn-primary btn-block" onclick="addMedia()">Добавить</button></div></div>';
-  document.getElementById('app').innerHTML = html;
-}
-
-function addMedia() {
-  const title = ((document.getElementById('md-title') || {}).value || '').trim();
-  if (!title) return toast('Введите название', 'error');
-  state.media.push({
-    id: uid(), title: title,
-    author: ((document.getElementById('md-author') || {}).value || '').trim(),
-    type: ((document.getElementById('md-type') || {}).value || 'Книга'),
-    created_at: nowISO()
-  });
-  save();
-  toast('Добавлено', 'success');
-  renderMedia();
-}
-
-function deleteMedia(id) {
-  state.media = state.media.filter(function(m) { return m.id !== id; });
-  save();
-  renderMedia();
-}
-
-/* ═══ FINANCE ═══ */
-function renderFinance() {
-  const income = state.finance.filter(function(f) { return f.type === 'income'; }).reduce(function(s, f) { return s + f.amount; }, 0);
-  const expense = state.finance.filter(function(f) { return f.type === 'expense'; }).reduce(function(s, f) { return s + f.amount; }, 0);
-  let html = '<div class="page"><div class="title-xl">Финансы</div>';
-  html += '<div class="stat-grid mb-4">';
-  html += '<div class="stat-item"><div class="stat-value" style="color:var(--success);">+' + income + '</div><div class="stat-label">Доход</div></div>';
-  html += '<div class="stat-item"><div class="stat-value" style="color:var(--danger);">-' + expense + '</div><div class="stat-label">Расход</div></div>';
-  html += '<div class="stat-item"><div class="stat-value">' + (income - expense) + '</div><div class="stat-label">Баланс</div></div>';
-  html += '</div>';
-  if (state.finance.length) {
-    const recent = state.finance.slice().reverse().slice(0, 15);
-    for (let i = 0; i < recent.length; i++) {
-      const f = recent[i];
-      const color = f.type === 'income' ? 'var(--success)' : 'var(--danger)';
-      html += '<div class="list-row"><div class="list-icon" style="background:' + color + ';color:#000;">' + (f.type === 'income' ? '+' : '−') + '</div>';
-      html += '<div class="list-body"><div class="list-title">' + esc(f.category || 'Без категории') + '</div>';
-      html += '<div class="list-subtitle">' + fmtDate(f.timestamp) + '</div></div>';
-      html += '<div class="list-value" style="color:' + color + ';">' + f.amount + '</div></div>';
-    }
-  }
-  html += '<div class="card"><h2>Добавить</h2>';
-  html += '<div class="field"><select id="f-type"><option value="expense">➖ Расход</option><option value="income">➕ Доход</option></select></div>';
-  html += '<div class="field"><input type="number" id="f-amount" placeholder="Сумма"/></div>';
-  html += '<div class="field"><input type="text" id="f-cat" placeholder="Категория"/></div>';
-  html += '<button class="btn btn-primary btn-block" onclick="addFinance()">Добавить</button></div></div>';
-  document.getElementById('app').innerHTML = html;
-}
-
-function addFinance() {
-  const amount = parseFloat((document.getElementById('f-amount') || {}).value);
-  if (!amount || amount <= 0) return toast('Введите сумму', 'error');
-  state.finance.push({
-    id: uid(),
-    type: ((document.getElementById('f-type') || {}).value || 'expense'),
-    amount: amount,
-    category: ((document.getElementById('f-cat') || {}).value || '').trim(),
-    timestamp: nowISO(),
-    created_at: nowISO()
-  });
-  save();
-  toast('Добавлено', 'success');
-  haptic('success');
-  renderFinance();
-}
-
-/* ═══ HISTORY ═══ */
-function renderHistory() {
-  let html = '<div class="page"><div class="title-xl">История</div><div class="card"><h2>Сводка</h2>';
-  html += '<div class="list-row"><div class="list-icon" style="background:var(--brand);">✅</div><div class="list-body"><div class="list-title">Задач всего</div></div><div class="list-value">' + state.tasks.length + '</div></div>';
-  html += '<div class="list-row"><div class="list-icon" style="background:var(--info);">✨</div><div class="list-body"><div class="list-title">Сообщений AI</div></div><div class="list-value">' + state.chats.length + '</div></div>';
-  html += '<div class="list-row"><div class="list-icon" style="background:var(--success);">📅</div><div class="list-body"><div class="list-title">Событий</div></div><div class="list-value">' + state.schedule.length + '</div></div>';
-  html += '<div class="list-row"><div class="list-icon" style="background:var(--warning);color:#000;">📝</div><div class="list-body"><div class="list-title">Заметок</div></div><div class="list-value">' + state.notes.length + '</div></div>';
-  html += '</div></div>';
-  document.getElementById('app').innerHTML = html;
-}
-
-/* ═══ DB MANAGER ═══ */
-function renderDBManager() {
-  const tables = ['tasks', 'schedule', 'habits', 'goals', 'notes', 'learning', 'timer', 'chats', 'mood', 'water', 'meds', 'workouts', 'meditations', 'journal', 'media', 'finance', 'matrix'];
-  let total = 0;
-  for (let i = 0; i < tables.length; i++) total += (state[tables[i]] || []).length;
-  let html = '<div class="page"><div class="title-xl">База данных</div>';
-  html += '<div class="card"><h2>Статус</h2>';
-  html += '<div class="list-row"><div class="list-icon" style="background:var(--success);color:#000;">✓</div>';
-  html += '<div class="list-body"><div class="list-title">LocalStorage</div><div class="list-subtitle">' + STORAGE_KEY + '</div></div></div>';
-  html += '<div class="list-row"><div class="list-icon" style="background:var(--brand);">📦</div>';
-  html += '<div class="list-body"><div class="list-title">Всего записей</div></div>';
-  html += '<div class="list-value">' + total + '</div></div></div>';
-  html += '<div class="card"><h2>Таблицы</h2>';
-  for (let i = 0; i < tables.length; i++) {
-    const t = tables[i];
-    html += '<div class="list-row" onclick="manageTable(\'' + t + '\')">';
-    html += '<div class="list-icon" style="background:var(--surface-3);">🗄</div>';
-    html += '<div class="list-body"><div class="list-title">' + t + '</div></div>';
-    html += '<div class="list-value">' + (state[t] || []).length + '</div></div>';
-  }
-  html += '</div>';
-  html += '<div class="card"><h2>Операции</h2>';
-  html += '<button class="btn btn-primary btn-block mb-2" onclick="exportDB()">📤 Экспорт JSON</button>';
-  html += '<button class="btn btn-ghost btn-block mb-2" onclick="document.getElementById(\'importDB\').click()">📥 Импорт JSON</button>';
-  html += '<input type="file" id="importDB" accept=".json" style="display:none" onchange="importDB(event)"/>';
-  html += '<button class="btn btn-danger btn-block" onclick="if(confirm(\'Сбросить всё?\')){localStorage.removeItem(\'' + STORAGE_KEY + '\');location.reload();}">🗑 Полный сброс</button></div></div>';
-  document.getElementById('app').innerHTML = html;
-}
-
-function manageTable(table) {
-  const items = state[table] || [];
-  let html = '<div style="max-height:60vh;overflow-y:auto;">';
-  const slice = items.slice(0, 100);
-  for (let i = 0; i < slice.length; i++) {
-    const item = slice[i];
-    html += '<div style="padding:12px 0;border-bottom:0.5px solid var(--divider);">';
-    html += '<div style="font-weight:600;margin-bottom:4px;">' + esc(item.title || item.name || item.date || (item.id ? item.id.slice(0, 12) : '')) + '</div>';
-    html += '<div class="caption text-tertiary" style="font-family:monospace;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc(JSON.stringify(item).slice(0, 80)) + '</div></div>';
-  }
-  html += '</div>';
-  openSheet(table + ' (' + items.length + ')', html);
-}
-
-function exportDB() {
-  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'ai-health-' + today() + '.json';
-  a.click();
-  URL.revokeObjectURL(url);
-  toast('Экспорт готов', 'success');
-}
-
-function importDB(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(ev) {
-    try {
-      const data = JSON.parse(ev.target.result);
-      if (!confirm('Заменить все данные?')) return;
-      state = Object.assign(defaultState(), data);
-      save();
-      toast('Импорт успешен', 'success');
-      location.reload();
-    } catch(err) { toast('Ошибка: ' + err.message, 'error'); }
-  };
-  reader.readAsText(file);
-}
-
-/* ═══ SETTINGS ═══ */
-function renderSettings() {
-  let html = '<div class="page"><div class="title-xl">Настройки</div>';
-  html += '<div class="card"><h2>Профиль</h2>';
-  html += '<div class="field"><label class="field-label">Имя</label>';
-  html += '<input type="text" id="s-name" value="' + esc(state.settings.username) + '" onchange="saveName(this.value)"/></div>';
-  html += '<div class="list-row"><div class="list-body"><div class="list-title">Тёмная тема</div></div>';
-  html += '<button class="switch ' + (state.settings.theme === 'dark' ? 'on' : '') + '" onclick="toggleTheme()"></button></div></div>';
-  html += '<div class="card"><h2>AI</h2>';
-  html += '<div class="list-row" onclick="openAISettings()">';
-  html += '<div class="list-icon" style="background:var(--brand);">✨</div>';
-  html += '<div class="list-body"><div class="list-title">' + state.settings.provider + '</div>';
-  html += '<div class="list-subtitle">' + (state.settings.apiKey ? 'Ключ установлен' : 'Ключ не задан') + '</div></div>';
-  html += '<div class="list-chevron">›</div></div></div>';
-  html += '<div class="card"><h2>Данные</h2>';
-  html += '<div class="list-row" onclick="navigate(\'dbmanager\')">';
-  html += '<div class="list-icon" style="background:var(--coach);color:#000;">🗄</div>';
-  html += '<div class="list-body"><div class="list-title">База данных</div></div>';
-  html += '<div class="list-chevron">›</div></div></div>';
-  html += '<div class="footnote text-tertiary" style="text-align:center;margin-top:32px;">AI Health Ecosystem<br>v16.0</div></div>';
-  document.getElementById('app').innerHTML = html;
-}
-
-function saveName(name) {
-  state.settings.username = name || 'Пользователь';
-  save();
-  const chip = document.getElementById('userChip');
-  if (chip) chip.textContent = state.settings.username;
-  toast('Сохранено', 'success');
-}
-
-/* ═══ THEME ═══ */
-function applyTheme(theme) {
-  document.body.classList.toggle('light', theme === 'light');
-  const btn = document.getElementById('themeBtn');
-  if (btn) btn.textContent = theme === 'light' ? '☀️' : '🌙';
-  const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute('content', theme === 'light' ? '#f4f4f8' : '#000000');
-}
-
-function toggleTheme() {
-  state.settings.theme = state.settings.theme === 'light' ? 'dark' : 'light';
-  applyTheme(state.settings.theme);
-  save();
-  haptic('light');
-  if (currentPage === 'settings') renderSettings();
-}
-
-/* ═══ INIT ═══ */
-function init() {
-  try {
-    applyTheme(state.settings.theme);
-    
-    if (state.tasks.length === 0) {
-      state.tasks = [
-        { id: uid(), title: 'Завершить отчёт', category: 'Работа', planned_time: 45, actual_time: 0, status: 'pending', priority: 'high', created_at: nowISO() },
-        { id: uid(), title: 'Повторить 10 слов', category: 'Обучение', planned_time: 15, actual_time: 0, status: 'pending', priority: 'medium', created_at: nowISO() },
-        { id: uid(), title: 'Позвонить маме', category: 'Личное', planned_time: 10, actual_time: 0, status: 'pending', priority: 'high', created_at: nowISO() }
-      ];
-      save();
-    }
-    
-    renderTabBar();
-    renderDashboard();
-    
-    const t = today();
-    if (state.stats.lastActiveDay !== t) {
-      const y = new Date();
-      y.setDate(y.getDate() - 1);
-      state.stats.streak = state.stats.lastActiveDay === y.toISOString().slice(0, 10)
-        ? (state.stats.streak || 0) + 1
-        : 1;
-      state.stats.lastActiveDay = t;
-      save();
-    }
-  } catch(e) {
-    console.error('Init error:', e);
-    const app = document.getElementById('app');
-    if (app) app.innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-title">Ошибка загрузки</div><div class="empty-text">' + esc(e.message) + '</div></div>';
-  }
-}
-
-// Экспорт функций в window для inline onclick
-window.navigate = navigate;
-window.openSheet = openSheet;
-window.closeSheet = closeSheet;
-window.toggleTheme = toggleTheme;
-window.openPersona = openPersona;
-window.addWater = addWater;
-window.quickMoodLog = quickMoodLog;
-window.saveMood = saveMood;
-window.addTask = addTask;
-window.saveTask = saveTask;
-window.toggleTask = toggleTask;
-window.editTask = editTask;
-window.updateTask = updateTask;
-window.deleteTask = deleteTask;
-window.switchPersona = switchPersona;
-window.quickAsk = quickAsk;
-window.sendMsg = sendMsg;
-window.openAISettings = openAISettings;
-window.saveAISettings = saveAISettings;
-window.addHabit = addHabit;
-window.toggleHabit = toggleHabit;
-window.deleteHabit = deleteHabit;
-window.addGoal = addGoal;
-window.updateGoal = updateGoal;
-window.deleteGoal = deleteGoal;
-window.startTimer = startTimer;
-window.pauseTimer = pauseTimer;
-window.resumeTimer = resumeTimer;
-window.stopTimer = stopTimer;
-window.addNote = addNote;
-window.saveNote = saveNote;
-window.editNote = editNote;
-window.updateNote = updateNote;
-window.deleteNote = deleteNote;
-window.addLearning = addLearning;
-window.updateLearning = updateLearning;
-window.deleteLearning = deleteLearning;
-window.addMatrixTask = addMatrixTask;
-window.saveMatrixTask = saveMatrixTask;
-window.removeMatrixTask = removeMatrixTask;
-window.toggleFlag = toggleFlag;
-window.saveWaterGoal = saveWaterGoal;
-window.addMed = addMed;
-window.deleteMed = deleteMed;
-window.addWorkout = addWorkout;
-window.startMeditation = startMeditation;
-window.saveJournal = saveJournal;
-window.deleteJournal = deleteJournal;
-window.addMedia = addMedia;
-window.deleteMedia = deleteMedia;
-window.addFinance = addFinance;
-window.addEvent = addEvent;
-window.editEvent = editEvent;
-window.saveEvent = saveEvent;
-window.deleteEvent = deleteEvent;
-window.showDayDetails = showDayDetails;
-window.manageTable = manageTable;
-window.exportDB = exportDB;
-window.importDB = importDB;
-window.saveName = saveName;
-window.renderCalendar = renderCalendar;
-window.renderTasks = renderTasks;
-window.renderHabits = renderHabits;
-window.renderGoals = renderGoals;
-window.renderNotes = renderNotes;
-window.renderLearning = renderLearning;
-window.renderMatrix = renderMatrix;
-window.renderFocus = renderFocus;
-window.renderMood = renderMood;
-window.renderWater = renderWater;
-window.renderMeds = renderMeds;
-window.renderWorkouts = renderWorkouts;
-window.renderMeditation = renderMeditation;
-window.renderJournal = renderJournal;
-window.renderMedia = renderMedia;
-window.renderFinance = renderFinance;
-window.renderSettings = renderSettings;
-window.renderStats = renderStats;
-window.renderHistory = renderHistory;
-window.renderDBManager = renderDBManager;
-
-// Запуск
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', init);
-} else {
-  init();
-}
-</script>
-</body>
-</html>
