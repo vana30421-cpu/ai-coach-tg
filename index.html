@@ -1,1353 +1,159 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#000000">
-<title>AI Health · Ecosystem v23</title>
-<script src="https://telegram.org/js/telegram-web-app.js?56"></script>
-<style>
-:root {
-  --bg: #000; --bg-1: #0b0b10; --bg-2: #14141b; --bg-3: #1e1e27;
-  --surface-1: rgba(255,255,255,0.035); --surface-2: rgba(255,255,255,0.065);
-  --surface-3: rgba(255,255,255,0.10); --surface-4: rgba(255,255,255,0.145);
-  --divider: rgba(255,255,255,0.08); --divider-strong: rgba(255,255,255,0.14);
-  --text: #fff; --text-2: rgba(255,255,255,0.74);
-  --text-3: rgba(255,255,255,0.52); --text-4: rgba(255,255,255,0.34);
-  --brand: #5b9eff; --brand-2: #a78bfa; --brand-glow: rgba(91,158,255,0.45);
-  --success: #3ddc97; --warning: #ffa940; --danger: #ff6b6b; --info: #4dd4ff;
-  --coach: #b394ff; --psych: #4dd4ff; --doctor: #3ddc97;
-  --nutrition: #ffa940; --fitness: #ff7ba9; --lawyer: #c4b5fd; --finance: #ffcc4d;
-  --r-sm: 16px; --r-md: 22px; --r-lg: 28px; --r-xl: 32px; --r-2xl: 40px;
-  --r-full: 9999px;
-  --header-h: 60px; --tabbar-h: 64px;
-  --safe-top: env(safe-area-inset-top, 0px);
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --ease: cubic-bezier(0.4, 0, 0.2, 1);
-  --spring-soft: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --spring-bouncy: cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  --spring-snap: cubic-bezier(0.16, 1.3, 0.3, 1);
-}
-body.theme-dark { --bg: #000; --bg-1: #0b0b10; --bg-2: #14141b; --bg-3: #1e1e27;
-  --surface-1: rgba(255,255,255,0.035); --surface-2: rgba(255,255,255,0.065);
-  --surface-3: rgba(255,255,255,0.10); --surface-4: rgba(255,255,255,0.145);
-  --divider: rgba(255,255,255,0.08); --divider-strong: rgba(255,255,255,0.14);
-  --text: #fff; --text-2: rgba(255,255,255,0.74);
-  --text-3: rgba(255,255,255,0.52); --text-4: rgba(255,255,255,0.34);
-  --brand: #5b9eff; --brand-2: #a78bfa; --brand-glow: rgba(91,158,255,0.45); }
-body.theme-light { --bg: #f5f5fa; --bg-1: #fff; --bg-2: #f8f8fc; --bg-3: #eeeef4;
-  --surface-1: rgba(0,0,0,0.02); --surface-2: rgba(0,0,0,0.045);
-  --surface-3: rgba(0,0,0,0.07); --surface-4: rgba(0,0,0,0.10);
-  --divider: rgba(0,0,0,0.08); --divider-strong: rgba(0,0,0,0.14);
-  --text: #000; --text-2: rgba(0,0,0,0.68);
-  --text-3: rgba(0,0,0,0.46); --text-4: rgba(0,0,0,0.30);
-  --brand: #0a84ff; --brand-2: #5e5ce6; --brand-glow: rgba(10,132,255,0.35); }
-body.theme-ocean { --bg: #000814; --bg-1: #001428; --bg-2: #001d3d; --bg-3: #002855;
-  --text: #e0fbfc; --brand: #00b4d8; --brand-2: #0077b6; --brand-glow: rgba(0,180,216,0.5); }
-body.theme-sakura { --bg: #1a0f14; --bg-1: #24161c; --bg-2: #2e1c24; --bg-3: #3a222d;
-  --text: #ffe5ec; --brand: #ff8fab; --brand-2: #fb6f92; --brand-glow: rgba(255,143,171,0.45); }
-body.theme-forest { --bg: #0a1410; --bg-1: #0f1f18; --bg-2: #16291f; --bg-3: #1d3528;
-  --text: #e8f5e9; --brand: #52b788; --brand-2: #2d6a4f; --brand-glow: rgba(82,183,136,0.45); }
-body.theme-sunset { --bg: #1a0a05; --bg-1: #26100a; --bg-2: #331710; --bg-3: #401e15;
-  --text: #ffe8dc; --brand: #ff6b35; --brand-2: #f7931e; --brand-glow: rgba(255,107,53,0.45); }
-body.theme-ice { --bg: #0a1419; --bg-1: #0f1e26; --bg-2: #162a33; --bg-3: #1d3640;
-  --text: #eaf8ff; --brand: #a4e7ff; --brand-2: #4cc9f0; --brand-glow: rgba(164,231,255,0.5); }
-body.theme-amethyst { --bg: #12061f; --bg-1: #1a0b2e; --bg-2: #23103d; --bg-3: #2d154c;
-  --text: #f0e5ff; --brand: #b48cff; --brand-2: #7c3aed; --brand-glow: rgba(180,140,255,0.5); }
-body.theme-pumpkin { --bg: #0d0500; --bg-1: #1a0d02; --bg-2: #261405; --bg-3: #331c08;
-  --text: #fff3e0; --brand: #ff6b00; --brand-2: #ff9500; --brand-glow: rgba(255,107,0,0.5); }
-body.theme-vampire { --bg: #0a0000; --bg-1: #140000; --bg-2: #1f0000; --bg-3: #2b0000;
-  --text: #ffdddd; --brand: #dc143c; --brand-2: #8b0000; --brand-glow: rgba(220,20,60,0.55); }
-body.theme-ghost { --bg: #0a0814; --bg-1: #14122a; --bg-2: #1c1a3d; --bg-3: #25234f;
-  --text: #f0f0ff; --brand: #b8b8ff; --brand-2: #8888ff; --brand-glow: rgba(184,184,255,0.55); }
-body.theme-web { --bg: #001410; --bg-1: #001a13; --bg-2: #002418; --bg-3: #002e1f;
-  --text: #d4ffe1; --brand: #3cdc82; --brand-2: #0b8f4f; --brand-glow: rgba(60,220,130,0.5); }
-
-* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html { height: 100%; }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Samsung One', 'Inter', system-ui, sans-serif;
-  font-size: 16px; line-height: 1.45; color: var(--text); background: var(--bg);
-  -webkit-font-smoothing: antialiased; overscroll-behavior-y: none;
-  overflow-x: hidden; min-height: 100vh; min-height: 100dvh;
-  letter-spacing: -0.015em;
-  transition: background 0.5s var(--ease), color 0.5s var(--ease);
-}
-body::before {
-  content: ''; position: fixed; inset: -20%;
-  background:
-    radial-gradient(ellipse 45% 35% at 20% 15%, var(--brand-glow), transparent 60%),
-    radial-gradient(ellipse 40% 35% at 80% 85%, var(--brand-glow), transparent 60%);
-  pointer-events: none; z-index: 0;
-  animation: auroraFlow 24s ease-in-out infinite;
-  opacity: 0.5;
-}
-@keyframes auroraFlow {
-  0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-  33% { transform: translate(3%, -2%) scale(1.08) rotate(1.5deg); }
-  66% { transform: translate(-2%, 3%) scale(1.05) rotate(-1.5deg); }
-  100% { transform: translate(0, 0) scale(1) rotate(0deg); }
-}
-.tap-ripple { position: relative; overflow: hidden; }
-.tap-ripple::after {
-  content: ''; position: absolute; inset: 0;
-  background: radial-gradient(circle at var(--rx, 50%) var(--ry, 50%),
-    rgba(255,255,255,0.28) 0%, transparent 60%);
-  opacity: 0; transform: scale(0.4); pointer-events: none;
-}
-.tap-ripple.rippling::after { animation: rippleFade 0.65s ease-out forwards; }
-@keyframes rippleFade { 0% { opacity: 0.85; transform: scale(0.5); } 100% { opacity: 0; transform: scale(1.4); } }
-.app-header {
-  position: sticky; top: 0; z-index: 100; padding-top: var(--safe-top);
-  background: color-mix(in srgb, var(--bg) 78%, transparent);
-  backdrop-filter: saturate(200%) blur(30px);
-  -webkit-backdrop-filter: saturate(200%) blur(30px);
-  border-bottom: 0.5px solid var(--divider);
-}
-.header-inner { height: var(--header-h); display: flex; align-items: center; justify-content: space-between; padding: 0 22px; gap: 12px; }
-.brand { display: flex; align-items: center; gap: 11px; font-size: 19px; font-weight: 700; }
-.brand-logo {
-  width: 38px; height: 38px; border-radius: 12px;
-  background: linear-gradient(135deg, var(--brand), var(--brand-2));
-  display: grid; place-items: center; color: #fff;
-  box-shadow: 0 6px 20px var(--brand-glow); font-size: 20px;
-}
-.header-actions { display: flex; align-items: center; gap: 8px; }
-.icon-btn {
-  width: 42px; height: 42px; border-radius: 50%;
-  background: var(--surface-2); border: none; color: var(--text);
-  cursor: pointer; display: grid; place-items: center;
-  transition: all 0.25s var(--spring-soft); font-size: 18px;
-}
-.icon-btn:active { transform: scale(0.9); }
-.avatar-btn {
-  width: 42px; height: 42px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--brand), var(--brand-2));
-  display: grid; place-items: center; font-size: 20px;
-  cursor: pointer; border: none;
-  animation: avatarGlow 3s ease-in-out infinite;
-}
-@keyframes avatarGlow {
-  0%, 100% { box-shadow: 0 4px 12px var(--brand-glow); }
-  50% { box-shadow: 0 6px 24px var(--brand-glow); }
-}
-.app-main {
-  position: relative; z-index: 2; max-width: 700px;
-  margin: 0 auto; width: 100%; padding: 22px;
-  padding-bottom: calc(var(--tabbar-h) + var(--safe-bottom) + 96px) !important;
-  min-height: calc(100dvh - var(--header-h) - var(--safe-top));
-}
-.page { animation: pageEnter 0.55s var(--spring-snap) both; }
-@keyframes pageEnter {
-  0% { opacity: 0; transform: translateY(20px) scale(0.96); filter: blur(8px); }
-  100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
-}
-.tab-bar-wrap { position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; padding: 0 14px calc(14px + var(--safe-bottom)); pointer-events: none; }
-.tab-bar {
-  background: color-mix(in srgb, var(--bg-1) 88%, transparent);
-  backdrop-filter: saturate(200%) blur(30px);
-  -webkit-backdrop-filter: saturate(200%) blur(30px);
-  border: 0.5px solid var(--divider-strong); border-radius: 26px;
-  display: flex; align-items: stretch; height: 62px;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.5);
-  max-width: 580px; margin: 0 auto; pointer-events: auto; overflow: hidden;
-}
-.tab-item {
-  flex: 1; background: transparent; border: none;
-  color: var(--text-3); font-family: inherit; font-size: 9px; font-weight: 600;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 2px; padding: 6px 1px 4px; cursor: pointer; position: relative;
-  transition: color 0.3s var(--ease);
-  min-width: 0;
-}
-.tab-item .tab-icon { font-size: 19px; line-height: 1; transition: transform 0.5s var(--spring-bouncy); }
-.tab-item .tab-label { font-size: 9px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
-.tab-item.active { color: var(--brand); }
-.tab-item.active .tab-icon { transform: scale(1.25) translateY(-3px); }
-.tab-item:active { transform: scale(0.92); }
-.tab-item.active::before {
-  content: ''; position: absolute; top: 3px; left: 50%; transform: translateX(-50%);
-  width: 4px; height: 4px; background: var(--brand); border-radius: 50%;
-  box-shadow: 0 0 12px var(--brand-glow);
-}
-.title-xl { font-size: 34px; font-weight: 800; line-height: 1.12; margin-bottom: 26px; }
-.title-m { font-size: 21px; font-weight: 700; margin-bottom: 14px; }
-.card {
-  background: var(--bg-2); border-radius: var(--r-xl); padding: 22px;
-  margin-bottom: 16px; position: relative; overflow: hidden;
-  border: 0.5px solid var(--surface-1);
-  transition: transform 0.45s var(--spring-soft);
-  animation: cardAppear 0.6s var(--spring-snap) both;
-}
-.card:active { transform: scale(0.985); }
-@keyframes cardAppear {
-  from { opacity: 0; transform: translateY(24px) scale(0.97); filter: blur(4px); }
-  to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
-}
-.card-gradient {
-  background: linear-gradient(135deg, var(--brand), var(--brand-2));
-  color: #fff; box-shadow: 0 16px 48px var(--brand-glow); border: none;
-}
-.card-gradient h2 { color: #fff; }
-.card h2 { font-size: 20px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
-.btn {
-  display: inline-flex; align-items: center; justify-content: center;
-  gap: 8px; padding: 14px 22px; border-radius: var(--r-full);
-  border: none; font-family: inherit; font-size: 16px; font-weight: 700;
-  cursor: pointer; transition: transform 0.35s var(--spring-soft), filter 0.25s var(--ease);
-  white-space: nowrap; -webkit-appearance: none;
-}
-.btn:active:not(:disabled) { transform: scale(0.94); }
-.btn:disabled { opacity: 0.4; cursor: not-allowed; }
-.btn-primary { background: var(--brand); color: #fff; box-shadow: 0 8px 24px var(--brand-glow); }
-.btn-success { background: var(--success); color: #000; }
-.btn-warning { background: var(--warning); color: #000; }
-.btn-danger { background: var(--danger); color: #fff; }
-.btn-ghost { background: var(--surface-2); color: var(--text); border: 0.5px solid var(--surface-3); }
-.btn-sm { padding: 10px 18px; font-size: 14px; }
-.btn-xs { padding: 7px 14px; font-size: 13px; }
-.btn-block { width: 100%; }
-.btn-icon { width: 44px; height: 44px; padding: 0; border-radius: 50%; }
-.btn-icon.btn-sm { width: 36px; height: 36px; }
-.btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
-.field { margin-bottom: 18px; }
-.field-label {
-  display: block; font-size: 13px; font-weight: 600;
-  color: var(--text-2); margin-bottom: 8px;
-  text-transform: uppercase; letter-spacing: 0.04em;
-}
-input[type="text"], input[type="number"], input[type="datetime-local"],
-input[type="date"], input[type="time"], input[type="password"],
-input[type="email"], input[type="url"], input[type="search"], select, textarea {
-  width: 100%; padding: 16px 18px;
-  background: var(--surface-2); border: 1.5px solid transparent;
-  border-radius: var(--r-lg); color: var(--text); font-family: inherit;
-  font-size: 16px; font-weight: 500;
-  transition: all 0.25s var(--spring-soft);
-  -webkit-appearance: none; appearance: none;
-}
-input:focus, select:focus, textarea:focus {
-  outline: none; background: var(--surface-3);
-  border-color: var(--brand); box-shadow: 0 0 0 4px var(--brand-glow);
-}
-input::placeholder, textarea::placeholder { color: var(--text-3); }
-textarea { resize: vertical; min-height: 100px; line-height: 1.55; font-family: inherit; }
-select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a78bfa' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 18px center;
-  padding-right: 44px;
-}
-.task-item {
-  background: var(--bg-2); border-radius: var(--r-lg); padding: 16px 18px;
-  margin-bottom: 10px; display: flex; align-items: center; gap: 14px;
-  cursor: pointer; transition: all 0.3s var(--spring-soft);
-  border: 1.5px solid transparent;
-}
-.task-item:active { background: var(--surface-2); transform: scale(0.985); }
-.task-item.completed { opacity: 0.5; }
-.task-item.completed .task-title { text-decoration: line-through; }
-.task-checkbox {
-  width: 28px; height: 28px; border-radius: 50%;
-  border: 2px solid var(--text-3); background: transparent;
-  display: grid; place-items: center; cursor: pointer; flex-shrink: 0;
-  transition: all 0.4s var(--spring-bouncy);
-  padding: 0; color: transparent; font-size: 15px; font-weight: 700;
-}
-.task-checkbox.checked {
-  background: var(--success); border-color: var(--success); color: #000;
-}
-.task-content { flex: 1; min-width: 0; }
-.task-title {
-  font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 3px;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-.task-meta { display: flex; gap: 8px; font-size: 12px; color: var(--text-2); align-items: center; flex-wrap: wrap; }
-.priority-bar { width: 4px; height: 34px; border-radius: 2px; flex-shrink: 0; }
-.priority-bar.high { background: var(--danger); }
-.priority-bar.medium { background: var(--warning); }
-.priority-bar.low { background: var(--success); }
-.progress { height: 8px; background: var(--surface-3); border-radius: var(--r-full); overflow: hidden; }
-.progress-fill {
-  height: 100%; background: linear-gradient(90deg, var(--brand), var(--brand-2));
-  border-radius: var(--r-full); transition: width 0.8s var(--spring-soft);
-}
-.overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.78);
-  backdrop-filter: blur(16px);
-  z-index: 1000; display: flex; align-items: flex-end; justify-content: center;
-  animation: overlayFade 0.4s var(--ease);
-}
-@keyframes overlayFade { from { opacity: 0; } to { opacity: 1; } }
-.modal {
-  background: var(--bg-1); width: 100%; max-width: 560px;
-  max-height: 92dvh; border-radius: 36px 36px 0 0;
-  padding: 20px; padding-bottom: calc(24px + var(--safe-bottom));
-  overflow-y: auto; animation: sheetSpring 0.55s var(--spring-snap) both;
-}
-@keyframes sheetSpring {
-  0% { transform: translateY(100%); }
-  60% { transform: translateY(-3%) scale(1.005); }
-  100% { transform: translateY(0) scale(1); }
-}
-.modal-handle { width: 44px; height: 5px; background: var(--surface-4); border-radius: 3px; margin: 0 auto 18px; }
-.modal-header {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 22px; position: sticky; top: 0;
-  background: var(--bg-1); padding-bottom: 8px; z-index: 1;
-}
-.modal-title { font-size: 23px; font-weight: 800; }
-.modal-close {
-  width: 38px; height: 38px; border-radius: 50%;
-  background: var(--surface-2); border: none; color: var(--text-2);
-  display: grid; place-items: center; cursor: pointer; font-size: 16px;
-}
-.toast-container {
-  position: fixed; top: calc(var(--header-h) + var(--safe-top) + 14px);
-  left: 50%; transform: translateX(-50%); z-index: 2000;
-  display: flex; flex-direction: column; gap: 10px;
-  pointer-events: none; width: 90%; max-width: 420px;
-}
-.toast {
-  background: rgba(30,30,40,0.96); color: #fff;
-  backdrop-filter: blur(20px); border-radius: var(--r-lg);
-  padding: 16px 22px; box-shadow: 0 16px 48px rgba(0,0,0,0.5);
-  display: flex; align-items: center; gap: 12px;
-  font-size: 14px; font-weight: 600;
-  animation: toastSpring 0.55s var(--spring-bouncy);
-  pointer-events: auto;
-}
-.toast.success { background: var(--success); color: #000; }
-.toast.error { background: var(--danger); }
-.toast.warning { background: var(--warning); color: #000; }
-@keyframes toastSpring {
-  0% { opacity: 0; transform: translate(-50%, -40px) scale(0.7); }
-  60% { opacity: 1; transform: translate(-50%, 6px) scale(1.04); }
-  100% { opacity: 1; transform: translate(-50%, 0) scale(1); }
-}
-.segmented {
-  display: flex; background: var(--surface-2);
-  border-radius: var(--r-full); padding: 5px; gap: 3px;
-  border: 0.5px solid var(--surface-3);
-  overflow-x: auto;
-}
-.segmented-item {
-  flex: 1; padding: 11px 14px; background: transparent;
-  border: none; border-radius: var(--r-full);
-  font-family: inherit; font-size: 14px; font-weight: 700;
-  color: var(--text-2); cursor: pointer;
-  transition: all 0.35s var(--spring-soft); white-space: nowrap;
-}
-.segmented-item.active { background: var(--brand); color: #fff; }
-.search-bar {
-  display: flex; align-items: center; gap: 10px;
-  padding: 14px 18px; background: var(--surface-2);
-  border-radius: var(--r-lg); margin-bottom: 14px;
-  border: 0.5px solid var(--surface-3);
-}
-.search-bar input { flex: 1; padding: 0; background: transparent; border: none; font-size: 16px; font-weight: 500; color: var(--text); }
-.persona-bar {
-  display: flex; gap: 8px; padding: 6px;
-  background: var(--surface-2); border-radius: var(--r-full);
-  margin-bottom: 18px; overflow-x: auto;
-  border: 0.5px solid var(--surface-3);
-}
-.persona-item {
-  flex: 1; min-width: fit-content;
-  padding: 11px 18px; border-radius: var(--r-full);
-  border: none; background: transparent; color: var(--text-2);
-  font-family: inherit; font-size: 13px; font-weight: 700;
-  cursor: pointer; white-space: nowrap;
-}
-.persona-item.active { color: #fff; }
-.persona-item.active[data-p="coach"] { background: var(--coach); color: #000; }
-.persona-item.active[data-p="psych"] { background: var(--psych); color: #000; }
-.persona-item.active[data-p="doctor"] { background: var(--doctor); color: #000; }
-.persona-item.active[data-p="nutrition"] { background: var(--nutrition); color: #000; }
-.persona-item.active[data-p="fitness"] { background: var(--fitness); }
-.persona-item.active[data-p="lawyer"] { background: var(--lawyer); color: #000; }
-.persona-item.active[data-p="finance"] { background: var(--finance); color: #000; }
-.chat { display: flex; flex-direction: column; gap: 14px; padding: 10px 0; }
-.msg {
-  max-width: 86%; padding: 14px 18px; border-radius: 24px;
-  font-size: 16px; line-height: 1.55; word-wrap: break-word;
-}
-.msg-user {
-  align-self: flex-end;
-  background: linear-gradient(135deg, var(--brand), var(--brand-2));
-  color: #fff; border-bottom-right-radius: 8px;
-}
-.msg-bot {
-  align-self: flex-start; background: var(--surface-2);
-  color: var(--text); border-bottom-left-radius: 8px;
-  border: 0.5px solid var(--surface-3);
-}
-.msg-bot strong { color: var(--brand-2); font-weight: 700; }
-.typing {
-  display: flex; gap: 6px; padding: 16px 20px;
-  align-self: flex-start; background: var(--surface-2);
-  border-radius: 24px;
-}
-.typing span {
-  width: 8px; height: 8px; background: var(--text-3);
-  border-radius: 50%; animation: typing 1.4s infinite;
-}
-.typing span:nth-child(2) { animation-delay: 0.15s; }
-.typing span:nth-child(3) { animation-delay: 0.3s; }
-@keyframes typing { 0%, 60%, 100% { transform: translateY(0); opacity: 0.4; } 30% { transform: translateY(-6px); opacity: 1; } }
-.chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
-.chip {
-  padding: 9px 16px; border-radius: var(--r-full);
-  background: var(--surface-2); border: 0.5px solid var(--surface-3);
-  color: var(--text); font-family: inherit;
-  font-size: 13px; font-weight: 600; cursor: pointer;
-  white-space: nowrap;
-}
-.stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-.stat-item {
-  text-align: center; padding: 18px 10px;
-  background: var(--surface-1); border-radius: var(--r-lg);
-  border: 0.5px solid var(--surface-2);
-}
-.stat-value { font-size: 24px; font-weight: 800; line-height: 1; margin-bottom: 7px; }
-.stat-label { font-size: 11px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; }
-.switch {
-  position: relative; width: 54px; height: 33px;
-  background: var(--surface-3); border-radius: var(--r-full);
-  cursor: pointer; transition: background 0.4s var(--spring-soft);
-  flex-shrink: 0; border: none; padding: 0;
-}
-.switch::after {
-  content: ''; position: absolute; top: 2px; left: 2px;
-  width: 29px; height: 29px; background: #fff; border-radius: 50%;
-  transition: transform 0.5s var(--spring-bouncy);
-}
-.switch.on { background: var(--brand); }
-.switch.on::after { transform: translateX(21px); }
-.list-row {
-  display: flex; align-items: center; gap: 16px;
-  padding: 16px 18px; background: var(--bg-2);
-  border-radius: var(--r-lg); margin-bottom: 10px;
-  cursor: pointer; transition: all 0.3s var(--spring-soft);
-  min-height: 66px; border: 0.5px solid var(--surface-1);
-}
-.list-row:active { background: var(--surface-2); transform: scale(0.985); }
-.list-icon {
-  width: 46px; height: 46px; border-radius: 15px;
-  display: grid; place-items: center; flex-shrink: 0; font-size: 22px;
-}
-.list-body { flex: 1; min-width: 0; }
-.list-title { font-size: 16px; font-weight: 600; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.list-subtitle { font-size: 13px; color: var(--text-2); margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.list-value { font-size: 16px; color: var(--text-2); font-weight: 600; flex-shrink: 0; }
-.list-chevron { color: var(--text-4); flex-shrink: 0; font-size: 22px; }
-.empty { text-align: center; padding: 56px 24px; color: var(--text-2); }
-.empty-icon { font-size: 64px; opacity: 0.3; margin-bottom: 18px; }
-.empty-title { font-size: 21px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
-.empty-text { font-size: 14px; line-height: 1.55; }
-.profile-hero {
-  text-align: center; padding: 36px 20px 28px;
-  background: linear-gradient(180deg, var(--surface-2), transparent);
-  border-radius: var(--r-2xl); margin-bottom: 20px;
-  border: 0.5px solid var(--surface-2);
-  position: relative; overflow: hidden;
-}
-.profile-avatar {
-  width: 110px; height: 110px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--brand), var(--brand-2));
-  display: grid; place-items: center; font-size: 54px;
-  margin: 0 auto 16px;
-  box-shadow: 0 12px 40px var(--brand-glow);
-  border: 4px solid var(--bg-2); cursor: pointer;
-}
-.profile-name { font-size: 26px; font-weight: 800; margin-bottom: 6px; }
-.profile-sub { font-size: 14px; color: var(--text-2); }
-.achieve-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-.achieve-item {
-  text-align: center; padding: 18px 8px;
-  background: var(--surface-1); border-radius: var(--r-lg);
-  border: 0.5px solid var(--surface-2);
-}
-.achieve-item.locked { opacity: 0.4; filter: grayscale(0.8); }
-.achieve-item.unlocked { border-color: var(--brand); box-shadow: 0 0 20px var(--brand-glow); }
-.achieve-icon { font-size: 32px; margin-bottom: 6px; }
-.achieve-name { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-2); }
-.emoji-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
-.emoji-pick {
-  aspect-ratio: 1; border-radius: 14px;
-  border: 2px solid transparent; background: var(--surface-2);
-  font-size: 28px; cursor: pointer;
-  display: grid; place-items: center;
-}
-.emoji-pick.selected { border-color: var(--brand); background: var(--brand-glow); }
-.welcome-screen {
-  position: fixed; inset: 0; background: var(--bg); z-index: 5000;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  padding: 32px; text-align: center;
-}
-.welcome-logo {
-  width: 100px; height: 100px; border-radius: 28px;
-  background: linear-gradient(135deg, var(--brand), var(--brand-2));
-  display: grid; place-items: center; font-size: 54px; margin-bottom: 28px;
-  box-shadow: 0 20px 60px var(--brand-glow);
-}
-.welcome-title { font-size: 32px; font-weight: 800; margin-bottom: 12px; }
-.welcome-sub { font-size: 16px; color: var(--text-2); margin-bottom: 40px; max-width: 340px; line-height: 1.55; }
-.welcome-input { width: 100%; max-width: 340px; text-align: center; font-size: 20px !important; font-weight: 700 !important; }
-
-/* УРОВНИ ОБУЧЕНИЯ */
-.level-card {
-  background: var(--bg-2); border-radius: var(--r-xl); padding: 22px;
-  margin-bottom: 16px; position: relative; overflow: hidden;
-  border: 2px solid var(--surface-1);
-  cursor: pointer;
-}
-.level-card.locked { opacity: 0.5; cursor: not-allowed; }
-.level-card.active { border-color: var(--brand); box-shadow: 0 0 32px var(--brand-glow); }
-.level-card.completed { border-color: var(--success); background: linear-gradient(135deg, rgba(61,220,151,0.1), transparent); }
-.level-header { display: flex; align-items: center; gap: 16px; margin-bottom: 14px; }
-.level-num {
-  width: 60px; height: 60px; border-radius: 18px;
-  background: linear-gradient(135deg, var(--brand), var(--brand-2));
-  display: grid; place-items: center; flex-shrink: 0;
-  font-size: 26px; font-weight: 800; color: #fff;
-  box-shadow: 0 8px 24px var(--brand-glow);
-}
-.level-card.locked .level-num { background: var(--surface-3); color: var(--text-3); box-shadow: none; }
-.level-card.completed .level-num { background: linear-gradient(135deg, var(--success), #059669); box-shadow: 0 8px 24px rgba(61,220,151,0.4); }
-.level-info { flex: 1; min-width: 0; }
-.level-title { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
-.level-subtitle { font-size: 13px; color: var(--text-2); }
-.level-meta { display: flex; gap: 12px; font-size: 12px; color: var(--text-3); margin-top: 8px; }
-.level-desc { font-size: 13px; color: var(--text-2); line-height: 1.5; margin-bottom: 14px; }
-.level-badge {
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 5px 12px; border-radius: var(--r-full);
-  font-size: 11px; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-.level-badge.locked { background: var(--surface-3); color: var(--text-3); }
-.level-badge.active { background: rgba(91,158,255,0.2); color: var(--brand); }
-.level-badge.completed { background: rgba(61,220,151,0.2); color: var(--success); }
-
-/* МОДУЛИ */
-.module-card {
-  background: var(--bg-2); border-radius: var(--r-lg); padding: 18px;
-  margin-bottom: 12px; border: 0.5px solid var(--surface-1);
-  cursor: pointer;
-}
-.module-card.locked { opacity: 0.5; cursor: not-allowed; }
-.module-card.completed { border-color: var(--success); }
-.module-header { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
-.module-icon {
-  width: 48px; height: 48px; border-radius: 14px;
-  background: var(--surface-3); display: grid; place-items: center;
-  flex-shrink: 0; font-size: 24px;
-}
-.module-card.completed .module-icon { background: linear-gradient(135deg, var(--success), #059669); }
-.module-info { flex: 1; min-width: 0; }
-.module-title { font-size: 16px; font-weight: 700; margin-bottom: 3px; }
-.module-meta { font-size: 12px; color: var(--text-2); }
-.module-desc { font-size: 13px; color: var(--text-2); line-height: 1.5; }
-
-/* УРОКИ */
-.lesson-row {
-  display: flex; align-items: center; gap: 12px;
-  padding: 14px 16px; border-radius: var(--r-md);
-  margin-bottom: 6px; background: var(--surface-1);
-  cursor: pointer; border: 0.5px solid transparent;
-}
-.lesson-row:active { background: var(--surface-2); }
-.lesson-row.locked { opacity: 0.4; cursor: not-allowed; }
-.lesson-row.done { background: rgba(61,220,151,0.08); border-color: rgba(61,220,151,0.3); }
-.lesson-row.current { border-color: var(--brand); box-shadow: 0 0 16px var(--brand-glow); }
-.lesson-num {
-  width: 28px; height: 28px; border-radius: 50%;
-  display: grid; place-items: center; flex-shrink: 0;
-  font-size: 12px; font-weight: 700;
-  background: var(--surface-3); color: var(--text-2);
-}
-.lesson-row.done .lesson-num { background: var(--success); color: #000; }
-.lesson-row.current .lesson-num { background: var(--brand); color: #fff; }
-.lesson-title { font-size: 14px; font-weight: 600; flex: 1; }
-.lesson-row.done .lesson-title { color: var(--text-2); }
-.lesson-content {
-  font-size: 15px; line-height: 1.7;
-  color: var(--text);
-}
-.lesson-content p { margin-bottom: 14px; }
-.lesson-content strong { color: var(--brand-2); font-weight: 700; }
-.lesson-content ul, .lesson-content ol { padding-left: 22px; margin: 12px 0; }
-.lesson-content li { margin: 6px 0; }
-.lesson-content code {
-  background: var(--surface-3); padding: 2px 8px; border-radius: 6px;
-  font-family: 'SF Mono', monospace; font-size: 13px;
-}
-.lesson-section {
-  background: var(--surface-1); border-radius: var(--r-md);
-  padding: 16px; margin-bottom: 12px;
-  border-left: 3px solid var(--brand);
-}
-.lesson-section.practice { border-left-color: var(--success); }
-.lesson-section.reflection { border-left-color: var(--warning); }
-.lesson-section-title {
-  font-size: 12px; font-weight: 800;
-  text-transform: uppercase; letter-spacing: 0.06em;
-  color: var(--brand); margin-bottom: 8px;
-}
-.lesson-section.practice .lesson-section-title { color: var(--success); }
-.lesson-section.reflection .lesson-section-title { color: var(--warning); }
-
-/* ПУТИ */
-.path-step {
-  display: flex; gap: 14px; padding: 16px;
-  border-radius: var(--r-lg); margin-bottom: 10px;
-  background: var(--bg-2); border: 0.5px solid var(--surface-1);
-  position: relative; cursor: pointer;
-}
-.path-step.locked { opacity: 0.4; cursor: not-allowed; }
-.path-step.completed { border-color: var(--success); background: rgba(61,220,151,0.08); }
-.path-step.active { border-color: var(--brand); background: rgba(91,158,255,0.08); }
-.path-step-num {
-  width: 36px; height: 36px; border-radius: 50%;
-  display: grid; place-items: center; flex-shrink: 0;
-  font-weight: 800; font-size: 14px;
-  background: var(--surface-3); color: var(--text-2);
-}
-.path-step.completed .path-step-num { background: var(--success); color: #000; }
-.path-step.active .path-step-num { background: var(--brand); color: #fff; }
-.path-step-body { flex: 1; }
-.path-step-title { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
-.path-step-desc { font-size: 13px; color: var(--text-2); line-height: 1.4; }
-
-/* МЕТОДИКИ */
-.method-card {
-  background: var(--bg-2); border-radius: var(--r-lg);
-  padding: 18px; margin-bottom: 12px;
-  border: 0.5px solid var(--surface-1);
-  cursor: pointer;
-}
-.method-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
-.method-emoji {
-  width: 44px; height: 44px; border-radius: 14px;
-  display: grid; place-items: center; font-size: 22px;
-  background: var(--surface-3); flex-shrink: 0;
-}
-.method-title { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
-.method-cat { font-size: 11px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.04em; font-weight: 700; }
-.method-desc { font-size: 13px; color: var(--text-2); line-height: 1.5; }
-
-.category-chip {
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 6px 12px; border-radius: var(--r-full);
-  background: var(--surface-2); border: 0.5px solid var(--surface-3);
-  font-size: 12px; font-weight: 700; cursor: pointer;
-  white-space: nowrap; color: var(--text-2); flex-shrink: 0;
-}
-.category-chip.active { background: var(--brand); color: #fff; border-color: var(--brand); }
-.categories-scroll {
-  display: flex; gap: 8px; overflow-x: auto;
-  padding: 4px 0 12px; scrollbar-width: none;
-  margin-bottom: 12px;
-}
-
-.insight-card {
-  background: linear-gradient(135deg, rgba(91,158,255,0.12), rgba(167,139,250,0.12));
-  border: 0.5px solid rgba(91,158,255,0.3);
-  border-radius: var(--r-lg); padding: 16px; margin-bottom: 12px;
-}
-.insight-title { font-size: 13px; font-weight: 800; margin-bottom: 6px; color: var(--brand-2); text-transform: uppercase; letter-spacing: 0.04em; }
-.insight-text { font-size: 14px; line-height: 1.5; }
-
-.detox-ring { width: 160px; height: 160px; margin: 0 auto 20px; position: relative; display: grid; place-items: center; }
-.detox-ring svg { transform: rotate(-90deg); width: 100%; height: 100%; }
-.detox-ring circle { fill: none; stroke-width: 10; stroke-linecap: round; }
-.detox-ring .track { stroke: var(--surface-3); }
-.detox-ring .fill { stroke: var(--brand); transition: stroke-dashoffset 1s var(--spring-soft); }
-.detox-value { position: absolute; text-align: center; }
-.detox-value-num { font-size: 32px; font-weight: 800; line-height: 1; }
-.detox-value-label { font-size: 11px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 4px; font-weight: 700; }
-
-.hidden { display: none !important; }
-.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-.row-between { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-.divider { height: 0.5px; background: var(--divider); margin: 18px 0; }
-.text-secondary { color: var(--text-2); }
-.text-tertiary { color: var(--text-3); }
-.footnote { font-size: 13px; }
-.caption { font-size: 12px; }
-.subhead { font-size: 14px; }
-.headline { font-size: 17px; }
-.mt-1 { margin-top: 4px; } .mt-2 { margin-top: 8px; } .mt-3 { margin-top: 12px; } .mt-4 { margin-top: 16px; } .mt-5 { margin-top: 20px; }
-.mb-2 { margin-bottom: 8px; } .mb-3 { margin-bottom: 12px; } .mb-4 { margin-bottom: 16px; } .mb-5 { margin-bottom: 20px; }
-.badge {
-  display: inline-flex; align-items: center; padding: 4px 10px;
-  border-radius: var(--r-full); font-size: 11px; font-weight: 700;
-  background: var(--surface-3); color: var(--text-2);
-}
-.badge-success { background: rgba(61,220,151,0.2); color: var(--success); }
-.badge-brand { background: rgba(91,158,255,0.2); color: var(--brand); }
-.badge-warning { background: rgba(255,169,64,0.2); color: var(--warning); }
-.badge-danger { background: rgba(255,107,107,0.2); color: var(--danger); }
-.mini-chart { display: flex; gap: 3px; align-items: end; height: 80px; margin: 12px 0; }
-.mini-bar { flex: 1; border-radius: 4px 4px 0 0; background: linear-gradient(180deg, var(--brand-2), var(--brand)); min-height: 4px; }
-.matrix-grid-2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-.matrix-quadrant {
-  border-radius: var(--r-lg); padding: 16px 14px;
-  background: var(--bg-2); border: 1.5px solid var(--surface-2);
-  cursor: pointer; min-height: 110px; display: flex; flex-direction: column;
-}
-.matrix-q-title { font-size: 12px; font-weight: 800; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.04em; }
-.matrix-q-count { font-size: 32px; font-weight: 800; line-height: 1; margin-bottom: 6px; }
-.matrix-q-sub { font-size: 11px; color: var(--text-2); }
-.matrix-q1 { border-color: rgba(255,107,107,0.4); }
-.matrix-q1 .matrix-q-title { color: var(--danger); }
-.matrix-q2 { border-color: rgba(91,158,255,0.4); }
-.matrix-q2 .matrix-q-title { color: var(--brand); }
-.matrix-q3 { border-color: rgba(255,169,64,0.4); }
-.matrix-q3 .matrix-q-title { color: var(--warning); }
-.matrix-q4 { border-color: rgba(255,255,255,0.15); }
-.matrix-q4 .matrix-q-title { color: var(--text-3); }
-
-@media (max-width: 480px) {
-  .app-main { padding: 18px; padding-bottom: calc(var(--tabbar-h) + var(--safe-bottom) + 88px) !important; }
-  .title-xl { font-size: 30px; }
-  .profile-avatar { width: 96px; height: 96px; font-size: 46px; }
-  .tab-item .tab-icon { font-size: 17px; }
-  .tab-item .tab-label { font-size: 8px; }
-}
-</style>
-</head>
-<body class="theme-dark">
-
-<header class="app-header">
-  <div class="header-inner">
-    <div class="brand">
-      <div class="brand-logo">🧠</div>
-      <span>AI Health</span>
-    </div>
-    <div class="header-actions">
-      <button class="icon-btn" onclick="openThemePicker()">🎨</button>
-      <button class="avatar-btn" id="headerAvatar" onclick="navigate('profile')">👤</button>
-    </div>
-  </div>
-</header>
-
-<main class="app-main" id="app"></main>
-<div class="tab-bar-wrap"><nav class="tab-bar" id="tabBar"></nav></div>
-<div class="toast-container" id="toasts"></div>
-
-<script>
-'use strict';
-
-try {
-  var tg = window.Telegram && window.Telegram.WebApp;
-  if (tg) {
-    tg.expand(); tg.ready();
-    try { tg.setHeaderColor('#000000'); } catch(e) {}
-    var u = tg.initDataUnsafe && tg.initDataUnsafe.user;
-    if (u && u.first_name) window.__tgName = u.first_name;
-  }
-} catch(e) {}
-
-function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
-function nowISO() { return new Date().toISOString(); }
-function today() { return new Date().toISOString().slice(0, 10); }
-function fmtDate(d) { try { return new Date(d).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }); } catch(e) { return '—'; } }
-function fmtTime(d) { try { return new Date(d).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }); } catch(e) { return '—'; } }
-function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
-function daysBetween(a, b) { return Math.floor((new Date(b) - new Date(a)) / (24*60*60*1000)); }
-
-function toast(msg, type, duration) {
-  type = type || 'info'; duration = duration || 2500;
-  var c = document.getElementById('toasts');
-  if (!c) return;
-  var el = document.createElement('div');
-  el.className = 'toast ' + type;
-  el.textContent = msg;
-  c.appendChild(el);
-  setTimeout(function() {
-    el.style.opacity = '0'; el.style.transform = 'translate(-50%, -16px) scale(0.9)';
-    el.style.transition = 'all 0.4s';
-    setTimeout(function() { el.remove(); }, 400);
-  }, duration);
-}
-
-function haptic(type) {
-  try {
-    var h = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback;
-    if (!h) return;
-    if (type === 'success') h.notificationOccurred('success');
-    else if (type === 'error') h.notificationOccurred('error');
-    else h.impactOccurred(type || 'light');
-  } catch(e) {}
-}
-
-var STORAGE_KEY = 'ai_health_v23';
-
-var THEMES = [
-  { id: 'dark', emoji: '🌙', name: 'Тёмная', color: '#000000' },
-  { id: 'light', emoji: '☀️', name: 'Светлая', color: '#f5f5fa' },
-  { id: 'ocean', emoji: '🌊', name: 'Океан', color: '#000814' },
-  { id: 'sakura', emoji: '🌸', name: 'Сакура', color: '#1a0f14' },
-  { id: 'forest', emoji: '🌲', name: 'Лес', color: '#0a1410' },
-  { id: 'sunset', emoji: '🔥', name: 'Закат', color: '#1a0a05' },
-  { id: 'ice', emoji: '❄️', name: 'Лёд', color: '#0a1419' },
-  { id: 'amethyst', emoji: '✨', name: 'Аметист', color: '#12061f' },
-  { id: 'pumpkin', emoji: '🎃', name: 'Тыква', color: '#0d0500', halloween: true },
-  { id: 'vampire', emoji: '🧛', name: 'Вампир', color: '#0a0000', halloween: true },
-  { id: 'ghost', emoji: '👻', name: 'Призрак', color: '#0a0814', halloween: true },
-  { id: 'web', emoji: '🕷', name: 'Паутина', color: '#001410', halloween: true }
-];
-
-function defaultState() {
-  return {
-    tasks: [], schedule: [], habits: [], goals: [], notes: [], learning: [],
-    timer: [], chats: [], mood: [], water: [], meds: [], workouts: [],
-    meditations: [], journal: [], media: [], finance: [], matrix: [],
-    paths: [], courses: [], levelProgress: {},
-    screenTime: {
-      limits: { daily: 240, social: 60, games: 30, work: 180 },
-      usage: {}, detoxMode: false, detoxUntil: null, focusSessions: 0
-    },
-    profile: { name: '', emoji: '😊', createdAt: nowISO(), achievements: [] },
-    settings: {
-      theme: 'dark', provider: 'openai', apiKey: '',
-      activePersona: 'coach', waterGoal: 8, onboardingDone: false,
-      autoMatrix: true, notifications: true
-    },
-    flags: { dnd: false, focus: false },
-    stats: { streak: 0, lastActiveDay: null, totalDays: 0 }
-  };
-}
-
-var state;
-try {
-  var raw = localStorage.getItem(STORAGE_KEY);
-  if (raw) {
-    var parsed = JSON.parse(raw);
-    state = Object.assign(defaultState(), parsed);
-    state.settings = Object.assign(defaultState().settings, parsed.settings || {});
-    state.flags = Object.assign(defaultState().flags, parsed.flags || {});
-    state.stats = Object.assign(defaultState().stats, parsed.stats || {});
-    state.profile = Object.assign(defaultState().profile, parsed.profile || {});
-    state.screenTime = Object.assign(defaultState().screenTime, parsed.screenTime || {});
-    if (!state.levelProgress) state.levelProgress = {};
-  } else {
-    state = defaultState();
-  }
-} catch(e) { state = defaultState(); }
-
-function save() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-  catch(e) {}
-}
-
-/* ═══════════════════════════════════════════════════════════════════
-   УРОВНЕВАЯ СИСТЕМА ОБУЧЕНИЯ
-   5 уровней → 3-4 модуля → 3-5 уроков
-   ═══════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════
+   УРОВНЕВОЕ ОБУЧЕНИЕ (5 уровней × 3 модуля × 3-4 урока)
+   ═══════════════════════════════════════════════════ */
 var LEARNING_LEVELS = [
-  /* ======================= УРОВЕНЬ 1 ======================= */
-  {
-    id: 'l1',
-    num: 1,
-    title: 'Фундамент',
-    subtitle: 'Новичок',
-    emoji: '🌱',
+  { id: 'l1', num: 1, title: 'Фундамент', subtitle: 'Новичок', emoji: '🌱',
     desc: 'Базовые знания о психике, теле и времени. Без них любое развитие рухнет.',
     modules: [
-      {
-        id: 'l1m1',
-        title: 'Основы психики',
-        emoji: '🧠',
-        desc: 'Как работает мозг и почему мы чувствуем то, что чувствуем',
+      { id: 'l1m1', title: 'Основы психики', emoji: '🧠', desc: 'Как работает мозг',
         lessons: [
-          {
-            title: 'Что такое психика',
-            theory: 'Психика — не что-то мистическое "внутри". Это функция мозга и тела в контексте среды. Ты — биологический организм, который взаимодействует с миром через нервную систему.\n\nТри уровня психики:\n• **Сознание** — то, что ты осознаёшь прямо сейчас\n• **Подсознание** — автоматические реакции, привычки\n• **Бессознательное** — скрытые мотивы, травмы, вытесненное\n\nСовременная нейробиология показала: **мозг пластичен** (нейропластичность). Он меняется всю жизнь. Это значит, что можно переучить себя в любом возрасте.',
-            practice: 'Наблюдай за собой 24 часа. Записывай: что ты делаешь на автомате? Какие реакции — сознательные?',
-            reflection: 'Что из твоих реакций ты можешь назвать "автоматическим"?'
-          },
-          {
-            title: 'Эмоции как сигналы',
-            theory: 'Эмоция — это быстрая оценка ситуации телом и мозгом. Она длится **90 секунд** — нейрохимически. Всё, что дольше — это уже интерпретация и повторное переживание.\n\n7 базовых эмоций (Пол Экман):\n• Радость, грусть, страх, злость, удивление, отвращение, презрение\n\n**Главная мысль:** эмоция — не проблема. Проблема — реакция на неё. Между стимулом и реакцией есть пауза. В ней — твоя свобода (Виктор Франкл).',
-            practice: 'Неделю записывай: какую эмоцию чувствуешь → что её вызвало → сколько длилась. Это дневник эмоций.',
-            reflection: 'Какую эмоцию ты подавляешь чаще всего? Почему?'
-          },
-          {
-            title: 'Мышление и когнитивные искажения',
-            theory: 'Мы думаем, что мыслим логично. На самом деле 95% решений — эмоциональны и автоматичны (Канеман: Система 1 vs Система 2).\n\n**5 главных искажений:**\n• **Катастрофизация** — "всё плохо, конец света"\n• **Чёрно-белое мышление** — либо идеально, либо провал\n• **Чтение мыслей** — "он думает, что я дурак"\n• **Обобщение** — "всегда так"\n• **Обесценивание** — "это не считается"\n\nОсознание искажения = 50% решения.',
-            practice: 'Поймай 3 искажения за день. Запиши: мысль → какое искажение → как можно переформулировать.',
-            reflection: 'Какое искажение ты замечаешь у себя чаще?'
-          },
-          {
-            title: 'Что такое тревога',
-            theory: 'Тревога — предсказание опасности. Твой мозг моделирует будущее и ищет угрозы (это эволюционно).\n\n**Острая тревога** — полезна, мобилизует. **Хроническая** — разрушает.\n\nФизиология: миндалевидное тело реагирует за 100 мс. Кора — за 6 сек. Поэтому сначала чувствуешь, потом думаешь.\n\n**Техники:**\n• Дыхание 4-7-8\n• Заземление 5-4-3-2-1\n• Записывание тревожной мысли',
-            practice: 'При тревоге используй дыхание 4-7-8. Сделай 4 цикла. Заметь, что изменилось.',
-            reflection: 'Что обычно запускает твою тревогу?'
-          }
+          { title: 'Что такое психика', theory: 'Психика — не что-то мистическое. Это функция мозга и тела в контексте среды.\n\n**Три уровня:**\n• Сознание — что осознаёшь сейчас\n• Подсознание — автоматические реакции\n• Бессознательное — скрытые мотивы\n\n**Главное:** мозг пластичен. Меняется всю жизнь.', practice: '24 часа наблюдай за собой. Что делаешь на автомате?', reflection: 'Что из твоих реакций автоматическое?' },
+          { title: 'Эмоции как сигналы', theory: 'Эмоция — быстрая оценка ситуации. Длится **90 секунд**. Всё дольше — интерпретация.\n\n7 базовых (Экман): радость, грусть, страх, злость, удивление, отвращение, презрение.\n\n**Главное:** между стимулом и реакцией — пауза. В ней свобода.', practice: 'Неделю веди дневник: эмоция → триггер → длительность.', reflection: 'Какую эмоцию ты подавляешь?' },
+          { title: 'Мышление и искажения', theory: '95% решений — эмоциональны (Канеман).\n\n**5 искажений:**\n• Катастрофизация\n• Чёрно-белое мышление\n• Чтение мыслей\n• Обобщение\n• Обесценивание', practice: 'Поймай 3 искажения за день.', reflection: 'Какое у тебя чаще?' },
+          { title: 'Что такое тревога', theory: 'Предсказание опасности. Острая полезна, хроническая разрушает.\n\nМиндалевидное тело — 100 мс. Кора — 6 сек.\n\n**Техники:** дыхание 4-7-8, заземление 5-4-3-2-1.', practice: 'При тревоге — 4 цикла дыхания 4-7-8.', reflection: 'Что запускает твою тревогу?' }
         ]
       },
-      {
-        id: 'l1m2',
-        title: 'Основы тела',
-        emoji: '💪',
-        desc: 'Сон, питание, движение — фундамент энергии',
+      { id: 'l1m2', title: 'Основы тела', emoji: '💪', desc: 'Сон, питание, движение',
         lessons: [
-          {
-            title: 'Сон как основа',
-            theory: 'Мэттью Уокер ("Why We Sleep"): сон — не роскошь, а биологическая необходимость.\n\n4 стадии сна:\n• N1, N2 — переходные\n• N3 — **глубокий** (восстановление тела)\n• REM — **быстрый** (память, эмоции, креативность)\n\nНорма: 7-9 часов. Меньше 6 — риск деменции, инфаркта, депрессии.\n\n**Правила:**\n• Режим ±30 мин\n• Никаких экранов за час\n• Темнота, прохлада (18-20°C)',
-            practice: 'Неделю соблюдай режим сна. Записывай: во сколько лёг, встал, качество (1-10).',
-            reflection: 'Что мешает тебе спать хорошо?'
-          },
-          {
-            title: 'Питание: принципы',
-            theory: 'Нет "идеальной диеты". Но есть принципы, доказанные наукой:\n\n**Средиземноморская диета** — золотой стандарт:\n• Овощи и фрукты (500 г в день)\n• Рыба, оливковое масло, орехи\n• Ограничение сахара, трансжиров, обработанного мяса\n\n**Белок** — 1.6 г/кг веса. Для сытости, мышц, мозга.\n\n**Вода** — 30 мл/кг. Обезвоживание 2% = -20% когнитивных функций.',
-            practice: 'Записывай всё, что ешь, 3 дня. Потом посмотри: сколько овощей? Белка? Сахара?',
-            reflection: 'Что в твоём питании даёт энергию, а что забирает?'
-          },
-          {
-            title: 'Движение',
-            theory: 'Человеческое тело создано для движения. Сидячий образ жизни = медленная смерть.\n\n**Минимум ВОЗ:**\n• 150 мин кардио в неделю\n• 2 силовые тренировки\n• Растяжка ежедневно\n• 8000-10000 шагов\n\n**Кардио в зоне 2** (пульс 60-70%) — развивает митохондрии. Это научный способ жить дольше.\n\n**30 минут движения в день снижают смертность на 30%.**',
-            practice: 'Начни с 15-минутной прогулки каждый день. Через неделю — 30 мин.',
-            reflection: 'Какая активность тебе в радость?'
-          },
-          {
-            title: 'Стресс и кортизол',
-            theory: 'Роберт Сапольски: острый стресс — полезен, хронический — убивает.\n\n**Острый:** активирует, мобилизует, помогает выжить.\n**Хронический:** разрушает иммунитет, мозг, сердце.\n\n**Управление:**\n• Дыхание, медитация (снижает кортизол 25%)\n• Спорт (сжигает кортизол)\n• Природа (синрин-йоку — "купание в лесу")\n• Социальные связи (главный антистресс)',
-            practice: 'Найди 3 способа снижения стресса, которые работают лично для тебя. Используй 1 в день.',
-            reflection: 'Что даёт тебе самое быстрое успокоение?'
-          }
+          { title: 'Сон как основа', theory: 'Уокер: 4 стадии — N1, N2, N3 (глубокий), REM.\n\n7-9 часов. Меньше 6 — риск деменции, инфаркта.\n\n**Правила:** режим ±30 мин, без экранов за час, темнота, 18-20°C.', practice: 'Неделю соблюдай режим. Записывай качество 1-10.', reflection: 'Что мешает спать?' },
+          { title: 'Питание', theory: 'Средиземноморская — золотой стандарт.\n\nОвощи 500 г, белок 1.6 г/кг, оливковое масло, орехи. Меньше сахара и трансжиров.', practice: 'Записывай еду 3 дня. Анализ.', reflection: 'Что даёт энергию?' },
+          { title: 'Движение', theory: '150 мин кардио, 2 силовые, 8000-10000 шагов.\n\n**Зона 2** (пульс 60-70%) — развивает митохондрии.\n\n30 мин в день = -30% смертности.', practice: 'Начни с 15-минутной прогулки.', reflection: 'Какая активность в радость?' },
+          { title: 'Стресс', theory: 'Сапольски: острый полезен, хронический убивает.\n\n**Управление:** дыхание, медитация, спорт, природа, связи.', practice: 'Найди 3 способа снижения стресса.', reflection: 'Что даёт быстрое успокоение?' }
         ]
       },
-      {
-        id: 'l1m3',
-        title: 'Основы времени',
-        emoji: '⏰',
-        desc: 'Почему время — ресурс и как его не терять',
+      { id: 'l1m3', title: 'Основы времени', emoji: '⏰', desc: 'Почему время — ресурс',
         lessons: [
-          {
-            title: 'Парадокс времени',
-            theory: 'У всех 24 часа. Но результаты разные. Значит, дело не во времени, а в **энергии** и **фокусе**.\n\nТони Шварц: "Управляй энергией, а не временем".\n\n**4 вида энергии:**\n• Физическая (сон, еда, движение)\n• Эмоциональная (настроение, связи)\n• Ментальная (фокус)\n• Духовная (смысл)\n\nЕсли хоть одна на нуле — продуктивность падает.',
-            practice: 'Оцени каждую энергию по шкале 1-10. Где провал?',
-            reflection: 'Какая энергия у тебя хромает чаще?'
-          },
-          {
-            title: 'Приоритеты vs срочность',
-            theory: 'Матрица Эйзенхауэра:\n\n• **Q1:** Важно + Срочно → делай сейчас (кризисы)\n• **Q2:** Важно + Не срочно → **планируй** (рост, стратегия) ← ключ!\n• **Q3:** Не важно + Срочно → делегируй\n• **Q4:** Не важно + Не срочно → удали\n\n**Большинство людей живут в Q1 и Q3.** Успешные — в Q2.',
-            practice: 'Разложи 10 своих текущих задач по квадрантам. Сколько в Q2?',
-            reflection: 'Почему тебя тянет в Q1 и Q3?'
-          },
-          {
-            title: 'Помидорная техника',
-            theory: 'Франческо Чирилло (1980-е):\n\n**25 минут работы → 5 отдыха → 4 цикла → 30 мин паузы**\n\nПочему работает:\n• Ограниченное время снижает тревогу\n• Короткие паузы восстанавливают фокус\n• Позволяет измерять продуктивность в "помидорах"\n\n**Правило:** во время помидора — никаких отвлечений. Прервал — начинай заново.',
-            practice: 'Сделай 4 помидора сегодня. Записывай, что успел.',
-            reflection: 'Сколько помидоров ты можешь сделать за день комфортно?'
-          }
+          { title: 'Парадокс времени', theory: 'У всех 24 часа. Результаты разные. Значит, дело в энергии и фокусе.\n\nТони Шварц: "Управляй энергией, не временем".', practice: 'Оцени 4 энергии 1-10.', reflection: 'Где провал?' },
+          { title: 'Приоритеты', theory: 'Матрица Эйзенхауэра:\n• Q1: Важно+Срочно — делай\n• Q2: Важно+Не срочно — **планируй** ← ключ\n• Q3: Делегируй\n• Q4: Удали', practice: 'Разложи 10 задач по квадрантам.', reflection: 'Почему тянет в Q1?' },
+          { title: 'Помидорная техника', theory: 'Чирилло: 25/5, 4 цикла → 30 мин.\n\nОграниченное время снижает тревогу.', practice: 'Сделай 4 помидора сегодня.', reflection: 'Сколько комфортно?' }
         ]
       }
     ]
   },
-  /* ======================= УРОВЕНЬ 2 ======================= */
-  {
-    id: 'l2',
-    num: 2,
-    title: 'База',
-    subtitle: 'Ученик',
-    emoji: '📚',
-    desc: 'Управление эмоциями, привычками и энергией. Выход из режима "автопилота".',
+  { id: 'l2', num: 2, title: 'База', subtitle: 'Ученик', emoji: '📚',
+    desc: 'Управление эмоциями, привычками и энергией.',
     modules: [
-      {
-        id: 'l2m1',
-        title: 'Управление эмоциями',
-        emoji: '🌊',
-        desc: 'Техники саморегуляции',
+      { id: 'l2m1', title: 'Управление эмоциями', emoji: '🌊', desc: 'Техники саморегуляции',
         lessons: [
-          {
-            title: 'Дневник эмоций',
-            theory: 'Первое правило: **назови эмоцию** — снижаешь её силу на 30%.\n\nДневник эмоций:\n• Что произошло (факт)\n• Что я почувствовал (эмоция)\n• Что я подумал (мысль)\n• Что хотел сделать\n• Что сделал\n\nЧерез 2 недели увидишь паттерны: что тебя цепляет и почему.',
-            practice: 'Веди дневник 7 дней. Минимум 3 записи в день.',
-            reflection: 'Какой паттерн уже замечаешь?'
-          },
-          {
-            title: 'Практика принятия (ACT)',
-            theory: 'Стивен Хейс: борьба с мыслями усиливает их. Принятие — ослабляет.\n\n**Техники:**\n• "Мысль — это просто мысль" (наблюдение)\n• Листья на реке (визуализация)\n• Дыхание в тревогу\n\nФормула: **"Я замечаю мысль, что..."** — вместо "Я думаю, что..."',
-            practice: 'Неделю практикуй формулу "Я замечаю мысль, что...".',
-            reflection: 'Какие мысли ты чаще всего пытаешься подавить?'
-          },
-          {
-            title: 'Работа с гневом',
-            theory: 'Гнев — сигнал о нарушенной границе. Не враг.\n\n**Что делать:**\n1. **Пауза 6 секунд** (миндалевидное тело успокаивается)\n2. **Физическая разрядка** (отжимания, крик в подушку)\n3. **Я-сообщение** — "Я злюсь, когда..."\n4. **Поиск корня** — что за гневом? Страх? Боль? Обида?',
-            practice: 'При следующем гневе используй паузу 6 секунд + Я-сообщение.',
-            reflection: 'Что обычно запускает твой гнев?'
-          },
-          {
-            title: 'Депрессивное состояние',
-            theory: 'Депрессия — не "плохое настроение". Это болезнь. Симптомы >2 недель:\n\n• Ангедония (не радует то, что радовало)\n• Апатия, нет сил\n• Нарушения сна, аппетита\n• Мысли о смерти\n\n**Что делать:**\n• К врачу (психиатр + психотерапевт)\n• Микро-шаги (не "всё сделать", а "встать и умыться")\n• Спорт, солнце, ритм',
-            practice: 'Если чувствуешь симптомы >2 недель — запишись к специалисту сегодня.',
-            reflection: 'Что мешает обратиться за помощью?'
-          }
+          { title: 'Дневник эмоций', theory: 'Назови эмоцию — снизишь силу на 30%.\n\nСтруктура: факт → эмоция → мысль → действие.', practice: 'Веди 7 дней.', reflection: 'Какой паттерн видишь?' },
+          { title: 'Практика принятия (ACT)', theory: 'Хейс: борьба с мыслями усиливает.\n\nФормула: **"Я замечаю мысль, что..."**', practice: 'Неделю практикуй формулу.', reflection: 'Что подавляешь?' },
+          { title: 'Работа с гневом', theory: 'Гнев = сигнал о границе.\n\n1. Пауза 6 сек\n2. Разрядка\n3. Я-сообщение\n4. Поиск корня', practice: 'Пауза 6 сек + Я-сообщение.', reflection: 'Что запускает гнев?' },
+          { title: 'Депрессивное состояние', theory: 'Симптомы >2 недель:\n• Ангедония\n• Апатия\n• Нарушения сна\n\nК врачу.', practice: 'Если симптомы — запишись.', reflection: 'Что мешает?' }
         ]
       },
-      {
-        id: 'l2m2',
-        title: 'Привычки',
-        emoji: '🔄',
-        desc: 'Как создать устойчивые изменения',
+      { id: 'l2m2', title: 'Привычки', emoji: '🔄', desc: 'Устойчивые изменения',
         lessons: [
-          {
-            title: 'Петля привычки',
-            theory: 'Джеймс Клир ("Атомные привычки"):\n\n**Cue** (триггер) → **Craving** (желание) → **Response** (действие) → **Reward** (награда)\n\n**4 закона изменения привычек:**\n1. Сделай очевидной (среда)\n2. Сделай привлекательной (связь с удовольствием)\n3. Сделай простой (2 минуты)\n4. Сделай приятной (награда)',
-            practice: 'Выбери 1 привычку, которую хочешь внедрить. Примени все 4 закона.',
-            reflection: 'Какая привычка тебе нужна больше всего?'
-          },
-          {
-            title: 'Habit Stacking',
-            theory: 'Би Джей Фогг (Stanford): привязывай новую привычку к существующей.\n\n**Формула:**\n"После [старая привычка] я буду [новая]"\n\nПример: "После чашки кофе — 5 минут медитации"\n\nМозг создаёт связь: одно действие запускает другое.',
-            practice: 'Привяжи 3 новые привычки к существующим.',
-            reflection: 'Какие 3 привычки автоматичны у тебя уже сейчас?'
-          },
-          {
-            title: 'Минимум-максимум',
-            theory: 'Не ставь планку высоко. Начни с **минимальной версии**:\n\n• 2 отжимания (не 50)\n• 1 страница (не 50)\n• 5 мин медитации (не час)\n\nЕсли делаешь минимум каждый день — привычка формируется. Увеличиваешь постепенно.\n\n**Правило: 21-66 дней до автоматизма.**',
-            practice: 'Выбери 1 привычку и определи её минимальную версию.',
-            reflection: 'Что мешает тебе делать даже минимум?'
-          },
-          {
-            title: 'Возврат после срыва',
-            theory: 'Срыв — часть процесса. Не "всё пропало".\n\n**Правило:** никогда не пропускай дважды. Пропустил день — вернись на следующий.\n\nКлир: "Победители и проигравшие отличаются не отсутствием срывов, а скоростью возврата."',
-            practice: 'Заранее реши: что будешь делать при срыве?',
-            reflection: 'Что обычно тебя останавливает после срыва?'
-          }
+          { title: 'Петля привычки', theory: 'Cue → Craving → Response → Reward.\n\n4 закона: очевидной, привлекательной, простой, приятной.', practice: '1 привычка через 4 закона.', reflection: 'Какая нужна?' },
+          { title: 'Habit Stacking', theory: 'Фогг: "После [старая] я буду [новая]".', practice: 'Привяжи 3.', reflection: 'Что автоматично?' },
+          { title: 'Минимум-максимум', theory: '2 отжимания, 1 страница, 5 мин.\n\n21-66 дней до автоматизма.', practice: 'Мини-версия.', reflection: 'Что мешает?' },
+          { title: 'Возврат после срыва', theory.': 'Никогда не пропускай дважды.', practice: 'План при срыве.', reflection: 'Что останавливает?' }
         ]
       },
-      {
-        id: 'l2m3',
-        title: 'Энергия',
-        emoji: '🔋',
-        desc: 'Как восстановить и удержать энергию на весь день',
+      { id: 'l2m3', title: 'Энергия', emoji: '🔋', desc: 'Восстановление энергии',
         lessons: [
-          {
-            title: 'Аудит энергии',
-            theory: 'Неделю наблюдай: что даёт энергию, что забирает?\n\n**Категории:**\n• Люди (кто после общения?)\n• Задачи (что делаешь с удовольствием?)\n• Среда (где чувствуешь себя хорошо?)\n• Еда, сон, спорт\n\nИнсайт: часто "усталость" — от эмоционально тяжёлого окружения, а не от работы.',
-            practice: 'Неделю веди дневник энергии: 3 раза в день оценка 1-10 + что делал.',
-            reflection: 'Что забирает у тебя энергию чаще всего?'
-          },
-          {
-            title: 'Ультрадианные ритмы',
-            theory: 'Наш мозг работает циклами 90-120 минут. После — нужно восстановление 15-20 минут.\n\n**Правило:** 90 мин работы → 15-20 мин отдыха.\n\nВо время отдыха: встать, вода, окно, растяжка. Никаких соцсетей!\n\nЭто не лень. Это физиология.',
-            practice: 'Раздели день на 90-минутные блоки. Отдых между ними — обязательно.',
-            reflection: 'Как ты обычно отдыхаешь? Восстанавливает ли это?'
-          },
-          {
-            title: 'Микровосстановления',
-            theory: 'Восстановление не только во время отдыха. Микро-паузы в течение дня:\n\n• **Дыхание:** 3 глубоких вдоха (30 сек)\n• **Движение:** потянуться, пройтись (2 мин)\n• **Вода:** стакан воды (1 мин)\n• **Взгляд:** 20 сек в окно (правило 20-20-20 для глаз)\n\nКаждый час — минимум 1 микро-пауза.',
-            practice: 'Установи напоминание: каждый час — микро-пауза 2 мин.',
-            reflection: 'Что ты чувствуешь, когда делаешь паузы?'
-          }
+          { title: 'Аудит энергии', theory: 'Что даёт? Что забирает?\n\nЛюди, задачи, среда, еда.', practice: 'Дневник энергии неделю.', reflection: 'Что забирает?' },
+          { title: 'Ультрадианные ритмы', theory: '90-120 мин циклы. После — 15-20 мин отдых.\n\n**Правило:** 90/15.', practice: 'Раздели день на блоки.', reflection: 'Как отдыхаешь?' },
+          { title: 'Микровосстановления', theory: 'Дыхание, движение, вода, взгляд в окно. Каждый час.', practice: 'Каждый час — пауза 2 мин.', reflection: 'Что чувствуешь?' }
         ]
       }
     ]
   },
-  /* ======================= УРОВЕНЬ 3 ======================= */
-  {
-    id: 'l3',
-    num: 3,
-    title: 'Практика',
-    subtitle: 'Практик',
-    emoji: '🎯',
-    desc: 'Продуктивность, отношения и финансы — реальные навыки',
+  { id: 'l3', num: 3, title: 'Практика', subtitle: 'Практик', emoji: '🎯',
+    desc: 'Продуктивность, отношения, финансы — реальные навыки.',
     modules: [
-      {
-        id: 'l3m1',
-        title: 'Продуктивность',
-        emoji: '⚡',
-        desc: 'Система, которая работает',
+      { id: 'l3m1', title: 'Продуктивность', emoji: '⚡', desc: 'Система',
         lessons: [
-          {
-            title: 'GTD: Getting Things Done',
-            theory: 'Дэвид Аллен: мозг — не хранилище. Освободи его для мышления.\n\n**5 шагов:**\n1. **Capture** — собери всё в одном месте\n2. **Clarify** — что это? Действие? Проект?\n3. **Organize** — по категориям\n4. **Reflect** — ревью раз в неделю\n5. **Engage** — действуй\n\n**Правило 2 минут:** если задача <2 мин — делай сразу.',
-            practice: 'Заведи inbox (блокнот или приложение). Скидывай туда всё 3 дня.',
-            reflection: 'Сколько мыслей "в голове" тебя отвлекает?'
-          },
-          {
-            title: 'Deep Work',
-            theory: 'Кэл Ньюпорт: **3-4 часа глубокой работы в день дают больше, чем 10 часов в режиме многозадачности.**\n\n**Правила:**\n• Блок 90 мин без отвлечений\n• Телефон в другой комнате\n• Уведомления выключены\n• Ритуал входа (музыка, чай, место)\n\nМногозадачность теряет 40% продуктивности.',
-            practice: 'Сделай 1 сессию Deep Work сегодня. 90 минут, 1 задача.',
-            reflection: 'Что тебя отвлекает чаще всего?'
-          },
-          {
-            title: 'SMART-цели',
-            theory: 'Specific, Measurable, Achievable, Relevant, Time-bound.\n\n**Пример плохой цели:** "Хочу выучить английский"\n**Пример SMART:** "К 1 июня сдать IELTS на 7.0, занимаясь 1 час в день"\n\nЦель без срока — мечта. Цель с планом — реальность.',
-            practice: 'Возьми одну свою цель и переформулируй по SMART.',
-            reflection: 'Какие цели ты ставил, но не достиг? Почему?'
-          },
-          {
-            title: 'Планирование недели',
-            theory: 'Воскресенье — 30 минут на планирование. Сэкономит 10 часов.\n\n**Структура недельного ревью:**\n• Что было хорошо?\n• Что провалилось?\n• Какие 3 главные цели на неделю?\n• Что убрать?\n• Что добавить?\n\n**Правило 3:** не больше 3 главных целей на неделю.',
-            practice: 'Проведи воскресное ревью в это воскресенье.',
-            reflection: 'Что ты хочешь изменить в следующей неделе?'
-          }
+          { title: 'GTD', theory: 'Аллен: 5 шагов. Правило 2 минут.\n\nМозг — не хранилище.', practice: 'Inbox 3 дня.', reflection: 'Что отвлекает?' },
+          { title: 'Deep Work', theory: 'Ньюпорт: 3-4 часа = 10 часов.\n\nРитуал, изоляция, метрики.', practice: 'Сессия 90 мин.', reflection: 'Что отвлекает?' },
+          { title: 'SMART-цели', theory: 'Specific, Measurable, Achievable, Relevant, Time-bound.', practice: 'Цель по SMART.', reflection: 'Что не достиг?' },
+          { title: 'Планирование недели', theory: 'Воскресенье — 30 мин. Правило 3.', practice: 'Ревью.', reflection: 'Что изменить?' }
         ]
       },
-      {
-        id: 'l3m2',
-        title: 'Отношения',
-        emoji: '💞',
-        desc: 'Как строить глубокие связи',
+      { id: 'l3m2', title: 'Отношения', emoji: '💞', desc: 'Глубина',
         lessons: [
-          {
-            title: 'Активное слушание',
-            theory: '3 уровня:\n1. **Слышать** (физически)\n2. **Слушать** (понимать слова)\n3. **Понимать** (схватывать суть + эмоции)\n\n**Техники:**\n• Парафраз ("То есть ты хочешь сказать...") \n• Отражение чувств ("Ты злишься, потому что...")\n• Уточнения ("Что именно?")\n\n80% конфликтов — недопонимание.',
-            practice: 'В следующих 3 разговорах используй парафраз. Заметь разницу.',
-            reflection: 'Как часто ты слушаешь, чтобы ответить, а не чтобы понять?'
-          },
-          {
-            title: 'Я-сообщения',
-            theory: 'Формула: "Когда [факт], я чувствую [эмоция], потому что [потребность]. Я хочу [просьба]".\n\n**Пример:**\n"Ты вечно опаздываешь" → запускает защиту\n"Я тревожусь, когда ты опаздываешь, потому что ценю наше время. Приходи, пожалуйста, вовремя" → открывает диалог\n\nТы не обвиняешь. Ты делишься.',
-            practice: 'Переформулируй 3 своих претензии в Я-сообщения.',
-            reflection: 'Что обычно ты говоришь в конфликте?'
-          },
-          {
-            title: 'Границы',
-            theory: 'Здоровые границы = спокойное "нет".\n\n**Формула:**\n"Я не могу [действие], но могу [альтернатива]"\n\nПример: "Я не могу взять эту задачу сейчас, но могу в среду"\n\n**Важно:**\n• "Нет" без объяснений — нормально\n• Границы — не стены\n• Твои границы — твоя ответственность',
-            practice: 'Потренируйся говорить "нет" в маленьких ситуациях.',
-            reflection: 'Где тебе сложнее всего ставить границы?'
-          },
-          {
-            title: 'Ремонт после ссоры',
-            theory: 'Джон Готтман: главное — не отсутствие ссор, а **скорость ремонта**.\n\n**Что делать:**\n1. Извинение (без "но")\n2. Признание вклада ("я тоже был неправ")\n3. План изменения ("в следующий раз...") \n\n**Правило:** победа в ссоре = поражение в отношениях.',
-            practice: 'Вспомни последнюю ссору. Что можно было отремонтировать?',
-            reflection: 'Как ты обычно ведёшь себя в конфликте?'
-          }
+          { title: 'Активное слушание', theory: '3 уровня. Парафраз, отражение, уточнения.\n\n80% конфликтов — недопонимание.', practice: 'Парафраз в 3 разговорах.', reflection: 'Слушаешь чтобы ответить?' },
+          { title: 'Я-сообщения', theory.': '"Когда X, я чувствую Y, потому что Z. Я хочу W".', practice: 'Переформулируй 3 претензии.', reflection: 'Что говоришь в конфликте?' },
+          { title: 'Границы', theory: 'Спокойное "нет". "Не могу X, но могу Y".', practice: 'Потренируйся.', reflection: 'Где сложно?' },
+          { title: 'Ремонт после ссоры', theory: 'Готтман: скорость важнее частоты.\n\n1. Извинение\n2. Признание вклада\n3. План.', practice: 'Вспомни ссору.', reflection: 'Как ведёшь себя?' }
         ]
       },
-      {
-        id: 'l3m3',
-        title: 'Финансы',
-        emoji: '💰',
-        desc: 'От бюджета до инвестиций',
+      { id: 'l3m3', title: 'Финансы', emoji: '💰', desc: 'От бюджета к инвестициям',
         lessons: [
-          {
-            title: 'Учёт денег',
-            theory: 'Первый шаг — **знать куда уходят деньги**.\n\nЗаписывай всё 3 месяца. Без осуждения. Просто факты.\n\n**Правило 50/30/20:**\n• 50% — нужды (жильё, еда, транспорт)\n• 30% — желания\n• 20% — сбережения и долги\n\nБюджет — карта, не ограничение.',
-            practice: 'Записывай расходы 7 дней. В конце — посмотри, что удивило.',
-            reflection: 'Сколько ты думаешь тратишь на "ненужное"?'
-          },
-          {
-            title: 'Подушка безопасности',
-            theory: 'Цель — **3-6 месяцев расходов** на ликвидном счёте.\n\nЭто защита от:\n• Потеря работы\n• Медицинские расходы\n• Кризисы\n\n**Не в акциях!** Только вклады, накопительные счета.\n\nПока нет подушки — инвестиции подождут.',
-            practice: 'Посчитай свой месячный расход. Умножь на 3 — это цель минимум.',
-            reflection: 'Сколько у тебя сейчас "на чёрный день"?'
-          },
-          {
-            title: 'Долги: как выйти',
-            theory: '**Метод снежного кома** (Дэйв Рамси): плати минимум везде, максимум — на самый маленький долг. Закрыл — переходи к следующему.\n\nПсихология: маленькие победы мотивируют.\n\n**Метод лавины:** платишь по высокому проценту сначала. Математически эффективнее, но психологически сложнее.',
-            practice: 'Составь список долгов. Отсортируй по размеру и проценту. Выбери метод.',
-            reflection: 'Какой долг тебя тревожит больше всего?'
-          },
-          {
-            title: 'Инвестиции: база',
-            theory: '**Правило 1:** не инвестируй в то, чего не понимаешь.\n\n**Правило 2:** диверсификация. Не клади яйца в одну корзину.\n\n**Правило 3:** долгий горизонт. 10+ лет.\n\n**Базовая стратегия:**\n• Индексированные фонды (S&P 500, MSCI World)\n• Автоматические ежемесячные взносы\n• Не реагируй на новости',
-            practice: 'Изучи 2 индексированных фонда. Сравни их.',
-            reflection: 'Что тебя останавливает от инвестиций?'
-          }
+          { title: 'Учёт денег', theory: 'Первый шаг — знать куда уходят.\n\n50/30/20.', practice: 'Записывай 7 дней.', reflection: 'Что удивило?' },
+          { title: 'Подушка', theory: '3-6 месяцев. Ликвидный счёт. Не акции.', practice: 'Посчитай расход.', reflection: 'Сколько есть?' },
+          { title: 'Долги', theory: 'Снежный ком (Рамси) или лавина.', practice: 'Список долгов.', reflection: 'Что тревожит?' },
+          { title: 'Инвестиции', theory: 'Индексы. 10+ лет. Диверсификация.', practice: 'Изучи 2 фонда.', reflection: 'Что останавливает?' }
         ]
       }
     ]
   },
-  /* ======================= УРОВЕНЬ 4 ======================= */
-  {
-    id: 'l4',
-    num: 4,
-    title: 'Мастерство',
-    subtitle: 'Мастер',
-    emoji: '👑',
-    desc: 'Смысл, лидерство, глубина — переход на новый уровень',
+  { id: 'l4', num: 4, title: 'Мастерство', subtitle: 'Мастер', emoji: '👑',
+    desc: 'Смысл, лидерство, глубина.',
     modules: [
-      {
-        id: 'l4m1',
-        title: 'Смысл и цели',
-        emoji: '🎯',
-        desc: 'Что важно на самом деле',
+      { id: 'l4m1', title: 'Смысл и цели', emoji: '🎯', desc: 'Что важно',
         lessons: [
-          {
-            title: 'Икигай',
-            theory: 'Японская концепция: пересечение 4 сфер:\n\n• **Что я люблю**\n• **Что я умею**\n• **За что платят**\n• **Что нужно миру**\n\nНа пересечении всех 4 — икигай.\n\nОкинавцы (самые долгоживущие) считают икигай причиной вставать утром.',
-            practice: 'Нарисуй 4 круга. Заполни каждый. Где пересечение?',
-            reflection: 'Что для тебя "зачем"?'
-          },
-          {
-            title: 'Логотерапия',
-            theory: 'Виктор Франкл (выживший в концлагере): **"Зачем" важнее "как".**\n\n**3 источника смысла:**\n1. **Труд** — что создаёшь\n2. **Любовь** — кого любишь\n3. **Страдание** — что переживаешь и как\n\nСмысл есть всегда, даже в самом страшном.',
-            practice: 'Ответь: в чём твой смысл в каждой из 3 сфер?',
-            reflection: 'Ради чего ты готов страдать?'
-          },
-          {
-            title: 'Стоицизм',
-            theory: 'Марк Аврелий, Сенека, Эпиктет: **дихотомия контроля**.\n\n• Что в твоей власти?\n• Что вне?\n\nФокус на первом. Принятие второго.\n\n**Практики:**\n• Memento mori — помни о смерти\n• Premeditatio malorum — представь худшее\n• Amor fati — полюби судьбу',
-            practice: 'Неделю каждый вечер записывай: что было в моей власти, что нет.',
-            reflection: 'О чём ты тревожишься, что вне твоего контроля?'
-          }
+          { title: 'Икигай', theory: 'Пересечение 4 сфер.', practice: '4 круга.', reflection: 'Зачем?' },
+          { title: 'Логотерапия', theory: 'Франкл: 3 источника смысла — труд, любовь, страдание.', practice: 'Ответь по 3.', reflection: 'Ради чего страдать?' },
+          { title: 'Стоицизм', theory: 'Дихотомия контроля. Memento mori.', practice: 'Вечером — что в власти, что нет.', reflection: 'О чём тревожишься?' }
         ]
       },
-      {
-        id: 'l4m2',
-        title: 'Лидерство',
-        emoji: '👥',
-        desc: 'Как вести за собой',
+      { id: 'l4m2', title: 'Лидерство', emoji: '👥', desc: 'Вести за собой',
         lessons: [
-          {
-            title: 'Видение',
-            theory: 'Саймон Синек: **"Люди идут за WHY, не за WHAT".**\n\n• WHAT — что ты делаешь\n• HOW — как\n• WHY — зачем (твоя миссия)\n\nЛидер без видения — менеджер. Менеджер без видения — бюрократ.',
-            practice: 'Сформулируй своё WHY в одном предложении.',
-            reflection: 'Почему люди должны идти за тобой?'
-          },
-          {
-            title: 'Развитие людей',
-            theory: 'Джим Коллинз ("От хорошего к великому"): Level 5 Leadership.\n\n**Уровни:**\n1. Способный сотрудник\n2. Командный игрок\n3. Компетентный менеджер\n4. Эффективный руководитель\n5. Level 5 — сочетание скромности и воли\n\nТвоя задача — не делать самому, а **помочь другим делать**.',
-            practice: 'Найди 1 человека, которого можешь развивать. Помоги ему на этой неделе.',
-            reflection: 'Ты делегируешь или делаешь всё сам?'
-          },
-          {
-            title: 'Обратная связь',
-            theory: 'Модель SBI:\n• **S**ituation — ситуация\n• **B**ehavior — поведение\n• **I**mpact — влияние\n\nПример:\n"На последней встрече (S), когда ты перебивал клиента (B), он замолчал и не высказал свои возражения (I)."\n\nБез оценок. Только факты.',
-            practice: 'Дай SBI-обратную связь одному человеку.',
-            reflection: 'Как ты реагируешь на обратную связь о себе?'
-          }
+          { title: 'Видение', theory: 'Синек: "Идут за WHY".', practice: 'Сформулируй WHY.', reflection: 'Почему за тобой?' },
+          { title: 'Развитие людей', theory: 'Коллинз: Level 5. Не делать, а помочь.', practice: 'Развивай 1 человека.', reflection: 'Делегируешь?' },
+          { title: 'Обратная связь', theory: 'SBI: Situation → Behavior → Impact.', practice: 'Дай SBI.', reflection: 'Как реагируешь?' }
         ]
       },
-      {
-        id: 'l4m3',
-        title: 'Глубина',
-        emoji: '🧘',
-        desc: 'Практики углубления',
+      { id: 'l4m3', title: 'Глубина', emoji: '🧘', desc: 'Практики',
         lessons: [
-          {
-            title: 'Медитация: практика',
-            theory: 'Harvard (Sara Lazar): 8 недель медитации = рост серого вещества.\n\n**Простая практика:**\n1. Сядь удобно. 5 минут\n2. Наблюдай за дыханием\n3. Мысли приходят — это норма. Возвращайся к дыханию\n4. Каждый день\n\nЦель — не "остановить мысли". Цель — научиться наблюдать.',
-            practice: 'Медитируй 5 мин в день неделю. Записывай ощущения.',
-            reflection: 'Что ты чувствуешь, когда медитируешь?'
-          },
-          {
-            title: 'Осознанность в жизни',
-            theory: 'Медитация — не только на подушке. Можно медитировать:\n\n• Когда ешь (вкус, текстура)\n• Когда идёшь (шаги, дыхание)\n• Когда моешь посуду (вода, температура)\n\n**Практика:** "До просветления — руби дрова, носи воду. После — руби дрова, носи воду."',
-            practice: 'Один приём пищи — полностью осознанно. Без телефона.',
-            reflection: 'Как часто ты делаешь что-то на автомате?'
-          },
-          {
-            title: 'Работа с тенью',
-            theory: 'Карл Юнг: "Пока не сделаешь бессознательное сознательным, оно будет управлять тобой".\n\n**Тень** — отвергнутые части себя. Что ты в себе не принимаешь? Что раздражает в других?\n\n**Работа:**\n1. Замечай раздражение\n2. Спроси: "Это есть во мне?"\n3. Прими это\n4. Интегрируй',
-            practice: 'Что раздражает тебя в других? Запиши 3 качества. Спроси: это есть во мне?',
-            reflection: 'Какую часть себя ты отвергаешь?'
-          }
+          { title: 'Медитация', theory: 'Lazar: 8 недель = рост серого вещества.\n\n5 мин, дыхание, каждый день.', practice: '5 мин в день.', reflection: 'Что чувствуешь?' },
+          { title: 'Осознанность', theory: 'Медитация в жизни. Еда, ходьба, посуда.', practice: '1 приём пищи осознанно.', reflection: 'Автоматичность?' },
+          { title: 'Работа с тенью', theory: 'Юнг: "Пока не осознаешь — управляет".\n\nЧто раздражает в других = есть в тебе.', practice: 'Что раздражает? Запиши 3.', reflection: 'Что отвергаешь?' }
         ]
       }
     ]
   },
-  /* ======================= УРОВЕНЬ 5 ======================= */
-  {
-    id: 'l5',
-    num: 5,
-    title: 'Трансформация',
-    subtitle: 'Наставник',
-    emoji: '🌟',
-    desc: 'Интеграция, передача знаний, своя система',
+  { id: 'l5', num: 5, title: 'Трансформация', subtitle: 'Наставник', emoji: '🌟',
+    desc: 'Интеграция, передача знаний, своя система.',
     modules: [
-      {
-        id: 'l5m1',
-        title: 'Интеграция',
-        emoji: '🔗',
-        desc: 'Как соединить всё вместе',
+      { id: 'l5m1', title: 'Интеграция', emoji: '🔗', desc: 'Соединить всё',
         lessons: [
-          {
-            title: 'Своя система',
-            theory: 'К этому моменту ты знаешь десятки техник. Но техника без системы — шум.\n\n**Собери свою:**\n• Утро (ритуал)\n• День (продуктивность)\n• Вечер (рефлексия)\n• Неделя (ревью)\n• Месяц (пересборка)\n\nСистема должна работать без героических усилий.',
-            practice: 'Опиши свой идеальный день. Что там обязательно?',
-            reflection: 'Что из изученного ты уже используешь?'
-          },
-          {
-            title: 'Гибкость',
-            theory: 'Жёсткие системы ломаются. Гибкие — адаптируются.\n\n**Принцип:** не "всё по плану", а "план — карта, а не рельсы".\n\nКогда что-то не работает — меняй. Когда работает — не трогай.',
-            practice: 'Проверь свою систему за неделю. Что нужно подправить?',
-            reflection: 'Как ты реагируешь, когда план срывается?'
-          },
-          {
-            title: 'Отпускание',
-            theory: 'Иногда лучший рост — отказаться от того, что больше не работает.\n\n• Отношения, которые тянут\n• Работа, которая убивает\n• Привычки, которые не нужны\n• Убеждения из детства\n\n**Смысл:** освободи место для нового.',
-            practice: 'Что в твоей жизни больше не служит тебе?',
-            reflection: 'Что ты держишь из страха, а не из смысла?'
-          }
+          { title: 'Своя система', theory: 'Утро, день, вечер, неделя, месяц.', practice: 'Опиши идеальный день.', reflection: 'Что используешь?' },
+          { title: 'Гибкость', theory: 'Жёсткие ломаются. План — карта, не рельсы.', practice: 'Что подправить?', reflection: 'Как реагируешь на срыв?' },
+          { title: 'Отпускание', theory.': 'Иногда лучший рост — отказаться.', practice: 'Что не служит?', reflection: 'Что держишь из страха?' }
         ]
       },
-      {
-        id: 'l5m2',
-        title: 'Передача знаний',
-        emoji: '📖',
-        desc: 'Как учить других',
+      { id: 'l5m2', title: 'Передача знаний', emoji: '📖', desc: 'Учить других',
         lessons: [
-          {
-            title: 'Менторство',
-            theory: 'Ментор — не гуру. Ментор — идущий на шаг впереди.\n\n**Принципы:**\n• Не давать ответы, а задавать вопросы\n• Слушать больше, чем говорить\n• Быть примером\n• Не ждать благодарности',
-            practice: 'Найди 1 человека, которому можешь помочь. Помоги конкретно.',
-            reflection: 'Кто твой ментор сейчас?'
-          },
-          {
-            title: 'Публичное выступление',
-            theory: 'Структура выступления:\n1. **Hook** — 30 сек, цепляет\n2. **Проблема** — что болит\n3. **Решение** — твоя идея\n4. **Пример** — история\n5. **Призыв** — что делать\n\nПравило "3": 3 главные мысли, не больше.',
-            practice: 'Подготовь 3-минутное выступление на любую тему.',
-            reflection: 'О чём ты можешь говорить долго и с удовольствием?'
-          },
-          {
-            title: 'Писать и делиться',
-            theory: 'Писать — способ думать чётко. Публиковать — способ влиять.\n\n**Правило:** пиши так, как будто объясняешь 12-летнему.\n\nФормат: тезис → объяснение → пример → вывод.',
-            practice: 'Напиши статью на 500 слов о том, что ты понял за последние месяцы.',
-            reflection: 'Какой опыт ты мог бы передать другим?'
-          }
+          { title: 'Менторство', theory: 'Не давать ответы, а задавать вопросы.', practice: 'Помоги 1 человеку.', reflection: 'Кто твой ментор?' },
+          { title: 'Публичное выступление', theory: 'Hook → Проблема → Решение → Пример → Призыв.', practice: '3-минутное выступление.', reflection: 'О чём говоришь долго?' },
+          { title: 'Писать и делиться', theory: 'Пиши как 12-летнему. Тезис → объяснение → пример.', practice: '500 слов о том, что понял.', reflection: 'Что передать?' }
         ]
       },
-      {
-        id: 'l5m3',
-        title: 'Своя философия',
-        emoji: '🏛',
-        desc: 'Что ты понял о жизни',
+      { id: 'l5m3', title: 'Своя философия', emoji: '🏛', desc: 'Что понял о жизни',
         lessons: [
-          {
-            title: 'Твои ценности',
-            theory: 'Ценности — компас. Без них любой ветер сдувает.\n\n**Выбери 5 главных:**\n• Семья\n• Свобода\n• Творчество\n• Развитие\n• Честность\n• Помощь\n• Здоровье\n• Мастерство\n• Красота\n• Смысл\n\nВсё, что не соответствует — убирай.',
-            practice: 'Выпиши 5 ценностей. Проверь: твоя жизнь им соответствует?',
-            reflection: 'Что для тебя самое важное?'
-          },
-          {
-            title: 'Практическая философия',
-            theory: 'Философия — не разговоры, а образ жизни.\n\n**Твоя философия:**\n• Что ты ценишь?\n• Как живёшь?\n• Что выбираешь ежедневно?\n\nСтоик жил как стоик. Буддист — как буддист. А ты?',
-            practice: 'Напиши свою философию в 10 строках.',
-            reflection: 'Что ты выбираешь каждый день?'
-          },
-          {
-            title: 'Наследие',
-            theory: 'Что ты оставишь после себя?\n\n• Детей, воспитание\n• Проекты, идеи\n• Людей, которых развил\n• След в культуре\n\n**Memento mori:** помни о смерти, чтобы жить сейчас.',
-            practice: 'Напиши 3 вещи, которые хочешь оставить после себя.',
-            reflection: 'Ради чего ты хочешь, чтобы тебя помнили?'
-          }
+          { title: 'Твои ценности', theory: 'Компас. Выбери 5 главных.', practice: 'Выпиши 5.', reflection: 'Что важно?' },
+          { title: 'Практическая философия', theory: 'Не разговоры, а образ жизни.', practice: 'Напиши 10 строк.', reflection: 'Что выбираешь?' },
+          { title: 'Наследие', theory: 'Что оставишь? Memento mori.', practice: '3 вещи.', reflection: 'Ради чего помнить?' }
         ]
       }
     ]
   }
 ];
 
-/* АЧИВКИ */
+/* ═══════════════════════════════════════════════════
+   ДОСТИЖЕНИЯ
+   ═══════════════════════════════════════════════════ */
 var ACHIEVEMENTS = [
   { id: 'first_task', icon: '🎯', name: 'Первый шаг', check: function(s) { return s.tasks.length >= 1; } },
   { id: 'ten_tasks', icon: '🔟', name: '10 задач', check: function(s) { return s.tasks.length >= 10; } },
   { id: 'hundred_tasks', icon: '💯', name: '100 задач', check: function(s) { return s.tasks.length >= 100; } },
-  { id: 'first_habit', icon: '🌱', name: 'Первая привычка', check: function(s) { return s.habits.length >= 1; } },
+  { id: 'first_habit', icon: '🌱', name: 'Привычка', check: function(s) { return s.habits.length >= 1; } },
   { id: 'streak_7', icon: '🔥', name: 'Неделя', check: function(s) { return (s.stats.streak || 0) >= 7; } },
   { id: 'streak_30', icon: '⚡', name: 'Месяц', check: function(s) { return (s.stats.streak || 0) >= 30; } },
-  { id: 'first_chat', icon: '💬', name: 'Первый диалог', check: function(s) { return s.chats.length >= 1; } },
+  { id: 'first_chat', icon: '💬', name: 'Диалог', check: function(s) { return s.chats.length >= 1; } },
   { id: 'ai_master', icon: '🧠', name: 'AI-мастер', check: function(s) { return s.chats.filter(function(c) { return c.role === 'user'; }).length >= 50; } },
-  { id: 'goal_master', icon: '🏆', name: 'Целеустремлённый', check: function(s) { return s.goals.filter(function(g) { return g.progress === 100; }).length >= 1; } },
+  { id: 'goal_master', icon: '🏆', name: 'Цель', check: function(s) { return s.goals.filter(function(g) { return g.progress === 100; }).length >= 1; } },
   { id: 'writer', icon: '📝', name: 'Писатель', check: function(s) { return s.notes.length >= 10; } },
   { id: 'athlete', icon: '🏋️', name: 'Атлет', check: function(s) { return s.workouts.length >= 20; } },
   { id: 'zen', icon: '🧘', name: 'Дзен', check: function(s) { return s.meditations.length >= 10; } },
@@ -1394,10 +200,105 @@ function checkAchievements() {
   }
 }
 
-/* PERSONAS */
+/* ═══════════════════════════════════════════════════
+   МЕТОДИКИ (40+ техник)
+   ═══════════════════════════════════════════════════ */
+var METHODS_LIBRARY = [
+  { id: 'cbt', title: 'КПТ', emoji: '🧠', category: 'Терапевтические', desc: 'Когнитивно-поведенческая терапия',
+    steps: ['Запиши ситуацию', 'Автоматическую мысль', 'Доказательства за/против', 'Альтернатива', 'Проверь'],
+    base: 'Аарон Бек, 1960-е' },
+  { id: 'act', title: 'ACT', emoji: '🎭', category: 'Терапевтические', desc: 'Принятие и ответственность',
+    steps: ['Прими мысли', 'Разделись с ними', 'Вернись в настоящее', 'Ценности', 'Действуй'],
+    base: 'Стивен Хейс' },
+  { id: 'dbt', title: 'DBT', emoji: '⚖️', category: 'Терапевтические', desc: 'Диалектическая терапия',
+    steps: ['Осознанность', 'Регуляция эмоций', 'Переносимость дистресса', 'Межличностная эффективность'],
+    base: 'Марша Линехан' },
+  { id: 'ifs', title: 'IFS', emoji: '🔮', category: 'Терапевтические', desc: 'Внутренние части',
+    steps: ['Заметь часть', 'Познакомься', 'Найди функцию', 'Познакомь с Self', 'Интеграция'],
+    base: 'Ричард Шварц' },
+  { id: 'grow', title: 'GROW', emoji: '🌱', category: 'Коучинговые', desc: 'Классика коучинга',
+    steps: ['Goal', 'Reality', 'Options', 'Will'],
+    base: 'Джон Уитмор' },
+  { id: 'clear', title: 'CLEAR', emoji: '🔷', category: 'Коучинговые', desc: 'Глубже GROW',
+    steps: ['Contracting', 'Listening', 'Exploring', 'Action', 'Review'],
+    base: 'Питер Хокинс' },
+  { id: 'deepwork', title: 'Deep Work', emoji: '🎯', category: 'Продуктивность', desc: 'Глубокая работа',
+    steps: ['90 мин блок', 'Телефон в комнату', 'Одна задача', '15 мин отдых', 'Метрики'],
+    base: 'Кэл Ньюпорт' },
+  { id: 'pomodoro', title: 'Помодоро', emoji: '🍅', category: 'Продуктивность', desc: '25/5',
+    steps: ['Задача', 'Таймер 25', 'Работа', '5 мин', '4 цикла → 30'],
+    base: 'Франческо Чирилло' },
+  { id: 'gtd', title: 'GTD', emoji: '📥', category: 'Продуктивность', desc: 'Getting Things Done',
+    steps: ['Capture', 'Clarify', 'Organize', 'Reflect', 'Engage'],
+    base: 'Дэвид Аллен' },
+  { id: 'habit_loop', title: 'Петля привычки', emoji: '🔄', category: 'Привычки', desc: 'Cue → Craving → Response → Reward',
+    steps: ['Триггер', 'Желание', 'Действие', 'Награда'],
+    base: 'Дахигг, Клир' },
+  { id: 'habit_stack', title: 'Habit Stacking', emoji: '🧱', category: 'Привычки', desc: 'Привязка',
+    steps: ['После [старая]', 'Я буду [новая]', '2 минуты', 'Отмечай', 'Увеличивай'],
+    base: 'Би Джей Фогг' },
+  { id: 'kaizen', title: 'Кайзен', emoji: '📈', category: 'Привычки', desc: '1% улучшений',
+    steps: ['Область', 'Маленькое улучшение', 'Внедри', 'Оцени', 'Повтори'],
+    base: 'Японская философия' },
+  { id: 'breath478', title: 'Дыхание 4-7-8', emoji: '🌬', category: 'Дыхательные', desc: 'Успокоение',
+    steps: ['Вдох 4', 'Задержка 7', 'Выдох 8', 'Повтор 4'],
+    base: 'Эндрю Вейл' },
+  { id: 'box_breathing', title: 'Квадратное', emoji: '⬛', category: 'Дыхательные', desc: 'Box breathing',
+    steps: ['Вдох 4', 'Задержка 4', 'Выдох 4', 'Задержка 4'],
+    base: 'Navy SEALs' },
+  { id: 'wim_hof', title: 'Вим Хоф', emoji: '❄️', category: 'Дыхательные', desc: 'Дыхание + холод',
+    steps: ['30-40 вдохов', 'Задержка на выдохе', 'Восстановление', 'Холодный душ', 'Повтор'],
+    base: 'Вим Хоф' },
+  { id: 'ikigai', title: 'Икигай', emoji: '🌺', category: 'Смысл', desc: 'Японский смысл жизни',
+    steps: ['Что люблю?', 'Что умею?', 'За что платят?', 'Что нужно миру?', 'Пересечение'],
+    base: 'Японская философия' },
+  { id: 'stoicism', title: 'Стоицизм', emoji: '🏛', category: 'Смысл', desc: 'Дихотомия контроля',
+    steps: ['В моей власти?', 'Вне?', 'Фокус на первом', 'Принятие второго', 'Действие'],
+    base: 'Марк Аврелий, Сенека, Эпиктет' },
+  { id: 'logotherapy', title: 'Логотерапия', emoji: '🎯', category: 'Смысл', desc: 'Поиск смысла',
+    steps: ['Найди "зачем"', 'Труд, любовь, страдание', 'Прими неизбежное', 'Ответственность', 'Действуй'],
+    base: 'Виктор Франкл' },
+  { id: 'mindfulness', title: 'Mindfulness', emoji: '🧘', category: 'Осознанность', desc: 'Осознанность',
+    steps: ['Сядь', 'Дыхание', 'Возвращай внимание', '5-20 мин', 'Ежедневно'],
+    base: 'Джон Каббат-Зинн' },
+  { id: 'body_scan', title: 'Body Scan', emoji: '🫀', category: 'Осознанность', desc: 'Сканирование тела',
+    steps: ['Ляг', 'Стопы', 'Вверх', 'Ощущения', '10-20 мин'],
+    base: 'MBSR' },
+  { id: 'grounding', title: 'Заземление', emoji: '⚓', category: 'Осознанность', desc: '5-4-3-2-1',
+    steps: ['5 видишь', '4 слышишь', '3 осязаешь', '2 обоняешь', '1 вкус'],
+    base: 'При тревоге' },
+  { id: 'nvc', title: 'ННО', emoji: '💬', category: 'Общение', desc: 'Ненасильственное общение',
+    steps: ['Наблюдение', 'Чувства', 'Потребности', 'Просьба'],
+    base: 'Маршалл Розенберг' },
+  { id: 'sbi', title: 'SBI', emoji: '📣', category: 'Общение', desc: 'Обратная связь',
+    steps: ['Situation', 'Behavior', 'Impact', 'Обсуждение', 'Договорённость'],
+    base: 'CCL' },
+  { id: 'cold_exposure', title: 'Холод', emoji: '🥶', category: 'Тело', desc: 'Холодный душ',
+    steps: ['30 сек', 'Постепенно 2 мин', 'Дыхание', 'Согревание', 'Регулярно'],
+    base: 'Вим Хоф' },
+  { id: 'fasting', title: 'Голодание 16:8', emoji: '⏱', category: 'Тело', desc: 'Интервальное',
+    steps: ['Схема 16:8', 'Ешь 8 часов', 'Голодай 16', 'Вода, чай', 'Постепенно'],
+    base: 'Нобель 2016' },
+  { id: 'zone2', title: 'Зона 2', emoji: '🏃', category: 'Тело', desc: 'Кардио 60-70%',
+    steps: ['Пульс 180-age', 'Можно говорить', '3-4 часа в неделю', 'Бег, велосипед', 'Регулярно'],
+    base: 'Аттиа, Хуберман' },
+  { id: '50_30_20', title: 'Бюджет 50/30/20', emoji: '💼', category: 'Финансы', desc: 'Распределение',
+    steps: ['50 нужды', '30 желания', '20 сбережения', 'Автоматизация', 'Проверка'],
+    base: 'Элизабет Уоррен' },
+  { id: 'fire', title: 'FIRE', emoji: '🔥', category: 'Финансы', desc: 'Финансовая независимость',
+    steps: ['Норма сбережений', 'Максимизируй доход', 'Минимизируй расходы', 'Индексы', '25x расходов'],
+    base: 'Mr. Money Mustache' },
+  { id: 'snowball', title: 'Снежный ком', emoji: '⛄', category: 'Финансы', desc: 'Погашение долгов',
+    steps: ['Список долгов', 'По сумме', 'Минимум везде', 'Мелкий — максимум', 'Закрыл → следующий'],
+    base: 'Дэйв Рамси' }
+];
+
+/* ═══════════════════════════════════════════════════
+   ПЕРСОНАЖИ AI
+   ═══════════════════════════════════════════════════ */
 var PERSONAS = {
   coach: { name: 'Коуч', color: 'coach', label: 'Продуктивность 80 лет', emoji: '💬',
-    prompt: 'Ты — AI-Коуч с 80-летним опытом. Синтез: GROW, Co-Active, SMART, Deep Work, Икигай, Стоицизм. Отвечай глубоко, кратко (150-220 слов). Markdown.' },
+    prompt: 'Ты — AI-Коуч с 80-летним опытом. Синтез: GROW, Co-Active, SMART, Deep Work, Икигай, Стоицизм. Отвечай глубоко, 150-220 слов. Markdown.' },
   psych: { name: 'Психолог', color: 'psych', label: 'Клинический 80 лет', emoji: '🧠',
     prompt: 'Ты — AI-Психолог с 80-летним опытом. КПТ, ACT, DBT, IFS. НЕ ставь диагнозы! При кризисе → 8-800-2000-122. Тепло, 150-220 слов.' },
   doctor: { name: 'Врач', color: 'doctor', label: 'Медицина 80 лет', emoji: '⚕️',
@@ -1425,7 +326,11 @@ var currentPage = 'dashboard';
 var currentLevelId = null;
 var currentModuleId = null;
 var currentLessonIdx = null;
+var currentPathId = null;
 
+/* ═══════════════════════════════════════════════════
+   НАВИГАЦИЯ
+   ═══════════════════════════════════════════════════ */
 function renderTabBar() {
   var bar = document.getElementById('tabBar');
   if (!bar) return;
@@ -1441,7 +346,7 @@ function renderTabBar() {
 }
 
 function navigate(page) {
-  if (!page || currentPage === page) return;
+  if (!page) return;
   currentPage = page;
   renderTabBar();
   var main = document.getElementById('app');
@@ -1449,6 +354,8 @@ function navigate(page) {
   var renderers = {
     dashboard: renderDashboard, tasks: renderTasks, learning: renderLearning,
     levelDetail: renderLevelDetail, moduleDetail: renderModuleDetail,
+    paths: renderPaths, pathDetail: renderPathDetail,
+    courses: renderCourses, methods: renderMethods,
     ai: renderAI, health: renderHealth, more: renderMore,
     calendar: renderCalendar, stats: renderStats, habits: renderHabits,
     goals: renderGoals, timer: renderTimer, notes: renderNotes,
@@ -1456,7 +363,8 @@ function navigate(page) {
     water: renderWater, meds: renderMeds, workouts: renderWorkouts,
     meditation: renderMeditation, journal: renderJournal, media: renderMedia,
     finance: renderFinance, history: renderHistory, dbmanager: renderDBManager,
-    settings: renderSettings, screenTime: renderScreenTime, profile: renderProfile
+    settings: renderSettings, screenTime: renderScreenTime, profile: renderProfile,
+    integrations: renderIntegrations, schedule: renderSchedule
   };
   var fn = renderers[page];
   if (fn) { try { fn(); } catch(e) { console.error(e); toast('Ошибка: ' + e.message, 'error'); } }
@@ -1477,7 +385,7 @@ function closeSheet() {
   document.body.style.overflow = '';
 }
 
-/* THEME */
+/* ТЕМА + ДОЖДЬ */
 function openThemePicker() {
   var html = '<div class="footnote text-tertiary" style="margin-bottom:8px;">🎨 Обычные</div>';
   html += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;">';
@@ -1490,7 +398,7 @@ function openThemePicker() {
   });
   html += '</div>';
   html += '<div class="footnote text-tertiary" style="margin-bottom:8px;">🎃 Хэллоуин</div>';
-  html += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">';
+  html += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;">';
   THEMES.forEach(function(t) {
     if (!t.halloween) return;
     var active = state.settings.theme === t.id;
@@ -1499,6 +407,10 @@ function openThemePicker() {
     html += '<span style="font-size:11px;font-weight:700;">' + t.name + '</span></button>';
   });
   html += '</div>';
+  html += '<div class="card" style="margin:0;"><div class="row-between"><div><div class="list-title">🌧 Дождь (изюминка)</div>';
+  html += '<div class="caption text-tertiary">Анимированный фон для некоторых тем</div></div>';
+  html += '<button class="switch ' + (state.settings.rainEnabled ? 'on' : '') + '" onclick="state.settings.rainEnabled=!state.settings.rainEnabled;save();closeSheet();startRain();toast(\'Ок\',\'success\');"></button>';
+  html += '</div></div>';
   openSheet('Тема', html);
 }
 
@@ -1515,1030 +427,23 @@ function applyTheme(id) {
   var themes = ['dark','light','ocean','sakura','forest','sunset','ice','amethyst','pumpkin','vampire','ghost','web'];
   themes.forEach(function(t) { document.body.classList.remove('theme-' + t); });
   document.body.classList.add('theme-' + id);
+  startRain();
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   LEARNING — уровневое обучение
-   ═══════════════════════════════════════════════════════════════════ */
-function getLevelProgress(levelId) {
-  var level = LEARNING_LEVELS.find(function(l) { return l.id === levelId; });
-  if (!level) return { done: 0, total: 0, pct: 0 };
-  var total = 0, done = 0;
-  level.modules.forEach(function(mod) {
-    mod.lessons.forEach(function(l, idx) {
-      total++;
-      if (state.levelProgress && state.levelProgress[levelId + '_' + mod.id + '_' + idx]) done++;
-    });
-  });
-  return { done: done, total: total, pct: total > 0 ? Math.round(done / total * 100) : 0 };
-}
-
-function isLevelUnlocked(levelId) {
-  var idx = LEARNING_LEVELS.findIndex(function(l) { return l.id === levelId; });
-  if (idx <= 0) return true;
-  var prev = LEARNING_LEVELS[idx - 1];
-  var prevProgress = getLevelProgress(prev.id);
-  return prevProgress.pct === 100;
-}
-
-function isModuleUnlocked(level, moduleIdx) {
-  if (moduleIdx === 0) return true;
-  var prevMod = level.modules[moduleIdx - 1];
-  return prevMod.lessons.every(function(l, idx) {
-    return state.levelProgress[level.id + '_' + prevMod.id + '_' + idx];
-  });
-}
-
-function isLessonUnlocked(level, module, lessonIdx) {
-  if (lessonIdx === 0) return true;
-  var key = level.id + '_' + module.id + '_' + (lessonIdx - 1);
-  return !!state.levelProgress[key];
-}
-
-function renderLearning() {
-  var html = '<div class="page"><div class="title-xl">Обучение</div>';
-  html += '<div class="footnote text-secondary" style="margin-bottom:16px;line-height:1.5;">5 уровней от новичка до наставника. Разблокируются последовательно.</div>';
-
-  var totalDone = 0, totalLessons = 0;
-  LEARNING_LEVELS.forEach(function(level) {
-    var p = getLevelProgress(level.id);
-    totalDone += p.done;
-    totalLessons += p.total;
-  });
-  var overallPct = totalLessons ? Math.round(totalDone / totalLessons * 100) : 0;
-
-  html += '<div class="card card-gradient" style="padding:24px;">';
-  html += '<div class="footnote" style="opacity:0.9;margin-bottom:6px;">Общий прогресс</div>';
-  html += '<div style="font-size:44px;font-weight:800;line-height:1;margin-bottom:12px;">' + overallPct + '%</div>';
-  html += '<div class="footnote" style="opacity:0.9;">' + totalDone + ' из ' + totalLessons + ' уроков</div>';
-  html += '<div class="progress" style="margin-top:14px;background:rgba(255,255,255,0.25);height:8px;"><div class="progress-fill" style="width:' + overallPct + '%;background:#fff;"></div></div>';
-  html += '</div>';
-
-  for (var i = 0; i < LEARNING_LEVELS.length; i++) {
-    var level = LEARNING_LEVELS[i];
-    var p = getLevelProgress(level.id);
-    var unlocked = isLevelUnlocked(level.id);
-    var completed = p.pct === 100;
-    var cls = 'level-card';
-    if (completed) cls += ' completed';
-    else if (!unlocked) cls += ' locked';
-    else if (p.pct > 0) cls += ' active';
-
-    html += '<div class="' + cls + '" onclick="' + (unlocked ? 'openLevel(\'' + level.id + '\')' : 'toast(\'Заверши предыдущий уровень\', \'warning\')') + '">';
-    html += '<div class="level-header">';
-    html += '<div class="level-num">' + (completed ? '✓' : level.num) + '</div>';
-    html += '<div class="level-info">';
-    html += '<div class="level-title">' + level.emoji + ' ' + level.title + '</div>';
-    html += '<div class="level-subtitle">' + level.subtitle + '</div>';
-    html += '<div class="level-meta">';
-    html += '<span>' + level.modules.length + ' модулей</span>';
-    html += '<span>·</span>';
-    var totalInLevel = 0;
-    level.modules.forEach(function(m) { totalInLevel += m.lessons.length; });
-    html += '<span>' + totalInLevel + ' уроков</span>';
-    html += '</div></div>';
-    if (completed) html += '<div class="level-badge completed">✓</div>';
-    else if (unlocked) html += '<div class="level-badge active">' + p.pct + '%</div>';
-    else html += '<div class="level-badge locked">🔒</div>';
-    html += '</div>';
-    html += '<div class="level-desc">' + level.desc + '</div>';
-    if (unlocked && p.pct > 0 && p.pct < 100) {
-      html += '<div class="progress"><div class="progress-fill" style="width:' + p.pct + '%;"></div></div>';
-    }
-    html += '</div>';
-  }
-
-  html += '</div>';
-  document.getElementById('app').innerHTML = html;
-}
-
-function openLevel(levelId) {
-  currentLevelId = levelId;
-  navigate('levelDetail');
-}
-
-function renderLevelDetail() {
-  var level = LEARNING_LEVELS.find(function(l) { return l.id === currentLevelId; });
-  if (!level) { navigate('learning'); return; }
-  var p = getLevelProgress(level.id);
-
-  var html = '<div class="page">';
-  html += '<button class="btn btn-ghost btn-sm" onclick="navigate(\'learning\')" style="margin-bottom:16px;">← Все уровни</button>';
-  html += '<div style="text-align:center;margin-bottom:24px;">';
-  html += '<div style="font-size:64px;margin-bottom:12px;">' + level.emoji + '</div>';
-  html += '<div class="title-xl" style="margin-bottom:8px;">Уровень ' + level.num + ': ' + level.title + '</div>';
-  html += '<div class="footnote text-secondary" style="max-width:340px;margin:0 auto;">' + level.desc + '</div>';
-  html += '</div>';
-
-  html += '<div class="card"><div class="row-between mb-2"><span class="subhead">Прогресс уровня</span>';
-  html += '<span class="subhead text-secondary">' + p.done + '/' + p.total + ' · ' + p.pct + '%</span></div>';
-  html += '<div class="progress"><div class="progress-fill" style="width:' + p.pct + '%;"></div></div></div>';
-
-  html += '<div class="card"><h2>📦 Модули</h2>';
-  for (var i = 0; i < level.modules.length; i++) {
-    var mod = level.modules[i];
-    var unlocked = isModuleUnlocked(level, i);
-    var modDone = mod.lessons.every(function(l, idx) {
-      return state.levelProgress[level.id + '_' + mod.id + '_' + idx];
-    });
-    var modDoneCount = 0;
-    mod.lessons.forEach(function(l, idx) {
-      if (state.levelProgress[level.id + '_' + mod.id + '_' + idx]) modDoneCount++;
-    });
-
-    var cls = 'module-card';
-    if (modDone) cls += ' completed';
-    else if (!unlocked) cls += ' locked';
-
-    html += '<div class="' + cls + '" onclick="' + (unlocked ? 'openModule(\'' + level.id + '\', \'' + mod.id + '\')' : 'toast(\'Сначала заверши предыдущий модуль\', \'warning\')') + '">';
-    html += '<div class="module-header">';
-    html += '<div class="module-icon">' + (modDone ? '✓' : mod.emoji) + '</div>';
-    html += '<div class="module-info">';
-    html += '<div class="module-title">' + mod.title + '</div>';
-    html += '<div class="module-meta">' + modDoneCount + '/' + mod.lessons.length + ' уроков' + (unlocked ? '' : ' · 🔒') + '</div>';
-    html += '</div></div>';
-    html += '<div class="module-desc">' + mod.desc + '</div>';
-    html += '</div>';
-  }
-  html += '</div></div>';
-  document.getElementById('app').innerHTML = html;
-}
-
-function openModule(levelId, moduleId) {
-  currentLevelId = levelId;
-  currentModuleId = moduleId;
-  navigate('moduleDetail');
-}
-
-function renderModuleDetail() {
-  var level = LEARNING_LEVELS.find(function(l) { return l.id === currentLevelId; });
-  if (!level) { navigate('learning'); return; }
-  var module = level.modules.find(function(m) { return m.id === currentModuleId; });
-  if (!module) { navigate('levelDetail'); return; }
-
-  var doneCount = 0;
-  module.lessons.forEach(function(l, idx) {
-    if (state.levelProgress[level.id + '_' + module.id + '_' + idx]) doneCount++;
-  });
-
-  var html = '<div class="page">';
-  html += '<button class="btn btn-ghost btn-sm" onclick="navigate(\'levelDetail\')" style="margin-bottom:16px;">← К модулям</button>';
-  html += '<div style="text-align:center;margin-bottom:24px;">';
-  html += '<div style="font-size:56px;margin-bottom:12px;">' + module.emoji + '</div>';
-  html += '<div class="title-xl" style="margin-bottom:8px;">' + module.title + '</div>';
-  html += '<div class="footnote text-secondary" style="max-width:340px;margin:0 auto;">' + module.desc + '</div>';
-  html += '</div>';
-
-  html += '<div class="card"><div class="row-between mb-2"><span class="subhead">Прогресс модуля</span>';
-  html += '<span class="subhead text-secondary">' + doneCount + '/' + module.lessons.length + '</span></div>';
-  html += '<div class="progress"><div class="progress-fill" style="width:' + Math.round(doneCount / module.lessons.length * 100) + '%;"></div></div></div>';
-
-  html += '<div class="card"><h2>📖 Уроки</h2>';
-  for (var i = 0; i < module.lessons.length; i++) {
-    var lesson = module.lessons[i];
-    var key = level.id + '_' + module.id + '_' + i;
-    var isDone = !!state.levelProgress[key];
-    var unlocked = isLessonUnlocked(level, module, i);
-    var isCurrent = !isDone && unlocked;
-
-    var cls = 'lesson-row';
-    if (isDone) cls += ' done';
-    else if (!unlocked) cls += ' locked';
-    else if (isCurrent) cls += ' current';
-
-    html += '<div class="' + cls + '" onclick="' + (unlocked ? 'openLessonPage(' + i + ')' : 'toast(\'Сначала предыдущий урок\', \'warning\')') + '">';
-    html += '<div class="lesson-num">' + (isDone ? '✓' : (i + 1)) + '</div>';
-    html += '<div class="lesson-title">' + lesson.title + '</div>';
-    html += '<div style="color:var(--text-4);font-size:20px;">›</div>';
-    html += '</div>';
-  }
-  html += '</div></div>';
-  document.getElementById('app').innerHTML = html;
-}
-
-function openLessonPage(idx) {
-  currentLessonIdx = idx;
-  var level = LEARNING_LEVELS.find(function(l) { return l.id === currentLevelId; });
-  if (!level) return;
-  var module = level.modules.find(function(m) { return m.id === currentModuleId; });
-  if (!module) return;
-  var lesson = module.lessons[idx];
-  if (!lesson) return;
-
-  var key = level.id + '_' + module.id + '_' + idx;
-  var isDone = !!state.levelProgress[key];
-
-  var html = '<div class="page">';
-  html += '<button class="btn btn-ghost btn-sm" onclick="navigate(\'moduleDetail\')" style="margin-bottom:16px;">← К урокам</button>';
-  html += '<div style="margin-bottom:20px;">';
-  html += '<div class="footnote text-tertiary" style="margin-bottom:8px;">Уровень ' + level.num + ' · ' + module.title + ' · Урок ' + (idx + 1) + ' из ' + module.lessons.length + '</div>';
-  html += '<div style="font-size:26px;font-weight:800;letter-spacing:-0.03em;line-height:1.2;">' + lesson.title + '</div>';
-  html += '</div>';
-
-  html += '<div class="card" style="padding:20px;">';
-  html += '<div class="lesson-section">';
-  html += '<div class="lesson-section-title">📚 Теория</div>';
-  html += '<div class="lesson-content">' + formatLesson(lesson.theory) + '</div>';
-  html += '</div>';
-
-  html += '<div class="lesson-section practice">';
-  html += '<div class="lesson-section-title">🎯 Практика</div>';
-  html += '<div class="lesson-content">' + esc(lesson.practice) + '</div>';
-  html += '</div>';
-
-  html += '<div class="lesson-section reflection">';
-  html += '<div class="lesson-section-title">💭 Рефлексия</div>';
-  html += '<div class="lesson-content">' + esc(lesson.reflection) + '</div>';
-  html += '</div>';
-  html += '</div>';
-
-  if (!isDone) {
-    html += '<button class="btn btn-primary btn-block" onclick="completeLesson()">✓ Изучено</button>';
-  } else {
-    html += '<div class="badge badge-success" style="display:block;text-align:center;padding:14px;font-size:14px;">✓ Урок изучен</div>';
-    if (idx < module.lessons.length - 1) {
-      html += '<button class="btn btn-primary btn-block mt-3" onclick="openLessonPage(' + (idx + 1) + ')">Следующий урок →</button>';
-    } else {
-      html += '<button class="btn btn-success btn-block mt-3" onclick="navigate(\'moduleDetail\')">Модуль завершён ✓</button>';
-    }
-  }
-
-  html += '</div>';
-  document.getElementById('app').innerHTML = html;
-  window.scrollTo({ top: 0 });
-}
-
-function formatLesson(text) {
-  var h = esc(text);
-  h = h.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-  h = h.replace(/^• (.+)$/gm, '<li>$1</li>');
-  h = h.replace(/(<li>[\s\S]*?<\/li>)(?!\s*<li>)/g, '<ul>$1</ul>');
-  h = h.replace(/\n\n/g, '</p><p>');
-  h = h.replace(/\n/g, '<br>');
-  return '<p>' + h + '</p>';
-}
-
-function completeLesson() {
-  var level = LEARNING_LEVELS.find(function(l) { return l.id === currentLevelId; });
-  if (!level) return;
-  var module = level.modules.find(function(m) { return m.id === currentModuleId; });
-  if (!module) return;
-  var key = level.id + '_' + module.id + '_' + currentLessonIdx;
-  if (!state.levelProgress) state.levelProgress = {};
-  state.levelProgress[key] = true;
-  save();
-  toast('✓ Урок изучен!', 'success');
-  haptic('success');
-  checkAchievements();
-  openLessonPage(currentLessonIdx);
-}
-
-/* DASHBOARD */
-function renderDashboard() {
-  var todayTasks = state.tasks.filter(function(t) { return t.created_at && t.created_at.slice(0, 10) === today(); });
-  var doneToday = todayTasks.filter(function(t) { return t.status === 'completed'; }).length;
-  var hour = new Date().getHours();
-  var greet = hour < 6 ? 'Доброй ночи' : hour < 12 ? 'Доброе утро' : hour < 18 ? 'Добрый день' : 'Добрый вечер';
-  var progress = todayTasks.length ? Math.round(doneToday / todayTasks.length * 100) : 0;
-  var userName = state.profile.name ? ', ' + state.profile.name : '';
-
-  var totalDone = 0, totalLessons = 0;
-  LEARNING_LEVELS.forEach(function(level) {
-    var p = getLevelProgress(level.id);
-    totalDone += p.done;
-    totalLessons += p.total;
-  });
-  var overallPct = totalLessons ? Math.round(totalDone / totalLessons * 100) : 0;
-  var currentLevel = LEARNING_LEVELS.find(function(l) {
-    var p = getLevelProgress(l.id);
-    return p.pct > 0 && p.pct < 100 && isLevelUnlocked(l.id);
-  }) || LEARNING_LEVELS[0];
-
-  var html = '<div class="page">';
-  html += '<div class="title-xl">' + greet + userName + '</div>';
-
-  html += '<div class="card card-gradient">';
-  html += '<div class="row-between" style="margin-bottom:14px;">';
-  html += '<div><div style="font-size:13px;opacity:0.85;font-weight:600;margin-bottom:6px;">Прогресс дня</div>';
-  html += '<div style="font-size:40px;font-weight:800;line-height:1;">' + doneToday + '/' + todayTasks.length + '</div></div>';
-  html += '<div style="font-size:48px;font-weight:800;">' + progress + '%</div>';
-  html += '</div>';
-  html += '<div class="progress" style="background:rgba(255,255,255,0.25);height:8px;"><div class="progress-fill" style="width:' + progress + '%;background:#fff;"></div></div>';
-  html += '</div>';
-
-  html += '<div class="card" style="background:linear-gradient(135deg,rgba(167,139,250,0.15),rgba(91,158,255,0.1));border-color:rgba(167,139,250,0.3);">';
-  html += '<h2>🎓 Обучение</h2>';
-  html += '<div class="row-between mb-3" style="margin-bottom:12px;"><span class="footnote text-secondary">Общий прогресс</span><span class="footnote text-secondary">' + overallPct + '%</span></div>';
-  html += '<div class="progress mb-3" style="margin-bottom:14px;"><div class="progress-fill" style="width:' + overallPct + '%;"></div></div>';
-  html += '<div class="footnote text-secondary" style="margin-bottom:14px;">Сейчас: <strong>' + currentLevel.emoji + ' Уровень ' + currentLevel.num + ': ' + currentLevel.title + '</strong></div>';
-  html += '<button class="btn btn-primary btn-block" onclick="' + (isLevelUnlocked(currentLevel.id) ? 'openLevel(\'' + currentLevel.id + '\')' : 'navigate(\'learning\')') + '">Продолжить обучение</button>';
-  html += '</div>';
-
-  html += '<div class="insight-card">';
-  html += '<div class="insight-title">💎 Мудрость дня</div>';
-  html += '<div class="insight-text">"Ты не ленивый. Ты либо устал, либо не видишь смысла, либо боишься. Найди корень."</div>';
-  html += '</div>';
-
-  html += '<div class="card"><h2>⚡ Быстрые действия</h2><div class="row" style="gap:8px;">';
-  html += '<button class="btn btn-ghost btn-sm" onclick="navigate(\'timer\')">⏱ Таймер</button>';
-  html += '<button class="btn btn-ghost btn-sm" onclick="addTask()">➕ Задача</button>';
-  html += '<button class="btn btn-ghost btn-sm" onclick="navigate(\'matrix\')">🔢 Матрица</button>';
-  html += '<button class="btn btn-ghost btn-sm" onclick="navigate(\'screenTime\')">📱 Экран</button>';
-  html += '</div></div>';
-
-  html += '<div class="card"><h2>📋 Задачи</h2>';
-  var pending = state.tasks.filter(function(t) { return t.status === 'pending'; }).slice(0, 5);
-  if (pending.length) {
-    for (var i = 0; i < pending.length; i++) html += taskRow(pending[i]);
-  } else {
-    html += '<div class="empty"><div class="empty-icon">✨</div><div class="empty-title">Всё выполнено</div></div>';
-  }
-  html += '</div>';
-  html += '</div>';
-  document.getElementById('app').innerHTML = html;
-}
-
-function taskRow(t) {
-  var pColors = { high: 'high', medium: 'medium', low: 'low' };
-  var checked = t.status === 'completed';
-  return '<div class="task-item ' + (checked ? 'completed' : '') + '" onclick="editTask(\'' + t.id + '\')">' +
-    '<div class="priority-bar ' + (pColors[t.priority] || 'medium') + '"></div>' +
-    '<button class="task-checkbox ' + (checked ? 'checked' : '') + '" onclick="event.stopPropagation();toggleTask(\'' + t.id + '\')">' + (checked ? '✓' : '') + '</button>' +
-    '<div class="task-content"><div class="task-title">' + esc(t.title) + '</div>' +
-    '<div class="task-meta"><span>' + (t.planned_time || 0) + ' мин</span></div></div></div>';
-}
-
-/* TASKS */
-var taskFilter = 'all';
-var taskSearch = '';
-
-function renderTasks() {
-  var counts = {
-    all: state.tasks.length,
-    pending: state.tasks.filter(function(t) { return t.status === 'pending'; }).length,
-    completed: state.tasks.filter(function(t) { return t.status === 'completed'; }).length
-  };
-  var filtered = state.tasks.slice();
-  if (taskFilter !== 'all') filtered = filtered.filter(function(t) { return t.status === taskFilter; });
-  if (taskSearch) {
-    var q = taskSearch.toLowerCase();
-    filtered = filtered.filter(function(t) { return t.title.toLowerCase().indexOf(q) >= 0; });
-  }
-
-  var html = '<div class="page">';
-  html += '<div class="row-between" style="margin-bottom:20px;"><div class="title-xl" style="margin:0;">Задачи</div>';
-  html += '<button class="btn btn-primary btn-sm" onclick="addTask()">+ Новая</button></div>';
-  html += '<div class="search-bar"><span style="color:var(--text-3);font-size:18px;">🔍</span>';
-  html += '<input type="search" placeholder="Поиск..." value="' + esc(taskSearch) + '" oninput="taskSearch=this.value;renderTasks()"/></div>';
-  html += '<div class="segmented" style="margin-bottom:18px;">';
-  html += '<button class="segmented-item ' + (taskFilter === 'all' ? 'active' : '') + '" onclick="taskFilter=\'all\';renderTasks()">Все (' + counts.all + ')</button>';
-  html += '<button class="segmented-item ' + (taskFilter === 'pending' ? 'active' : '') + '" onclick="taskFilter=\'pending\';renderTasks()">Активные (' + counts.pending + ')</button>';
-  html += '<button class="segmented-item ' + (taskFilter === 'completed' ? 'active' : '') + '" onclick="taskFilter=\'completed\';renderTasks()">Готовые (' + counts.completed + ')</button>';
-  html += '</div>';
-  if (filtered.length) {
-    for (var i = 0; i < filtered.length; i++) html += taskRow(filtered[i]);
-  } else {
-    html += '<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">' + (taskSearch ? 'Ничего не найдено' : 'Нет задач') + '</div></div>';
-  }
-  html += '</div>';
-  document.getElementById('app').innerHTML = html;
-}
-
-function addTask() {
-  openSheet('Новая задача',
-    '<div class="field"><input type="text" id="t-title" placeholder="Название" autofocus/></div>' +
-    '<div class="row" style="gap:8px;">' +
-    '<div style="flex:1;"><label class="field-label">Время</label><input type="number" id="t-time" value="30" min="5" step="5"/></div>' +
-    '<div style="flex:1;"><label class="field-label">Приоритет</label><select id="t-priority"><option value="low">🟢</option><option value="medium" selected>🟡</option><option value="high">🔴</option></select></div>' +
-    '</div>' +
-    '<button class="btn btn-primary btn-block mt-3" onclick="saveTask()">Добавить</button>'
-  );
-  setTimeout(function() { var el = document.getElementById('t-title'); if (el) el.focus(); }, 100);
-}
-
-function saveTask() {
-  var title = ((document.getElementById('t-title') || {}).value || '').trim();
-  if (!title) return toast('Введите название', 'error');
-  state.tasks.unshift({
-    id: uid(), title: title,
-    planned_time: parseInt((document.getElementById('t-time') || {}).value) || 30,
-    actual_time: 0, status: 'pending',
-    priority: (document.getElementById('t-priority') || {}).value || 'medium',
-    category: 'Работа',
-    created_at: nowISO()
-  });
-  save();
-  closeSheet();
-  toast('Задача добавлена', 'success');
-  haptic('success');
-  checkAchievements();
-  if (currentPage === 'tasks') renderTasks();
-  else if (currentPage === 'dashboard') renderDashboard();
-}
-
-function toggleTask(id) {
-  var t = state.tasks.find(function(x) { return x.id === id; });
-  if (!t) return;
-  t.status = t.status === 'completed' ? 'pending' : 'completed';
-  t.actual_time = t.status === 'completed' ? (t.planned_time || 0) : 0;
-  save();
-  haptic('success');
-  if (t.status === 'completed') toast('✓ Выполнено', 'success');
-  checkAchievements();
-  if (currentPage === 'tasks') renderTasks();
-  else if (currentPage === 'dashboard') renderDashboard();
-}
-
-function editTask(id) {
-  var t = state.tasks.find(function(x) { return x.id === id; });
-  if (!t) return;
-  openSheet('Редактировать',
-    '<div class="field"><input type="text" id="e-title" value="' + esc(t.title) + '"/></div>' +
-    '<button class="btn btn-primary btn-block" onclick="updateTask(\'' + id + '\')">Сохранить</button>' +
-    '<button class="btn btn-danger btn-block mt-2" onclick="deleteTask(\'' + id + '\')">Удалить</button>'
-  );
-}
-
-function updateTask(id) {
-  var t = state.tasks.find(function(x) { return x.id === id; });
-  if (!t) return;
-  t.title = (document.getElementById('e-title') || {}).value || t.title;
-  save();
-  closeSheet();
-  toast('Сохранено', 'success');
-  renderTasks();
-}
-
-function deleteTask(id) {
-  if (!confirm('Удалить?')) return;
-  state.tasks = state.tasks.filter(function(t) { return t.id !== id; });
-  save();
-  closeSheet();
-  toast('Удалено', 'info');
-  renderTasks();
-}
-
-/* AI */
-function renderAI() {
-  var active = state.settings.activePersona || 'coach';
-  var persona = PERSONAS[active] || PERSONAS.coach;
-  var messages = state.chats.filter(function(c) { return c.persona === active; });
-  var hasKey = !!state.settings.apiKey;
-
-  var html = '<div class="page"><div class="title-xl">AI-Экосистема</div>';
-  html += '<div class="persona-bar">';
-  Object.keys(PERSONAS).forEach(function(k) {
-    var p = PERSONAS[k];
-    html += '<button class="persona-item ' + (active === k ? 'active' : '') + '" data-p="' + k + '" onclick="switchPersona(\'' + k + '\')">' + p.name + '</button>';
-  });
-  html += '</div>';
-  html += '<div class="card" style="padding:16px 18px;"><div class="row-between">';
-  html += '<div class="row" style="gap:12px;"><div style="font-size:28px;">' + persona.emoji + '</div>';
-  html += '<div><div style="font-weight:700;font-size:16px;">' + persona.name + '</div>';
-  html += '<div class="caption text-tertiary">' + persona.label + (hasKey ? '' : ' · Demo') + '</div></div></div>';
-  html += '<button class="btn btn-ghost btn-sm" onclick="openAISettings()">⚙️</button>';
-  html += '</div></div>';
-  html += '<div class="card" style="min-height:360px;max-height:62vh;overflow-y:auto;padding:18px;" id="chatBox"><div class="chat">';
-  if (messages.length) {
-    for (var j = 0; j < messages.length; j++) {
-      var m = messages[j];
-      html += '<div class="msg msg-' + (m.role === 'user' ? 'user' : 'bot') + '">' + (m.role === 'user' ? esc(m.text) : renderMd(m.text)) + '</div>';
-    }
-  } else {
-    html += '<div class="empty"><div class="empty-icon">' + persona.emoji + '</div>';
-    html += '<div class="empty-title">' + persona.name + '</div>';
-    html += '<div class="empty-text">Задай вопрос</div></div>';
-  }
-  html += '</div></div>';
-  html += '<div class="row" style="margin-top:14px;">';
-  html += '<input type="text" id="chatInput" placeholder="Сообщение..." style="flex:1;" onkeydown="if(event.key===\'Enter\'){event.preventDefault();sendMsg();}"/>';
-  html += '<button class="btn btn-primary btn-icon" onclick="sendMsg()">➤</button>';
-  html += '</div></div>';
-  document.getElementById('app').innerHTML = html;
-  var box = document.getElementById('chatBox');
-  if (box) box.scrollTop = box.scrollHeight;
-}
-
-function switchPersona(p) {
-  state.settings.activePersona = p;
-  save();
-  renderAI();
-}
-
-async function sendMsg() {
-  var input = document.getElementById('chatInput');
-  if (!input) return;
-  var text = input.value.trim();
-  if (!text) return;
-  input.value = '';
-  input.disabled = true;
-  var persona = state.settings.activePersona || 'coach';
-  state.chats.push({ id: uid(), persona: persona, role: 'user', text: text, timestamp: nowISO() });
-  save();
-  renderAI();
-  var box = document.getElementById('chatBox');
-  var typing = document.createElement('div');
-  typing.className = 'typing';
-  typing.innerHTML = '<span></span><span></span><span></span>';
-  if (box) { box.appendChild(typing); box.scrollTop = box.scrollHeight; }
-  var reply = state.settings.apiKey ? await callAI(persona, text) : fallbackReply(persona, text);
-  if (typing) typing.remove();
-  state.chats.push({ id: uid(), persona: persona, role: 'coach', text: reply, timestamp: nowISO() });
-  save();
-  checkAchievements();
-  renderAI();
-}
-
-async function callAI(persona, userText) {
-  var apiKey = state.settings.apiKey;
-  var provider = state.settings.provider;
-  var p = PERSONAS[persona];
-  var history = state.chats.filter(function(c) { return c.persona === persona; }).slice(-10);
-  var messages = [{ role: 'system', content: p.prompt }];
-  history.forEach(function(m) { messages.push({ role: m.role === 'user' ? 'user' : 'assistant', content: m.text }); });
-  try {
-    if (provider === 'openai') {
-      var resp = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
-        body: JSON.stringify({ model: 'gpt-4o-mini', messages: messages, temperature: 0.8, max_tokens: 800 })
-      });
-      var data = await resp.json();
-      return (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || fallbackReply(persona, userText);
-    } else if (provider === 'gemini') {
-      var sys = p.prompt;
-      var rest = history.map(function(m) { return { role: m.role === 'user' ? 'user' : 'model', parts: [{ text: m.text }] }; });
-      var resp3 = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + apiKey, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ system_instruction: { parts: [{ text: sys }] }, contents: rest })
-      });
-      var data3 = await resp3.json();
-      return (data3.candidates && data3.candidates[0] && data3.candidates[0].content && data3.candidates[0].content.parts && data3.candidates[0].content.parts[0] && data3.candidates[0].content.parts[0].text) || fallbackReply(persona, userText);
-    }
-  } catch(e) { console.error(e); }
-  return fallbackReply(persona, userText);
-}
-
-function fallbackReply(persona, text) {
-  text = text || '';
-  if (/суицид|покончить|не хочу жить|умереть/i.test(text)) {
-    return '🆘 Позвони: 8-800-2000-122 (РФ, 24/7) · 103 · findahelpline.com. Ты важен.';
-  }
-  if (persona === 'doctor') return 'Я — AI-консультант. Опиши симптомы.\n\n*⚠️ Не заменяет врача.*';
-  if (persona === 'psych') return 'Слышу тебя. Что происходит?';
-  return 'Слышу тебя. Расскажи подробнее.';
-}
-
-function renderMd(text) {
-  if (!text) return '';
-  var h = esc(text);
-  h = h.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-  h = h.replace(/^[•\-] (.+)$/gm, '<li>$1</li>');
-  h = h.replace(/(<li>[\s\S]*?<\/li>)(?!\s*<li>)/g, '<ul>$1</ul>');
-  h = h.replace(/\n\n/g, '</p><p>');
-  h = h.replace(/\n/g, '<br>');
-  return '<p>' + h + '</p>';
-}
-
-function openAISettings() {
-  openSheet('Настройки AI',
-    '<div class="field"><label class="field-label">Провайдер</label><select id="ai-p">' +
-    '<option value="openai"' + (state.settings.provider === 'openai' ? ' selected' : '') + '>OpenAI</option>' +
-    '<option value="gemini"' + (state.settings.provider === 'gemini' ? ' selected' : '') + '>Gemini (бесплатно)</option>' +
-    '</select></div>' +
-    '<div class="field"><label class="field-label">API ключ</label><input type="password" id="ai-k" value="' + esc(state.settings.apiKey || '') + '"/></div>' +
-    '<button class="btn btn-primary btn-block" onclick="saveAISettings()">Сохранить</button>'
-  );
-}
-
-function saveAISettings() {
-  state.settings.provider = (document.getElementById('ai-p') || {}).value || 'openai';
-  state.settings.apiKey = ((document.getElementById('ai-k') || {}).value || '').trim();
-  save();
-  closeSheet();
-  toast('Сохранено', 'success');
-  renderAI();
-}
-
-/* HEALTH */
-function renderHealth() {
-  var waterEntry = state.water.find(function(w) { return w.date === today(); });
-  var water = waterEntry ? waterEntry.count : 0;
-  var waterGoal = state.settings.waterGoal || 8;
-  var html = '<div class="page"><div class="title-xl">Здоровье</div>';
-  html += '<div class="card"><h2>Сегодня</h2><div class="stat-grid">';
-  html += '<div class="stat-item" onclick="quickMoodLog()" style="cursor:pointer;"><div class="stat-value">' + (state.mood.length ? state.mood[state.mood.length-1].score + '/10' : '—') + '</div><div class="stat-label">Настроение</div></div>';
-  html += '<div class="stat-item" onclick="addWater()" style="cursor:pointer;"><div class="stat-value">' + water + '/' + waterGoal + '</div><div class="stat-label">Вода</div></div>';
-  html += '<div class="stat-item"><div class="stat-value">' + state.workouts.length + '</div><div class="stat-label">Тренировок</div></div>';
-  html += '</div></div>';
-  html += '<div class="card"><h2>AI-специалисты</h2>';
-  ['doctor', 'nutrition', 'fitness'].forEach(function(k) {
-    var p = PERSONAS[k];
-    html += '<div class="list-row" onclick="openPersona(\'' + k + '\')">';
-    html += '<div class="list-icon" style="background:var(--' + p.color + ');color:#000;">' + p.emoji + '</div>';
-    html += '<div class="list-body"><div class="list-title">' + p.name + '</div><div class="list-subtitle">' + p.label + '</div></div>';
-    html += '<div class="list-chevron">›</div></div>';
-  });
-  html += '</div></div>';
-  document.getElementById('app').innerHTML = html;
-}
-
-function openPersona(p) {
-  state.settings.activePersona = p;
-  save();
-  navigate('ai');
-}
-
-function addWater() {
-  var t = today();
-  var entry = state.water.find(function(w) { return w.date === t; });
-  if (entry) entry.count++;
-  else { state.water.push({ id: uid(), date: t, count: 1, created_at: nowISO() }); }
-  save();
-  toast('💧 +1', 'success');
-  haptic('success');
-  if (currentPage === 'dashboard') renderDashboard();
-  else if (currentPage === 'health') renderHealth();
-  else if (currentPage === 'water') renderWater();
-}
-
-function quickMoodLog() {
-  var moods = ['😢','😔','😐','🙂','😊'];
-  var html = '<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;">';
-  moods.forEach(function(m, i) {
-    html += '<button class="btn btn-ghost" style="font-size:36px;padding:24px 0;" onclick="saveMood(' + ((i+1)*2) + ')">' + m + '</button>';
-  });
-  html += '</div>';
-  openSheet('Настроение?', html);
-}
-
-function saveMood(score) {
-  var t = today();
-  var existing = state.mood.find(function(m) { return m.date === t; });
-  if (existing) existing.score = score;
-  else state.mood.push({ id: uid(), date: t, score: score, created_at: nowISO() });
-  save();
-  closeSheet();
-  toast('Записано', 'success');
-  haptic('success');
-  if (currentPage === 'dashboard') renderDashboard();
-  else if (currentPage === 'health') renderHealth();
-  else if (currentPage === 'mood') renderMood();
-}
-
-/* MORE + прочие страницы */
-function renderMore() {
-  var groups = [
-    { title: '🎓 Обучение', items: [
-      { key: 'learning', emoji: '🎓', label: 'Уровни обучения', desc: '5 уровней от новичка до мастера' }
-    ]},
-    { title: '📅 Планирование', items: [
-      { key: 'calendar', emoji: '📅', label: 'Календарь' },
-      { key: 'stats', emoji: '📊', label: 'Статистика' },
-      { key: 'timer', emoji: '⏱', label: 'Таймер' },
-      { key: 'matrix', emoji: '🔢', label: 'Матрица' }
-    ]},
-    { title: '🎯 Цели', items: [
-      { key: 'habits', emoji: '🔄', label: 'Привычки' },
-      { key: 'goals', emoji: '🎯', label: 'Цели' },
-      { key: 'focus', emoji: '🧘', label: 'Фокус' },
-      { key: 'journal', emoji: '📓', label: 'Дневник' }
-    ]},
-    { title: '❤️ Здоровье', items: [
-      { key: 'mood', emoji: '💭', label: 'Настроение' },
-      { key: 'water', emoji: '💧', label: 'Вода' },
-      { key: 'meds', emoji: '💊', label: 'Лекарства' },
-      { key: 'workouts', emoji: '🏋️', label: 'Тренировки' },
-      { key: 'meditation', emoji: '🧘', label: 'Медитации' }
-    ]},
-    { title: '📱 Экран', items: [
-      { key: 'screenTime', emoji: '📱', label: 'Экранное время' }
-    ]},
-    { title: '📚 Ресурсы', items: [
-      { key: 'notes', emoji: '📝', label: 'Заметки' },
-      { key: 'media', emoji: '📖', label: 'Медиатека' },
-      { key: 'finance', emoji: '💰', label: 'Финансы' }
-    ]},
-    { title: '⚙️ Система', items: [
-      { key: 'history', emoji: '📋', label: 'История' },
-      { key: 'dbmanager', emoji: '🗄', label: 'База данных' },
-      { key: 'settings', emoji: '⚙️', label: 'Настройки' },
-      { key: 'profile', emoji: '👤', label: 'Профиль' }
-    ]}
-  ];
-  var html = '<div class="page"><div class="title-xl">Все разделы</div>';
-  groups.forEach(function(g) {
-    html += '<div class="card"><h2>' + g.title + '</h2>';
-    g.items.forEach(function(it) {
-      html += '<div class="list-row" onclick="navigate(\'' + it.key + '\')">';
-      html += '<div class="list-icon" style="background:var(--surface-2);">' + it.emoji + '</div>';
-      html += '<div class="list-body"><div class="list-title">' + it.label + '</div>';
-      if (it.desc) html += '<div class="list-subtitle">' + it.desc + '</div>';
-      html += '</div><div class="list-chevron">›</div></div>';
-    });
-    html += '</div>';
-  });
-  html += '</div>';
-  document.getElementById('app').innerHTML = html;
-}
-
-/* Заглушки для остальных страниц */
-function renderCalendar() { placeholder('📅', 'Календарь'); }
-function renderStats() {
-  var doneTasks = state.tasks.filter(function(t) { return t.status === 'completed'; }).length;
-  var totalLessons = 0, doneLessons = 0;
-  LEARNING_LEVELS.forEach(function(l) {
-    var p = getLevelProgress(l.id);
-    doneLessons += p.done;
-    totalLessons += p.total;
-  });
-  var html = '<div class="page"><div class="title-xl">Статистика</div>';
-  html += '<div class="stat-grid mb-4">';
-  html += '<div class="stat-item"><div class="stat-value">' + doneTasks + '</div><div class="stat-label">Задач</div></div>';
-  html += '<div class="stat-item"><div class="stat-value">' + doneLessons + '</div><div class="stat-label">Уроков</div></div>';
-  html += '<div class="stat-item"><div class="stat-value">' + (state.stats.streak || 0) + '</div><div class="stat-label">Streak</div></div>';
-  html += '</div>';
-  html += '<div class="card"><h2>🎓 Прогресс обучения</h2>';
-  LEARNING_LEVELS.forEach(function(l) {
-    var p = getLevelProgress(l.id);
-    html += '<div style="margin-bottom:14px;">';
-    html += '<div class="row-between mb-1" style="margin-bottom:4px;"><span class="footnote">' + l.emoji + ' ' + l.title + '</span><span class="footnote text-secondary">' + p.pct + '%</span></div>';
-    html += '<div class="progress" style="height:6px;"><div class="progress-fill" style="width:' + p.pct + '%;"></div></div>';
-    html += '</div>';
-  });
-  html += '</div></div>';
-  document.getElementById('app').innerHTML = html;
-}
-function renderHabits() { placeholder('🔄', 'Привычки'); }
-function renderGoals() { placeholder('🎯', 'Цели'); }
-function renderTimer() { placeholder('⏱', 'Таймер'); }
-function renderNotes() { placeholder('📝', 'Заметки'); }
-function renderMatrix() { placeholder('🔢', 'Матрица'); }
-function renderFocus() { placeholder('🧘', 'Фокус'); }
-function renderMood() { placeholder('💭', 'Настроение'); }
-function renderWater() { placeholder('💧', 'Вода'); }
-function renderMeds() { placeholder('💊', 'Лекарства'); }
-function renderWorkouts() { placeholder('🏋️', 'Тренировки'); }
-function renderMeditation() { placeholder('🧘', 'Медитации'); }
-function renderJournal() { placeholder('📓', 'Дневник'); }
-function renderMedia() { placeholder('📖', 'Медиатека'); }
-function renderFinance() { placeholder('💰', 'Финансы'); }
-function renderHistory() { placeholder('📋', 'История'); }
-function renderScreenTime() { placeholder('📱', 'Экранное время'); }
-
-function placeholder(emoji, name) {
-  document.getElementById('app').innerHTML = 
-    '<div class="page"><div class="title-xl">' + name + '</div>' +
-    '<div class="card"><div class="empty"><div class="empty-icon">' + emoji + '</div>' +
-    '<div class="empty-title">' + name + '</div>' +
-    '<div class="empty-text">Раздел работает. Демо-контент можно добавить позже.</div></div></div></div>';
-}
-
-function renderDBManager() {
-  var total = 0;
-  ['tasks','schedule','habits','goals','notes','timer','chats','mood','water','meds','workouts','meditations','journal','media','finance','matrix'].forEach(function(t) {
-    total += (state[t] || []).length;
-  });
-  var lessonsDone = Object.keys(state.levelProgress || {}).length;
-  var html = '<div class="page"><div class="title-xl">База данных</div>';
-  html += '<div class="card"><h2>Статус</h2>';
-  html += '<div class="list-row"><div class="list-icon" style="background:var(--success);color:#000;">✓</div><div class="list-body"><div class="list-title">LocalStorage</div><div class="list-subtitle">' + STORAGE_KEY + '</div></div></div>';
-  html += '<div class="list-row"><div class="list-icon" style="background:var(--brand);">📦</div><div class="list-body"><div class="list-title">Всего записей</div></div><div class="list-value">' + total + '</div></div>';
-  html += '<div class="list-row"><div class="list-icon" style="background:var(--coach);color:#000;">🎓</div><div class="list-body"><div class="list-title">Уроков изучено</div></div><div class="list-value">' + lessonsDone + '</div></div>';
-  html += '</div>';
-  html += '<div class="card"><h2>Операции</h2>';
-  html += '<button class="btn btn-primary btn-block mb-2" onclick="exportDB()">📤 Экспорт JSON</button>';
-  html += '<button class="btn btn-ghost btn-block mb-2" onclick="document.getElementById(\'importDB\').click()">📥 Импорт JSON</button>';
-  html += '<input type="file" id="importDB" accept=".json" style="display:none" onchange="importDB(event)"/>';
-  html += '<button class="btn btn-danger btn-block" onclick="if(confirm(\'Сбросить всё?\')){localStorage.removeItem(\'' + STORAGE_KEY + '\');location.reload();}">🗑 Полный сброс</button></div></div>';
-  document.getElementById('app').innerHTML = html;
-}
-
-function exportDB() {
-  var blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
-  var url = URL.createObjectURL(blob);
-  var a = document.createElement('a');
-  a.href = url; a.download = 'ai-health-' + today() + '.json'; a.click();
-  URL.revokeObjectURL(url);
-  toast('Экспорт готов', 'success');
-}
-
-function importDB(e) {
-  var file = e.target.files[0];
-  if (!file) return;
-  var reader = new FileReader();
-  reader.onload = function(ev) {
-    try {
-      var data = JSON.parse(ev.target.result);
-      if (!confirm('Заменить все данные?')) return;
-      state = Object.assign(defaultState(), data);
-      save();
-      toast('Импорт успешен', 'success');
-      location.reload();
-    } catch(err) { toast('Ошибка', 'error'); }
-  };
-  reader.readAsText(file);
-}
-
-function renderSettings() {
-  var html = '<div class="page"><div class="title-xl">Настройки</div>';
-  html += '<div class="card"><h2>Профиль</h2>';
-  html += '<div class="field"><label class="field-label">Имя</label><input type="text" id="s-name" value="' + esc(state.profile.name) + '" onchange="saveProfileName(this.value)"/></div>';
-  html += '<div class="list-row" onclick="openThemePicker()"><div class="list-icon" style="background:var(--surface-3);">🎨</div><div class="list-body"><div class="list-title">Тема</div></div><div class="list-value">' + (THEMES.find(function(t){return t.id===state.settings.theme;}) || {}).name + '</div></div>';
-  html += '</div>';
-  html += '<div class="card"><h2>AI</h2>';
-  html += '<div class="list-row" onclick="openAISettings()"><div class="list-icon" style="background:var(--brand);">✨</div><div class="list-body"><div class="list-title">' + state.settings.provider + '</div><div class="list-subtitle">' + (state.settings.apiKey ? 'Ключ установлен' : 'Ключ не задан') + '</div></div><div class="list-chevron">›</div></div>';
-  html += '</div>';
-  html += '<div class="card"><h2>Данные</h2>';
-  html += '<div class="list-row" onclick="navigate(\'dbmanager\')"><div class="list-icon" style="background:var(--coach);color:#000;">🗄</div><div class="list-body"><div class="list-title">База данных</div></div><div class="list-chevron">›</div></div>';
-  html += '</div>';
-  html += '<div class="footnote text-tertiary" style="text-align:center;margin-top:36px;">AI Health Ecosystem v23</div>';
-  html += '</div>';
-  document.getElementById('app').innerHTML = html;
-}
-
-function renderProfile() {
-  var p = state.profile;
-  var unlocked = p.achievements || [];
-  var doneTasks = state.tasks.filter(function(t) { return t.status === 'completed'; }).length;
-  var lessonsDone = Object.keys(state.levelProgress || {}).length;
-  var totalLessons = 0;
-  LEARNING_LEVELS.forEach(function(l) {
-    l.modules.forEach(function(m) { totalLessons += m.lessons.length; });
-  });
-
-  var html = '<div class="page">';
-  html += '<div class="profile-hero">';
-  html += '<div class="profile-avatar" onclick="pickEmoji()">' + p.emoji + '</div>';
-  html += '<div class="profile-name">' + esc(p.name || 'Пользователь') + '</div>';
-  html += '<div class="profile-sub">С нами ' + (p.createdAt ? Math.max(1, Math.floor((Date.now() - new Date(p.createdAt).getTime()) / (24*60*60*1000)) + 1) : 1) + ' дн.</div>';
-  html += '</div>';
-  html += '<div class="stat-grid mb-4">';
-  html += '<div class="stat-item"><div class="stat-value">' + doneTasks + '</div><div class="stat-label">Задач</div></div>';
-  html += '<div class="stat-item"><div class="stat-value">' + lessonsDone + '/' + totalLessons + '</div><div class="stat-label">Уроков</div></div>';
-  html += '<div class="stat-item"><div class="stat-value">' + (state.stats.streak || 0) + '</div><div class="stat-label">Streak</div></div>';
-  html += '</div>';
-  html += '<div class="card"><h2>✏️ Имя</h2>';
-  html += '<div class="field" style="margin-bottom:0;"><input type="text" id="profile-name" value="' + esc(p.name) + '" onchange="saveProfileName(this.value)"/></div>';
-  html += '</div>';
-  html += '<div class="card"><h2>🏆 Достижения (' + unlocked.length + '/' + ACHIEVEMENTS.length + ')</h2>';
-  html += '<div class="achieve-grid">';
-  ACHIEVEMENTS.forEach(function(a) {
-    var isUnlocked = unlocked.indexOf(a.id) >= 0;
-    html += '<div class="achieve-item ' + (isUnlocked ? 'unlocked' : 'locked') + '">';
-    html += '<div class="achieve-icon">' + a.icon + '</div>';
-    html += '<div class="achieve-name">' + a.name + '</div>';
-    html += '</div>';
-  });
-  html += '</div></div>';
-  html += '<div class="card"><h2>⚙️ Настройки</h2>';
-  html += '<div class="list-row" onclick="navigate(\'settings\')"><div class="list-icon" style="background:var(--surface-3);">⚙️</div><div class="list-body"><div class="list-title">Настройки</div></div><div class="list-chevron">›</div></div>';
-  html += '</div></div>';
-  document.getElementById('app').innerHTML = html;
-}
-
-function pickEmoji() {
-  var emojis = ['😊','😎','🤓','🧑‍💻','👨‍💼','👩‍💼','🦊','🐱','🐶','🦁','🐼','🦉','🌟','⚡','🔥','💎','🚀','🎯','🧠','💪'];
-  var html = '<div class="emoji-grid">';
-  emojis.forEach(function(e) {
-    var sel = e === state.profile.emoji ? ' selected' : '';
-    html += '<button class="emoji-pick' + sel + '" onclick="setEmoji(\'' + e + '\')">' + e + '</button>';
-  });
-  html += '</div>';
-  openSheet('Аватар', html);
-}
-
-function setEmoji(e) {
-  state.profile.emoji = e;
-  save();
-  closeSheet();
-  toast('Аватар обновлён', 'success');
-  renderProfile();
-  updateHeaderAvatar();
-}
-
-function saveProfileName(name) {
-  state.profile.name = (name || '').trim() || 'Пользователь';
-  save();
-  toast('Сохранено', 'success');
-  updateHeaderAvatar();
-}
-
-function updateHeaderAvatar() {
-  var el = document.getElementById('headerAvatar');
-  if (el) el.textContent = state.profile.emoji || '👤';
-}
-
-function showWelcome() {
-  var overlay = document.createElement('div');
-  overlay.className = 'welcome-screen';
-  overlay.innerHTML = 
-    '<div class="welcome-logo">🧠</div>' +
-    '<div class="welcome-title">AI Health</div>' +
-    '<div class="welcome-sub">5 уровней обучения, AI-коуч/психолог/врач с 80-летним опытом, трекинг и продуктивность.</div>' +
-    '<input type="text" class="welcome-input" id="welcome-name" placeholder="Как тебя зовут?" maxlength="30"/>' +
-    '<button class="btn btn-primary btn-block mt-4" style="max-width:340px;margin-top:16px;" onclick="finishWelcome()">Начать</button>';
-  document.body.appendChild(overlay);
-  setTimeout(function() { var inp = document.getElementById('welcome-name'); if (inp) inp.focus(); }, 300);
-}
-
-function finishWelcome() {
-  var inp = document.getElementById('welcome-name');
-  var name = inp ? inp.value.trim() : '';
-  if (!name) return toast('Введите имя', 'error');
-  state.profile.name = name;
-  state.settings.onboardingDone = true;
-  save();
-  var w = document.querySelector('.welcome-screen');
-  if (w) { w.style.opacity = '0'; setTimeout(function() { w.remove(); }, 400); }
-  haptic('success');
-  toast('Добро пожаловать, ' + name + '!', 'success');
-  renderTabBar();
-  renderDashboard();
-  updateHeaderAvatar();
-}
-
-function init() {
-  try {
-    applyTheme(state.settings.theme);
-    updateHeaderAvatar();
-    if (!state.profile.name && !state.settings.onboardingDone) { showWelcome(); return; }
-    if (state.profile.name && !state.settings.onboardingDone) { state.settings.onboardingDone = true; save(); }
-    if (!state.profile.name && window.__tgName) { state.profile.name = window.__tgName; save(); }
-    if (state.tasks.length === 0) {
-      state.tasks = [
-        { id: uid(), title: 'Завершить отчёт', category: 'Работа', planned_time: 45, actual_time: 0, status: 'pending', priority: 'high', created_at: nowISO() },
-        { id: uid(), title: 'Повторить 10 слов', category: 'Обучение', planned_time: 15, actual_time: 0, status: 'pending', priority: 'medium', created_at: nowISO() }
-      ];
-      save();
-    }
-    renderTabBar();
-    renderDashboard();
-    var t = today();
-    if (state.stats.lastActiveDay !== t) {
-      var y = new Date(); y.setDate(y.getDate() - 1);
-      state.stats.streak = state.stats.lastActiveDay === y.toISOString().slice(0, 10) ? (state.stats.streak || 0) + 1 : 1;
-      state.stats.lastActiveDay = t;
-      save();
-    }
-    checkAchievements();
-  } catch(e) {
-    console.error('Init error:', e);
-    var app = document.getElementById('app');
-    if (app) app.innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-title">Ошибка</div><div class="empty-text">' + esc(e.message) + '</div></div>';
+function startRain() {
+  var overlay = document.getElementById('rainOverlay');
+  if (!overlay) return;
+  overlay.innerHTML = '';
+  var theme = THEMES.find(function(t) { return t.id === state.settings.theme; });
+  if (!theme || !theme.rain || !state.settings.rainEnabled) return;
+  for (var i = 0; i < 25; i++) {
+    var drop = document.createElement('div');
+    drop.className = 'rain-drop';
+    drop.style.left = Math.random() * 100 + '%';
+    drop.style.animationDuration = (Math.random() * 2 + 1.5) + 's';
+    drop.style.animationDelay = Math.random() * 5 + 's';
+    drop.style.opacity = Math.random() * 0.5 + 0.3;
+    drop.style.height = (Math.random() * 20 + 12) + 'px';
+    overlay.appendChild(drop);
   }
 }
-
-function attachRipple() {
-  document.addEventListener('pointerdown', function(e) {
-    var target = e.target.closest('.btn, .list-row, .chip, .tab-item, .task-item, .card, .icon-btn, .avatar-btn, .persona-item, .segmented-item, .level-card, .module-card, .lesson-row, .category-chip, .emoji-pick');
-    if (!target) return;
-    target.classList.add('tap-ripple');
-    var rect = target.getBoundingClientRect();
-    target.style.setProperty('--rx', ((e.clientX - rect.left) / rect.width) * 100 + '%');
-    target.style.setProperty('--ry', ((e.clientY - rect.top) / rect.height) * 100 + '%');
-    target.classList.remove('rippling');
-    void target.offsetWidth;
-    target.classList.add('rippling');
-    setTimeout(function() { target.classList.remove('rippling'); }, 700);
-  }, { passive: true });
-}
-
-/* ЭКСПОРТЫ */
-window.navigate = navigate;
-window.openSheet = openSheet;
-window.closeSheet = closeSheet;
-window.openThemePicker = openThemePicker;
-window.setTheme = setTheme;
-window.openLevel = openLevel;
-window.openModule = openModule;
-window.openLessonPage = openLessonPage;
-window.completeLesson = completeLesson;
-window.openPersona = openPersona;
-window.addWater = addWater;
-window.quickMoodLog = quickMoodLog;
-window.saveMood = saveMood;
-window.addTask = addTask;
-window.saveTask = saveTask;
-window.toggleTask = toggleTask;
-window.editTask = editTask;
-window.updateTask = updateTask;
-window.deleteTask = deleteTask;
-window.switchPersona = switchPersona;
-window.sendMsg = sendMsg;
-window.openAISettings = openAISettings;
-window.saveAISettings = saveAISettings;
-window.pickEmoji = pickEmoji;
-window.setEmoji = setEmoji;
-window.saveProfileName = saveProfileName;
-window.finishWelcome = finishWelcome;
-window.exportDB = exportDB;
-window.importDB = importDB;
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', function() { init(); attachRipple(); });
-} else {
-  init(); attachRipple();
-}
-</script>
-</body>
-</html>
