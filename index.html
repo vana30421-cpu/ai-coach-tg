@@ -1,2296 +1,814 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#000000">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>AI Health Ecosystem · Enterprise</title>
-<script src="https://telegram.org/js/telegram-web-app.js?56"></script>
-<style>
 /* ══════════════════════════════════════════════════════════════════
-   APPLE/SAMSUNG-GRADE DESIGN SYSTEM v12
-   Строгие метрики, идеальные пропорции, 8pt grid
+   PAGE: CALENDAR — полная с Google sync
    ══════════════════════════════════════════════════════════════════ */
-:root {
-  /* ── Colors: iOS 18 + One UI 7 ── */
-  --bg-canvas: #000000;
-  --bg-primary: #0a0a0f;
-  --bg-secondary: #121218;
-  --bg-tertiary: #1c1c24;
-  --bg-elevated: #24242e;
-  
-  --fill-primary: rgba(120,120,128,0.20);
-  --fill-secondary: rgba(120,120,128,0.16);
-  --fill-tertiary: rgba(118,118,128,0.12);
-  --fill-quaternary: rgba(116,116,128,0.08);
-  
-  --separator: rgba(84,84,88,0.65);
-  --separator-opaque: #38383a;
-  
-  --label-primary: #ffffff;
-  --label-secondary: rgba(235,235,245,0.60);
-  --label-tertiary: rgba(235,235,245,0.30);
-  --label-quaternary: rgba(235,235,245,0.18);
-  
-  /* ── Brand: Apple Blue + Samsung Violet ── */
-  --blue: #0a84ff;
-  --blue-dark: #0064d2;
-  --indigo: #5e5ce6;
-  --purple: #bf5af2;
-  --pink: #ff375f;
-  --red: #ff453a;
-  --orange: #ff9f0a;
-  --yellow: #ffd60a;
-  --green: #32d74b;
-  --mint: #63e6e2;
-  --teal: #64d2ff;
-  --cyan: #5ac8fa;
-  
-  /* ── Semantic ── */
-  --brand: #0a84ff;
-  --brand-2: #5e5ce6;
-  --success: #32d74b;
-  --warning: #ff9f0a;
-  --danger: #ff453a;
-  --info: #64d2ff;
-  
-  /* ── Personas ── */
-  --coach: #5e5ce6;
-  --psych: #64d2ff;
-  --doctor: #32d74b;
-  --nutrition: #ff9f0a;
-  --fitness: #ff375f;
-  --lawyer: #bf5af2;
-  --finance: #ffd60a;
-  
-  /* ── Radii: Apple exact ── */
-  --r-xs: 6px;
-  --r-sm: 10px;
-  --r-md: 14px;
-  --r-lg: 18px;
-  --r-xl: 22px;
-  --r-2xl: 28px;
-  --r-3xl: 38px;
-  --r-full: 9999px;
-  
-  /* ── Spacing: 4pt base ── */
-  --s-1: 4px;
-  --s-2: 8px;
-  --s-3: 12px;
-  --s-4: 16px;
-  --s-5: 20px;
-  --s-6: 24px;
-  --s-8: 32px;
-  --s-10: 40px;
-  --s-12: 48px;
-  
-  /* ── Typography: SF Pro scale ── */
-  --t-large-title: 34px;
-  --t-title-1: 28px;
-  --t-title-2: 22px;
-  --t-title-3: 20px;
-  --t-headline: 17px;
-  --t-body: 17px;
-  --t-callout: 16px;
-  --t-subhead: 15px;
-  --t-footnote: 13px;
-  --t-caption-1: 12px;
-  --t-caption-2: 11px;
-  
-  /* ── Motion: Apple HIG ── */
-  --ease-standard: cubic-bezier(0.4, 0.0, 0.2, 1);
-  --ease-decelerate: cubic-bezier(0.0, 0.0, 0.2, 1);
-  --ease-accelerate: cubic-bezier(0.4, 0.0, 1, 1);
-  --ease-spring: cubic-bezier(0.5, 1.5, 0.5, 1);
-  
-  --dur-instant: 100ms;
-  --dur-fast: 200ms;
-  --dur-normal: 300ms;
-  --dur-slow: 500ms;
-  
-  /* ── Layout ── */
-  --header-h: 44px;
-  --tabbar-h: 49px;
-  --safe-top: env(safe-area-inset-top, 0px);
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --safe-left: env(safe-area-inset-left, 0px);
-  --safe-right: env(safe-area-inset-right, 0px);
-  
-  /* ── Shadow: subtle, Apple-style ── */
-  --sh-sm: 0 1px 2px rgba(0,0,0,0.3);
-  --sh-md: 0 4px 12px rgba(0,0,0,0.25);
-  --sh-lg: 0 12px 32px rgba(0,0,0,0.35);
-  --sh-xl: 0 24px 64px rgba(0,0,0,0.5);
-  --sh-inner: inset 0 1px 0 rgba(255,255,255,0.05);
-}
+let calView = 'month';
+let calOffset = 0;
 
-body.light {
-  --bg-canvas: #f2f2f7;
-  --bg-primary: #ffffff;
-  --bg-secondary: #f2f2f7;
-  --bg-tertiary: #e5e5ea;
-  --bg-elevated: #ffffff;
-  
-  --fill-primary: rgba(120,120,128,0.20);
-  --fill-secondary: rgba(120,120,128,0.16);
-  --fill-tertiary: rgba(118,118,128,0.12);
-  --fill-quaternary: rgba(116,116,128,0.08);
-  
-  --separator: rgba(60,60,67,0.29);
-  --separator-opaque: #c6c6c8;
-  
-  --label-primary: #000000;
-  --label-secondary: rgba(60,60,67,0.60);
-  --label-tertiary: rgba(60,60,67,0.30);
-  --label-quaternary: rgba(60,60,67,0.18);
-  
-  --sh-md: 0 4px 12px rgba(0,0,0,0.06);
-  --sh-lg: 0 12px 32px rgba(0,0,0,0.08);
-  --sh-xl: 0 24px 64px rgba(0,0,0,0.12);
-}
+function renderCalendar() {
+  syncFromGoogleSilent();
+  const now = new Date();
+  const month = new Date(now.getFullYear(), now.getMonth() + calOffset, 1);
+  const year = month.getFullYear(), m = month.getMonth();
+  const firstDay = (new Date(year, m, 1).getDay() + 6) % 7;
+  const daysInMonth = new Date(year, m + 1, 0).getDate();
+  const monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+  const weekdays = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+  const todayStr = today();
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
-}
-
-html {
-  height: 100%;
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
-}
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Inter', 'Segoe UI', system-ui, sans-serif;
-  font-size: var(--t-body);
-  line-height: 1.4;
-  color: var(--label-primary);
-  background: var(--bg-canvas);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-feature-settings: 'ss01', 'cv01', 'cv11';
-  overscroll-behavior-y: none;
-  overflow-x: hidden;
-  min-height: 100vh;
-  min-height: 100dvh;
-  letter-spacing: -0.022em;
-  transition: background var(--dur-normal) var(--ease-standard), color var(--dur-normal) var(--ease-standard);
-}
-
-/* ══════════════ HEADER: iOS Navigation Bar ══════════════ */
-.app-header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  padding-top: var(--safe-top);
-  background: color-mix(in srgb, var(--bg-canvas) 82%, transparent);
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
-  border-bottom: 0.5px solid var(--separator);
-}
-
-.header-inner {
-  height: var(--header-h);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 var(--s-4);
-  gap: var(--s-3);
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: var(--s-2);
-  font-size: var(--t-headline);
-  font-weight: 600;
-  letter-spacing: -0.022em;
-}
-
-.brand-logo {
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, var(--brand), var(--purple));
-  display: grid;
-  place-items: center;
-  font-size: 17px;
-  box-shadow: 0 2px 8px rgba(10,132,255,0.35);
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--s-2);
-}
-
-.header-btn {
-  height: 32px;
-  min-width: 32px;
-  padding: 0 var(--s-3);
-  border-radius: var(--r-full);
-  background: var(--fill-tertiary);
-  border: none;
-  color: var(--brand);
-  font-size: var(--t-subhead);
-  font-weight: 500;
-  font-family: inherit;
-  cursor: pointer;
-  display: grid;
-  place-items: center;
-  transition: opacity var(--dur-fast) var(--ease-standard), transform var(--dur-fast) var(--ease-standard);
-}
-.header-btn:active { opacity: 0.6; transform: scale(0.94); }
-.header-btn.icon-only { width: 32px; padding: 0; font-size: 16px; }
-
-/* ══════════════ MAIN: Content Area ══════════════ */
-.app-main {
-  position: relative;
-  max-width: 680px;
-  margin: 0 auto;
-  width: 100%;
-  padding: var(--s-4);
-  /* CRITICAL FIX: гарантированный отступ снизу под tab bar */
-  padding-bottom: calc(var(--tabbar-h) + var(--safe-bottom) + 60px) !important;
-  min-height: calc(100vh - var(--header-h) - var(--safe-top));
-  min-height: calc(100dvh - var(--header-h) - var(--safe-top));
-}
-
-.page {
-  animation: pageIn var(--dur-normal) var(--ease-decelerate);
-  width: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
-}
-.page.hidden { display: none !important; }
-
-@keyframes pageIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ══════════════ TAB BAR: iOS Style ══════════════ */
-.tab-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  padding-bottom: var(--safe-bottom);
-  background: color-mix(in srgb, var(--bg-canvas) 82%, transparent);
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
-  border-top: 0.5px solid var(--separator);
-  display: flex;
-  align-items: stretch;
-  height: calc(var(--tabbar-h) + var(--safe-bottom));
-}
-
-.tab-item {
-  flex: 1;
-  min-width: 0;
-  background: transparent;
-  border: none;
-  color: var(--label-tertiary);
-  font-family: inherit;
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: -0.01em;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  padding: 6px 2px 4px;
-  cursor: pointer;
-  transition: color var(--dur-fast) var(--ease-standard);
-  position: relative;
-}
-.tab-item .tab-icon {
-  font-size: 24px;
-  line-height: 1;
-  transition: transform var(--dur-fast) var(--ease-spring);
-}
-.tab-item .tab-label {
-  font-size: 10px;
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
-}
-.tab-item.active { color: var(--brand); }
-.tab-item.active .tab-icon { transform: scale(1.08); }
-.tab-item:active { opacity: 0.5; }
-.tab-item.active::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 20px;
-  height: 2px;
-  background: var(--brand);
-  border-radius: 0 0 2px 2px;
-}
-
-/* ══════════════ TYPOGRAPHY ══════════════ */
-.title-large {
-  font-size: var(--t-large-title);
-  font-weight: 700;
-  letter-spacing: 0.37px;
-  line-height: 1.2;
-  margin-bottom: var(--s-5);
-  color: var(--label-primary);
-}
-.title-1 {
-  font-size: var(--t-title-1);
-  font-weight: 700;
-  letter-spacing: 0.36px;
-  line-height: 1.25;
-  margin-bottom: var(--s-4);
-}
-.title-2 {
-  font-size: var(--t-title-2);
-  font-weight: 600;
-  letter-spacing: -0.26px;
-  line-height: 1.27;
-  margin-bottom: var(--s-3);
-}
-.title-3 {
-  font-size: var(--t-title-3);
-  font-weight: 600;
-  letter-spacing: -0.45px;
-  line-height: 1.2;
-  margin-bottom: var(--s-2);
-}
-.headline {
-  font-size: var(--t-headline);
-  font-weight: 600;
-  letter-spacing: -0.41px;
-  line-height: 1.3;
-}
-.body { font-size: var(--t-body); letter-spacing: -0.41px; line-height: 1.4; }
-.callout { font-size: var(--t-callout); letter-spacing: -0.31px; }
-.subhead { font-size: var(--t-subhead); letter-spacing: -0.23px; }
-.footnote { font-size: var(--t-footnote); letter-spacing: -0.08px; line-height: 1.38; }
-.caption { font-size: var(--t-caption-1); letter-spacing: 0px; }
-.caption-2 { font-size: var(--t-caption-2); letter-spacing: 0.06px; }
-
-.text-secondary { color: var(--label-secondary); }
-.text-tertiary { color: var(--label-tertiary); }
-
-/* ══════════════ GROUPED LIST (iOS Settings style) ══════════════ */
-.grouped {
-  background: var(--bg-secondary);
-  border-radius: var(--r-sm);
-  overflow: hidden;
-  margin-bottom: var(--s-4);
-}
-.grouped-header {
-  font-size: var(--t-footnote);
-  color: var(--label-secondary);
-  text-transform: uppercase;
-  letter-spacing: -0.08px;
-  padding: var(--s-2) var(--s-4) var(--s-1);
-  font-weight: 400;
-}
-
-.list-row {
-  display: flex;
-  align-items: center;
-  gap: var(--s-3);
-  padding: var(--s-3) var(--s-4);
-  background: var(--bg-secondary);
-  min-height: 44px;
-  border-bottom: 0.5px solid var(--separator);
-  cursor: pointer;
-  transition: background var(--dur-fast) var(--ease-standard);
-  position: relative;
-}
-.list-row:last-child { border-bottom: none; }
-.list-row:active:not(.no-press) { background: var(--fill-quaternary); }
-
-.list-icon {
-  width: 29px;
-  height: 29px;
-  border-radius: 6.5px;
-  display: grid;
-  place-items: center;
-  font-size: 15px;
-  flex-shrink: 0;
-  color: #fff;
-}
-.list-body { flex: 1; min-width: 0; }
-.list-title {
-  font-size: var(--t-body);
-  letter-spacing: -0.41px;
-  color: var(--label-primary);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.list-subtitle {
-  font-size: var(--t-footnote);
-  color: var(--label-secondary);
-  letter-spacing: -0.08px;
-  margin-top: 2px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.list-value {
-  font-size: var(--t-body);
-  color: var(--label-secondary);
-  letter-spacing: -0.41px;
-  flex-shrink: 0;
-}
-.list-chevron {
-  color: var(--label-tertiary);
-  font-size: 14px;
-  font-weight: 600;
-  flex-shrink: 0;
-}
-
-/* ══════════════ CARDS ══════════════ */
-.card {
-  background: var(--bg-secondary);
-  border-radius: var(--r-md);
-  padding: var(--s-4);
-  margin-bottom: var(--s-3);
-  transition: background var(--dur-fast) var(--ease-standard);
-  position: relative;
-  overflow: hidden;
-}
-
-.card-elevated {
-  background: var(--bg-elevated);
-  box-shadow: var(--sh-md);
-}
-
-.card-hero {
-  background: linear-gradient(135deg, var(--brand), var(--indigo) 60%, var(--purple));
-  color: #fff;
-  box-shadow: 0 12px 32px rgba(10,132,255,0.25);
-}
-
-.card h2 {
-  font-size: var(--t-headline);
-  font-weight: 600;
-  letter-spacing: -0.41px;
-  margin-bottom: var(--s-3);
-  display: flex;
-  align-items: center;
-  gap: var(--s-2);
-}
-
-/* ══════════════ BUTTONS ══════════════ */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--s-2);
-  padding: 12px 20px;
-  border-radius: var(--r-full);
-  border: none;
-  font-family: inherit;
-  font-size: var(--t-body);
-  font-weight: 600;
-  letter-spacing: -0.41px;
-  cursor: pointer;
-  transition: opacity var(--dur-fast) var(--ease-standard), transform var(--dur-fast) var(--ease-standard);
-  user-select: none;
-  white-space: nowrap;
-  -webkit-appearance: none;
-}
-.btn:active:not(:disabled) { opacity: 0.7; transform: scale(0.97); }
-.btn:disabled { opacity: 0.35; cursor: not-allowed; }
-
-.btn-primary { background: var(--brand); color: #fff; }
-.btn-success { background: var(--success); color: #000; }
-.btn-warning { background: var(--warning); color: #000; }
-.btn-danger { background: var(--danger); color: #fff; }
-.btn-ghost {
-  background: var(--fill-tertiary);
-  color: var(--brand);
-}
-.btn-plain {
-  background: transparent;
-  color: var(--brand);
-  padding: 8px 12px;
-}
-.btn-sm { padding: 8px 14px; font-size: var(--t-subhead); }
-.btn-xs { padding: 6px 10px; font-size: var(--t-footnote); }
-.btn-block { width: 100%; }
-.btn-icon {
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  border-radius: 50%;
-  font-size: 15px;
-}
-.btn-icon.btn-sm { width: 28px; height: 28px; font-size: 13px; }
-.btn-row { display: flex; gap: var(--s-2); flex-wrap: wrap; }
-
-/* ══════════════ FORM CONTROLS ══════════════ */
-.field { margin-bottom: var(--s-4); }
-.field-label {
-  display: block;
-  font-size: var(--t-footnote);
-  color: var(--label-secondary);
-  text-transform: uppercase;
-  letter-spacing: -0.08px;
-  margin-bottom: var(--s-2);
-  padding: 0 var(--s-4);
-}
-
-input[type="text"],
-input[type="number"],
-input[type="datetime-local"],
-input[type="date"],
-input[type="time"],
-input[type="password"],
-input[type="email"],
-input[type="url"],
-input[type="search"],
-select,
-textarea {
-  width: 100%;
-  padding: 11px var(--s-4);
-  background: var(--fill-tertiary);
-  border: none;
-  border-radius: var(--r-sm);
-  color: var(--label-primary);
-  font-family: inherit;
-  font-size: var(--t-body);
-  letter-spacing: -0.41px;
-  transition: background var(--dur-fast) var(--ease-standard);
-  -webkit-appearance: none;
-  appearance: none;
-}
-input:focus, select:focus, textarea:focus {
-  outline: none;
-  background: var(--fill-secondary);
-}
-input::placeholder, textarea::placeholder { color: var(--label-tertiary); }
-textarea { resize: vertical; min-height: 88px; line-height: 1.45; font-family: inherit; }
-
-select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238e8e93' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 14px center;
-  padding-right: 36px;
-}
-
-/* ══════════════ TASK ITEM (fixed!) ══════════════ */
-.task-item {
-  background: var(--bg-secondary);
-  border-radius: var(--r-md);
-  padding: var(--s-3) var(--s-4);
-  margin-bottom: var(--s-2);
-  display: flex;
-  align-items: center;
-  gap: var(--s-3);
-  transition: all var(--dur-fast) var(--ease-standard);
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  border: 1px solid transparent;
-}
-.task-item:active { background: var(--fill-quaternary); }
-.task-item.completed { opacity: 0.5; }
-.task-item.completed .task-title { text-decoration: line-through; }
-.task-item.selected {
-  background: color-mix(in srgb, var(--brand) 15%, var(--bg-secondary));
-  border-color: var(--brand);
-}
-
-.task-checkbox {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  border: 1.5px solid var(--label-tertiary);
-  background: transparent;
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: all var(--dur-fast) var(--ease-standard);
-  font-size: 12px;
-  color: transparent;
-  padding: 0;
-}
-.task-checkbox:hover { border-color: var(--brand); }
-.task-checkbox.checked {
-  background: var(--success);
-  border-color: var(--success);
-  color: #fff;
-}
-
-.task-content { flex: 1; min-width: 0; }
-.task-title {
-  font-size: var(--t-body);
-  letter-spacing: -0.41px;
-  color: var(--label-primary);
-  font-weight: 500;
-  margin-bottom: 2px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.task-meta {
-  display: flex;
-  gap: var(--s-2);
-  font-size: var(--t-caption-1);
-  color: var(--label-secondary);
-  align-items: center;
-  flex-wrap: wrap;
-}
-.task-meta .dot {
-  width: 3px; height: 3px; border-radius: 50%;
-  background: var(--label-tertiary);
-  display: inline-block;
-}
-
-.task-actions {
-  display: flex;
-  gap: 4px;
-  flex-shrink: 0;
-  opacity: 0;
-  transition: opacity var(--dur-fast) var(--ease-standard);
-}
-.task-item:active .task-actions,
-.task-item.selected .task-actions { opacity: 1; }
-
-/* Priority indicator */
-.priority-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-.priority-high { background: var(--red); box-shadow: 0 0 6px rgba(255,69,58,0.6); }
-.priority-medium { background: var(--orange); }
-.priority-low { background: var(--green); }
-
-/* ══════════════ BADGE ══════════════ */
-.badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 8px;
-  border-radius: var(--r-full);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: -0.06px;
-  white-space: nowrap;
-}
-.badge-brand { background: rgba(10,132,255,0.18); color: var(--brand); }
-.badge-success { background: rgba(50,215,75,0.18); color: var(--success); }
-.badge-warning { background: rgba(255,159,10,0.18); color: var(--warning); }
-.badge-danger { background: rgba(255,69,58,0.18); color: var(--danger); }
-.badge-muted { background: var(--fill-tertiary); color: var(--label-secondary); }
-
-/* ══════════════ PROGRESS ══════════════ */
-.progress {
-  height: 4px;
-  background: var(--fill-tertiary);
-  border-radius: var(--r-full);
-  overflow: hidden;
-}
-.progress-fill {
-  height: 100%;
-  background: var(--brand);
-  border-radius: var(--r-full);
-  transition: width var(--dur-slow) var(--ease-decelerate);
-}
-
-/* ══════════════ MODAL ══════════════ */
-.overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  z-index: 1000;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  animation: fadeIn var(--dur-fast) var(--ease-decelerate);
-}
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-.modal {
-  background: var(--bg-primary);
-  width: 100%;
-  max-width: 540px;
-  max-height: 92vh;
-  max-height: 92dvh;
-  border-radius: var(--r-xl) var(--r-xl) 0 0;
-  padding: var(--s-4) var(--s-5);
-  padding-bottom: calc(var(--s-5) + var(--safe-bottom));
-  overflow-y: auto;
-  animation: sheetUp var(--dur-normal) var(--ease-decelerate);
-  box-shadow: 0 -8px 32px rgba(0,0,0,0.4);
-}
-@keyframes sheetUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
-}
-
-.modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--s-4);
-  padding-top: var(--s-2);
-  position: sticky;
-  top: 0;
-  background: var(--bg-primary);
-  z-index: 1;
-}
-.modal-title {
-  font-size: var(--t-title-3);
-  font-weight: 700;
-  letter-spacing: -0.45px;
-}
-.modal-close {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: var(--fill-tertiary);
-  border: none;
-  color: var(--label-secondary);
-  font-size: 15px;
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-}
-
-/* ══════════════ TOAST ══════════════ */
-.toast-container {
-  position: fixed;
-  top: calc(var(--header-h) + var(--safe-top) + var(--s-2));
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 2000;
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-2);
-  pointer-events: none;
-  width: 90%;
-  max-width: 400px;
-}
-.toast {
-  background: rgba(30,30,36,0.95);
-  color: #fff;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-radius: var(--r-lg);
-  padding: var(--s-3) var(--s-4);
-  box-shadow: var(--sh-xl);
-  display: flex;
-  align-items: center;
-  gap: var(--s-2);
-  font-size: var(--t-subhead);
-  font-weight: 500;
-  animation: toastIn var(--dur-normal) var(--ease-decelerate);
-  pointer-events: auto;
-}
-.toast.success { background: rgba(50,215,75,0.95); color: #000; }
-.toast.error { background: rgba(255,69,58,0.95); }
-.toast.warning { background: rgba(255,159,10,0.95); color: #000; }
-@keyframes toastIn {
-  from { opacity: 0; transform: translate(-50%, -20px); }
-  to { opacity: 1; transform: translate(-50%, 0); }
-}
-
-/* ══════════════ EMPTY ══════════════ */
-.empty {
-  text-align: center;
-  padding: var(--s-10) var(--s-5);
-  color: var(--label-secondary);
-}
-.empty-icon { font-size: 48px; opacity: 0.3; margin-bottom: var(--s-3); }
-.empty-title { font-size: var(--t-headline); font-weight: 600; margin-bottom: var(--s-1); color: var(--label-primary); }
-.empty-text { font-size: var(--t-subhead); line-height: 1.45; }
-
-/* ══════════════ SEGMENTED CONTROL ══════════════ */
-.segmented {
-  display: flex;
-  background: var(--fill-tertiary);
-  border-radius: var(--r-sm);
-  padding: 2px;
-  gap: 2px;
-}
-.segmented-item {
-  flex: 1;
-  padding: 6px 12px;
-  background: transparent;
-  border: none;
-  border-radius: calc(var(--r-sm) - 2px);
-  font-family: inherit;
-  font-size: var(--t-subhead);
-  font-weight: 500;
-  color: var(--label-primary);
-  cursor: pointer;
-  transition: all var(--dur-fast) var(--ease-standard);
-  white-space: nowrap;
-}
-.segmented-item.active {
-  background: var(--bg-elevated);
-  box-shadow: var(--sh-sm);
-  font-weight: 600;
-}
-
-/* ══════════════ SEARCH BAR ══════════════ */
-.search-bar {
-  display: flex;
-  align-items: center;
-  gap: var(--s-2);
-  padding: 8px var(--s-3);
-  background: var(--fill-tertiary);
-  border-radius: var(--r-sm);
-  margin-bottom: var(--s-3);
-}
-.search-bar input {
-  flex: 1;
-  padding: 0;
-  background: transparent;
-  border: none;
-  font-size: var(--t-body);
-  color: var(--label-primary);
-}
-.search-bar input:focus { background: transparent; }
-.search-icon {
-  color: var(--label-tertiary);
-  font-size: 15px;
-  flex-shrink: 0;
-}
-
-/* ══════════════ PERSONA SWITCHER ══════════════ */
-.persona-bar {
-  display: flex;
-  gap: var(--s-2);
-  padding: var(--s-2);
-  background: var(--fill-quaternary);
-  border-radius: var(--r-full);
-  margin-bottom: var(--s-4);
-  overflow-x: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-.persona-bar::-webkit-scrollbar { display: none; }
-.persona-item {
-  flex: 1;
-  min-width: fit-content;
-  padding: 8px 14px;
-  border-radius: var(--r-full);
-  border: none;
-  background: transparent;
-  color: var(--label-secondary);
-  font-family: inherit;
-  font-size: var(--t-footnote);
-  font-weight: 600;
-  cursor: pointer;
-  transition: all var(--dur-fast) var(--ease-standard);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  white-space: nowrap;
-}
-.persona-item .p-icon { font-size: 15px; }
-.persona-item.active {
-  color: #fff;
-  box-shadow: var(--sh-sm);
-}
-.persona-item.active[data-p="coach"] { background: var(--coach); }
-.persona-item.active[data-p="psych"] { background: var(--psych); color: #000; }
-.persona-item.active[data-p="doctor"] { background: var(--doctor); color: #000; }
-.persona-item.active[data-p="nutrition"] { background: var(--nutrition); color: #000; }
-.persona-item.active[data-p="fitness"] { background: var(--fitness); }
-.persona-item.active[data-p="lawyer"] { background: var(--lawyer); }
-.persona-item.active[data-p="finance"] { background: var(--finance); color: #000; }
-
-/* ══════════════ CHAT ══════════════ */
-.chat {
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-3);
-  padding: var(--s-2) 0;
-}
-.msg {
-  max-width: 86%;
-  padding: 10px 14px;
-  border-radius: 18px;
-  font-size: var(--t-body);
-  letter-spacing: -0.41px;
-  line-height: 1.45;
-  word-wrap: break-word;
-  animation: msgIn var(--dur-normal) var(--ease-decelerate);
-}
-@keyframes msgIn {
-  from { opacity: 0; transform: translateY(8px) scale(0.96); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-.msg-user {
-  align-self: flex-end;
-  background: var(--brand);
-  color: #fff;
-  border-bottom-right-radius: 6px;
-}
-.msg-bot {
-  align-self: flex-start;
-  background: var(--fill-tertiary);
-  color: var(--label-primary);
-  border-bottom-left-radius: 6px;
-}
-.msg-bot strong { font-weight: 600; color: var(--brand); }
-.msg-bot p { margin: 0 0 8px 0; }
-.msg-bot p:last-child { margin-bottom: 0; }
-.msg-bot ul { margin: 6px 0; padding-left: 20px; }
-.msg-bot li { margin: 3px 0; }
-.msg-bot code {
-  background: var(--fill-secondary);
-  padding: 1px 6px;
-  border-radius: 4px;
-  font-family: 'SF Mono', Monaco, monospace;
-  font-size: 13px;
-}
-
-.typing {
-  display: flex;
-  gap: 4px;
-  padding: 12px 16px;
-  align-self: flex-start;
-  background: var(--fill-tertiary);
-  border-radius: 18px;
-  border-bottom-left-radius: 6px;
-}
-.typing span {
-  width: 6px; height: 6px;
-  background: var(--label-tertiary);
-  border-radius: 50%;
-  animation: typing 1.3s infinite;
-}
-.typing span:nth-child(2) { animation-delay: 0.15s; }
-.typing span:nth-child(3) { animation-delay: 0.3s; }
-@keyframes typing {
-  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-  30% { transform: translateY(-4px); opacity: 1; }
-}
-
-/* ══════════════ CHIPS ══════════════ */
-.chips {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  margin-top: var(--s-2);
-}
-.chip {
-  padding: 6px 12px;
-  border-radius: var(--r-full);
-  background: var(--fill-tertiary);
-  border: none;
-  color: var(--label-primary);
-  font-family: inherit;
-  font-size: var(--t-footnote);
-  font-weight: 500;
-  cursor: pointer;
-  transition: all var(--dur-fast) var(--ease-standard);
-  white-space: nowrap;
-}
-.chip:hover { background: var(--fill-secondary); }
-.chip:active { transform: scale(0.94); }
-
-/* ══════════════ STATS ══════════════ */
-.stat-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--s-2);
-}
-.stat-item {
-  text-align: center;
-  padding: var(--s-3) var(--s-2);
-  background: var(--fill-quaternary);
-  border-radius: var(--r-sm);
-}
-.stat-value {
-  font-size: var(--t-title-3);
-  font-weight: 700;
-  letter-spacing: -0.45px;
-  line-height: 1;
-  margin-bottom: 4px;
-}
-.stat-label {
-  font-size: var(--t-caption-2);
-  color: var(--label-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.06px;
-}
-
-/* ══════════════ SWITCH ══════════════ */
-.switch {
-  position: relative;
-  width: 51px;
-  height: 31px;
-  background: var(--fill-tertiary);
-  border-radius: var(--r-full);
-  cursor: pointer;
-  transition: background var(--dur-normal) var(--ease-standard);
-  flex-shrink: 0;
-  border: none;
-  padding: 0;
-}
-.switch::after {
-  content: '';
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 27px;
-  height: 27px;
-  background: #fff;
-  border-radius: 50%;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.15), 0 1px 1px rgba(0,0,0,0.16);
-  transition: transform var(--dur-normal) var(--ease-standard);
-}
-.switch.on { background: var(--success); }
-.switch.on::after { transform: translateX(20px); }
-
-/* ══════════════ MISC ══════════════ */
-.hidden { display: none !important; }
-.divider { height: 0.5px; background: var(--separator); margin: var(--s-3) 0; }
-
-.row {
-  display: flex;
-  gap: var(--s-2);
-  flex-wrap: wrap;
-  align-items: center;
-}
-.row-between {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--s-2);
-}
-
-@media (max-width: 480px) {
-  .app-main { padding: var(--s-3); padding-bottom: calc(var(--tabbar-h) + var(--safe-bottom) + 56px) !important; }
-  .title-large { font-size: 30px; }
-}
-
-@media (min-width: 768px) {
-  .tab-bar {
-    max-width: 680px;
-    margin: 0 auto;
-    border-radius: var(--r-2xl) var(--r-2xl) 0 0;
-    border: 0.5px solid var(--separator);
-    border-bottom: none;
-  }
-  .modal { border-radius: var(--r-2xl); margin-bottom: 5vh; }
-  .overlay { align-items: center; }
-}
-</style>
-</head>
-<body>
-
-<header class="app-header">
-  <div class="header-inner">
-    <div class="brand">
-      <div class="brand-logo">🧠</div>
-      <span>AI Health</span>
-    </div>
-    <div class="header-actions">
-      <button class="header-btn icon-only" onclick="toggleTheme()" id="themeBtn">🌙</button>
-      <button class="header-btn icon-only" onclick="openDBManager()" title="База данных">🗄</button>
-      <div class="header-btn" id="userChip" style="max-width:110px;overflow:hidden;text-overflow:ellipsis;">Гость</div>
-    </div>
-  </div>
-</header>
-
-<main class="app-main" id="app"></main>
-<nav class="tab-bar" id="tabBar"></nav>
-<div class="toast-container" id="toasts"></div>
-
-<script>
-'use strict';
-
-/* ══════════════════════════════════════════════════════════════════
-   LAYER 1: DATABASE — IndexedDB с SQL-подобным API
-   ══════════════════════════════════════════════════════════════════
-   Заменяет localStorage. Асинхронная, транзакционная, индексированная.
-   Работает офлайн. Масштабируется до ~50MB+ (в отличие от 5MB localStorage).
-*/
-const DB_NAME = 'ai_health_ecosystem';
-const DB_VERSION = 12;
-const STORES = {
-  tasks: { keyPath: 'id', indexes: ['status', 'priority', 'created_at', 'category', 'due_date'] },
-  schedule: { keyPath: 'id', indexes: ['start_time'] },
-  habits: { keyPath: 'id', indexes: ['created_at'] },
-  goals: { keyPath: 'id', indexes: ['created_at'] },
-  notes: { keyPath: 'id', indexes: ['created_at'] },
-  learning: { keyPath: 'id', indexes: ['created_at'] },
-  timer: { keyPath: 'id', indexes: ['start_time', 'status'] },
-  chats: { keyPath: 'id', indexes: ['persona', 'timestamp'] },
-  health: { keyPath: 'id', indexes: ['type', 'date'] },
-  mood: { keyPath: 'id', indexes: ['date'] },
-  water: { keyPath: 'id', indexes: ['date'] },
-  meds: { keyPath: 'id', indexes: ['time'] },
-  workouts: { keyPath: 'id', indexes: ['timestamp'] },
-  meditations: { keyPath: 'id', indexes: ['timestamp'] },
-  journal: { keyPath: 'id', indexes: ['timestamp'] },
-  media: { keyPath: 'id', indexes: ['type'] },
-  finance: { keyPath: 'id', indexes: ['type', 'timestamp'] },
-  matrix: { keyPath: 'id', indexes: ['quadrant'] },
-  symptoms: { keyPath: 'id', indexes: ['timestamp'] },
-  actionLog: { keyPath: 'id', indexes: ['timestamp'] },
-  settings: { keyPath: 'key' },
-  personas: { keyPath: 'id' }
-};
-
-class Database {
-  constructor() {
-    this.db = null;
-    this.ready = this._init();
-  }
-  
-  _init() {
-    return new Promise((resolve, reject) => {
-      const req = indexedDB.open(DB_NAME, DB_VERSION);
-      req.onerror = () => reject(req.error);
-      req.onsuccess = () => {
-        this.db = req.result;
-        resolve(this.db);
-      };
-      req.onupgradeneeded = (e) => {
-        const db = e.target.result;
-        for (const [name, cfg] of Object.entries(STORES)) {
-          if (!db.objectStoreNames.contains(name)) {
-            const store = db.createObjectStore(name, { keyPath: cfg.keyPath });
-            (cfg.indexes || []).forEach(idx => {
-              store.createIndex(idx, idx, { unique: false });
-            });
-          }
-        }
-      };
-    });
-  }
-  
-  async _tx(store, mode = 'readonly') {
-    await this.ready;
-    return this.db.transaction(store, mode).objectStore(store);
-  }
-  
-  // CRUD API
-  async insert(store, data) {
-    if (!data.id && !data.key) data.id = uid();
-    if (!data.created_at) data.created_at = nowISO();
-    data.updated_at = nowISO();
-    const s = await this._tx(store, 'readwrite');
-    return new Promise((res, rej) => {
-      const req = s.put(data);
-      req.onsuccess = () => res(data);
-      req.onerror = () => rej(req.error);
-    });
-  }
-  
-  async update(store, id, patch) {
-    const s = await this._tx(store, 'readwrite');
-    return new Promise((res, rej) => {
-      const getReq = s.get(id);
-      getReq.onsuccess = () => {
-        const existing = getReq.result;
-        if (!existing) return rej(new Error('Not found'));
-        const updated = { ...existing, ...patch, updated_at: nowISO() };
-        const putReq = s.put(updated);
-        putReq.onsuccess = () => res(updated);
-        putReq.onerror = () => rej(putReq.error);
-      };
-      getReq.onerror = () => rej(getReq.error);
-    });
-  }
-  
-  async get(store, id) {
-    const s = await this._tx(store);
-    return new Promise((res, rej) => {
-      const req = s.get(id);
-      req.onsuccess = () => res(req.result);
-      req.onerror = () => rej(req.error);
-    });
-  }
-  
-  async getAll(store, opts = {}) {
-    const s = await this._tx(store);
-    return new Promise((res, rej) => {
-      const req = s.getAll();
-      req.onsuccess = () => {
-        let result = req.result || [];
-        // Client-side filtering (просто и надёжно)
-        if (opts.where) {
-          result = result.filter(item => {
-            for (const [k, v] of Object.entries(opts.where)) {
-              if (item[k] !== v) return false;
-            }
-            return true;
-          });
-        }
-        if (opts.search) {
-          const q = opts.search.toLowerCase();
-          result = result.filter(item => {
-            const text = (item.title || item.text || item.name || '').toLowerCase();
-            return text.includes(q);
-          });
-        }
-        if (opts.sort) {
-          const [field, dir] = opts.sort.split(':');
-          result.sort((a, b) => {
-            const av = a[field], bv = b[field];
-            if (av < bv) return dir === 'desc' ? 1 : -1;
-            if (av > bv) return dir === 'desc' ? -1 : 1;
-            return 0;
-          });
-        }
-        if (opts.limit) result = result.slice(0, opts.limit);
-        if (opts.offset) result = result.slice(opts.offset);
-        res(result);
-      };
-      req.onerror = () => rej(req.error);
-    });
-  }
-  
-  async delete(store, id) {
-    const s = await this._tx(store, 'readwrite');
-    return new Promise((res, rej) => {
-      const req = s.delete(id);
-      req.onsuccess = () => res(true);
-      req.onerror = () => rej(req.error);
-    });
-  }
-  
-  async bulkInsert(store, items) {
-    const s = await this._tx(store, 'readwrite');
-    return new Promise((res, rej) => {
-      let count = 0;
-      for (const item of items) {
-        if (!item.id) item.id = uid();
-        if (!item.created_at) item.created_at = nowISO();
-        s.put(item);
-        count++;
-      }
-      s.transaction.oncomplete = () => res(count);
-      s.transaction.onerror = () => rej(s.transaction.error);
-    });
-  }
-  
-  async bulkDelete(store, ids) {
-    const s = await this._tx(store, 'readwrite');
-    return new Promise((res, rej) => {
-      for (const id of ids) s.delete(id);
-      s.transaction.oncomplete = () => res(ids.length);
-      s.transaction.onerror = () => rej(s.transaction.error);
-    });
-  }
-  
-  async count(store) {
-    const s = await this._tx(store);
-    return new Promise((res, rej) => {
-      const req = s.count();
-      req.onsuccess = () => res(req.result);
-      req.onerror = () => rej(req.error);
-    });
-  }
-  
-  async clear(store) {
-    const s = await this._tx(store, 'readwrite');
-    return new Promise((res, rej) => {
-      const req = s.clear();
-      req.onsuccess = () => res(true);
-      req.onerror = () => rej(req.error);
-    });
-  }
-  
-  async exportAll() {
-    const dump = { version: DB_VERSION, exported_at: nowISO(), data: {} };
-    for (const store of Object.keys(STORES)) {
-      dump.data[store] = await this.getAll(store);
-    }
-    return dump;
-  }
-  
-  async importAll(dump) {
-    if (!dump || !dump.data) throw new Error('Invalid dump');
-    for (const [store, items] of Object.entries(dump.data)) {
-      if (!STORES[store]) continue;
-      await this.clear(store);
-      await this.bulkInsert(store, items);
-    }
-    return true;
-  }
-}
-
-const db = new Database();
-
-/* ══════════════════════════════════════════════════════════════════
-   LAYER 2: STATE CACHE (быстрый доступ в памяти)
-   ══════════════════════════════════════════════════════════════════ */
-const cache = {
-  tasks: [], schedule: [], habits: [], goals: [], notes: [], learning: [],
-  timer: [], chats: [], health: [], mood: [], water: [], meds: [],
-  workouts: [], meditations: [], journal: [], media: [], finance: [],
-  matrix: [], symptoms: [], actionLog: [],
-  settings: {
-    theme: 'dark',
-    username: 'Пользователь',
-    provider: 'openai',
-    apiKey: '',
-    activePersona: 'coach',
-    waterGoal: 8
-  },
-  flags: { dnd: false, focus: false, agentPaused: false },
-  stats: { streak: 0, lastActiveDay: null }
-};
-
-async function loadAll() {
-  cache.tasks = await db.getAll('tasks', { sort: 'created_at:desc' });
-  cache.schedule = await db.getAll('schedule', { sort: 'start_time:asc' });
-  cache.habits = await db.getAll('habits');
-  cache.goals = await db.getAll('goals');
-  cache.notes = await db.getAll('notes', { sort: 'created_at:desc' });
-  cache.learning = await db.getAll('learning');
-  cache.timer = await db.getAll('timer', { sort: 'start_time:desc' });
-  cache.chats = await db.getAll('chats', { sort: 'timestamp:asc' });
-  cache.health = await db.getAll('health');
-  cache.mood = await db.getAll('mood', { sort: 'date:asc' });
-  cache.water = await db.getAll('water');
-  cache.meds = await db.getAll('meds');
-  cache.workouts = await db.getAll('workouts', { sort: 'timestamp:desc' });
-  cache.meditations = await db.getAll('meditations', { sort: 'timestamp:desc' });
-  cache.journal = await db.getAll('journal', { sort: 'timestamp:desc' });
-  cache.media = await db.getAll('media');
-  cache.finance = await db.getAll('finance', { sort: 'timestamp:desc' });
-  cache.matrix = await db.getAll('matrix');
-  cache.symptoms = await db.getAll('symptoms', { sort: 'timestamp:desc' });
-  cache.actionLog = await db.getAll('actionLog', { sort: 'timestamp:desc', limit: 500 });
-  
-  const settings = await db.getAll('settings');
-  settings.forEach(s => {
-    if (s.key === 'app') cache.settings = { ...cache.settings, ...s.value };
-    if (s.key === 'flags') cache.flags = { ...cache.flags, ...s.value };
-    if (s.key === 'stats') cache.stats = { ...cache.stats, ...s.value };
+  const events = cache.schedule.filter(b => {
+    const d = new Date(b.start_time);
+    return d.getMonth() === m && d.getFullYear() === year;
   });
-}
 
-async function saveSetting(key, value) {
-  await db.insert('settings', { key, value });
-  if (key === 'app') cache.settings = { ...cache.settings, ...value };
-  if (key === 'flags') cache.flags = { ...cache.flags, ...value };
-  if (key === 'stats') cache.stats = { ...cache.stats, ...value };
-}
-
-/* ══════════════════════════════════════════════════════════════════
-   LAYER 3: UTILS
-   ══════════════════════════════════════════════════════════════════ */
-const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-const nowISO = () => new Date().toISOString();
-const today = () => new Date().toISOString().slice(0, 10);
-const fmtDate = (d) => new Date(d).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
-const fmtTime = (d) => new Date(d).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-
-function toast(msg, type = 'info', duration = 2500) {
-  const c = document.getElementById('toasts');
-  const el = document.createElement('div');
-  el.className = `toast ${type}`;
-  const icons = { success: '✓', error: '✕', info: 'ℹ', warning: '!' };
-  el.innerHTML = `<span style="font-weight:700;">${icons[type] || 'ℹ'}</span><span>${esc(msg)}</span>`;
-  c.appendChild(el);
-  setTimeout(() => {
-    el.style.opacity = '0';
-    el.style.transform = 'translate(-50%, -12px)';
-    el.style.transition = 'all 0.3s';
-    setTimeout(() => el.remove(), 300);
-  }, duration);
-}
-
-function haptic(type = 'light') {
-  if (tg?.HapticFeedback) {
-    try {
-      if (type === 'success') tg.HapticFeedback.notificationOccurred('success');
-      else if (type === 'error') tg.HapticFeedback.notificationOccurred('error');
-      else if (type === 'warning') tg.HapticFeedback.notificationOccurred('warning');
-      else tg.HapticFeedback.impactOccurred(type);
-    } catch(e) {}
-  }
-}
-
-function vibrate(pattern = 10) {
-  if (navigator.vibrate) navigator.vibrate(pattern);
-}
-
-/* ══════════════════════════════════════════════════════════════════
-   LAYER 4: TELEGRAM
-   ══════════════════════════════════════════════════════════════════ */
-const tg = window.Telegram?.WebApp;
-if (tg) {
-  tg.expand(); tg.ready();
-  tg.setHeaderColor?.('#000000');
-  tg.setBackgroundColor?.('#000000');
-  const u = tg.initDataUnsafe?.user;
-  if (u) document.getElementById('userChip').textContent = u.first_name || u.username || 'Пользователь';
-}
-
-/* ══════════════════════════════════════════════════════════════════
-   LAYER 5: PERSONAS — база специалистов
-   ══════════════════════════════════════════════════════════════════ */
-const PERSONAS = {
-  coach: {
-    name: 'Коуч', icon: '💬', color: 'coach', label: 'Продуктивность',
-    prompt: `Ты — AI-Коуч МАКСИМАЛЬНОГО УРОВНЯ. Синтез лучших практик.
-
-МЕТОДОЛОГИИ: GROW, Внутренняя игра (Голви), Co-Active (Уитворт), Прохазка, Деси/Райан, Поток (Чиксентмихайи), SMART, Пирамида Дилтса, OKR, Кайзен, Pomodoro, Эйзенхауэр, Eat That Frog, Deep Work, Атомные привычки, GTD, Икигай, Стоицизм, Логотерапия.
-
-ОРИЕНТИРЫ: Тони Роббинс, Брайан Трейси, Стивен Кови, Саймон Синек, Ангела Дакворт, Кэрол Дуэк, Навал, Райан Холидей, Дэвид Гоггинс, Джеймс Клир, Кэл Ньюпорт.
-
-АЛГОРИТМ: 1) Отрази суть 2) Задай 1-2 вопроса 3) Дай инсайт+методику 4) Микро-шаг 5-25 мин 5) 1 вопрос рефлексии.
-КРАТКО (150-220 слов). Markdown.`
-  },
-  psych: {
-    name: 'Психолог', icon: '🧠', color: 'psych', label: 'Эмоции',
-    prompt: `Ты — AI-Психолог ПРОФЕССИОНАЛЬНОГО УРОВНЯ.
-
-МЕТОДОЛОГИИ: КПТ (Бек), ACT (Хейс), DBT (Линехан), Схема-терапия (Янг), Психодинамика, Гештальт, Роджерс, Франкл, Селигман, Привязанность (Боулби), RAIN (Брах), ННО (Розенберг), IFS, Соматика.
-
-ОРИЕНТИРЫ: Брене Браун, Сьюзен Джефферс, Байрон Кейти, Тара Брах, Кристин Нефф, Габор Мате, Ирвин Ялом, Эстер Перель, Готтман.
-
-СТИЛЬ: Тёплый, эмпатичный, валидация чувств.
-НЕ ставь диагнозы! При кризисе → 8-800-2000-122.
-ОТВЕЧАЙ ТЕПЛО (150-220 слов).`
-  },
-  doctor: {
-    name: 'Врач', icon: '⚕️', color: 'doctor', label: 'Здоровье',
-    prompt: `Ты — AI-Врач-консультант. НЕ ставишь диагнозы, НЕ назначаешь лечение.
-
-ВАЖНО: Всегда заканчивай дисклеймером. При острых симптомах → 103/112.
-
-ЗНАНИЯ: сон, питание, активность, стресс, долголетие, профилактика, психиатрия, неврология, эндокринология, кардиология.
-
-АЛГОРИТМ: 1) Уточни симптомы 2) Образовательная информация 3) К какому врачу 4) Самопомощь до приёма 5) Дисклеймер.
-ОТВЕЧАЙ ЧЁТКО (150-250 слов).`
-  },
-  nutrition: {
-    name: 'Нутрициолог', icon: '🥗', color: 'nutrition', label: 'Питание',
-    prompt: `Ты — AI-Нутрициолог.
-
-ЗНАНИЯ: средиземноморская диета, интервальное голодание, микробиом, макронутриенты, витамины, метаболизм.
-
-ОРИЕНТИРЫ: Майкл Поллан, Дэвид Перлмуттер, Марк Хайман, Джесси Инчаспе.
-
-НЕ назначай диеты при заболеваниях — направляй к врачу.
-ОТВЕЧАЙ 150-200 слов.`
-  },
-  fitness: {
-    name: 'Тренер', icon: '🏋️', color: 'fitness', label: 'Фитнес',
-    prompt: `Ты — AI-Фитнес-тренер.
-
-ЗНАНИЯ: силовые, кардио, HIIT, мобильность, восстановление, зона 2, VO2max.
-
-ОРИЕНТИРЫ: Джефф Ниппард, Майк Ментцер, Эндрю Хуберман, Питер Аттиа.
-
-Учитывай уровень подготовки, травмы. Форма — сначала.
-ОТВЕЧАЙ 150-200 слов.`
-  },
-  lawyer: {
-    name: 'Юрист', icon: '⚖️', color: 'lawyer', label: 'Право',
-    prompt: `Ты — AI-Юрист-консультант. Даёшь ОБРАЗОВАТЕЛЬНУЮ информацию.
-
-ВАЖНО: НЕ заменяешь юриста. Для конкретных дел — обращайтесь к адвокату.
-
-ЗНАНИЯ: гражданское, трудовое, налоговое, семейное право РФ (базово).
-
-ОТВЕЧАЙ 150-200 слов. Всегда дисклеймер.`
-  },
-  finance: {
-    name: 'Финансист', icon: '💰', color: 'finance', label: 'Финансы',
-    prompt: `Ты — AI-Финансовый консультант.
-
-ЗНАНИЯ: бюджет, сбережения, инвестиции (базово), налоги, финансовая независимость.
-
-ОРИЕНТИРЫ: Уоррен Баффет, Джон Богл, Роберт Кийосаки, Навал Равикант.
-
-НЕ даёшь конкретных инвестиционных рекомендаций! Только принципы.
-ОТВЕЧАЙ 150-200 слов.`
-  }
-};
-
-/* ══════════════════════════════════════════════════════════════════
-   LAYER 6: AI PROVIDERS
-   ══════════════════════════════════════════════════════════════════ */
-const AI_PROVIDERS = {
-  openai: {
-    name: 'OpenAI GPT-4o',
-    url: 'https://api.openai.com/v1/chat/completions',
-    build: (msgs, key) => ({
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
-      body: JSON.stringify({ model: 'gpt-4o-mini', messages: msgs, temperature: 0.8, max_tokens: 800 })
-    }),
-    parse: (d) => d.choices?.[0]?.message?.content
-  },
-  anthropic: {
-    name: 'Anthropic Claude',
-    url: 'https://api.anthropic.com/v1/messages',
-    build: (msgs, key) => {
-      const sys = msgs.find(m => m.role === 'system')?.content || '';
-      const rest = msgs.filter(m => m.role !== 'system');
-      return {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': key,
-          'anthropic-version': '2023-06-01',
-          'anthropic-dangerous-direct-browser-access': 'true'
-        },
-        body: JSON.stringify({ model: 'claude-3-5-sonnet-20241022', system: sys, messages: rest, max_tokens: 800 })
-      };
-    },
-    parse: (d) => d.content?.[0]?.text
-  },
-  gemini: {
-    name: 'Google Gemini',
-    url: (key) => `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`,
-    build: (msgs, key) => {
-      const sys = msgs.find(m => m.role === 'system')?.content || '';
-      const rest = msgs.filter(m => m.role !== 'system');
-      return {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          system_instruction: { parts: [{ text: sys }] },
-          contents: rest.map(m => ({
-            role: m.role === 'assistant' ? 'model' : 'user',
-            parts: [{ text: m.content }]
-          })),
-          generationConfig: { temperature: 0.8, maxOutputTokens: 800 }
-        })
-      };
-    },
-    parse: (d) => d.candidates?.[0]?.content?.parts?.[0]?.text
-  }
-};
-
-async function callAI(messages) {
-  const { provider, apiKey } = cache.settings;
-  if (!apiKey || !AI_PROVIDERS[provider]) {
-    return { text: fallback(cache.settings.activePersona), fallback: true };
-  }
-  try {
-    const p = AI_PROVIDERS[provider];
-    const url = typeof p.url === 'function' ? p.url(apiKey) : p.url;
-    const resp = await fetch(url, p.build(messages, apiKey));
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const data = await resp.json();
-    const text = p.parse(data);
-    if (!text) throw new Error('Empty response');
-    return { text, fallback: false };
-  } catch (e) {
-    console.error(e);
-    toast(`AI ошибка: ${e.message}`, 'error');
-    return { text: fallback(cache.settings.activePersona), fallback: true };
-  }
-}
-
-function fallback(persona = 'coach') {
-  if (persona === 'doctor') return '⚕️ Я — AI-консультант. Расскажите о симптомах.\n\n*⚠️ Не заменяет врача. При острых симптомах — 103/112.*';
-  if (persona === 'psych') return '🧠 Слышу тебя. Что происходит? Я помогу разобраться.';
-  if (persona === 'nutrition') return '🥗 Расскажи о своём питании и целях.';
-  if (persona === 'fitness') return '🏋️ Расскажи об уровне подготовки и целях.';
-  if (persona === 'lawyer') return '⚖️ Опиши ситуацию. *Не заменяет юриста.*';
-  if (persona === 'finance') return '💰 Расскажи о финансовой цели. *Не инвестиционный совет.*';
-  return '💬 Слышу тебя. Расскажи подробнее.';
-}
-
-/* ══════════════════════════════════════════════════════════════════
-   LAYER 7: NAVIGATION
-   ══════════════════════════════════════════════════════════════════ */
-const TABS = [
-  { id: 'dashboard', icon: '🏠', label: 'Главная', render: renderDashboard },
-  { id: 'tasks', icon: '✅', label: 'Задачи', render: renderTasks },
-  { id: 'ai', icon: '✨', label: 'AI', render: renderAI },
-  { id: 'health', icon: '❤️', label: 'Здоровье', render: renderHealth },
-  { id: 'more', icon: '⋯', label: 'Ещё', render: renderMore }
-];
-
-const SUBPAGES = {
-  calendar: { icon: '📅', label: 'Календарь', render: renderCalendar },
-  stats: { icon: '📊', label: 'Статистика', render: renderStats },
-  habits: { icon: '🔄', label: 'Привычки', render: renderHabits },
-  goals: { icon: '🎯', label: 'Цели', render: renderGoals },
-  timer: { icon: '⏱', label: 'Таймер', render: renderTimer },
-  notes: { icon: '📝', label: 'Заметки', render: renderNotes },
-  learning: { icon: '📚', label: 'Обучение', render: renderLearning },
-  matrix: { icon: '🔢', label: 'Матрица', render: renderMatrix },
-  mood: { icon: '💭', label: 'Настроение', render: renderMood },
-  water: { icon: '💧', label: 'Вода', render: renderWater },
-  meds: { icon: '💊', label: 'Лекарства', render: renderMeds },
-  workouts: { icon: '🏋️', label: 'Тренировки', render: renderWorkouts },
-  journal: { icon: '📓', label: 'Дневник', render: renderJournal },
-  media: { icon: '📖', label: 'Медиатека', render: renderMedia },
-  finance: { icon: '💰', label: 'Финансы', render: renderFinance },
-  settings: { icon: '⚙️', label: 'Настройки', render: renderSettings },
-  dbmanager: { icon: '🗄', label: 'База данных', render: renderDBManager }
-};
-
-let currentPage = 'dashboard';
-
-function renderTabBar() {
-  const bar = document.getElementById('tabBar');
-  bar.innerHTML = TABS.map(t => `
-    <button class="tab-item ${t.id === currentPage ? 'active' : ''}" onclick="navigate('${t.id}')">
-      <span class="tab-icon">${t.icon}</span>
-      <span class="tab-label">${t.label}</span>
-    </button>
-  `).join('');
-}
-
-window.navigate = function(page) {
-  if (currentPage === page) return;
-  currentPage = page;
-  renderTabBar();
-  const main = document.getElementById('app');
-  main.innerHTML = '';
-  const render = TABS.find(t => t.id === page)?.render || SUBPAGES[page]?.render;
-  if (render) render();
-  window.scrollTo({ top: 0, behavior: 'auto' });
-};
-
-/* ══════════════════════════════════════════════════════════════════
-   LAYER 8: MODAL
-   ══════════════════════════════════════════════════════════════════ */
-window.openSheet = function(title, content, onMount) {
-  const overlay = document.createElement('div');
-  overlay.className = 'overlay';
-  overlay.innerHTML = `
-    <div class="modal">
-      <div class="modal-header">
-        <div class="modal-title">${title}</div>
-        <button class="modal-close" onclick="closeSheet()">✕</button>
-      </div>
-      <div class="modal-body">${content}</div>
-    </div>
-  `;
-  overlay.onclick = (e) => { if (e.target === overlay) closeSheet(); };
-  document.body.appendChild(overlay);
-  document.body.style.overflow = 'hidden';
-  if (onMount) onMount(overlay);
-  return overlay;
-};
-
-window.closeSheet = function() {
-  document.querySelectorAll('.overlay').forEach(o => o.remove());
-  document.body.style.overflow = '';
-};
-
-/* ══════════════════════════════════════════════════════════════════
-   PAGE: DASHBOARD
-   ══════════════════════════════════════════════════════════════════ */
-function renderDashboard() {
-  const todayTasks = cache.tasks.filter(t => t.created_at?.slice(0, 10) === today());
-  const doneToday = todayTasks.filter(t => t.status === 'completed').length;
-  const habitsToday = cache.habits.filter(h => h.history?.includes(today())).length;
-  const hour = new Date().getHours();
-  const greet = hour < 6 ? 'Доброй ночи' : hour < 12 ? 'Доброе утро' : hour < 18 ? 'Добрый день' : 'Добрый вечер';
-  const lastMood = cache.mood?.[cache.mood.length - 1];
-  const waterToday = cache.water?.find(w => w.date === today())?.count || 0;
-
-  document.getElementById('app').innerHTML = `
-    <div class="page">
-      <div class="title-large">${greet}</div>
-
-      <div class="card card-hero">
-        <div class="row-between" style="margin-bottom:12px;">
-          <div>
-            <div style="font-size:13px;opacity:0.85;font-weight:500;margin-bottom:6px;">Прогресс дня</div>
-            <div style="font-size:38px;font-weight:700;letter-spacing:-1.5px;line-height:1;">${doneToday}/${todayTasks.length}</div>
-          </div>
-          <div style="font-size:44px;font-weight:700;letter-spacing:-2px;">${todayTasks.length ? Math.round(doneToday/todayTasks.length*100) : 0}%</div>
-        </div>
-        <div class="progress" style="background:rgba(255,255,255,0.2);height:6px;">
-          <div class="progress-fill" style="width:${todayTasks.length ? (doneToday/todayTasks.length*100) : 0}%;background:#fff;"></div>
-        </div>
-      </div>
-
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
-        <div class="card" style="margin:0;">
-          <div style="font-size:11px;color:var(--label-secondary);text-transform:uppercase;letter-spacing:0.06px;font-weight:600;margin-bottom:6px;">🔥 Streak</div>
-          <div style="font-size:24px;font-weight:700;letter-spacing:-0.6px;">${cache.stats.streak || 0}</div>
-          <div style="font-size:12px;color:var(--label-secondary);margin-top:4px;">дней подряд</div>
-        </div>
-        <div class="card" style="margin:0;">
-          <div style="font-size:11px;color:var(--label-secondary);text-transform:uppercase;letter-spacing:0.06px;font-weight:600;margin-bottom:6px;">🔄 Привычки</div>
-          <div style="font-size:24px;font-weight:700;letter-spacing:-0.6px;">${habitsToday}/${cache.habits.length}</div>
-          <div style="font-size:12px;color:var(--label-secondary);margin-top:4px;">сегодня</div>
-        </div>
-      </div>
-
-      <div class="grouped">
-        <div class="grouped-header">Быстрые действия</div>
-        <div class="list-row" onclick="openPersona('coach')">
-          <div class="list-icon" style="background:var(--coach);">💬</div>
-          <div class="list-body"><div class="list-title">Спросить AI-Коуча</div></div>
-          <div class="list-chevron">›</div>
-        </div>
-        <div class="list-row" onclick="openPersona('psych')">
-          <div class="list-icon" style="background:var(--psych);">🧠</div>
-          <div class="list-body"><div class="list-title">AI-Психолог</div></div>
-          <div class="list-chevron">›</div>
-        </div>
-        <div class="list-row" onclick="openPersona('doctor')">
-          <div class="list-icon" style="background:var(--doctor);">⚕️</div>
-          <div class="list-body"><div class="list-title">AI-Врач</div></div>
-          <div class="list-chevron">›</div>
-        </div>
-      </div>
-
-      <div class="grouped">
-        <div class="grouped-header">Состояние</div>
-        <div class="list-row no-press">
-          <div class="list-icon" style="background:var(--indigo);">😴</div>
-          <div class="list-body"><div class="list-title">Настроение</div></div>
-          <div class="list-value">${lastMood ? lastMood.score + '/10' : '—'}</div>
-        </div>
-        <div class="list-row" onclick="addWater()">
-          <div class="list-icon" style="background:var(--teal);">💧</div>
-          <div class="list-body"><div class="list-title">Вода</div></div>
-          <div class="list-value">${waterToday}/${cache.settings.waterGoal}</div>
-        </div>
-      </div>
-
-      <div class="grouped">
-        <div class="grouped-header">Задачи на сегодня</div>
-        ${cache.tasks.filter(t => t.status === 'pending').slice(0, 5).map(t => taskRow(t)).join('') || `<div class="empty"><div class="empty-icon">✨</div><div class="empty-title">Всё выполнено</div><div class="empty-text">Отдохни — ты заслужил</div></div>`}
-      </div>
-    </div>
-  `;
-}
-
-function taskRow(t) {
-  const pColors = { high: 'priority-high', medium: 'priority-medium', low: 'priority-low' };
-  return `
-    <div class="list-row" onclick="editTask('${t.id}')" style="padding-left:16px;">
-      <button class="task-checkbox ${t.status === 'completed' ? 'checked' : ''}" onclick="event.stopPropagation();toggleComplete('${t.id}')">
-        ${t.status === 'completed' ? '✓' : ''}
+  let grid = weekdays.map(w => `<div style="text-align:center;font-size:11px;font-weight:700;color:var(--label-tertiary);padding:8px 0;text-transform:uppercase;">${w}</div>`).join('');
+  for (let i = 0; i < firstDay; i++) grid += '<div></div>';
+  for (let day = 1; day <= daysInMonth; day++) {
+    const ds = `${year}-${String(m+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const dayEvents = events.filter(b => new Date(b.start_time).toISOString().slice(0, 10) === ds);
+    const isToday = ds === todayStr;
+    grid += `
+      <button style="aspect-ratio:1;border-radius:14px;border:none;background:${isToday ? 'var(--brand)' : 'transparent'};color:${isToday ? '#fff' : 'var(--label-primary)'};font-family:inherit;font-size:14px;font-weight:${isToday ? '800' : '600'};cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px;position:relative;" onclick="showDayDetails('${ds}')">
+        <span>${day}</span>
+        ${dayEvents.length ? `<span style="display:flex;gap:1px;">${dayEvents.slice(0,3).map(() => `<span style="width:3px;height:3px;border-radius:50%;background:${isToday ? '#fff' : 'var(--brand)'};"></span>`).join('')}</span>` : ''}
       </button>
-      <div class="list-body">
-        <div class="list-title" style="${t.status === 'completed' ? 'text-decoration:line-through;color:var(--label-secondary);' : ''}">${esc(t.title)}</div>
-        <div class="list-subtitle">
-          <span class="priority-dot ${pColors[t.priority] || 'priority-medium'}" style="display:inline-block;margin-right:6px;vertical-align:middle;"></span>
-          ${t.planned_time || 0} мин${t.category ? ' · ' + esc(t.category) : ''}
-        </div>
-      </div>
-      <div class="list-chevron">›</div>
-    </div>
-  `;
-}
-
-/* ══════════════════════════════════════════════════════════════════
-   PAGE: TASKS — полностью переработан, исправлены баги
-   ══════════════════════════════════════════════════════════════════ */
-let taskView = { filter: 'all', search: '', sort: 'created_at:desc', selection: new Set() };
-
-function renderTasks() {
-  const filtered = filterTasks();
-  const { filter, search } = taskView;
-  const counts = {
-    all: cache.tasks.length,
-    pending: cache.tasks.filter(t => t.status === 'pending').length,
-    completed: cache.tasks.filter(t => t.status === 'completed').length
-  };
+    `;
+  }
 
   document.getElementById('app').innerHTML = `
     <div class="page">
-      <div class="row-between" style="margin-bottom:16px;">
-        <div class="title-large" style="margin:0;">Задачи</div>
-        <button class="header-btn" onclick="addTask()" style="background:var(--brand);color:#fff;">+ Новая</button>
-      </div>
-
-      <div class="search-bar">
-        <span class="search-icon">🔍</span>
-        <input type="search" placeholder="Поиск задач..." value="${esc(search)}" oninput="taskView.search=this.value;renderTasks()"/>
-        ${search ? '<button class="header-btn icon-only" style="background:transparent;color:var(--label-secondary);" onclick="taskView.search=\'\';renderTasks();">✕</button>' : ''}
-      </div>
-
-      <div class="segmented" style="margin-bottom:12px;">
-        <button class="segmented-item ${filter === 'all' ? 'active' : ''}" onclick="taskView.filter='all';renderTasks()">
-          Все ${counts.all ? '(' + counts.all + ')' : ''}
-        </button>
-        <button class="segmented-item ${filter === 'pending' ? 'active' : ''}" onclick="taskView.filter='pending';renderTasks()">
-          Активные ${counts.pending ? '(' + counts.pending + ')' : ''}
-        </button>
-        <button class="segmented-item ${filter === 'completed' ? 'active' : ''}" onclick="taskView.filter='completed';renderTasks()">
-          Готовые ${counts.completed ? '(' + counts.completed + ')' : ''}
+      <div class="row-between" style="margin-bottom:20px;">
+        <div class="title-xl" style="margin:0;">Календарь</div>
+        <button class="icon-btn" onclick="openGoogleCalendar()" style="${cache.settings.googleCalendarSyncEnabled ? 'background:var(--success);' : ''}">
+          ${icon('google', 20)}
         </button>
       </div>
 
-      <div id="taskList">
-        ${filtered.length ? `
-          <div class="grouped">
-            ${filtered.map(t => taskRow(t)).join('')}
+      ${cache.settings.googleCalendarSyncEnabled ? `
+        <div class="card" style="padding:12px 16px;background:rgba(52,211,153,0.1);border:1px solid var(--success);margin-bottom:16px;">
+          <div class="row" style="gap:10px;">
+            ${icon('google', 20)}
+            <div style="flex:1;font-size:13px;font-weight:600;">Google Calendar подключён</div>
+            <button class="btn btn-xs btn-ghost" onclick="fullSync()">Синхр.</button>
           </div>
-        ` : `
-          <div class="empty">
-            <div class="empty-icon">📋</div>
-            <div class="empty-title">${search ? 'Ничего не найдено' : 'Нет задач'}</div>
-            <div class="empty-text">${search ? 'Попробуй другой запрос' : 'Нажми "+ Новая" чтобы создать'}</div>
+        </div>
+      ` : ''}
+
+      <div class="card">
+        <div class="row-between" style="margin-bottom:16px;">
+          <button class="icon-btn" onclick="calOffset--;renderCalendar()">${icon('chevronLeft', 18)}</button>
+          <div class="title-m" style="margin:0;">${monthNames[m]} ${year}</div>
+          <button class="icon-btn" onclick="calOffset++;renderCalendar()">${icon('chevronRight', 18)}</button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;">${grid}</div>
+      </div>
+
+      <div class="card">
+        <h2>${icon('plus', 20)} Новое событие</h2>
+        <div class="field"><input type="text" id="ev-title" placeholder="Название"/></div>
+        <div class="field"><input type="datetime-local" id="ev-start"/></div>
+        <div class="field"><input type="datetime-local" id="ev-end"/></div>
+        <div class="field"><textarea id="ev-desc" placeholder="Описание" rows="2"></textarea></div>
+        <button class="btn btn-primary btn-block" onclick="addEvent()">Создать ${cache.settings.googleCalendarSyncEnabled ? 'и синхронизировать' : ''}</button>
+      </div>
+
+      <div class="card">
+        <h2>${icon('calendar', 20)} Предстоящие</h2>
+        ${cache.schedule.filter(b => new Date(b.start_time) >= new Date()).sort((a,b) => new Date(a.start_time) - new Date(b.start_time)).slice(0, 8).map(b => `
+          <div class="list-row" onclick="editEvent('${b.id}')" style="margin-bottom:8px;">
+            <div style="width:4px;height:40px;border-radius:2px;background:${b.source === 'google' ? 'var(--success)' : 'var(--brand)'};flex-shrink:0;"></div>
+            <div class="list-body">
+              <div class="list-title">${esc(b.title)}</div>
+              <div class="list-subtitle">${fmtDate(b.start_time)} · ${fmtTime(b.start_time)}–${fmtTime(b.end_time)}${b.source === 'google' ? ' · Google' : ''}</div>
+            </div>
+            <div class="list-chevron">${icon('chevronRight', 18)}</div>
           </div>
-        `}
+        `).join('') || '<div class="empty"><div class="empty-icon">📅</div><div class="empty-text">Нет событий</div></div>'}
       </div>
     </div>
   `;
 }
 
-function filterTasks() {
-  let list = [...cache.tasks];
-  if (taskView.filter !== 'all') list = list.filter(t => t.status === taskView.filter);
-  if (taskView.search) {
-    const q = taskView.search.toLowerCase();
-    list = list.filter(t => t.title.toLowerCase().includes(q) || (t.description || '').toLowerCase().includes(q));
-  }
-  return list;
-}
-
-window.addTask = function() {
-  openSheet('Новая задача', `
-    <div class="field">
-      <input type="text" id="t-title" placeholder="Название задачи" autofocus/>
-    </div>
-    <div class="field">
-      <textarea id="t-desc" placeholder="Описание (необязательно)" rows="2"></textarea>
-    </div>
-    <div class="row" style="gap:8px;">
-      <div style="flex:1;min-width:120px;">
-        <label class="footnote text-secondary" style="display:block;margin-bottom:6px;">Время (мин)</label>
-        <input type="number" id="t-time" value="30" min="5" step="5"/>
-      </div>
-      <div style="flex:1;min-width:120px;">
-        <label class="footnote text-secondary" style="display:block;margin-bottom:6px;">Приоритет</label>
-        <select id="t-priority">
-          <option value="low">🟢 Низкий</option>
-          <option value="medium" selected>🟡 Средний</option>
-          <option value="high">🔴 Высокий</option>
-        </select>
-      </div>
-    </div>
-    <div class="field" style="margin-top:12px;">
-      <label class="footnote text-secondary" style="display:block;margin-bottom:6px;">Категория</label>
-      <select id="t-category">
-        <option value="work">💼 Работа</option>
-        <option value="learning">📚 Обучение</option>
-        <option value="personal">👤 Личное</option>
-        <option value="health">❤️ Здоровье</option>
-        <option value="chores">🏠 Бытовые</option>
-        <option value="other">📌 Другое</option>
-      </select>
-    </div>
-    <div class="field">
-      <label class="footnote text-secondary" style="display:block;margin-bottom:6px;">Дедлайн (необязательно)</label>
-      <input type="datetime-local" id="t-due"/>
-    </div>
-    <button class="btn btn-primary btn-block" onclick="saveTask()">Добавить задачу</button>
-  `, (overlay) => {
-    setTimeout(() => document.getElementById('t-title')?.focus(), 100);
-  });
-};
-
-window.saveTask = async function() {
-  const title = document.getElementById('t-title').value.trim();
-  if (!title) return toast('Введите название', 'error');
-  const due = document.getElementById('t-due').value;
-  const task = {
+window.addEvent = async function() {
+  const title = document.getElementById('ev-title').value.trim();
+  const start = document.getElementById('ev-start').value;
+  const end = document.getElementById('ev-end').value;
+  if (!title || !start || !end) return toast('Заполните поля', 'error');
+  if (new Date(start) >= new Date(end)) return toast('Неверный интервал', 'error');
+  
+  const ev = {
     id: uid(),
     title,
-    description: document.getElementById('t-desc').value.trim(),
-    planned_time: parseInt(document.getElementById('t-time').value) || 30,
-    actual_time: 0,
-    status: 'pending',
-    priority: document.getElementById('t-priority').value,
-    category: document.getElementById('t-category').value,
-    due_date: due ? new Date(due).toISOString() : null,
+    description: document.getElementById('ev-desc').value.trim(),
+    start_time: new Date(start).toISOString(),
+    end_time: new Date(end).toISOString(),
+    source: 'app',
     created_at: nowISO()
   };
-  await db.insert('tasks', task);
-  cache.tasks.unshift(task);
-  closeSheet();
-  toast('Задача добавлена', 'success');
+  await db.insert('schedule', ev);
+  cache.schedule.push(ev);
+  
+  // Sync to Google
+  if (googleAccessToken && cache.settings.googleCalendarSyncEnabled) {
+    try {
+      const calendarId = cache.settings.googleCalendarId || 'primary';
+      const created = await gcalRequest(`/calendars/${encodeURIComponent(calendarId)}/events`, {
+        method: 'POST',
+        body: JSON.stringify({
+          summary: title,
+          description: ev.description,
+          start: { dateTime: ev.start_time, timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone },
+          end: { dateTime: ev.end_time, timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone }
+        })
+      });
+      await db.update('schedule', ev.id, { googleEventId: created.id });
+      ev.googleEventId = created.id;
+      toast('Создано и синхронизировано с Google', 'success');
+    } catch (e) {
+      toast('Создано локально. Ошибка синхр.: ' + e.message, 'warning');
+    }
+  } else {
+    toast('Событие создано', 'success');
+  }
   haptic('success');
-  if (currentPage === 'tasks') renderTasks();
-  else if (currentPage === 'dashboard') renderDashboard();
+  renderCalendar();
 };
 
-window.editTask = function(id) {
-  const t = cache.tasks.find(x => x.id === id);
-  if (!t) return;
-  openSheet('Редактировать задачу', `
-    <div class="field"><input type="text" id="e-title" value="${esc(t.title)}"/></div>
-    <div class="field"><textarea id="e-desc" rows="2" placeholder="Описание">${esc(t.description || '')}</textarea></div>
-    <div class="row" style="gap:8px;">
-      <div style="flex:1;">
-        <label class="footnote text-secondary" style="display:block;margin-bottom:6px;">Время (мин)</label>
-        <input type="number" id="e-time" value="${t.planned_time || 30}" min="5" step="5"/>
+window.editEvent = function(id) {
+  const b = cache.schedule.find(x => x.id === id);
+  if (!b) return;
+  openSheet('Событие', `
+    <div class="field"><label class="field-label">Название</label><input type="text" id="ee-title" value="${esc(b.title)}"/></div>
+    <div class="field"><label class="field-label">Описание</label><textarea id="ee-desc" rows="2">${esc(b.description || '')}</textarea></div>
+    <div class="field"><label class="field-label">Начало</label><input type="datetime-local" id="ee-start" value="${new Date(b.start_time).toISOString().slice(0,16)}"/></div>
+    <div class="field"><label class="field-label">Окончание</label><input type="datetime-local" id="ee-end" value="${new Date(b.end_time).toISOString().slice(0,16)}"/></div>
+    ${b.source === 'google' ? '<div class="footnote text-secondary mb-3">Это событие из Google Calendar. Изменения синхронизируются.</div>' : ''}
+    <button class="btn btn-primary btn-block" onclick="saveEvent('${id}')">Сохранить</button>
+    <button class="btn btn-danger btn-block mt-2" onclick="deleteEvent('${id}')">Удалить</button>
+  `);
+};
+
+window.saveEvent = async function(id) {
+  const b = cache.schedule.find(x => x.id === id);
+  if (!b) return;
+  const patch = {
+    title: document.getElementById('ee-title').value.trim(),
+    description: document.getElementById('ee-desc').value.trim(),
+    start_time: new Date(document.getElementById('ee-start').value).toISOString(),
+    end_time: new Date(document.getElementById('ee-end').value).toISOString()
+  };
+  await db.update('schedule', id, patch);
+  Object.assign(b, patch);
+  
+  // Sync to Google
+  if (b.googleEventId && googleAccessToken) {
+    try {
+      const calendarId = cache.settings.googleCalendarId || 'primary';
+      await gcalRequest(`/calendars/${encodeURIComponent(calendarId)}/events/${b.googleEventId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+          summary: patch.title,
+          description: patch.description,
+          start: { dateTime: patch.start_time },
+          end: { dateTime: patch.end_time }
+        })
+      });
+      toast('Обновлено и синхронизировано', 'success');
+    } catch (e) {
+      toast('Обновлено локально', 'warning');
+    }
+  } else {
+    toast('Сохранено', 'success');
+  }
+  closeSheet();
+  renderCalendar();
+};
+
+window.deleteEvent = async function(id) {
+  const b = cache.schedule.find(x => x.id === id);
+  if (!b) return;
+  if (!confirm('Удалить?')) return;
+  
+  if (b.googleEventId && googleAccessToken) {
+    try {
+      const calendarId = cache.settings.googleCalendarId || 'primary';
+      await gcalRequest(`/calendars/${encodeURIComponent(calendarId)}/events/${b.googleEventId}`, { method: 'DELETE' });
+    } catch (e) { console.warn('Google delete failed:', e); }
+  }
+  
+  await db.delete('schedule', id);
+  cache.schedule = cache.schedule.filter(x => x.id !== id);
+  closeSheet();
+  toast('Удалено', 'info');
+  renderCalendar();
+};
+
+window.showDayDetails = function(dateStr) {
+  const events = cache.schedule.filter(b => new Date(b.start_time).toISOString().slice(0, 10) === dateStr);
+  const tasks = cache.tasks.filter(t => t.created_at?.slice(0, 10) === dateStr);
+  openSheet(fmtDate(dateStr), `
+    <div class="stat-grid mb-4">
+      <div class="stat-item"><div class="stat-value">${tasks.length}</div><div class="stat-label">Задач</div></div>
+      <div class="stat-item"><div class="stat-value">${tasks.filter(t => t.status === 'completed').length}</div><div class="stat-label">Готово</div></div>
+      <div class="stat-item"><div class="stat-value">${events.length}</div><div class="stat-label">Событий</div></div>
+    </div>
+    <div class="headline mb-2">События</div>
+    ${events.length ? events.map(b => `
+      <div class="list-row" onclick="closeSheet();editEvent('${b.id}')">
+        <div style="width:4px;height:40px;border-radius:2px;background:${b.source === 'google' ? 'var(--success)' : 'var(--brand)'};"></div>
+        <div class="list-body"><div class="list-title">${esc(b.title)}</div><div class="list-subtitle">${fmtTime(b.start_time)}–${fmtTime(b.end_time)}</div></div>
       </div>
-      <div style="flex:1;">
-        <label class="footnote text-secondary" style="display:block;margin-bottom:6px;">Приоритет</label>
-        <select id="e-priority">
-          <option value="low" ${t.priority === 'low' ? 'selected' : ''}>🟢 Низкий</option>
-          <option value="medium" ${t.priority === 'medium' ? 'selected' : ''}>🟡 Средний</option>
-          <option value="high" ${t.priority === 'high' ? 'selected' : ''}>🔴 Высокий</option>
+    `).join('') : '<div class="footnote text-tertiary">Нет событий</div>'}
+    <div class="headline mb-2 mt-4">Задачи</div>
+    ${tasks.length ? tasks.map(t => `
+      <div class="list-row">
+        <div class="list-icon" style="background:${t.status === 'completed' ? 'var(--success)' : 'var(--surface-3)'};color:${t.status === 'completed' ? '#000' : 'var(--label-primary)'};">${t.status === 'completed' ? icon('check', 20) : ''}</div>
+        <div class="list-body"><div class="list-title">${esc(t.title)}</div></div>
+      </div>
+    `).join('') : '<div class="footnote text-tertiary">Нет задач</div>'}
+  `);
+};
+
+/* ══════════════════════════════════════════════════════════════════
+   PAGE: STATS
+   ══════════════════════════════════════════════════════════════════ */
+function renderStats() {
+  const total = cache.tasks.length;
+  const done = cache.tasks.filter(t => t.status === 'completed').length;
+  const totalMinutes = cache.tasks.filter(t => t.status === 'completed').reduce((s, t) => s + (t.actual_time || 0), 0);
+  const chats = cache.chats.filter(c => c.role === 'user').length;
+  const waterTotal = cache.water.reduce((s, w) => s + w.count, 0);
+  const workoutsTotal = cache.workouts.reduce((s, w) => s + (w.duration || 0), 0);
+
+  document.getElementById('app').innerHTML = `
+    <div class="page">
+      <div class="title-xl">Статистика</div>
+
+      <div class="stat-grid mb-4">
+        <div class="stat-item"><div class="stat-value">${done}</div><div class="stat-label">Задач</div></div>
+        <div class="stat-item"><div class="stat-value">${Math.floor(totalMinutes / 60)}ч</div><div class="stat-label">Время</div></div>
+        <div class="stat-item"><div class="stat-value">${cache.stats.streak || 0}</div><div class="stat-label">Streak</div></div>
+      </div>
+
+      <div class="card">
+        <h2>Прогресс задач</h2>
+        <div class="row-between mb-2">
+          <span class="subhead">Выполнено</span>
+          <span class="subhead text-secondary">${done} из ${total}</span>
+        </div>
+        <div class="progress"><div class="progress-fill" style="width:${total ? (done/total*100) : 0}%;"></div></div>
+      </div>
+
+      <div class="card">
+        <h2>AI-диалоги</h2>
+        ${Object.entries(PERSONAS).map(([k, p]) => {
+          const count = cache.chats.filter(c => c.persona === k && c.role === 'user').length;
+          if (count === 0) return '';
+          return `
+            <div class="list-row" style="margin-bottom:8px;">
+              <div class="list-icon" style="background:var(--${p.color});color:#000;">${p.name[0]}</div>
+              <div class="list-body"><div class="list-title">${p.name}</div></div>
+              <div class="list-value">${count}</div>
+            </div>
+          `;
+        }).join('') || '<div class="footnote text-tertiary">Пока нет диалогов</div>'}
+      </div>
+
+      <div class="card">
+        <h2>Трекинг</h2>
+        <div class="list-row" style="margin-bottom:8px;">
+          <div class="list-icon" style="background:var(--accent-cyan);">💧</div>
+          <div class="list-body"><div class="list-title">Вода всего</div></div>
+          <div class="list-value">${waterTotal} ст.</div>
+        </div>
+        <div class="list-row">
+          <div class="list-icon" style="background:var(--accent-pink);">🏋️</div>
+          <div class="list-body"><div class="list-title">Тренировок</div></div>
+          <div class="list-value">${workoutsTotal} мин</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   PAGE: HABITS
+   ══════════════════════════════════════════════════════════════════ */
+function calcStreak(history) {
+  if (!history?.length) return 0;
+  let s = 0; const d = new Date();
+  while (s < 365) {
+    const ds = d.toISOString().slice(0, 10);
+    if (history.includes(ds)) { s++; d.setDate(d.getDate() - 1); } else break;
+  }
+  return s;
+}
+
+function renderHabits() {
+  document.getElementById('app').innerHTML = `
+    <div class="page">
+      <div class="title-xl">Привычки</div>
+
+      ${cache.habits.length ? `
+        <div class="card">
+          ${cache.habits.map(h => {
+            const done = h.history?.includes(today());
+            const streak = calcStreak(h.history || []);
+            return `
+              <div class="list-row" style="margin-bottom:8px;">
+                <button class="task-checkbox ${done ? 'checked' : ''}" onclick="event.stopPropagation();toggleHabit('${h.id}')">
+                  <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+                </button>
+                <div class="list-body">
+                  <div class="list-title">${esc(h.title)}</div>
+                  <div class="list-subtitle">${streak > 0 ? '🔥 ' + streak + ' дней' : 'Начни серию'}</div>
+                </div>
+                <button class="btn btn-icon btn-sm btn-ghost" onclick="event.stopPropagation();deleteHabit('${h.id}')">${icon('trash', 16)}</button>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      ` : '<div class="empty"><div class="empty-icon">🔄</div><div class="empty-title">Нет привычек</div><div class="empty-text">Начни с одной</div></div>'}
+
+      <div class="card">
+        <h2>Новая привычка</h2>
+        <div class="field"><input type="text" id="h-title" placeholder="Например: Чтение 30 мин"/></div>
+        <button class="btn btn-primary btn-block" onclick="addHabit()">Добавить</button>
+      </div>
+    </div>
+  `;
+}
+
+window.addHabit = async function() {
+  const title = document.getElementById('h-title').value.trim();
+  if (!title) return toast('Введите название', 'error');
+  const h = { id: uid(), title, history: [], created_at: nowISO() };
+  await db.insert('habits', h);
+  cache.habits.push(h);
+  toast('Добавлено', 'success');
+  haptic('success');
+  renderHabits();
+};
+
+window.toggleHabit = async function(id) {
+  const h = cache.habits.find(x => x.id === id);
+  if (!h) return;
+  if (!h.history) h.history = [];
+  const t = today();
+  if (h.history.includes(t)) {
+    h.history = h.history.filter(d => d !== t);
+    toast('Отменено', 'info');
+  } else {
+    h.history.push(t);
+    toast(`Серия ${calcStreak(h.history)} 🔥`, 'success');
+    haptic('success');
+  }
+  await db.update('habits', id, { history: h.history });
+  renderHabits();
+};
+
+window.deleteHabit = async function(id) {
+  if (!confirm('Удалить?')) return;
+  await db.delete('habits', id);
+  cache.habits = cache.habits.filter(h => h.id !== id);
+  renderHabits();
+};
+
+/* ══════════════════════════════════════════════════════════════════
+   PAGE: GOALS
+   ══════════════════════════════════════════════════════════════════ */
+function renderGoals() {
+  document.getElementById('app').innerHTML = `
+    <div class="page">
+      <div class="title-xl">Цели</div>
+      ${cache.goals.length ? cache.goals.map(g => `
+        <div class="card">
+          <div class="row-between mb-3">
+            <div style="font-weight:700;font-size:17px;">${esc(g.title)}</div>
+            <button class="btn btn-icon btn-sm btn-ghost" onclick="deleteGoal('${g.id}')">${icon('trash', 16)}</button>
+          </div>
+          <div class="progress mb-2"><div class="progress-fill" style="width:${g.progress || 0}%;"></div></div>
+          <div class="row-between">
+            <span class="footnote text-secondary">${g.progress || 0}%</span>
+            <button class="btn btn-sm btn-ghost" onclick="updateGoal('${g.id}')">Изменить</button>
+          </div>
+        </div>
+      `).join('') : '<div class="empty"><div class="empty-icon">🎯</div><div class="empty-title">Нет целей</div></div>'}
+      
+      <div class="card">
+        <h2>Новая цель</h2>
+        <div class="field"><input type="text" id="g-title" placeholder="Например: Выучить английский"/></div>
+        <div class="field"><input type="number" id="g-progress" placeholder="Начальный прогресс %" value="0" min="0" max="100"/></div>
+        <button class="btn btn-primary btn-block" onclick="addGoal()">Добавить</button>
+      </div>
+    </div>
+  `;
+}
+
+window.addGoal = async function() {
+  const title = document.getElementById('g-title').value.trim();
+  if (!title) return toast('Введите название', 'error');
+  const g = { id: uid(), title, progress: parseInt(document.getElementById('g-progress').value) || 0, created_at: nowISO() };
+  await db.insert('goals', g);
+  cache.goals.push(g);
+  toast('Цель добавлена', 'success');
+  haptic('success');
+  renderGoals();
+};
+
+window.updateGoal = function(id) {
+  const g = cache.goals.find(x => x.id === id);
+  if (!g) return;
+  const p = prompt('Прогресс (0-100):', g.progress);
+  if (p === null) return;
+  const newP = Math.max(0, Math.min(100, parseInt(p) || 0));
+  g.progress = newP;
+  db.update('goals', id, { progress: newP });
+  renderGoals();
+  if (newP === 100) { toast('🎉 Цель достигнута!', 'success'); haptic('success'); }
+};
+
+window.deleteGoal = async function(id) {
+  if (!confirm('Удалить?')) return;
+  await db.delete('goals', id);
+  cache.goals = cache.goals.filter(g => g.id !== id);
+  renderGoals();
+};
+
+/* ══════════════════════════════════════════════════════════════════
+   PAGE: TIMER
+   ══════════════════════════════════════════════════════════════════ */
+let timerTick = null;
+
+function computeElapsed(s) {
+  if (!s) return 0;
+  return Math.floor((Date.now() - new Date(s.start_time).getTime() - (s.paused_time || 0)) / 1000);
+}
+
+function renderTimer() {
+  const active = cache.timer.find(s => s.status === 'active' || s.status === 'paused');
+  let html = '';
+  if (active) {
+    const elapsed = computeElapsed(active);
+    const mins = Math.floor(elapsed / 60), secs = elapsed % 60;
+    html = `
+      <div style="text-align:center;padding:32px 16px;">
+        <div class="subhead text-secondary mb-2">${esc(active.title)}</div>
+        <div style="font-size:72px;font-weight:800;letter-spacing:-3px;font-variant-numeric:tabular-nums;background:linear-gradient(135deg,var(--brand),var(--brand-2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin:20px 0;">${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}</div>
+        <div class="btn-row" style="justify-content:center;">
+          ${active.status === 'active' 
+            ? `<button class="btn btn-warning" onclick="pauseTimer()">⏸ Пауза</button>` 
+            : `<button class="btn btn-success" onclick="resumeTimer()">▶ Продолжить</button>`}
+          <button class="btn btn-danger" onclick="stopTimer()">⏹ Завершить</button>
+        </div>
+      </div>
+    `;
+  } else {
+    html = `
+      <div class="field"><input type="text" id="tm-title" placeholder="Что делаем?"/></div>
+      <div class="field">
+        <label class="field-label">Режим</label>
+        <select id="tm-mode">
+          <option value="25">🍅 Pomodoro · 25 мин</option>
+          <option value="50">⚡ Deep Work · 50 мин</option>
+          <option value="5">☕ Перерыв · 5 мин</option>
         </select>
       </div>
+      <button class="btn btn-success btn-block" onclick="startTimer()">▶ Запустить</button>
+    `;
+  }
+  const history = cache.timer.filter(s => s.status === 'done').slice(-5).reverse();
+  document.getElementById('app').innerHTML = `
+    <div class="page">
+      <div class="title-xl">Таймер</div>
+      <div class="card">${html}</div>
+      <div class="card">
+        <h2>История</h2>
+        ${history.length ? history.map(s => `
+          <div class="list-row" style="margin-bottom:8px;">
+            <div class="list-body">
+              <div class="list-title">${esc(s.title)}</div>
+              <div class="list-subtitle">${Math.floor((s.total_time||0)/60)} мин · ${fmtDate(s.end_time)}</div>
+            </div>
+          </div>
+        `).join('') : '<div class="footnote text-tertiary">Пока нет сессий</div>'}
+      </div>
     </div>
-    <div class="divider"></div>
-    <div class="row" style="gap:8px;">
-      <button class="btn btn-primary" style="flex:1;" onclick="updateTask('${id}')">Сохранить</button>
-      <button class="btn btn-ghost" onclick="closeSheet()">Отмена</button>
-    </div>
-    <button class="btn btn-danger btn-block" style="margin-top:8px;" onclick="deleteTask('${id}')">Удалить задачу</button>
-  `);
-};
+  `;
+  if (active?.status === 'active' && !timerTick) {
+    timerTick = setInterval(() => { if (currentPage === 'timer') renderTimer(); }, 1000);
+  } else if (!active && timerTick) {
+    clearInterval(timerTick); timerTick = null;
+  }
+}
 
-window.updateTask = async function(id) {
-  const patch = {
-    title: document.getElementById('e-title').value.trim(),
-    description: document.getElementById('e-desc').value.trim(),
-    planned_time: parseInt(document.getElementById('e-time').value) || 30,
-    priority: document.getElementById('e-priority').value
-  };
-  if (!patch.title) return toast('Введите название', 'error');
-  await db.update('tasks', id, patch);
-  const idx = cache.tasks.findIndex(t => t.id === id);
-  if (idx >= 0) cache.tasks[idx] = { ...cache.tasks[idx], ...patch };
-  closeSheet();
-  toast('Сохранено', 'success');
-  if (currentPage === 'tasks') renderTasks();
-  else if (currentPage === 'dashboard') renderDashboard();
-};
-
-window.toggleComplete = async function(id) {
-  const t = cache.tasks.find(x => x.id === id);
-  if (!t) return;
-  const newStatus = t.status === 'completed' ? 'pending' : 'completed';
-  const patch = {
-    status: newStatus,
-    actual_time: newStatus === 'completed' ? (t.planned_time || 0) : 0,
-    completed_at: newStatus === 'completed' ? nowISO() : null
-  };
-  await db.update('tasks', id, patch);
-  Object.assign(t, patch);
+window.startTimer = async function() {
+  const title = document.getElementById('tm-title').value.trim() || 'Фокус-сессия';
+  const t = { id: uid(), title, start_time: nowISO(), paused_time: 0, status: 'active', created_at: nowISO() };
+  await db.insert('timer', t);
+  cache.timer.push(t);
+  toast('Запущено', 'success');
   haptic('success');
-  if (newStatus === 'completed') toast('✓ Выполнено', 'success');
-  if (currentPage === 'tasks') renderTasks();
-  else if (currentPage === 'dashboard') renderDashboard();
+  renderTimer();
 };
 
-window.deleteTask = async function(id) {
-  if (!confirm('Удалить задачу?')) return;
-  await db.delete('tasks', id);
-  cache.tasks = cache.tasks.filter(t => t.id !== id);
-  closeSheet();
-  toast('Удалено', 'info');
-  if (currentPage === 'tasks') renderTasks();
-  else if (currentPage === 'dashboard') renderDashboard();
+window.pauseTimer = async function() {
+  const s = cache.timer.find(x => x.status === 'active');
+  if (!s) return;
+  s.paused_time += Date.now() - new Date(s.start_time).getTime() - s.paused_time;
+  s.status = 'paused';
+  await db.update('timer', s.id, { paused_time: s.paused_time, status: 'paused' });
+  renderTimer();
+};
+
+window.resumeTimer = async function() {
+  const s = cache.timer.find(x => x.status === 'paused');
+  if (!s) return;
+  s.start_time = nowISO(); s.status = 'active';
+  await db.update('timer', s.id, { start_time: s.start_time, status: 'active' });
+  renderTimer();
+};
+
+window.stopTimer = async function() {
+  const s = cache.timer.find(x => x.status === 'active' || x.status === 'paused');
+  if (!s) return;
+  s.total_time = computeElapsed(s);
+  s.status = 'done';
+  s.end_time = nowISO();
+  await db.update('timer', s.id, { total_time: s.total_time, status: 'done', end_time: s.end_time });
+  toast(`Готово: ${Math.floor(s.total_time/60)} мин`, 'success');
+  haptic('success');
+  renderTimer();
 };
 
 /* ══════════════════════════════════════════════════════════════════
-   PAGE: AI
+   PAGE: NOTES
    ══════════════════════════════════════════════════════════════════ */
-function renderAI() {
-  const active = cache.settings.activePersona || 'coach';
-  const persona = PERSONAS[active];
-  const messages = cache.chats.filter(c => c.persona === active);
-  const hasKey = !!cache.settings.apiKey;
-
-  const quick = {
-    coach: ['Не могу начать', 'Выгорание', 'План дня', 'Боюсь провала'],
-    psych: ['Тревога', 'Всё откладываю', 'Отношения', 'Пустота'],
-    doctor: ['Плохо сплю', 'Болит голова', 'Усталость', 'Болит спина'],
-    nutrition: ['Что на завтрак', 'Похудеть', 'Больше энергии'],
-    fitness: ['Начать бегать', 'Силовая программа', 'Растяжка'],
-    lawyer: ['Трудовой спор', 'Договор', 'Права потребителя'],
-    finance: ['Бюджет', 'Накопления', 'Инвестиции']
-  };
-
+function renderNotes() {
   document.getElementById('app').innerHTML = `
     <div class="page">
-      <div class="title-large">AI-Экосистема</div>
+      <div class="title-xl">Заметки</div>
+      ${cache.notes.length ? cache.notes.slice().reverse().map(n => `
+        <div class="card" style="cursor:pointer;" onclick="editNote('${n.id}')">
+          <div class="row-between mb-2">
+            <div style="font-weight:700;font-size:17px;">${esc(n.title)}</div>
+            <span class="caption text-tertiary">${fmtDate(n.created_at)}</span>
+          </div>
+          <div class="footnote text-secondary" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${esc(n.content)}</div>
+        </div>
+      `).join('') : '<div class="empty"><div class="empty-icon">📝</div><div class="empty-title">Нет заметок</div></div>'}
+      <button class="btn btn-primary btn-block" onclick="addNote()">+ Новая заметка</button>
+    </div>
+  `;
+}
 
-      <div class="persona-bar">
-        ${Object.entries(PERSONAS).map(([k, p]) => `
-          <button class="persona-item ${active === k ? 'active' : ''}" data-p="${k}" onclick="switchPersona('${k}')">
-            <span class="p-icon">${p.icon}</span>
-            <span>${p.name}</span>
-          </button>
+window.addNote = function() {
+  openSheet('Новая заметка', `
+    <div class="field"><input type="text" id="n-title" placeholder="Заголовок" autofocus/></div>
+    <div class="field"><textarea id="n-content" placeholder="Содержание..." rows="6"></textarea></div>
+    <button class="btn btn-primary btn-block" onclick="saveNote()">Сохранить</button>
+  `);
+};
+
+window.saveNote = async function() {
+  const title = document.getElementById('n-title').value.trim();
+  const content = document.getElementById('n-content').value.trim();
+  if (!title || !content) return toast('Заполните поля', 'error');
+  const n = { id: uid(), title, content, created_at: nowISO() };
+  await db.insert('notes', n);
+  cache.notes.push(n);
+  closeSheet();
+  toast('Сохранено', 'success');
+  haptic('success');
+  renderNotes();
+};
+
+window.editNote = function(id) {
+  const n = cache.notes.find(x => x.id === id);
+  if (!n) return;
+  openSheet('Заметка', `
+    <div class="field"><input type="text" id="en-title" value="${esc(n.title)}"/></div>
+    <div class="field"><textarea id="en-content" rows="8">${esc(n.content)}</textarea></div>
+    <button class="btn btn-primary btn-block" onclick="updateNote('${id}')">Сохранить</button>
+    <button class="btn btn-danger btn-block mt-2" onclick="deleteNote('${id}')">Удалить</button>
+  `);
+};
+
+window.updateNote = async function(id) {
+  const n = cache.notes.find(x => x.id === id);
+  if (!n) return;
+  const title = document.getElementById('en-title').value.trim();
+  const content = document.getElementById('en-content').value.trim();
+  await db.update('notes', id, { title, content });
+  n.title = title; n.content = content;
+  closeSheet();
+  toast('Сохранено', 'success');
+  renderNotes();
+};
+
+window.deleteNote = async function(id) {
+  if (!confirm('Удалить?')) return;
+  await db.delete('notes', id);
+  cache.notes = cache.notes.filter(n => n.id !== id);
+  closeSheet();
+  renderNotes();
+};
+
+/* ══════════════════════════════════════════════════════════════════
+   PAGE: LEARNING
+   ══════════════════════════════════════════════════════════════════ */
+function renderLearning() {
+  document.getElementById('app').innerHTML = `
+    <div class="page">
+      <div class="title-xl">Обучение</div>
+      ${cache.learning.length ? cache.learning.map(l => `
+        <div class="card">
+          <div class="row-between mb-2">
+            <div style="font-weight:700;font-size:17px;">${esc(l.title)}</div>
+            <span class="badge badge-brand">${l.status}</span>
+          </div>
+          <div class="progress mb-2"><div class="progress-fill" style="width:${l.progress || 0}%;"></div></div>
+          <div class="row-between">
+            <span class="footnote text-secondary">${l.progress || 0}%</span>
+            <div class="row" style="gap:6px;">
+              <button class="btn btn-xs btn-ghost" onclick="updateLearning('${l.id}')">Изменить</button>
+              <button class="btn btn-xs btn-ghost" onclick="deleteLearning('${l.id}')">${icon('trash', 14)}</button>
+            </div>
+          </div>
+        </div>
+      `).join('') : '<div class="empty"><div class="empty-icon">📚</div><div class="empty-title">Нет курсов</div></div>'}
+      
+      <div class="card">
+        <h2>Новый курс</h2>
+        <div class="field"><input type="text" id="l-title" placeholder="Название"/></div>
+        <div class="field"><input type="text" id="l-material" placeholder="Ссылка на материал"/></div>
+        <button class="btn btn-primary btn-block" onclick="addLearning()">Добавить</button>
+      </div>
+    </div>
+  `;
+}
+
+window.addLearning = async function() {
+  const title = document.getElementById('l-title').value.trim();
+  if (!title) return toast('Введите название', 'error');
+  const l = { id: uid(), title, material: document.getElementById('l-material').value.trim(), status: 'in_progress', progress: 0, created_at: nowISO() };
+  await db.insert('learning', l);
+  cache.learning.push(l);
+  toast('Добавлено', 'success');
+  haptic('success');
+  renderLearning();
+};
+
+window.updateLearning = function(id) {
+  const l = cache.learning.find(x => x.id === id);
+  if (!l) return;
+  const p = prompt('Прогресс (0-100):', l.progress || 0);
+  if (p === null) return;
+  const np = Math.max(0, Math.min(100, parseInt(p) || 0));
+  l.progress = np;
+  l.status = np === 100 ? 'completed' : 'in_progress';
+  db.update('learning', id, { progress: np, status: l.status });
+  renderLearning();
+};
+
+window.deleteLearning = async function(id) {
+  if (!confirm('Удалить?')) return;
+  await db.delete('learning', id);
+  cache.learning = cache.learning.filter(l => l.id !== id);
+  renderLearning();
+};
+
+/* ══════════════════════════════════════════════════════════════════
+   PAGE: MATRIX (Eisenhower)
+   ══════════════════════════════════════════════════════════════════ */
+function renderMatrix() {
+  const m = { q1: [], q2: [], q3: [], q4: [] };
+  cache.matrix.forEach(x => { if (m[x.quadrant]) m[x.quadrant].push(x); });
+  const qs = [
+    { key: 'q1', title: 'Важно и срочно', color: 'var(--danger)', emoji: '🔥' },
+    { key: 'q2', title: 'Важно, не срочно', color: 'var(--brand)', emoji: '📌' },
+    { key: 'q3', title: 'Не важно, срочно', color: 'var(--warning)', emoji: '⚡' },
+    { key: 'q4', title: 'Не важно, не срочно', color: 'var(--label-tertiary)', emoji: '🗑' }
+  ];
+  document.getElementById('app').innerHTML = `
+    <div class="page">
+      <div class="title-xl">Матрица Эйзенхауэра</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        ${qs.map(q => `
+          <div class="card" style="margin:0;cursor:pointer;border-top:3px solid ${q.color};" onclick="addMatrixTask('${q.key}')">
+            <div class="footnote text-secondary mb-2">${q.emoji} ${q.title}</div>
+            <div style="font-size:32px;font-weight:800;color:${q.color};letter-spacing:-1px;">${m[q.key].length}</div>
+          </div>
         `).join('')}
       </div>
-
-      <div class="grouped" style="margin-bottom:12px;">
-        <div class="list-row no-press" style="padding:12px 16px;">
-          <div class="list-icon" style="background:var(--${persona.color});">${persona.icon}</div>
-          <div class="list-body">
-            <div class="list-title">${persona.name}</div>
-            <div class="list-subtitle">${persona.label}${!hasKey ? ' · Demo режим' : ''}</div>
+      <div class="card mt-4">
+        <h2>Задачи в матрице</h2>
+        ${Object.entries(m).flatMap(([q, items]) => items.map(x => `
+          <div class="list-row" style="margin-bottom:8px;">
+            <div class="list-icon" style="background:${qs.find(qq => qq.key === q).color};">${qs.find(qq => qq.key === q).emoji}</div>
+            <div class="list-body"><div class="list-title">${esc(x.title)}</div></div>
+            <button class="btn btn-icon btn-sm btn-ghost" onclick="event.stopPropagation();removeMatrixTask('${x.id}')">${icon('trash', 16)}</button>
           </div>
-          <button class="header-btn icon-only" style="background:var(--fill-tertiary);color:var(--brand);" onclick="openAISettings()">⚙</button>
-        </div>
-      </div>
-
-      <div class="card" style="min-height:340px;max-height:60vh;overflow-y:auto;padding:16px;" id="chatBox">
-        <div class="chat">
-          ${messages.length ? messages.map(m => `
-            <div class="msg msg-${m.role === 'user' ? 'user' : 'bot'}">
-              ${m.role === 'user' ? esc(m.text) : renderMd(m.text)}
-            </div>
-          `).join('') : `
-            <div class="empty">
-              <div class="empty-icon">${persona.icon}</div>
-              <div class="empty-title">${persona.name}</div>
-              <div class="empty-text">${active === 'doctor' ? '⚠️ Не заменяет врача' : active === 'psych' ? 'Безопасное пространство' : 'Задай вопрос'}</div>
-            </div>
-          `}
-        </div>
-      </div>
-
-      <div class="chips" style="margin-top:12px;">
-        ${(quick[active] || []).map(q => `<button class="chip" onclick="quickAsk('${esc(q)}')">${q}</button>`).join('')}
-      </div>
-
-      <div class="row" style="margin-top:12px;">
-        <input type="text" id="chatInput" placeholder="Сообщение..." style="flex:1;" onkeydown="if(event.key==='Enter'){event.preventDefault();sendMsg();}"/>
-        <button class="btn btn-primary btn-icon" onclick="sendMsg()">➤</button>
+        `))).join('') || '<div class="footnote text-tertiary">Матрица пуста</div>'}
       </div>
     </div>
   `;
-  const box = document.getElementById('chatBox');
-  if (box) box.scrollTop = box.scrollHeight;
 }
 
-window.switchPersona = function(p) {
-  cache.settings.activePersona = p;
-  saveSetting('app', cache.settings);
-  haptic('light');
-  renderAI();
-};
-
-window.quickAsk = function(text) {
-  document.getElementById('chatInput').value = text;
-  sendMsg();
-};
-
-window.sendMsg = async function() {
-  const input = document.getElementById('chatInput');
-  const text = input.value.trim();
-  if (!text) return;
-  input.value = '';
-  input.disabled = true;
-  
-  const persona = cache.settings.activePersona || 'coach';
-  const userMsg = { id: uid(), persona, role: 'user', text, timestamp: nowISO() };
-  await db.insert('chats', userMsg);
-  cache.chats.push(userMsg);
-  renderAI();
-
-  const box = document.getElementById('chatBox');
-  const typing = document.createElement('div');
-  typing.className = 'typing';
-  typing.innerHTML = '<span></span><span></span><span></span>';
-  box.appendChild(typing);
-  box.scrollTop = box.scrollHeight;
-
-  const context = buildContext();
-  const p = PERSONAS[persona];
-  const history = cache.chats.filter(c => c.persona === persona).slice(-10);
-  const messages = [
-    { role: 'system', content: p.prompt + '\n\n' + context },
-    ...history.map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.text }))
-  ];
-
-  const res = await callAI(messages);
-  typing.remove();
-  const botMsg = { id: uid(), persona, role: 'coach', text: res.text, timestamp: nowISO() };
-  await db.insert('chats', botMsg);
-  cache.chats.push(botMsg);
-  renderAI();
-  haptic('light');
-  const ni = document.getElementById('chatInput');
-  if (ni) { ni.disabled = false; ni.focus(); }
-};
-
-function buildContext() {
-  const pending = cache.tasks.filter(t => t.status === 'pending').slice(0, 5);
-  const habits = cache.habits.map(h => `${h.title}${h.history?.includes(today()) ? '✓' : ''}`);
-  const lastMood = cache.mood?.[cache.mood.length - 1];
-  return `КОНТЕКСТ ПОЛЬЗОВАТЕЛЯ:
-• Streak: ${cache.stats.streak || 0} дней
-• Настроение: ${lastMood ? lastMood.score + '/10' : 'нет данных'}
-• Задачи: ${pending.length ? pending.map(t => `"${t.title}"`).join(', ') : 'нет'}
-• Привычки: ${habits.length ? habits.join(', ') : 'нет'}`;
-}
-
-function renderMd(text) {
-  if (!text) return '';
-  let h = esc(text);
-  h = h.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-  h = h.replace(/(^|\s)\*([^*\n]+)\*(?=\s|$|[.,!?])/g, '$1<em>$2</em>');
-  h = h.replace(/`([^`]+)`/g, '<code>$1</code>');
-  h = h.replace(/^[•\-] (.+)$/gm, '<li>$1</li>');
-  h = h.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
-  h = h.replace(/(<li>[\s\S]*?<\/li>)(?!\s*<li>)/g, '<ul>$1</ul>');
-  h = h.replace(/\n\n/g, '</p><p>');
-  h = h.replace(/\n/g, '<br>');
-  return `<p>${h}</p>`;
-}
-
-window.openAISettings = function() {
-  const s = cache.settings;
-  openSheet('Настройки AI', `
-    <div class="field">
-      <label class="footnote text-secondary" style="display:block;margin-bottom:6px;">Провайдер</label>
-      <select id="ai-p">
-        ${Object.entries(AI_PROVIDERS).map(([k, v]) => `<option value="${k}" ${s.provider === k ? 'selected' : ''}>${v.name}</option>`).join('')}
-      </select>
-    </div>
-    <div class="field">
-      <label class="footnote text-secondary" style="display:block;margin-bottom:6px;">API ключ</label>
-      <input type="password" id="ai-k" value="${esc(s.apiKey || '')}" placeholder="sk-..."/>
-    </div>
-    <div class="footnote text-secondary" style="margin-bottom:12px;line-height:1.4;">
-      💡 Ключ хранится локально.<br>
-      Получите ключ: <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--brand);">Gemini (бесплатно)</a> · 
-      <a href="https://platform.openai.com/api-keys" target="_blank" style="color:var(--brand);">OpenAI</a>
-    </div>
-    <button class="btn btn-primary btn-block" onclick="saveAISettings()">Сохранить</button>
-    ${s.apiKey ? `<button class="btn btn-plain btn-block" style="margin-top:8px;" onclick="clearAISettings()">Удалить ключ</button>` : ''}
+window.addMatrixTask = function(quadrant) {
+  openSheet('Добавить в матрицу', `
+    <div class="field"><input type="text" id="mx-title" placeholder="Задача" autofocus/></div>
+    <div class="field"><input type="number" id="mx-time" placeholder="Время (мин)" value="30"/></div>
+    <button class="btn btn-primary btn-block" onclick="saveMatrixTask('${quadrant}')">Добавить</button>
   `);
 };
 
-window.saveAISettings = async function() {
-  cache.settings.provider = document.getElementById('ai-p').value;
-  cache.settings.apiKey = document.getElementById('ai-k').value.trim();
-  await saveSetting('app', cache.settings);
-  toast('Сохранено', 'success');
+window.saveMatrixTask = async function(quadrant) {
+  const title = document.getElementById('mx-title').value.trim();
+  if (!title) return toast('Введите название', 'error');
+  const x = {
+    id: uid(),
+    title,
+    time: parseInt(document.getElementById('mx-time').value) || 30,
+    quadrant,
+    created_at: nowISO()
+  };
+  await db.insert('matrix', x);
+  cache.matrix.push(x);
   closeSheet();
-  renderAI();
+  toast('Добавлено', 'success');
+  haptic('success');
+  renderMatrix();
 };
 
-window.clearAISettings = async function() {
-  cache.settings.apiKey = '';
-  await saveSetting('app', cache.settings);
-  toast('Удалено', 'info');
-  closeSheet();
-  renderAI();
+window.removeMatrixTask = async function(id) {
+  await db.delete('matrix', id);
+  cache.matrix = cache.matrix.filter(x => x.id !== id);
+  renderMatrix();
 };
 
 /* ══════════════════════════════════════════════════════════════════
-   PAGE: HEALTH
+   PAGE: FOCUS
    ══════════════════════════════════════════════════════════════════ */
-function renderHealth() {
-  const water = cache.water.find(w => w.date === today())?.count || 0;
-  const lastMood = cache.mood?.[cache.mood.length - 1];
-  
+function renderFocus() {
+  const f = cache.flags;
   document.getElementById('app').innerHTML = `
     <div class="page">
-      <div class="title-large">Здоровье</div>
-
-      <div class="grouped">
-        <div class="grouped-header">Сегодня</div>
-        <div class="list-row" onclick="quickMoodLog()">
-          <div class="list-icon" style="background:var(--indigo);">💭</div>
-          <div class="list-body"><div class="list-title">Настроение</div></div>
-          <div class="list-value">${lastMood ? lastMood.score + '/10' : '—'}</div>
-          <div class="list-chevron">›</div>
+      <div class="title-xl">Фокус-режимы</div>
+      <div class="card">
+        <div class="list-row" style="margin-bottom:8px;">
+          <div class="list-icon" style="background:var(--brand);">🎯</div>
+          <div class="list-body"><div class="list-title">Глубокий фокус</div><div class="list-subtitle">Меньше уведомлений</div></div>
+          <button class="switch ${f.focus ? 'on' : ''}" onclick="toggleFlag('focus')"></button>
         </div>
-        <div class="list-row" onclick="addWater()">
-          <div class="list-icon" style="background:var(--teal);">💧</div>
-          <div class="list-body"><div class="list-title">Вода</div></div>
-          <div class="list-value">${water}/${cache.settings.waterGoal}</div>
-          <div class="list-chevron">›</div>
-        </div>
-      </div>
-
-      <div class="grouped">
-        <div class="grouped-header">AI-специалисты</div>
-        <div class="list-row" onclick="openPersona('doctor')">
-          <div class="list-icon" style="background:var(--doctor);">⚕️</div>
-          <div class="list-body"><div class="list-title">Врач</div><div class="list-subtitle">Образовательная консультация</div></div>
-          <div class="list-chevron">›</div>
-        </div>
-        <div class="list-row" onclick="openPersona('nutrition')">
-          <div class="list-icon" style="background:var(--nutrition);">🥗</div>
-          <div class="list-body"><div class="list-title">Нутрициолог</div></div>
-          <div class="list-chevron">›</div>
-        </div>
-        <div class="list-row" onclick="openPersona('fitness')">
-          <div class="list-icon" style="background:var(--fitness);">🏋️</div>
-          <div class="list-body"><div class="list-title">Фитнес-тренер</div></div>
-          <div class="list-chevron">›</div>
-        </div>
-      </div>
-
-      <div class="grouped">
-        <div class="grouped-header">Трекинг</div>
-        <div class="list-row" onclick="navigate('mood')">
-          <div class="list-icon" style="background:var(--indigo);">📊</div>
-          <div class="list-body"><div class="list-title">Настроение</div></div>
-          <div class="list-chevron">›</div>
-        </div>
-        <div class="list-row" onclick="navigate('workouts')">
-          <div class="list-icon" style="background:var(--fitness);">🏋️</div>
-          <div class="list-body"><div class="list-title">Тренировки</div></div>
-          <div class="list-chevron">›</div>
-        </div>
-        <div class="list-row" onclick="navigate('meds')">
-          <div class="list-icon" style="background:var(--red);">💊</div>
-          <div class="list-body"><div class="list-title">Лекарства</div></div>
-          <div class="list-chevron">›</div>
+        <div class="list-row">
+          <div class="list-icon" style="background:var(--accent-violet);">🔇</div>
+          <div class="list-body"><div class="list-title">Не беспокоить</div><div class="list-subtitle">Тихий режим</div></div>
+          <button class="switch ${f.dnd ? 'on' : ''}" onclick="toggleFlag('dnd')"></button>
         </div>
       </div>
     </div>
   `;
 }
 
-window.openPersona = function(p) {
-  cache.settings.activePersona = p;
-  saveSetting('app', cache.settings);
-  navigate('ai');
+window.toggleFlag = async function(key) {
+  cache.flags[key] = !cache.flags[key];
+  await saveSetting('flags', cache.flags);
+  haptic('light');
+  renderFocus();
 };
 
-window.addWater = async function() {
-  const t = today();
-  let entry = cache.water.find(w => w.date === t);
-  if (entry) {
-    entry.count += 1;
-    await db.update('water', entry.id, { count: entry.count });
-  } else {
-    entry = { id: uid(), date: t, count: 1 };
-    await db.insert('water', entry);
-    cache.water.push(entry);
-  }
-  toast(`💧 ${entry.count} стаканов`, 'success');
-  haptic('success');
-  if (currentPage === 'dashboard') renderDashboard();
-  else if (currentPage === 'health') renderHealth();
-};
+/* ══════════════════════════════════════════════════════════════════
+   PAGE: MOOD
+   ══════════════════════════════════════════════════════════════════ */
+function renderMood() {
+  const mood = cache.mood.slice(-30);
+  const maxS = 10;
+  document.getElementById('app').innerHTML = `
+    <div class="page">
+      <div class="title-xl">Настроение</div>
+      <div class="card">
+        <h2>Сегодня</h2>
+        <div style="font-size:48px;font-weight:800;text-align:center;padding:16px 0;letter-spacing:-2px;">${mood.length ? mood[mood.length-1].score + '/10' : '—'}</div>
+        <button class="btn btn-primary btn-block" onclick="quickMoodLog()">Записать настроение</button>
+      </div>
+      ${mood.length ? `
+        <div class="card">
+          <h2>Динамика · 30 дней</h2>
+          <div style="display:flex;gap:4px;align-items:end;height:120px;margin-top:12px;">
+            ${mood.map(m => `<div style="flex:1;height:${(m.score/maxS)*100}%;background:linear-gradient(180deg,var(--brand-2),var(--brand));border-radius:6px 6px 0 0;min-height:4px;"></div>`).join('')}
+          </div>
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
 
 window.quickMoodLog = function() {
-  const moods = ['😢', '😔', '😐', '🙂', '😊'];
+  const moods = ['😢','😔','😐','🙂','😊'];
   openSheet('Как настроение?', `
-    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;">
-      ${moods.map((m, i) => `
-        <button class="btn btn-ghost" style="font-size:28px;padding:16px 0;height:auto;" onclick="saveMood(${(i+1)*2})">${m}</button>
-      `).join('')}
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;">
+      ${moods.map((m, i) => `<button class="btn btn-ghost" style="font-size:32px;padding:20px 0;height:auto;" onclick="saveMood(${(i+1)*2})">${m}</button>`).join('')}
     </div>
-    <div class="footnote text-secondary" style="text-align:center;margin-top:12px;">1 = плохо, 10 = отлично</div>
   `);
 };
 
@@ -2301,92 +819,447 @@ window.saveMood = async function(score) {
     await db.update('mood', existing.id, { score });
     existing.score = score;
   } else {
-    const m = { id: uid(), date: t, score };
+    const m = { id: uid(), date: t, score, created_at: nowISO() };
     await db.insert('mood', m);
     cache.mood.push(m);
   }
   closeSheet();
-  toast('Настроение записано', 'success');
+  toast('Записано', 'success');
   haptic('success');
-  if (currentPage === 'dashboard') renderDashboard();
-  else if (currentPage === 'health') renderHealth();
+  if (currentPage === 'mood') renderMood();
+  else if (currentPage === 'dashboard') renderDashboard();
 };
 
 /* ══════════════════════════════════════════════════════════════════
-   PAGE: MORE
+   PAGE: WATER
    ══════════════════════════════════════════════════════════════════ */
-function renderMore() {
-  const items = Object.entries(SUBPAGES);
+function renderWater() {
+  const t = today();
+  const entry = cache.water.find(w => w.date === t);
+  const count = entry?.count || 0;
+  const goal = cache.settings.waterGoal || 8;
   document.getElementById('app').innerHTML = `
     <div class="page">
-      <div class="title-large">Все разделы</div>
-      <div class="grouped">
-        ${items.map(([k, v]) => `
-          <div class="list-row" onclick="navigate('${k}')">
-            <div class="list-icon" style="background:var(--fill-secondary);color:var(--label-primary);font-size:17px;">${v.icon}</div>
-            <div class="list-body"><div class="list-title">${v.label}</div></div>
-            <div class="list-chevron">›</div>
+      <div class="title-xl">Вода</div>
+      <div class="card card-gradient" style="text-align:center;padding:32px 20px;">
+        <div style="font-size:64px;margin-bottom:16px;">💧</div>
+        <div style="font-size:56px;font-weight:800;letter-spacing:-3px;line-height:1;">${count}/${goal}</div>
+        <div style="opacity:0.9;font-size:14px;margin-top:8px;">стаканов</div>
+        <div class="progress" style="margin-top:20px;background:rgba(255,255,255,0.25);height:8px;">
+          <div class="progress-fill" style="width:${Math.min(100, count/goal*100)}%;background:#fff;"></div>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-block mb-3" onclick="addWater()">💧 +1 стакан</button>
+      <button class="btn btn-ghost btn-block" onclick="resetWater()">Сбросить сегодня</button>
+      <div class="card mt-4">
+        <h2>Цель</h2>
+        <div class="field"><input type="number" id="w-goal" value="${goal}" min="1" max="20"/></div>
+        <button class="btn btn-primary btn-block" onclick="saveWaterGoal()">Сохранить</button>
+      </div>
+    </div>
+  `;
+}
+
+window.addWater = async function() {
+  const t = today();
+  let entry = cache.water.find(w => w.date === t);
+  if (entry) {
+    entry.count += 1;
+    await db.update('water', entry.id, { count: entry.count });
+  } else {
+    entry = { id: uid(), date: t, count: 1, created_at: nowISO() };
+    await db.insert('water', entry);
+    cache.water.push(entry);
+  }
+  toast(`💧 ${entry.count}`, 'success');
+  haptic('success');
+  if (currentPage === 'water') renderWater();
+  else if (currentPage === 'dashboard') renderDashboard();
+};
+
+window.resetWater = async function() {
+  const t = today();
+  const entry = cache.water.find(w => w.date === t);
+  if (entry) {
+    entry.count = 0;
+    await db.update('water', entry.id, { count: 0 });
+    renderWater();
+  }
+};
+
+window.saveWaterGoal = async function() {
+  cache.settings.waterGoal = parseInt(document.getElementById('w-goal').value) || 8;
+  await saveSetting('app', cache.settings);
+  toast('Сохранено', 'success');
+  renderWater();
+};
+
+/* ══════════════════════════════════════════════════════════════════
+   PAGE: MEDS
+   ══════════════════════════════════════════════════════════════════ */
+function renderMeds() {
+  document.getElementById('app').innerHTML = `
+    <div class="page">
+      <div class="title-xl">Лекарства</div>
+      ${cache.meds.length ? cache.meds.map(m => `
+        <div class="list-row" style="margin-bottom:8px;">
+          <div class="list-icon" style="background:var(--danger);">💊</div>
+          <div class="list-body">
+            <div class="list-title">${esc(m.name)}</div>
+            <div class="list-subtitle">${esc(m.dose || '')} ${m.time ? '· ' + m.time : ''}</div>
+          </div>
+          <button class="btn btn-icon btn-sm btn-ghost" onclick="deleteMed('${m.id}')">${icon('trash', 16)}</button>
+        </div>
+      `).join('') : '<div class="empty"><div class="empty-icon">💊</div><div class="empty-title">Нет лекарств</div></div>'}
+      <div class="card">
+        <h2>Добавить</h2>
+        <div class="field"><input type="text" id="m-name" placeholder="Название"/></div>
+        <div class="field"><input type="text" id="m-dose" placeholder="Дозировка"/></div>
+        <div class="field"><input type="time" id="m-time"/></div>
+        <button class="btn btn-primary btn-block" onclick="addMed()">Добавить</button>
+      </div>
+      <div class="footnote text-tertiary text-center mt-4">⚠️ Приложение не даёт медсоветов. Консультируйтесь с врачом.</div>
+    </div>
+  `;
+}
+
+window.addMed = async function() {
+  const name = document.getElementById('m-name').value.trim();
+  if (!name) return toast('Введите название', 'error');
+  const m = { id: uid(), name, dose: document.getElementById('m-dose').value.trim(), time: document.getElementById('m-time').value, created_at: nowISO() };
+  await db.insert('meds', m);
+  cache.meds.push(m);
+  toast('Добавлено', 'success');
+  haptic('success');
+  renderMeds();
+};
+
+window.deleteMed = async function(id) {
+  if (!confirm('Удалить?')) return;
+  await db.delete('meds', id);
+  cache.meds = cache.meds.filter(m => m.id !== id);
+  renderMeds();
+};
+
+/* ══════════════════════════════════════════════════════════════════
+   PAGE: WORKOUTS
+   ══════════════════════════════════════════════════════════════════ */
+function renderWorkouts() {
+  const total = cache.workouts.reduce((s, w) => s + (w.duration || 0), 0);
+  document.getElementById('app').innerHTML = `
+    <div class="page">
+      <div class="title-xl">Тренировки</div>
+      <div class="stat-grid mb-4">
+        <div class="stat-item"><div class="stat-value">${cache.workouts.length}</div><div class="stat-label">Сессий</div></div>
+        <div class="stat-item"><div class="stat-value">${total}</div><div class="stat-label">Минут</div></div>
+        <div class="stat-item"><div class="stat-value">${Math.floor(total/60)}ч</div><div class="stat-label">Часов</div></div>
+      </div>
+      ${cache.workouts.length ? cache.workouts.slice().reverse().slice(0, 10).map(w => `
+        <div class="list-row" style="margin-bottom:8px;">
+          <div class="list-icon" style="background:var(--accent-pink);">${icon('dumbbell', 20)}</div>
+          <div class="list-body">
+            <div class="list-title">${esc(w.type)}</div>
+            <div class="list-subtitle">${w.duration} мин · ${fmtDate(w.timestamp)}</div>
+          </div>
+        </div>
+      `).join('') : '<div class="empty"><div class="empty-icon">🏋️</div><div class="empty-title">Нет тренировок</div></div>'}
+      <div class="card">
+        <h2>Добавить</h2>
+        <div class="field">
+          <select id="w-type">
+            <option value="Кардио">🏃 Кардио</option>
+            <option value="Силовая">💪 Силовая</option>
+            <option value="Йога">🧘 Йога</option>
+            <option value="Плавание">🏊 Плавание</option>
+            <option value="Прогулка">🚶 Прогулка</option>
+          </select>
+        </div>
+        <div class="field"><input type="number" id="w-duration" placeholder="Минут" value="30"/></div>
+        <button class="btn btn-primary btn-block" onclick="addWorkout()">Добавить</button>
+      </div>
+    </div>
+  `;
+}
+
+window.addWorkout = async function() {
+  const w = {
+    id: uid(),
+    type: document.getElementById('w-type').value,
+    duration: parseInt(document.getElementById('w-duration').value) || 30,
+    timestamp: nowISO(),
+    created_at: nowISO()
+  };
+  await db.insert('workouts', w);
+  cache.workouts.push(w);
+  toast('Записано', 'success');
+  haptic('success');
+  renderWorkouts();
+};
+
+/* ══════════════════════════════════════════════════════════════════
+   PAGE: MEDITATION
+   ══════════════════════════════════════════════════════════════════ */
+function renderMeditation() {
+  const practices = [
+    { name: 'Дыхание 4-7-8', duration: 5, desc: 'Успокоение нервной системы' },
+    { name: 'Сканирование тела', duration: 10, desc: 'Осознанность телесных ощущений' },
+    { name: 'Любящая доброта', duration: 15, desc: 'Развитие сострадания' },
+    { name: 'Наблюдение за мыслями', duration: 10, desc: 'Отстранение от мыслей' },
+    { name: 'Заземление 5-4-3-2-1', duration: 3, desc: 'При тревоге и панике' }
+  ];
+  document.getElementById('app').innerHTML = `
+    <div class="page">
+      <div class="title-xl">Медитации</div>
+      <div class="card">
+        <h2>Практики</h2>
+        ${practices.map(p => `
+          <div class="list-row" style="margin-bottom:8px;" onclick="startMeditation('${p.name}', ${p.duration})">
+            <div class="list-icon" style="background:var(--accent-violet);">${icon('meditate', 20)}</div>
+            <div class="list-body">
+              <div class="list-title">${p.name}</div>
+              <div class="list-subtitle">${p.duration} мин · ${p.desc}</div>
+            </div>
+            <div class="list-chevron">${icon('chevronRight', 18)}</div>
           </div>
         `).join('')}
+      </div>
+      ${cache.meditations.length ? `
+        <div class="card">
+          <h2>Мои сессии (${cache.meditations.length})</h2>
+          ${cache.meditations.slice(-5).reverse().map(m => `
+            <div class="list-row" style="margin-bottom:8px;">
+              <div class="list-body">
+                <div class="list-title">${esc(m.name)}</div>
+                <div class="list-subtitle">${m.duration} мин · ${fmtDate(m.timestamp)}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+window.startMeditation = async function(name, duration) {
+  const m = { id: uid(), name, duration, timestamp: nowISO(), created_at: nowISO() };
+  await db.insert('meditations', m);
+  cache.meditations.push(m);
+  toast(`🧘 ${name} — сессия записана`, 'success');
+  haptic('success');
+  renderMeditation();
+};
+
+/* ══════════════════════════════════════════════════════════════════
+   PAGE: JOURNAL
+   ══════════════════════════════════════════════════════════════════ */
+function renderJournal() {
+  document.getElementById('app').innerHTML = `
+    <div class="page">
+      <div class="title-xl">Дневник</div>
+      <div class="card">
+        <h2>Новая запись</h2>
+        <div class="field"><textarea id="j-text" placeholder="Что сегодня было важного? Что чувствую?" rows="5"></textarea></div>
+        <button class="btn btn-primary btn-block" onclick="saveJournal()">Сохранить</button>
+      </div>
+      ${cache.journal.length ? cache.journal.slice().reverse().map(j => `
+        <div class="card">
+          <div class="row-between mb-2">
+            <span class="caption text-tertiary">${fmtDate(j.timestamp)} ${fmtTime(j.timestamp)}</span>
+            <button class="btn btn-icon btn-sm btn-ghost" onclick="deleteJournal('${j.id}')">${icon('trash', 16)}</button>
+          </div>
+          <div class="body" style="white-space:pre-wrap;line-height:1.55;">${esc(j.text)}</div>
+        </div>
+      `).join('') : ''}
+    </div>
+  `;
+}
+
+window.saveJournal = async function() {
+  const text = document.getElementById('j-text').value.trim();
+  if (!text) return toast('Введите текст', 'error');
+  const j = { id: uid(), text, timestamp: nowISO(), created_at: nowISO() };
+  await db.insert('journal', j);
+  cache.journal.push(j);
+  toast('Сохранено', 'success');
+  haptic('success');
+  renderJournal();
+};
+
+window.deleteJournal = async function(id) {
+  if (!confirm('Удалить?')) return;
+  await db.delete('journal', id);
+  cache.journal = cache.journal.filter(j => j.id !== id);
+  renderJournal();
+};
+
+/* ══════════════════════════════════════════════════════════════════
+   PAGE: MEDIA
+   ══════════════════════════════════════════════════════════════════ */
+function renderMedia() {
+  document.getElementById('app').innerHTML = `
+    <div class="page">
+      <div class="title-xl">Медиатека</div>
+      ${cache.media.length ? cache.media.map(m => `
+        <div class="list-row" style="margin-bottom:8px;">
+          <div class="list-icon" style="background:var(--accent-orange);">📚</div>
+          <div class="list-body">
+            <div class="list-title">${esc(m.title)}</div>
+            <div class="list-subtitle">${esc(m.author || '')} · ${m.type}</div>
+          </div>
+          <button class="btn btn-icon btn-sm btn-ghost" onclick="deleteMedia('${m.id}')">${icon('trash', 16)}</button>
+        </div>
+      `).join('') : '<div class="empty"><div class="empty-icon">📖</div><div class="empty-title">Пусто</div></div>'}
+      <div class="card">
+        <h2>Добавить</h2>
+        <div class="field"><input type="text" id="md-title" placeholder="Название"/></div>
+        <div class="field"><input type="text" id="md-author" placeholder="Автор"/></div>
+        <div class="field">
+          <select id="md-type">
+            <option value="Книга">📚 Книга</option>
+            <option value="Подкаст">🎙 Подкаст</option>
+            <option value="Статья">📄 Статья</option>
+            <option value="Курс">🎓 Курс</option>
+            <option value="Фильм">🎬 Фильм</option>
+          </select>
+        </div>
+        <button class="btn btn-primary btn-block" onclick="addMedia()">Добавить</button>
+      </div>
+    </div>
+  `;
+}
+
+window.addMedia = async function() {
+  const title = document.getElementById('md-title').value.trim();
+  if (!title) return toast('Введите название', 'error');
+  const m = { id: uid(), title, author: document.getElementById('md-author').value.trim(), type: document.getElementById('md-type').value, created_at: nowISO() };
+  await db.insert('media', m);
+  cache.media.push(m);
+  toast('Добавлено', 'success');
+  renderMedia();
+};
+
+window.deleteMedia = async function(id) {
+  await db.delete('media', id);
+  cache.media = cache.media.filter(m => m.id !== id);
+  renderMedia();
+};
+
+/* ══════════════════════════════════════════════════════════════════
+   PAGE: FINANCE
+   ══════════════════════════════════════════════════════════════════ */
+function renderFinance() {
+  const income = cache.finance.filter(f => f.type === 'income').reduce((s, f) => s + f.amount, 0);
+  const expense = cache.finance.filter(f => f.type === 'expense').reduce((s, f) => s + f.amount, 0);
+  document.getElementById('app').innerHTML = `
+    <div class="page">
+      <div class="title-xl">Финансы</div>
+      <div class="stat-grid mb-4">
+        <div class="stat-item"><div class="stat-value" style="color:var(--success);">+${income}</div><div class="stat-label">Доход</div></div>
+        <div class="stat-item"><div class="stat-value" style="color:var(--danger);">-${expense}</div><div class="stat-label">Расход</div></div>
+        <div class="stat-item"><div class="stat-value">${income - expense}</div><div class="stat-label">Баланс</div></div>
+      </div>
+      ${cache.finance.length ? cache.finance.slice().reverse().slice(0, 15).map(f => `
+        <div class="list-row" style="margin-bottom:8px;">
+          <div class="list-icon" style="background:${f.type === 'income' ? 'var(--success)' : 'var(--danger)'};color:#000;">${f.type === 'income' ? '+' : '−'}</div>
+          <div class="list-body">
+            <div class="list-title">${esc(f.category || 'Без категории')}</div>
+            <div class="list-subtitle">${fmtDate(f.timestamp)}</div>
+          </div>
+          <div class="list-value" style="color:${f.type === 'income' ? 'var(--success)' : 'var(--danger)'};">${f.amount}</div>
+        </div>
+      `).join('') : ''}
+      <div class="card">
+        <h2>Добавить</h2>
+        <div class="field">
+          <select id="f-type">
+            <option value="expense">➖ Расход</option>
+            <option value="income">➕ Доход</option>
+          </select>
+        </div>
+        <div class="field"><input type="number" id="f-amount" placeholder="Сумма"/></div>
+        <div class="field"><input type="text" id="f-cat" placeholder="Категория"/></div>
+        <button class="btn btn-primary btn-block" onclick="addFinance()">Добавить</button>
+      </div>
+    </div>
+  `;
+}
+
+window.addFinance = async function() {
+  const amount = parseFloat(document.getElementById('f-amount').value);
+  if (!amount || amount <= 0) return toast('Введите сумму', 'error');
+  const f = {
+    id: uid(),
+    type: document.getElementById('f-type').value,
+    amount,
+    category: document.getElementById('f-cat').value.trim(),
+    timestamp: nowISO(),
+    created_at: nowISO()
+  };
+  await db.insert('finance', f);
+  cache.finance.push(f);
+  toast('Добавлено', 'success');
+  haptic('success');
+  renderFinance();
+};
+
+/* ══════════════════════════════════════════════════════════════════
+   PAGE: HISTORY
+   ══════════════════════════════════════════════════════════════════ */
+function renderHistory() {
+  document.getElementById('app').innerHTML = `
+    <div class="page">
+      <div class="title-xl">История</div>
+      <div class="card">
+        ${cache.actionLog.length ? cache.actionLog.slice().reverse().slice(0, 100).map(l => `
+          <div style="padding:12px 0;border-bottom:0.5px solid var(--divider);">
+            <div class="row-between">
+              <span style="font-weight:600;font-size:14px;">${esc(l.action)}</span>
+              <span class="caption text-tertiary">${fmtTime(l.timestamp)}</span>
+            </div>
+            ${l.details ? `<div class="footnote text-secondary mt-1">${esc(l.details)}</div>` : ''}
+          </div>
+        `).join('') : '<div class="empty"><div class="empty-icon">📋</div><div class="empty-text">Журнал пуст</div></div>'}
       </div>
     </div>
   `;
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   PAGE: DB MANAGER — профессиональное управление базой
+   PAGE: DB MANAGER
    ══════════════════════════════════════════════════════════════════ */
 function renderDBManager() {
   const stores = Object.keys(STORES);
   document.getElementById('app').innerHTML = `
     <div class="page">
-      <div class="title-large">База данных</div>
-      
-      <div class="grouped">
-        <div class="grouped-header">Статус</div>
-        <div class="list-row no-press">
-          <div class="list-icon" style="background:var(--success);">✓</div>
+      <div class="title-xl">База данных</div>
+      <div class="card">
+        <div class="list-row" style="margin-bottom:8px;">
+          <div class="list-icon" style="background:var(--success);color:#000;">✓</div>
           <div class="list-body"><div class="list-title">IndexedDB</div><div class="list-subtitle">${DB_NAME} v${DB_VERSION}</div></div>
         </div>
-        <div class="list-row no-press">
+        <div class="list-row">
           <div class="list-icon" style="background:var(--brand);">📦</div>
           <div class="list-body"><div class="list-title">Всего записей</div></div>
           <div class="list-value">${stores.reduce((s, k) => s + (cache[k]?.length || 0), 0)}</div>
         </div>
       </div>
-      
-      <div class="grouped">
-        <div class="grouped-header">Таблицы</div>
-        ${stores.map(s => {
-          const count = cache[s]?.length || 0;
-          return `
-            <div class="list-row" onclick="manageTable('${s}')">
-              <div class="list-icon" style="background:var(--fill-secondary);color:var(--label-primary);font-size:14px;">📋</div>
-              <div class="list-body"><div class="list-title">${s}</div></div>
-              <div class="list-value">${count}</div>
-              <div class="list-chevron">›</div>
-            </div>
-          `;
-        }).join('')}
+      <div class="card">
+        <h2>Таблицы</h2>
+        ${stores.map(s => `
+          <div class="list-row" style="margin-bottom:6px;" onclick="manageTable('${s}')">
+            <div class="list-icon" style="background:var(--surface-3);color:var(--label-primary);">${icon('database', 20)}</div>
+            <div class="list-body"><div class="list-title">${s}</div></div>
+            <div class="list-value">${cache[s]?.length || 0}</div>
+            <div class="list-chevron">${icon('chevronRight', 18)}</div>
+          </div>
+        `).join('')}
       </div>
-      
-      <div class="grouped">
-        <div class="grouped-header">Операции</div>
-        <div class="list-row" onclick="exportDB()">
-          <div class="list-icon" style="background:var(--brand);">📤</div>
-          <div class="list-body"><div class="list-title">Экспорт JSON</div></div>
-          <div class="list-chevron">›</div>
-        </div>
-        <div class="list-row" onclick="document.getElementById('importDB').click()">
-          <div class="list-icon" style="background:var(--success);">📥</div>
-          <div class="list-body"><div class="list-title">Импорт JSON</div></div>
-          <div class="list-chevron">›</div>
-          <input type="file" id="importDB" accept=".json" style="display:none" onchange="importDB(event)"/>
-        </div>
-        <div class="list-row" onclick="if(confirm('Полный сброс базы?')){clearDB()}">
-          <div class="list-icon" style="background:var(--danger);">🗑</div>
-          <div class="list-body"><div class="list-title" style="color:var(--danger);">Сбросить базу</div></div>
-        </div>
+      <div class="card">
+        <h2>Операции</h2>
+        <button class="btn btn-primary btn-block mb-2" onclick="exportDB()">📤 Экспорт JSON</button>
+        <button class="btn btn-ghost btn-block mb-2" onclick="document.getElementById('importDB').click()">📥 Импорт JSON</button>
+        <input type="file" id="importDB" accept=".json" style="display:none" onchange="importDB(event)"/>
+        <button class="btn btn-danger btn-block" onclick="if(confirm('Сбросить всю базу?'))clearDB()">🗑 Полный сброс</button>
       </div>
     </div>
   `;
@@ -2395,17 +1268,15 @@ function renderDBManager() {
 window.manageTable = function(store) {
   const items = cache[store] || [];
   openSheet(`${store} (${items.length})`, `
-    ${items.length ? `
-      <div style="max-height:60vh;overflow-y:auto;">
-        ${items.slice(0, 100).map(item => `
-          <div style="padding:10px 0;border-bottom:0.5px solid var(--separator);">
-            <div style="font-size:14px;font-weight:500;margin-bottom:4px;">${esc(item.title || item.name || item.text || item.date || item.id?.slice(0, 10))}</div>
-            <div class="footnote text-secondary" style="font-family:monospace;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(JSON.stringify(item).slice(0, 100))}</div>
-          </div>
-        `).join('')}
-      </div>
-      <button class="btn btn-danger btn-block" style="margin-top:12px;" onclick="if(confirm('Очистить таблицу ${store}?')){clearTable('${store}')}">Очистить таблицу</button>
-    ` : '<div class="empty"><div class="empty-text">Таблица пуста</div></div>'}
+    <div style="max-height:60vh;overflow-y:auto;">
+      ${items.slice(0, 100).map(item => `
+        <div style="padding:12px 0;border-bottom:0.5px solid var(--divider);">
+          <div style="font-weight:600;margin-bottom:4px;">${esc(item.title || item.name || item.date || item.id?.slice(0, 12))}</div>
+          <div class="caption text-tertiary" style="font-family:monospace;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(JSON.stringify(item).slice(0, 80))}</div>
+        </div>
+      `).join('')}
+    </div>
+    ${items.length ? `<button class="btn btn-danger btn-block mt-4" onclick="if(confirm('Очистить?')){clearTable('${store}')}">Очистить таблицу</button>` : ''}
   `);
 };
 
@@ -2413,7 +1284,7 @@ window.clearTable = async function(store) {
   await db.clear(store);
   cache[store] = [];
   closeSheet();
-  toast('Таблица очищена', 'success');
+  toast('Очищено', 'success');
   renderDBManager();
 };
 
@@ -2423,7 +1294,7 @@ window.exportDB = async function() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `ai-health-backup-${today()}.json`;
+  a.download = `ai-ultra-${today()}.json`;
   a.click();
   URL.revokeObjectURL(url);
   toast('Экспорт готов', 'success');
@@ -2441,89 +1312,64 @@ window.importDB = async function(e) {
       await loadAll();
       toast('Импорт успешен', 'success');
       renderDBManager();
-    } catch (err) {
-      toast('Ошибка импорта', 'error');
-    }
+    } catch (err) { toast('Ошибка: ' + err.message, 'error'); }
   };
   reader.readAsText(file);
 };
 
 window.clearDB = async function() {
-  for (const store of Object.keys(STORES)) {
-    await db.clear(store);
-  }
+  for (const s of Object.keys(STORES)) await db.clear(s);
   location.reload();
 };
 
 /* ══════════════════════════════════════════════════════════════════
-   STUBS — остальные страницы (сокращены для размера)
+   PAGE: SETTINGS
    ══════════════════════════════════════════════════════════════════ */
-function renderCalendar() {
-  document.getElementById('app').innerHTML = `
-    <div class="page">
-      <div class="title-large">Календарь</div>
-      <div class="card">
-        <div class="empty">
-          <div class="empty-icon">📅</div>
-          <div class="empty-title">Календарь</div>
-          <div class="empty-text">Полная версия календаря в разработке.<br>Сейчас доступно в разделе "Расписание".</div>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function renderStats() {
-  const totalTasks = cache.tasks.length;
-  const doneTasks = cache.tasks.filter(t => t.status === 'completed').length;
-  const totalChats = cache.chats.filter(c => c.role === 'user').length;
-  document.getElementById('app').innerHTML = `
-    <div class="page">
-      <div class="title-large">Статистика</div>
-      <div class="stat-grid">
-        <div class="stat-item"><div class="stat-value">${doneTasks}</div><div class="stat-label">Задач</div></div>
-        <div class="stat-item"><div class="stat-value">${cache.stats.streak || 0}</div><div class="stat-label">Streak</div></div>
-        <div class="stat-item"><div class="stat-value">${totalChats}</div><div class="stat-label">Диалогов</div></div>
-      </div>
-      <div class="card" style="margin-top:12px;">
-        <div style="margin-bottom:12px;">
-          <div class="row-between" style="margin-bottom:6px;">
-            <span class="subhead">Прогресс задач</span>
-            <span class="footnote text-secondary">${totalTasks ? Math.round(doneTasks/totalTasks*100) : 0}%</span>
-          </div>
-          <div class="progress"><div class="progress-fill" style="width:${totalTasks ? (doneTasks/totalTasks*100) : 0}%;"></div></div>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
 function renderSettings() {
   const s = cache.settings;
   document.getElementById('app').innerHTML = `
     <div class="page">
-      <div class="title-large">Настройки</div>
-      <div class="grouped">
-        <div class="grouped-header">Профиль</div>
-        <div class="list-row no-press">
-          <div class="list-body"><div class="list-title">Имя</div></div>
-          <input type="text" id="s-name" value="${esc(s.username)}" style="width:auto;padding:6px 10px;font-size:14px;text-align:right;background:transparent;color:var(--label-secondary);" onchange="saveName(this.value)"/>
-        </div>
-        <div class="list-row no-press">
-          <div class="list-body"><div class="list-title">Тема</div></div>
+      <div class="title-xl">Настройки</div>
+      <div class="card">
+        <h2>Профиль</h2>
+        <div class="field"><label class="field-label">Имя</label><input type="text" id="s-name" value="${esc(s.username)}" onchange="saveName(this.value)"/></div>
+        <div class="list-row no-press" style="margin-bottom:8px;">
+          <div class="list-body"><div class="list-title">Тёмная тема</div></div>
           <button class="switch ${s.theme === 'dark' ? 'on' : ''}" onclick="toggleTheme()"></button>
         </div>
       </div>
-      <div class="grouped">
-        <div class="grouped-header">Данные</div>
-        <div class="list-row" onclick="navigate('dbmanager')">
-          <div class="list-icon" style="background:var(--purple);">🗄</div>
-          <div class="list-body"><div class="list-title">База данных</div></div>
-          <div class="list-chevron">›</div>
+      <div class="card">
+        <h2>Google Calendar</h2>
+        <div class="list-row" style="margin-bottom:8px;" onclick="openGoogleCalendar()">
+          <div class="list-icon" style="background:var(--success);">${icon('google', 20)}</div>
+          <div class="list-body">
+            <div class="list-title">${s.googleCalendarSyncEnabled ? 'Подключено' : 'Не подключено'}</div>
+            <div class="list-subtitle">Двусторонняя синхронизация</div>
+          </div>
+          <div class="list-chevron">${icon('chevronRight', 18)}</div>
         </div>
       </div>
-      <div class="footnote text-tertiary" style="text-align:center;margin-top:20px;">
-        AI Health Ecosystem<br>Enterprise Edition v12.0
+      <div class="card">
+        <h2>AI</h2>
+        <div class="list-row" onclick="openAISettings()">
+          <div class="list-icon" style="background:var(--brand);">${icon('ai', 20)}</div>
+          <div class="list-body">
+            <div class="list-title">${AI_PROVIDERS[s.provider]?.name || 'Не настроено'}</div>
+            <div class="list-subtitle">${s.apiKey ? '✓ Ключ установлен' : 'API ключ не задан'}</div>
+          </div>
+          <div class="list-chevron">${icon('chevronRight', 18)}</div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Данные</h2>
+        <div class="list-row" onclick="navigate('dbmanager')">
+          <div class="list-icon" style="background:var(--accent-violet);">${icon('database', 20)}</div>
+          <div class="list-body"><div class="list-title">База данных</div></div>
+          <div class="list-chevron">${icon('chevronRight', 18)}</div>
+        </div>
+      </div>
+      <div class="footnote text-tertiary" style="text-align:center;margin-top:32px;">
+        AI Health Ecosystem<br>Ultra Edition v13.0
       </div>
     </div>
   `;
@@ -2536,44 +1382,16 @@ window.saveName = async function(name) {
   toast('Сохранено', 'success');
 };
 
-// Заглушки для разделов (можно расширять)
-function renderHabits() { placeholder('🔄', 'Привычки'); }
-function renderGoals() { placeholder('🎯', 'Цели'); }
-function renderTimer() { placeholder('⏱', 'Таймер'); }
-function renderNotes() { placeholder('📝', 'Заметки'); }
-function renderLearning() { placeholder('📚', 'Обучение'); }
-function renderMatrix() { placeholder('🔢', 'Матрица'); }
-function renderMood() { placeholder('💭', 'Настроение'); }
-function renderWater() { placeholder('💧', 'Вода'); }
-function renderMeds() { placeholder('💊', 'Лекарства'); }
-function renderWorkouts() { placeholder('🏋️', 'Тренировки'); }
-function renderJournal() { placeholder('📓', 'Дневник'); }
-function renderMedia() { placeholder('📖', 'Медиатека'); }
-function renderFinance() { placeholder('💰', 'Финансы'); }
-
-function placeholder(icon, title) {
-  document.getElementById('app').innerHTML = `
-    <div class="page">
-      <div class="title-large">${title}</div>
-      <div class="card">
-        <div class="empty">
-          <div class="empty-icon">${icon}</div>
-          <div class="empty-title">Раздел в разработке</div>
-          <div class="empty-text">Скоро здесь появится полный функционал</div>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
 /* ══════════════════════════════════════════════════════════════════
    THEME
    ══════════════════════════════════════════════════════════════════ */
 function applyTheme(theme) {
   document.body.classList.toggle('light', theme === 'light');
   const btn = document.getElementById('themeBtn');
-  if (btn) btn.textContent = theme === 'light' ? '☀️' : '🌙';
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'light' ? '#f2f2f7' : '#000000');
+  if (btn) btn.innerHTML = theme === 'light' 
+    ? `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>`
+    : `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'light' ? '#f4f4f8' : '#000000');
 }
 
 window.toggleTheme = async function() {
@@ -2590,9 +1408,9 @@ window.toggleTheme = async function() {
 async function init() {
   await loadAll();
   applyTheme(cache.settings.theme);
+  initGoogleAuth();
   
   if (cache.tasks.length === 0) {
-    // Seed demo
     const demo = [
       { id: uid(), title: 'Завершить отчёт', category: 'work', planned_time: 45, actual_time: 0, status: 'pending', priority: 'high', created_at: nowISO() },
       { id: uid(), title: 'Повторить 10 слов', category: 'learning', planned_time: 15, actual_time: 0, status: 'pending', priority: 'medium', created_at: nowISO() },
@@ -2605,23 +1423,22 @@ async function init() {
   renderTabBar();
   renderDashboard();
   
-  // Streak
+  // Streak update
   const t = today();
   if (cache.stats.lastActiveDay !== t) {
     const y = new Date(); y.setDate(y.getDate() - 1);
-    if (cache.stats.lastActiveDay === y.toISOString().slice(0, 10)) {
-      cache.stats.streak = (cache.stats.streak || 0) + 1;
-    } else {
-      cache.stats.streak = 1;
-    }
+    cache.stats.streak = cache.stats.lastActiveDay === y.toISOString().slice(0, 10) ? (cache.stats.streak || 0) + 1 : 1;
     cache.stats.lastActiveDay = t;
     await saveSetting('stats', cache.stats);
   }
+  
+  // Auto-sync Google каждые 5 мин
+  setInterval(() => { if (cache.settings.googleCalendarSyncEnabled && googleAccessToken) syncFromGoogleSilent(); }, 5 * 60 * 1000);
 }
 
 init().catch(e => {
-  console.error('Init error:', e);
-  document.getElementById('app').innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-text">Ошибка загрузки: ' + e.message + '</div></div>';
+  console.error(e);
+  document.getElementById('app').innerHTML = `<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-title">Ошибка</div><div class="empty-text">${esc(e.message)}</div></div>`;
 });
 </script>
 </body>
