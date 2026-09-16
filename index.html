@@ -5,37 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>AI Health Ecosystem · Ultra</title>
+<title>AI Health Ecosystem</title>
 <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 <style>
-/* ══════════════════════════════════════════════════════════════════
-   SAMSUNG ONE UI 8 (Galaxy S26 Ultra) DESIGN SYSTEM v15
-   ══════════════════════════════════════════════════════════════════ */
 :root {
-  --bg: #000000;
+  --bg: #000;
   --bg-1: #0a0a0f;
   --bg-2: #131318;
   --bg-3: #1c1c22;
-  --surface-1: rgba(255,255,255,0.03);
   --surface-2: rgba(255,255,255,0.06);
   --surface-3: rgba(255,255,255,0.09);
-  --surface-4: rgba(255,255,255,0.13);
   --divider: rgba(255,255,255,0.07);
-  --divider-strong: rgba(255,255,255,0.12);
   --text: #ffffff;
   --text-2: rgba(255,255,255,0.72);
   --text-3: rgba(255,255,255,0.5);
-  --text-4: rgba(255,255,255,0.32);
-  
   --brand: #4a9eff;
   --brand-2: #a78bfa;
-  --brand-3: #c4b5fd;
   --brand-glow: rgba(74,158,255,0.4);
   --success: #34d399;
   --warning: #ff9f43;
   --danger: #ff5e57;
-  --info: #22d3ee;
-  
   --coach: #a78bfa;
   --psych: #22d3ee;
   --doctor: #34d399;
@@ -43,48 +32,26 @@
   --fitness: #ff6b9d;
   --lawyer: #c4b5fd;
   --finance: #ffb84d;
-  
-  --r-sm: 12px;
-  --r-md: 18px;
-  --r-lg: 22px;
-  --r-xl: 26px;
-  --r-2xl: 32px;
-  --r-full: 9999px;
-  
-  --header-h: 56px;
-  --tabbar-h: 68px;
+  --r-sm: 12px; --r-md: 18px; --r-lg: 22px; --r-xl: 26px; --r-full: 9999px;
+  --header-h: 56px; --tabbar-h: 68px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
-  
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 body.light {
-  --bg: #f4f4f8;
-  --bg-1: #ffffff;
-  --bg-2: #f8f8fc;
-  --bg-3: #eeeef4;
-  --surface-1: rgba(0,0,0,0.02);
-  --surface-2: rgba(0,0,0,0.05);
-  --surface-3: rgba(0,0,0,0.08);
-  --surface-4: rgba(0,0,0,0.11);
+  --bg: #f4f4f8; --bg-1: #fff; --bg-2: #f8f8fc; --bg-3: #eeeef4;
+  --surface-2: rgba(0,0,0,0.05); --surface-3: rgba(0,0,0,0.08);
   --divider: rgba(0,0,0,0.08);
-  --divider-strong: rgba(0,0,0,0.14);
-  --text: #000000;
-  --text-2: rgba(0,0,0,0.66);
-  --text-3: rgba(0,0,0,0.44);
-  --text-4: rgba(0,0,0,0.28);
+  --text: #000; --text-2: rgba(0,0,0,0.66); --text-3: rgba(0,0,0,0.44);
 }
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html { height: 100%; -webkit-text-size-adjust: 100%; }
+html { height: 100%; }
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Samsung One', 'Inter', system-ui, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', system-ui, sans-serif;
   font-size: 16px; line-height: 1.45; color: var(--text); background: var(--bg);
-  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
-  overscroll-behavior-y: none; overflow-x: hidden;
-  min-height: 100vh; min-height: 100dvh;
+  -webkit-font-smoothing: antialiased; overscroll-behavior-y: none;
+  overflow-x: hidden; min-height: 100vh; min-height: 100dvh;
   letter-spacing: -0.01em;
-  transition: background 0.3s var(--ease), color 0.3s var(--ease);
 }
 body::before {
   content: ''; position: fixed; inset: 0;
@@ -93,14 +60,9 @@ body::before {
     radial-gradient(ellipse 50% 40% at 80% 100%, rgba(167,139,250,0.08), transparent 60%);
   pointer-events: none; z-index: 0;
 }
-
-/* ═══════ SVG ICONS ═══════ */
 .icon { width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .icon svg { width: 100%; height: 100%; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.icon-sm { width: 20px; height: 20px; }
-.icon-lg { width: 32px; height: 32px; }
 
-/* ═══════ HEADER ═══════ */
 .app-header {
   position: sticky; top: 0; z-index: 100;
   padding-top: var(--safe-top);
@@ -111,9 +73,8 @@ body::before {
 }
 body.light .app-header { background: rgba(244,244,248,0.85); }
 .header-inner {
-  height: var(--header-h);
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 20px; gap: 12px;
+  height: var(--header-h); display: flex; align-items: center;
+  justify-content: space-between; padding: 0 20px; gap: 12px;
 }
 .brand { display: flex; align-items: center; gap: 10px; font-size: 19px; font-weight: 700; letter-spacing: -0.02em; }
 .brand-logo {
@@ -121,20 +82,12 @@ body.light .app-header { background: rgba(244,244,248,0.85); }
   background: linear-gradient(135deg, var(--brand), var(--brand-2));
   display: grid; place-items: center; color: #fff;
   box-shadow: 0 4px 12px var(--brand-glow);
-  position: relative; overflow: hidden;
 }
-.brand-logo::after {
-  content: ''; position: absolute; inset: 0;
-  background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.3) 50%, transparent 60%);
-  animation: shimmer 3s infinite;
-}
-@keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
 .header-actions { display: flex; align-items: center; gap: 8px; }
 .icon-btn {
   width: 40px; height: 40px; border-radius: 50%;
-  background: var(--surface-2); border: none;
-  color: var(--text); cursor: pointer;
-  display: grid; place-items: center;
+  background: var(--surface-2); border: none; color: var(--text);
+  cursor: pointer; display: grid; place-items: center;
   transition: all 0.2s var(--ease);
 }
 .icon-btn:active { transform: scale(0.9); background: var(--surface-3); }
@@ -144,8 +97,6 @@ body.light .app-header { background: rgba(244,244,248,0.85); }
   color: var(--text-2); max-width: 120px;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-
-/* ═══════ MAIN ═══════ */
 .app-main {
   position: relative; z-index: 1;
   max-width: 680px; margin: 0 auto; width: 100%;
@@ -153,13 +104,9 @@ body.light .app-header { background: rgba(244,244,248,0.85); }
   padding-bottom: calc(var(--tabbar-h) + var(--safe-bottom) + 64px) !important;
   min-height: calc(100dvh - var(--header-h) - var(--safe-top));
 }
-.page { animation: pageIn 0.35s var(--ease-out); }
-@keyframes pageIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+.page { animation: pageIn 0.35s var(--ease); }
+@keyframes pageIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* ═══════ TABBAR ═══════ */
 .tab-bar {
   position: fixed; bottom: 0; left: 0; right: 0;
   z-index: 100; padding-bottom: var(--safe-bottom);
@@ -167,8 +114,7 @@ body.light .app-header { background: rgba(244,244,248,0.85); }
   backdrop-filter: saturate(180%) blur(24px);
   -webkit-backdrop-filter: saturate(180%) blur(24px);
   border-top: 0.5px solid var(--divider);
-  display: flex;
-  height: calc(var(--tabbar-h) + var(--safe-bottom));
+  display: flex; height: calc(var(--tabbar-h) + var(--safe-bottom));
 }
 body.light .tab-bar { background: rgba(244,244,248,0.9); }
 .tab-item {
@@ -190,12 +136,10 @@ body.light .tab-bar { background: rgba(244,244,248,0.9); }
 }
 .tab-item:active { opacity: 0.6; }
 
-/* ═══════ TYPOGRAPHY ═══════ */
 .title-xl { font-size: 32px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 24px; }
 .title-l { font-size: 26px; font-weight: 800; letter-spacing: -0.025em; margin-bottom: 16px; }
 .title-m { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 12px; }
 
-/* ═══════ CARDS ═══════ */
 .card {
   background: var(--bg-2); border-radius: var(--r-xl);
   padding: 20px; margin-bottom: 16px;
@@ -212,7 +156,6 @@ body.light .tab-bar { background: rgba(244,244,248,0.9); }
   display: flex; align-items: center; gap: 8px;
 }
 
-/* ═══════ BUTTONS ═══════ */
 .btn {
   display: inline-flex; align-items: center; justify-content: center;
   gap: 8px; padding: 14px 20px; border-radius: var(--r-xl);
@@ -234,7 +177,6 @@ body.light .tab-bar { background: rgba(244,244,248,0.9); }
 .btn-icon.btn-sm { width: 34px; height: 34px; }
 .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
 
-/* ═══════ INPUTS ═══════ */
 .field { margin-bottom: 16px; }
 .field-label {
   display: block; font-size: 13px; font-weight: 600;
@@ -264,7 +206,6 @@ select {
   padding-right: 40px;
 }
 
-/* ═══════ TASK ═══════ */
 .task-item {
   background: var(--bg-2); border-radius: var(--r-lg);
   padding: 16px; margin-bottom: 8px;
@@ -280,7 +221,7 @@ select {
   border: 2px solid var(--text-3); background: transparent;
   display: grid; place-items: center; cursor: pointer;
   flex-shrink: 0; transition: all 0.3s var(--ease);
-  padding: 0; color: transparent;
+  padding: 0; color: transparent; font-size: 14px; font-weight: 700;
 }
 .task-checkbox.checked {
   background: var(--success); border-color: var(--success); color: #000;
@@ -297,7 +238,6 @@ select {
 .priority-bar.medium { background: var(--warning); }
 .priority-bar.low { background: var(--success); }
 
-/* ═══════ PROGRESS ═══════ */
 .progress {
   height: 6px; background: var(--surface-3);
   border-radius: var(--r-full); overflow: hidden;
@@ -307,7 +247,6 @@ select {
   border-radius: var(--r-full); transition: width 0.5s var(--ease);
 }
 
-/* ═══════ MODAL ═══════ */
 .overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,0.75);
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
@@ -319,7 +258,7 @@ select {
   background: var(--bg-1); width: 100%; max-width: 540px;
   max-height: 92dvh; border-radius: 32px 32px 0 0;
   padding: 20px; padding-bottom: calc(20px + var(--safe-bottom));
-  overflow-y: auto; animation: sheetUp 0.3s var(--ease-out);
+  overflow-y: auto; animation: sheetUp 0.3s var(--ease);
 }
 @keyframes sheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 .modal-header {
@@ -332,10 +271,9 @@ select {
   width: 36px; height: 36px; border-radius: 50%;
   background: var(--surface-2); border: none;
   color: var(--text-2); display: grid; place-items: center;
-  cursor: pointer;
+  cursor: pointer; font-size: 16px;
 }
 
-/* ═══════ TOAST ═══════ */
 .toast-container {
   position: fixed; top: calc(var(--header-h) + var(--safe-top) + 12px);
   left: 50%; transform: translateX(-50%); z-index: 2000;
@@ -348,7 +286,7 @@ select {
   padding: 16px 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.5);
   display: flex; align-items: center; gap: 12px;
   font-size: 14px; font-weight: 600;
-  animation: toastIn 0.3s var(--ease-out);
+  animation: toastIn 0.3s var(--ease);
   pointer-events: auto;
 }
 .toast.success { background: rgba(52,211,153,0.98); color: #000; }
@@ -359,7 +297,6 @@ select {
   to { opacity: 1; transform: translate(-50%, 0) scale(1); }
 }
 
-/* ═══════ SEGMENTED ═══════ */
 .segmented {
   display: flex; background: var(--surface-2);
   border-radius: var(--r-xl); padding: 4px; gap: 2px;
@@ -376,7 +313,6 @@ select {
   box-shadow: 0 2px 6px rgba(0,0,0,0.4);
 }
 
-/* ═══════ SEARCH ═══════ */
 .search-bar {
   display: flex; align-items: center; gap: 8px;
   padding: 12px 16px; background: var(--surface-2);
@@ -388,7 +324,6 @@ select {
 }
 .search-bar input:focus { background: transparent; box-shadow: none; }
 
-/* ═══════ PERSONA ═══════ */
 .persona-bar {
   display: flex; gap: 8px; padding: 8px;
   background: var(--surface-2); border-radius: var(--r-full);
@@ -412,12 +347,11 @@ select {
 .persona-item.active[data-p="lawyer"] { background: var(--lawyer); color: #000; }
 .persona-item.active[data-p="finance"] { background: var(--finance); color: #000; }
 
-/* ═══════ CHAT ═══════ */
 .chat { display: flex; flex-direction: column; gap: 12px; padding: 8px 0; }
 .msg {
   max-width: 86%; padding: 12px 16px;
   border-radius: 22px; font-size: 16px; line-height: 1.5;
-  word-wrap: break-word; animation: msgIn 0.3s var(--ease-out);
+  word-wrap: break-word; animation: msgIn 0.3s var(--ease);
 }
 @keyframes msgIn {
   from { opacity: 0; transform: translateY(8px) scale(0.95); }
@@ -453,7 +387,6 @@ select {
   30% { transform: translateY(-5px); opacity: 1; }
 }
 
-/* ═══════ CHIPS ═══════ */
 .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
 .chip {
   padding: 8px 14px; border-radius: var(--r-full);
@@ -464,11 +397,10 @@ select {
 }
 .chip:active { transform: scale(0.94); }
 
-/* ═══════ STATS ═══════ */
 .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 .stat-item {
   text-align: center; padding: 16px 8px;
-  background: var(--surface-1); border-radius: var(--r-lg);
+  background: var(--surface-2); border-radius: var(--r-lg);
 }
 .stat-value {
   font-size: 22px; font-weight: 800;
@@ -480,7 +412,6 @@ select {
   text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600;
 }
 
-/* ═══════ SWITCH ═══════ */
 .switch {
   position: relative; width: 52px; height: 32px;
   background: var(--surface-3); border-radius: var(--r-full);
@@ -496,7 +427,6 @@ select {
 .switch.on { background: var(--brand); }
 .switch.on::after { transform: translateX(20px); }
 
-/* ═══════ LIST ROW ═══════ */
 .list-row {
   display: flex; align-items: center; gap: 14px;
   padding: 16px; background: var(--bg-2);
@@ -507,7 +437,7 @@ select {
 .list-icon {
   width: 44px; height: 44px; border-radius: 14px;
   display: grid; place-items: center; flex-shrink: 0;
-  color: #fff;
+  font-size: 22px;
 }
 .list-body { flex: 1; min-width: 0; }
 .list-title {
@@ -519,16 +449,13 @@ select {
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .list-value { font-size: 16px; color: var(--text-2); font-weight: 600; flex-shrink: 0; }
-.list-chevron { color: var(--text-3); flex-shrink: 0; }
+.list-chevron { color: var(--text-3); flex-shrink: 0; font-size: 20px; }
 
-/* ═══════ EMPTY ═══════ */
 .empty { text-align: center; padding: 48px 20px; color: var(--text-2); }
-.empty-icon { margin-bottom: 16px; opacity: 0.3; display: flex; justify-content: center; }
-.empty-icon svg { width: 56px; height: 56px; stroke-width: 1.5; }
+.empty-icon { font-size: 56px; opacity: 0.3; margin-bottom: 16px; }
 .empty-title { font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
 .empty-text { font-size: 14px; line-height: 1.5; }
 
-/* ═══════ UTILS ═══════ */
 .hidden { display: none !important; }
 .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .row-between { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
@@ -558,11 +485,11 @@ select {
 <header class="app-header">
   <div class="header-inner">
     <div class="brand">
-      <div class="brand-logo" id="logoIcon"></div>
+      <div class="brand-logo">🧠</div>
       <span>AI Health</span>
     </div>
     <div class="header-actions">
-      <button class="icon-btn" onclick="toggleTheme()" id="themeBtn"></button>
+      <button class="icon-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
       <div class="user-chip" id="userChip">Гость</div>
     </div>
   </div>
@@ -575,188 +502,144 @@ select {
 <script>
 'use strict';
 
-/* ══════════════════════════════════════════════════════════════════
-   CONFIG: Google Calendar OAuth Client ID
-   Получи в https://console.cloud.google.com/
-   ══════════════════════════════════════════════════════════════════ */
-const GOOGLE_CLIENT_ID = ''; // Вставь свой OAuth Client ID здесь
-const GOOGLE_SCOPES = 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events';
+/* ═══ TELEGRAM INIT ═══ */
+(function() {
+  try {
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      tg.expand();
+      tg.ready();
+      try { tg.setHeaderColor?.('#000000'); } catch(e){}
+      try { tg.setBackgroundColor?.('#000000'); } catch(e){}
+      const u = tg.initDataUnsafe?.user;
+      if (u) {
+        const chip = document.getElementById('userChip');
+        if (chip) chip.textContent = u.first_name || u.username || 'Пользователь';
+      }
+    }
+  } catch(e) { console.warn('TG init error:', e); }
+})();
 
-/* ══════════════════════════════════════════════════════════════════
-   CUSTOM SVG ICON LIBRARY (35 иконок, самописные)
-   ══════════════════════════════════════════════════════════════════ */
-const SVG = {
-  brain: '<svg viewBox="0 0 24 24"><path d="M9.5 2A2.5 2.5 0 0 0 7 4.5v.55A3.5 3.5 0 0 0 4 8.5c0 .55.13 1.07.36 1.54A3.5 3.5 0 0 0 2 13.5 3.5 3.5 0 0 0 5.5 17H6v.5a2.5 2.5 0 0 0 5 0v-13A2.5 2.5 0 0 0 8.5 2h1zm5 0h1A2.5 2.5 0 0 1 18 4.5v.55A3.5 3.5 0 0 1 20 8.5c0 .55-.13 1.07-.36 1.54A3.5 3.5 0 0 1 22 13.5 3.5 3.5 0 0 1 18.5 17H18v.5a2.5 2.5 0 0 1-5 0v-13A2.5 2.5 0 0 1 15.5 2z"/></svg>',
-  home: '<svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v10a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg>',
-  tasks: '<svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>',
-  sparkle: '<svg viewBox="0 0 24 24"><path d="M12 2l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/></svg>',
-  heart: '<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>',
-  more: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="5" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg>',
-  plus: '<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
-  check: '<svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>',
-  trash: '<svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>',
-  close: '<svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>',
-  chevR: '<svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>',
-  chevL: '<svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>',
-  search: '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>',
-  calendar: '<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>',
-  clock: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
-  chart: '<svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/></svg>',
-  refresh: '<svg viewBox="0 0 24 24"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>',
-  target: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>',
-  note: '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>',
-  book: '<svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
-  grid: '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>',
-  focus: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="11" opacity="0.4"/></svg>',
-  mood: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>',
-  water: '<svg viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>',
-  pill: '<svg viewBox="0 0 24 24"><path d="M10.5 20.5a7 7 0 0 1-9.9-9.9l9.9 9.9a7 7 0 0 0 9.9-9.9l-9.9-9.9"/><path d="M8.5 8.5l7 7"/></svg>',
-  dumbbell: '<svg viewBox="0 0 24 24"><path d="M6.5 6.5h11v11h-11z"/><path d="M4 9v6M2 10v4M20 9v6M22 10v4"/></svg>',
-  lotus: '<svg viewBox="0 0 24 24"><path d="M12 3c-2 3-2 6 0 9 2-3 2-6 0-9z"/><path d="M12 12c-3-2-6-1-8 2 3 1 6 0 8-2z"/><path d="M12 12c3-2 6-1 8 2-3 1-6 0-8-2z"/><path d="M12 21c-4 0-7-2-9-5 3-1 6 0 9 5 3-5 6-6 9-5-2 3-5 5-9 5z"/></svg>',
-  journal: '<svg viewBox="0 0 24 24"><path d="M4 4a2 2 0 0 1 2-2h14v20H6a2 2 0 0 1-2-2z"/><path d="M8 2v20"/></svg>',
-  film: '<svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="2.18"/><path d="M7 2v20M17 2v20M2 12h20M2 7h5M2 17h5M17 17h5M17 7h5"/></svg>',
-  wallet: '<svg viewBox="0 0 24 24"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/></svg>',
-  database: '<svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>',
-  settings: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
-  google: '<svg viewBox="0 0 24 24" stroke="none" fill="none"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>',
-  fire: '<svg viewBox="0 0 24 24"><path d="M12 2c1 3 4 5 4 9a4 4 0 0 1-8 0c0-4 3-6 4-9z"/></svg>',
-  star: '<svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>',
-  edit: '<svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>',
-  send: '<svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>',
-  download: '<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/></svg>',
-  upload: '<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5M12 3v12"/></svg>',
-  sync: '<svg viewBox="0 0 24 24"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>'
-};
-function icon(name, size = 24) {
-  return `<span class="icon" style="width:${size}px;height:${size}px;">${SVG[name] || ''}</span>`;
-}
-
-/* ══════════════════════════════════════════════════════════════════
-   UTILS
-   ══════════════════════════════════════════════════════════════════ */
+/* ═══ UTILS ═══ */
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
 function nowISO() { return new Date().toISOString(); }
 function today() { return new Date().toISOString().slice(0, 10); }
 function fmtDate(d) { try { return new Date(d).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }); } catch(e) { return '—'; } }
 function fmtTime(d) { try { return new Date(d).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }); } catch(e) { return '—'; } }
-function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c])); }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
 
-function toast(msg, type = 'info', duration = 2500) {
+function toast(msg, type, duration) {
+  type = type || 'info';
+  duration = duration || 2500;
   const c = document.getElementById('toasts');
   if (!c) return;
   const el = document.createElement('div');
-  el.className = `toast ${type}`;
+  el.className = 'toast ' + type;
   el.textContent = msg;
   c.appendChild(el);
-  setTimeout(() => {
+  setTimeout(function() {
     el.style.opacity = '0';
     el.style.transform = 'translate(-50%, -12px)';
     el.style.transition = 'all 0.3s';
-    setTimeout(() => el.remove(), 300);
+    setTimeout(function() { el.remove(); }, 300);
   }, duration);
 }
-function haptic(type = 'light') {
-  if (window.Telegram?.WebApp?.HapticFeedback) {
-    try {
-      const h = window.Telegram.WebApp.HapticFeedback;
-      if (type === 'success') h.notificationOccurred('success');
-      else if (type === 'error') h.notificationOccurred('error');
-      else if (type === 'warning') h.notificationOccurred('warning');
-      else h.impactOccurred(type);
-    } catch(e) {}
-  }
-}
 
-/* ══════════════════════════════════════════════════════════════════
-   TELEGRAM INIT
-   ══════════════════════════════════════════════════════════════════ */
-const tg = window.Telegram?.WebApp;
-if (tg) {
+function haptic(type) {
   try {
-    tg.expand(); tg.ready();
-    tg.setHeaderColor?.('#000000');
-    tg.setBackgroundColor?.('#000000');
-    const u = tg.initDataUnsafe?.user;
-    if (u) document.getElementById('userChip').textContent = u.first_name || u.username || 'Пользователь';
+    const h = window.Telegram?.WebApp?.HapticFeedback;
+    if (!h) return;
+    if (type === 'success') h.notificationOccurred('success');
+    else if (type === 'error') h.notificationOccurred('error');
+    else if (type === 'warning') h.notificationOccurred('warning');
+    else h.impactOccurred(type || 'light');
   } catch(e) {}
 }
 
-/* ══════════════════════════════════════════════════════════════════
-   STATE
-   ══════════════════════════════════════════════════════════════════ */
-const STORAGE_KEY = 'ai_health_ecosystem_v15';
+/* ═══ STATE ═══ */
+const STORAGE_KEY = 'ai_health_v16';
 
-const DEFAULT_STATE = () => ({
-  tasks: [], schedule: [], habits: [], goals: [], notes: [], learning: [],
-  timer: [], chats: [], mood: [], water: [], meds: [], workouts: [],
-  meditations: [], journal: [], media: [], finance: [], matrix: [],
-  settings: {
-    theme: 'dark', username: 'Пользователь', provider: 'openai',
-    apiKey: '', activePersona: 'coach', waterGoal: 8,
-    googleClientId: GOOGLE_CLIENT_ID, googleCalendarId: 'primary',
-    googleAccessToken: null, googleSyncEnabled: false, lastGoogleSync: null
-  },
-  flags: { dnd: false, focus: false },
-  stats: { streak: 0, lastActiveDay: null }
-});
+function defaultState() {
+  return {
+    tasks: [], schedule: [], habits: [], goals: [], notes: [], learning: [],
+    timer: [], chats: [], mood: [], water: [], meds: [], workouts: [],
+    meditations: [], journal: [], media: [], finance: [], matrix: [],
+    settings: {
+      theme: 'dark',
+      username: 'Пользователь',
+      provider: 'openai',
+      apiKey: '',
+      activePersona: 'coach',
+      waterGoal: 8
+    },
+    flags: { dnd: false, focus: false },
+    stats: { streak: 0, lastActiveDay: null }
+  };
+}
 
 let state;
 try {
   const raw = localStorage.getItem(STORAGE_KEY);
-  state = raw ? { ...DEFAULT_STATE(), ...JSON.parse(raw) } : DEFAULT_STATE();
-  state.settings = { ...DEFAULT_STATE().settings, ...(state.settings || {}) };
-  state.flags = { ...DEFAULT_STATE().flags, ...(state.flags || {}) };
-  state.stats = { ...DEFAULT_STATE().stats, ...(state.stats || {}) };
-} catch (e) {
+  if (raw) {
+    const parsed = JSON.parse(raw);
+    state = Object.assign(defaultState(), parsed);
+    state.settings = Object.assign(defaultState().settings, parsed.settings || {});
+    state.flags = Object.assign(defaultState().flags, parsed.flags || {});
+    state.stats = Object.assign(defaultState().stats, parsed.stats || {});
+  } else {
+    state = defaultState();
+  }
+} catch(e) {
   console.error('Load error:', e);
-  state = DEFAULT_STATE();
-}
-function save() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-  catch (e) { console.error('Save error:', e); }
+  state = defaultState();
 }
 
-/* ══════════════════════════════════════════════════════════════════
-   PERSONAS
-   ══════════════════════════════════════════════════════════════════ */
+function save() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+  catch(e) { console.error('Save error:', e); }
+}
+
+/* ═══ PERSONAS ═══ */
 const PERSONAS = {
-  coach: { name: 'Коуч', color: 'coach', label: 'Продуктивность', icon: 'sparkle',
-    prompt: 'Ты — AI-Коуч максимального уровня. Методологии: GROW, Co-Active, Прохазка, SMART, Deep Work, Атомные привычки, Икигай, Стоицизм. АЛГОРИТМ: 1) Отрази суть 2) 1-2 вопроса 3) Инсайт + методика + автор 4) Микро-шаг 5-25 мин 5) 1 вопрос рефлексии. Отвечай кратко (150-220 слов). Markdown.' },
-  psych: { name: 'Психолог', color: 'psych', label: 'Эмоции', icon: 'brain',
-    prompt: 'Ты — AI-Психолог. Методологии: КПТ, ACT, DBT, Схема-терапия, IFS, Соматика. СТИЛЬ: тёплый, валидация чувств. НЕ ставь диагнозы! При кризисе → 8-800-2000-122. Отвечай тепло (150-220 слов).' },
-  doctor: { name: 'Врач', color: 'doctor', label: 'Здоровье', icon: 'heart',
+  coach: { name: 'Коуч', color: 'coach', label: 'Продуктивность', emoji: '💬',
+    prompt: 'Ты — AI-Коуч. Помогаешь с продуктивностью, целями, мотивацией. Методологии: GROW, SMART, Pomodoro, Deep Work, Атомные привычки. Отвечай кратко (150-220 слов). Markdown.' },
+  psych: { name: 'Психолог', color: 'psych', label: 'Эмоции', emoji: '🧠',
+    prompt: 'Ты — AI-Психолог. Валидируешь чувства, работаешь с КПТ, ACT, DBT. НЕ ставишь диагнозы. При кризисе → 8-800-2000-122. Отвечай тепло (150-220 слов).' },
+  doctor: { name: 'Врач', color: 'doctor', label: 'Здоровье', emoji: '⚕️',
     prompt: 'Ты — AI-Врач-консультант. НЕ ставишь диагнозы. ВСЕГДА заканчивай дисклеймером. При острых симптомах → 103/112. 150-250 слов.' },
-  nutrition: { name: 'Нутрициолог', color: 'nutrition', label: 'Питание', icon: 'lotus',
+  nutrition: { name: 'Нутрициолог', color: 'nutrition', label: 'Питание', emoji: '🥗',
     prompt: 'Ты — AI-Нутрициолог. Средиземноморская диета, интервальное голодание, микробиом. НЕ назначай диеты при заболеваниях. 150-200 слов.' },
-  fitness: { name: 'Тренер', color: 'fitness', label: 'Фитнес', icon: 'dumbbell',
-    prompt: 'Ты — AI-Фитнес-тренер. Силовые, кардио, HIIT, мобильность, восстановление. Форма — сначала. 150-200 слов.' },
-  lawyer: { name: 'Юрист', color: 'lawyer', label: 'Право', icon: 'note',
+  fitness: { name: 'Тренер', color: 'fitness', label: 'Фитнес', emoji: '🏋️',
+    prompt: 'Ты — AI-Фитнес-тренер. Силовые, кардио, HIIT, мобильность. Форма — сначала. 150-200 слов.' },
+  lawyer: { name: 'Юрист', color: 'lawyer', label: 'Право', emoji: '⚖️',
     prompt: 'Ты — AI-Юрист. Образовательная информация. НЕ заменяешь адвоката. Всегда дисклеймер. 150-200 слов.' },
-  finance: { name: 'Финансист', color: 'finance', label: 'Финансы', icon: 'wallet',
+  finance: { name: 'Финансист', color: 'finance', label: 'Финансы', emoji: '💰',
     prompt: 'Ты — AI-Финансовый консультант. Бюджет, сбережения, инвестиции (базово). НЕ даёшь конкретных рекомендаций. 150-200 слов.' }
 };
 
-/* ══════════════════════════════════════════════════════════════════
-   NAVIGATION
-   ══════════════════════════════════════════════════════════════════ */
+/* ═══ NAV ═══ */
 const TABS = [
-  { id: 'dashboard', icon: 'home', label: 'Главная' },
-  { id: 'tasks', icon: 'tasks', label: 'Задачи' },
-  { id: 'ai', icon: 'sparkle', label: 'AI' },
-  { id: 'health', icon: 'heart', label: 'Здоровье' },
-  { id: 'more', icon: 'more', label: 'Ещё' }
+  { id: 'dashboard', emoji: '🏠', label: 'Главная' },
+  { id: 'tasks', emoji: '✅', label: 'Задачи' },
+  { id: 'ai', emoji: '✨', label: 'AI' },
+  { id: 'health', emoji: '❤️', label: 'Здоровье' },
+  { id: 'more', emoji: '⋯', label: 'Ещё' }
 ];
+
 let currentPage = 'dashboard';
 
 function renderTabBar() {
   const bar = document.getElementById('tabBar');
   if (!bar) return;
-  bar.innerHTML = TABS.map(t => `
-    <button class="tab-item ${t.id === currentPage ? 'active' : ''}" onclick="navigate('${t.id}')">
-      ${icon(t.icon, 24)}
-      <span>${t.label}</span>
-    </button>
-  `).join('');
+  let html = '';
+  for (let i = 0; i < TABS.length; i++) {
+    const t = TABS[i];
+    html += '<button class="tab-item ' + (t.id === currentPage ? 'active' : '') + '" onclick="navigate(\'' + t.id + '\')">';
+    html += '<span style="font-size:24px;line-height:1;">' + t.emoji + '</span>';
+    html += '<span>' + t.label + '</span>';
+    html += '</button>';
+  }
+  bar.innerHTML = html;
 }
 
 function navigate(page) {
@@ -766,20 +649,36 @@ function navigate(page) {
   const main = document.getElementById('app');
   main.innerHTML = '';
   const renderers = {
-    dashboard: renderDashboard, tasks: renderTasks, ai: renderAI,
-    health: renderHealth, more: renderMore, calendar: renderCalendar,
-    stats: renderStats, habits: renderHabits, goals: renderGoals,
-    timer: renderTimer, notes: renderNotes, learning: renderLearning,
-    matrix: renderMatrix, focus: renderFocus, mood: renderMood,
-    water: renderWater, meds: renderMeds, workouts: renderWorkouts,
-    meditation: renderMeditation, journal: renderJournal, media: renderMedia,
-    finance: renderFinance, history: renderHistory, dbmanager: renderDBManager,
-    settings: renderSettings, gcal: renderGoogleCalendar
+    dashboard: renderDashboard,
+    tasks: renderTasks,
+    ai: renderAI,
+    health: renderHealth,
+    more: renderMore,
+    calendar: renderCalendar,
+    stats: renderStats,
+    habits: renderHabits,
+    goals: renderGoals,
+    timer: renderTimer,
+    notes: renderNotes,
+    learning: renderLearning,
+    matrix: renderMatrix,
+    focus: renderFocus,
+    mood: renderMood,
+    water: renderWater,
+    meds: renderMeds,
+    workouts: renderWorkouts,
+    meditation: renderMeditation,
+    journal: renderJournal,
+    media: renderMedia,
+    finance: renderFinance,
+    history: renderHistory,
+    dbmanager: renderDBManager,
+    settings: renderSettings
   };
   const fn = renderers[page];
   if (fn) {
     try { fn(); }
-    catch (e) { console.error('Render error:', page, e); toast('Ошибка: ' + e.message, 'error'); }
+    catch(e) { console.error('Render error:', page, e); toast('Ошибка: ' + e.message, 'error'); }
   }
   window.scrollTo({ top: 0, behavior: 'auto' });
 }
@@ -787,394 +686,90 @@ function navigate(page) {
 function openSheet(title, content) {
   const overlay = document.createElement('div');
   overlay.className = 'overlay';
-  overlay.innerHTML = `<div class="modal"><div class="modal-header"><div class="modal-title">${esc(title)}</div><button class="modal-close" onclick="closeSheet()">${icon('close', 18)}</button></div>${content}</div>`;
-  overlay.onclick = (e) => { if (e.target === overlay) closeSheet(); };
+  overlay.innerHTML = '<div class="modal"><div class="modal-header"><div class="modal-title">' + esc(title) + '</div><button class="modal-close" onclick="closeSheet()">✕</button></div>' + content + '</div>';
+  overlay.onclick = function(e) { if (e.target === overlay) closeSheet(); };
   document.body.appendChild(overlay);
   document.body.style.overflow = 'hidden';
 }
+
 function closeSheet() {
-  document.querySelectorAll('.overlay').forEach(o => o.remove());
+  document.querySelectorAll('.overlay').forEach(function(o) { o.remove(); });
   document.body.style.overflow = '';
 }
 
-/* ══════════════════════════════════════════════════════════════════
-   GOOGLE CALENDAR INTEGRATION (OAuth 2.0 + PKCE)
-   ══════════════════════════════════════════════════════════════════ */
-let googleTokenClient = null;
-
-function initGoogleAuth() {
-  const clientId = state.settings.googleClientId || GOOGLE_CLIENT_ID;
-  if (!clientId) return false;
-  if (!window.google?.accounts?.oauth2) return false;
-  try {
-    googleTokenClient = google.accounts.oauth2.initTokenClient({
-      client_id: clientId,
-      scope: GOOGLE_SCOPES,
-      callback: async (response) => {
-        if (response.access_token) {
-          state.settings.googleAccessToken = response.access_token;
-          state.settings.googleSyncEnabled = true;
-          save();
-          toast('Google Calendar подключён', 'success');
-          haptic('success');
-          await syncFromGoogle();
-          if (currentPage === 'gcal') renderGoogleCalendar();
-          if (currentPage === 'calendar') renderCalendar();
-        } else {
-          toast('Ошибка авторизации Google', 'error');
-        }
-      }
-    });
-    return true;
-  } catch(e) {
-    console.error('Google auth init error:', e);
-    return false;
-  }
-}
-
-function renderGoogleCalendar() {
-  const connected = state.settings.googleSyncEnabled && state.settings.googleAccessToken;
-  const hasClientId = !!(state.settings.googleClientId || GOOGLE_CLIENT_ID);
-  const last = state.settings.lastGoogleSync;
-  const withGoogle = state.schedule.filter(s => s.googleEventId).length;
-
-  document.getElementById('app').innerHTML = `
-    <div class="page">
-      <div class="title-xl">Google Calendar</div>
-
-      <div class="card">
-        <div class="row" style="gap:14px;align-items:center;margin-bottom:16px;">
-          <div style="width:52px;height:52px;border-radius:16px;background:var(--surface-2);display:grid;place-items:center;">
-            ${icon('google', 30)}
-          </div>
-          <div style="flex:1;">
-            <div style="font-weight:700;font-size:18px;">${connected ? 'Подключено' : 'Не подключено'}</div>
-            <div class="footnote text-secondary">${last ? 'Синхронизировано ' + fmtDate(last) + ' ' + fmtTime(last) : 'Ещё не синхронизировалось'}</div>
-          </div>
-        </div>
-
-        ${!hasClientId ? `
-          <div class="card" style="background:rgba(255,159,67,0.1);border:1px solid var(--warning);margin:0 0 16px 0;padding:14px;">
-            <div class="footnote" style="color:var(--warning);font-weight:600;margin-bottom:8px;">⚠️ Требуется настройка</div>
-            <div class="footnote text-secondary" style="line-height:1.55;">
-              Для работы Google Calendar нужен OAuth Client ID. Получи его бесплатно:
-            </div>
-            <div class="footnote text-secondary" style="line-height:1.7;margin-top:8px;">
-              <strong>1.</strong> Открой <a href="https://console.cloud.google.com/" target="_blank" style="color:var(--brand);">Google Cloud Console</a><br>
-              <strong>2.</strong> Создай проект (2 мин)<br>
-              <strong>3.</strong> Включи <strong>Google Calendar API</strong><br>
-              <strong>4.</strong> Создай <strong>OAuth 2.0 Client ID</strong> (тип: Web)<br>
-              <strong>5.</strong> Добавь свой домен в Authorized JavaScript origins<br>
-              <strong>6.</strong> Скопируй Client ID сюда:
-            </div>
-          </div>
-          <div class="field">
-            <label class="field-label">Google OAuth Client ID</label>
-            <input type="text" id="g-client-id" placeholder="xxxxx.apps.googleusercontent.com" value="${esc(state.settings.googleClientId || '')}"/>
-          </div>
-          <button class="btn btn-primary btn-block" onclick="saveGoogleClientId()">Сохранить и подключить</button>
-        ` : `
-          <div class="list-row" onclick="connectGoogle()">
-            <div class="list-icon" style="background:var(--brand);">${icon('sync', 22)}</div>
-            <div class="list-body">
-              <div class="list-title">${connected ? 'Переподключить' : 'Подключить'} Google</div>
-              <div class="list-subtitle">${connected ? 'Обновить токен' : 'Войти в аккаунт Google'}</div>
-            </div>
-            <div class="list-chevron">${icon('chevR', 18)}</div>
-          </div>
-
-          ${connected ? `
-            <div class="list-row" onclick="syncFromGoogle()">
-              <div class="list-icon" style="background:var(--info);">${icon('download', 22)}</div>
-              <div class="list-body">
-                <div class="list-title">Скачать из Google</div>
-                <div class="list-subtitle">События Google → приложение</div>
-              </div>
-              <div class="list-chevron">${icon('chevR', 18)}</div>
-            </div>
-
-            <div class="list-row" onclick="syncToGoogle()">
-              <div class="list-icon" style="background:var(--success);">${icon('upload', 22)}</div>
-              <div class="list-body">
-                <div class="list-title">Загрузить в Google</div>
-                <div class="list-subtitle">События приложения → Google</div>
-              </div>
-              <div class="list-chevron">${icon('chevR', 18)}</div>
-            </div>
-
-            <div class="list-row" onclick="fullSync()">
-              <div class="list-icon" style="background:var(--coach);color:#000;">${icon('refresh', 22)}</div>
-              <div class="list-body">
-                <div class="list-title">Двусторонняя синхронизация</div>
-                <div class="list-subtitle">Объединить данные</div>
-              </div>
-              <div class="list-chevron">${icon('chevR', 18)}</div>
-            </div>
-
-            <div class="stat-grid" style="margin-top:16px;">
-              <div class="stat-item">
-                <div class="stat-value">${withGoogle}</div>
-                <div class="stat-label">В Google</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-value">${state.schedule.length - withGoogle}</div>
-                <div class="stat-label">Локально</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-value">${state.schedule.length}</div>
-                <div class="stat-label">Всего</div>
-              </div>
-            </div>
-
-            <button class="btn btn-ghost btn-block mt-4" onclick="disconnectGoogle()">Отключить</button>
-          ` : ''}
-        `}
-      </div>
-    </div>
-  `;
-}
-
-function saveGoogleClientId() {
-  const id = document.getElementById('g-client-id').value.trim();
-  if (!id) return toast('Введите Client ID', 'error');
-  state.settings.googleClientId = id;
-  save();
-  toast('Сохранено. Подключаем...', 'success');
-  setTimeout(() => {
-    initGoogleAuth();
-    connectGoogle();
-  }, 500);
-}
-
-function connectGoogle() {
-  const clientId = state.settings.googleClientId || GOOGLE_CLIENT_ID;
-  if (!clientId) return toast('Сначала укажи Client ID', 'warning');
-  if (!googleTokenClient) {
-    const ok = initGoogleAuth();
-    if (!ok) return toast('Google SDK не загружен. Обнови страницу.', 'error');
-  }
-  try {
-    googleTokenClient.requestAccessToken({ prompt: 'consent' });
-  } catch(e) {
-    toast('Ошибка: ' + e.message, 'error');
-  }
-}
-
-function disconnectGoogle() {
-  if (!confirm('Отключить Google Calendar?')) return;
-  state.settings.googleAccessToken = null;
-  state.settings.googleSyncEnabled = false;
-  save();
-  toast('Отключено', 'info');
-  renderGoogleCalendar();
-}
-
-async function gcalRequest(path, options = {}) {
-  const token = state.settings.googleAccessToken;
-  if (!token) throw new Error('Нет доступа к Google');
-  const url = `https://www.googleapis.com/calendar/v3${path}`;
-  const resp = await fetch(url, {
-    ...options,
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-      ...(options.headers || {})
-    }
-  });
-  if (resp.status === 401) {
-    state.settings.googleAccessToken = null;
-    state.settings.googleSyncEnabled = false;
-    save();
-    throw new Error('Токен истёк. Подключи Google заново.');
-  }
-  if (!resp.ok) {
-    const err = await resp.text();
-    throw new Error(`Google API ${resp.status}`);
-  }
-  return resp.status === 204 ? null : resp.json();
-}
-
-async function syncFromGoogle() {
-  if (!state.settings.googleAccessToken) return toast('Сначала подключи Google', 'warning');
-  toast('Синхронизация...', 'info');
-  try {
-    const calId = state.settings.googleCalendarId || 'primary';
-    const timeMin = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
-    const timeMax = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString();
-    const resp = await gcalRequest(`/calendars/${encodeURIComponent(calId)}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime&maxResults=250`);
-    const events = resp.items || [];
-    let imported = 0, updated = 0;
-    for (const ev of events) {
-      if (!ev.start?.dateTime && !ev.start?.date) continue;
-      const existing = state.schedule.find(s => s.googleEventId === ev.id);
-      const data = {
-        googleEventId: ev.id,
-        title: ev.summary || 'Без названия',
-        description: ev.description || '',
-        start_time: ev.start.dateTime || ev.start.date + 'T00:00:00',
-        end_time: ev.end.dateTime || (ev.end.date || ev.start.date) + 'T23:59:59',
-        location: ev.location || '',
-        googleUpdatedAt: ev.updated,
-        source: 'google'
-      };
-      if (existing) {
-        if (existing.googleUpdatedAt !== ev.updated) {
-          Object.assign(existing, data);
-          updated++;
-        }
-      } else {
-        state.schedule.push({ id: uid(), ...data, created_at: nowISO() });
-        imported++;
-      }
-    }
-    state.settings.lastGoogleSync = nowISO();
-    save();
-    toast(`Google: +${imported} новых, ~${updated} обновлено`, 'success');
-    haptic('success');
-    if (currentPage === 'gcal') renderGoogleCalendar();
-    if (currentPage === 'calendar') renderCalendar();
-  } catch(e) {
-    console.error(e);
-    toast('Ошибка: ' + e.message, 'error');
-  }
-}
-
-async function syncToGoogle() {
-  if (!state.settings.googleAccessToken) return toast('Сначала подключи Google', 'warning');
-  toast('Экспорт...', 'info');
-  try {
-    const calId = state.settings.googleCalendarId || 'primary';
-    let exported = 0;
-    for (const ev of state.schedule) {
-      if (ev.googleEventId) continue;
-      const event = {
-        summary: ev.title,
-        description: ev.description || '',
-        start: { dateTime: ev.start_time, timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone },
-        end: { dateTime: ev.end_time, timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone }
-      };
-      const created = await gcalRequest(`/calendars/${encodeURIComponent(calId)}/events`, {
-        method: 'POST',
-        body: JSON.stringify(event)
-      });
-      ev.googleEventId = created.id;
-      ev.source = 'app';
-      exported++;
-    }
-    state.settings.lastGoogleSync = nowISO();
-    save();
-    toast(`Экспортировано: ${exported}`, 'success');
-    haptic('success');
-    if (currentPage === 'gcal') renderGoogleCalendar();
-  } catch(e) {
-    console.error(e);
-    toast('Ошибка: ' + e.message, 'error');
-  }
-}
-
-async function fullSync() {
-  await syncFromGoogle();
-  await syncToGoogle();
-  toast('Двусторонняя синхронизация завершена', 'success');
-}
-
-/* ══════════════════════════════════════════════════════════════════
-   PAGES
-   ══════════════════════════════════════════════════════════════════ */
+/* ═══ DASHBOARD ═══ */
 function renderDashboard() {
-  const todayTasks = state.tasks.filter(t => t.created_at?.slice(0, 10) === today());
-  const doneToday = todayTasks.filter(t => t.status === 'completed').length;
-  const habitsToday = state.habits.filter(h => h.history?.includes(today())).length;
+  const todayTasks = state.tasks.filter(function(t) { return t.created_at && t.created_at.slice(0, 10) === today(); });
+  const doneToday = todayTasks.filter(function(t) { return t.status === 'completed'; }).length;
+  const habitsToday = state.habits.filter(function(h) { return h.history && h.history.indexOf(today()) >= 0; }).length;
   const hour = new Date().getHours();
   const greet = hour < 6 ? 'Доброй ночи' : hour < 12 ? 'Доброе утро' : hour < 18 ? 'Добрый день' : 'Добрый вечер';
-  const lastMood = state.mood?.[state.mood.length - 1];
-  const waterToday = state.water?.find(w => w.date === today())?.count || 0;
+  const lastMood = state.mood.length ? state.mood[state.mood.length - 1] : null;
+  const waterEntry = state.water.find(function(w) { return w.date === today(); });
+  const waterToday = waterEntry ? waterEntry.count : 0;
   const waterGoal = state.settings.waterGoal || 8;
   const progress = todayTasks.length ? Math.round(doneToday / todayTasks.length * 100) : 0;
 
-  document.getElementById('app').innerHTML = `
-    <div class="page">
-      <div class="title-xl">${greet}</div>
+  let html = '<div class="page">';
+  html += '<div class="title-xl">' + greet + '</div>';
 
-      <div class="card card-gradient">
-        <div class="row-between" style="margin-bottom:12px;">
-          <div>
-            <div style="font-size:13px;opacity:0.85;font-weight:600;margin-bottom:6px;">Прогресс дня</div>
-            <div style="font-size:38px;font-weight:800;letter-spacing:-1.5px;line-height:1;">${doneToday}/${todayTasks.length}</div>
-          </div>
-          <div style="font-size:44px;font-weight:800;letter-spacing:-2px;">${progress}%</div>
-        </div>
-        <div class="progress" style="background:rgba(255,255,255,0.2);height:6px;">
-          <div class="progress-fill" style="width:${progress}%;background:#fff;"></div>
-        </div>
-      </div>
+  html += '<div class="card card-gradient">';
+  html += '<div class="row-between" style="margin-bottom:12px;">';
+  html += '<div><div style="font-size:13px;opacity:0.85;font-weight:600;margin-bottom:6px;">Прогресс дня</div>';
+  html += '<div style="font-size:38px;font-weight:800;letter-spacing:-1.5px;line-height:1;">' + doneToday + '/' + todayTasks.length + '</div></div>';
+  html += '<div style="font-size:44px;font-weight:800;letter-spacing:-2px;">' + progress + '%</div>';
+  html += '</div>';
+  html += '<div class="progress" style="background:rgba(255,255,255,0.2);height:6px;"><div class="progress-fill" style="width:' + progress + '%;background:#fff;"></div></div>';
+  html += '</div>';
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
-        <div class="card" style="margin:0;">
-          <div style="font-size:11px;color:var(--text-2);text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Streak</div>
-          <div style="font-size:24px;font-weight:800;letter-spacing:-0.6px;">${state.stats.streak || 0}</div>
-          <div style="font-size:12px;color:var(--text-2);margin-top:4px;">дней подряд</div>
-        </div>
-        <div class="card" style="margin:0;">
-          <div style="font-size:11px;color:var(--text-2);text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Привычки</div>
-          <div style="font-size:24px;font-weight:800;letter-spacing:-0.6px;">${habitsToday}/${state.habits.length}</div>
-          <div style="font-size:12px;color:var(--text-2);margin-top:4px;">сегодня</div>
-        </div>
-      </div>
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">';
+  html += '<div class="card" style="margin:0;"><div style="font-size:11px;color:var(--text-2);text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Streak</div>';
+  html += '<div style="font-size:24px;font-weight:800;letter-spacing:-0.6px;">' + (state.stats.streak || 0) + '</div>';
+  html += '<div style="font-size:12px;color:var(--text-2);margin-top:4px;">дней подряд</div></div>';
+  html += '<div class="card" style="margin:0;"><div style="font-size:11px;color:var(--text-2);text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Привычки</div>';
+  html += '<div style="font-size:24px;font-weight:800;letter-spacing:-0.6px;">' + habitsToday + '/' + state.habits.length + '</div>';
+  html += '<div style="font-size:12px;color:var(--text-2);margin-top:4px;">сегодня</div></div>';
+  html += '</div>';
 
-      <div class="card">
-        <h2>AI-специалисты</h2>
-        <div class="row" style="gap:8px;">
-          ${Object.entries(PERSONAS).slice(0, 4).map(([k, p]) => `
-            <button class="btn btn-ghost btn-sm" onclick="openPersona('${k}')">${p.name}</button>
-          `).join('')}
-        </div>
-      </div>
+  html += '<div class="card"><h2>✨ AI-специалисты</h2><div class="row" style="gap:8px;">';
+  ['coach', 'psych', 'doctor', 'nutrition'].forEach(function(k) {
+    const p = PERSONAS[k];
+    html += '<button class="btn btn-ghost btn-sm" onclick="openPersona(\'' + k + '\')">' + p.emoji + ' ' + p.name + '</button>';
+  });
+  html += '</div></div>';
 
-      <div class="card">
-        <h2>Быстрые действия</h2>
-        <div class="row" style="gap:8px;">
-          <button class="btn btn-ghost btn-sm" onclick="navigate('timer')">⏱ Таймер</button>
-          <button class="btn btn-ghost btn-sm" onclick="addTask()">➕ Задача</button>
-          <button class="btn btn-ghost btn-sm" onclick="addWater()">💧 Вода</button>
-          <button class="btn btn-ghost btn-sm" onclick="quickMoodLog()">💭 Настроение</button>
-        </div>
-      </div>
+  html += '<div class="card"><h2>⚡ Быстрые действия</h2><div class="row" style="gap:8px;">';
+  html += '<button class="btn btn-ghost btn-sm" onclick="navigate(\'timer\')">⏱ Таймер</button>';
+  html += '<button class="btn btn-ghost btn-sm" onclick="addTask()">➕ Задача</button>';
+  html += '<button class="btn btn-ghost btn-sm" onclick="addWater()">💧 Вода</button>';
+  html += '<button class="btn btn-ghost btn-sm" onclick="quickMoodLog()">💭 Настроение</button>';
+  html += '</div></div>';
 
-      <div class="card">
-        <h2>Состояние</h2>
-        <div class="stat-grid">
-          <div class="stat-item"><div class="stat-value">${lastMood ? lastMood.score + '/10' : '—'}</div><div class="stat-label">Настроение</div></div>
-          <div class="stat-item"><div class="stat-value">${waterToday}/${waterGoal}</div><div class="stat-label">Вода</div></div>
-          <div class="stat-item"><div class="stat-value">${state.workouts.length}</div><div class="stat-label">Тренировок</div></div>
-        </div>
-      </div>
+  html += '<div class="card"><h2>❤️ Состояние</h2><div class="stat-grid">';
+  html += '<div class="stat-item"><div class="stat-value">' + (lastMood ? lastMood.score + '/10' : '—') + '</div><div class="stat-label">Настроение</div></div>';
+  html += '<div class="stat-item"><div class="stat-value">' + waterToday + '/' + waterGoal + '</div><div class="stat-label">Вода</div></div>';
+  html += '<div class="stat-item"><div class="stat-value">' + state.workouts.length + '</div><div class="stat-label">Тренировок</div></div>';
+  html += '</div></div>';
 
-      <div class="card">
-        <h2>Задачи</h2>
-        ${state.tasks.filter(t => t.status === 'pending').slice(0, 5).map(t => taskRow(t)).join('') || `<div class="empty"><div class="empty-icon">${icon('check', 56)}</div><div class="empty-title">Всё выполнено</div><div class="empty-text">Отдохни</div></div>`}
-      </div>
-    </div>
-  `;
+  html += '<div class="card"><h2>📋 Задачи</h2>';
+  const pending = state.tasks.filter(function(t) { return t.status === 'pending'; }).slice(0, 5);
+  if (pending.length) {
+    for (let i = 0; i < pending.length; i++) html += taskRow(pending[i]);
+  } else {
+    html += '<div class="empty"><div class="empty-icon">✨</div><div class="empty-title">Всё выполнено</div><div class="empty-text">Отдохни</div></div>';
+  }
+  html += '</div></div>';
+  document.getElementById('app').innerHTML = html;
 }
 
 function taskRow(t) {
   const pColors = { high: 'high', medium: 'medium', low: 'low' };
-  return `
-    <div class="task-item ${t.status === 'completed' ? 'completed' : ''}" onclick="editTask('${t.id}')">
-      <div class="priority-bar ${pColors[t.priority] || 'medium'}"></div>
-      <button class="task-checkbox ${t.status === 'completed' ? 'checked' : ''}" onclick="event.stopPropagation();toggleTask('${t.id}')">
-        ${t.status === 'completed' ? icon('check', 14) : ''}
-      </button>
-      <div class="task-content">
-        <div class="task-title">${esc(t.title)}</div>
-        <div class="task-meta">
-          <span>${t.planned_time || 0} мин</span>
-          ${t.category ? `<span>· ${esc(t.category)}</span>` : ''}
-        </div>
-      </div>
-    </div>
-  `;
+  const checked = t.status === 'completed';
+  return '<div class="task-item ' + (checked ? 'completed' : '') + '" onclick="editTask(\'' + t.id + '\')">' +
+    '<div class="priority-bar ' + (pColors[t.priority] || 'medium') + '"></div>' +
+    '<button class="task-checkbox ' + (checked ? 'checked' : '') + '" onclick="event.stopPropagation();toggleTask(\'' + t.id + '\')">' + (checked ? '✓' : '') + '</button>' +
+    '<div class="task-content"><div class="task-title">' + esc(t.title) + '</div>' +
+    '<div class="task-meta"><span>' + (t.planned_time || 0) + ' мин</span>' + (t.category ? '<span>· ' + esc(t.category) + '</span>' : '') + '</div></div></div>';
 }
 
 function openPersona(p) {
@@ -1185,14 +780,14 @@ function openPersona(p) {
 
 function addWater() {
   const t = today();
-  let entry = state.water.find(w => w.date === t);
+  let entry = state.water.find(function(w) { return w.date === t; });
   if (entry) entry.count += 1;
   else {
     entry = { id: uid(), date: t, count: 1, created_at: nowISO() };
     state.water.push(entry);
   }
   save();
-  toast(`💧 ${entry.count}`, 'success');
+  toast('💧 ' + entry.count, 'success');
   haptic('success');
   if (currentPage === 'dashboard') renderDashboard();
   else if (currentPage === 'water') renderWater();
@@ -1200,19 +795,19 @@ function addWater() {
 
 function quickMoodLog() {
   const moods = ['😢','😔','😐','🙂','😊'];
-  openSheet('Как настроение?', `
-    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;">
-      ${moods.map((m, i) => `<button class="btn btn-ghost" style="font-size:32px;padding:20px 0;height:auto;" onclick="saveMood(${(i+1)*2})">${m}</button>`).join('')}
-    </div>
-    <div class="footnote text-tertiary" style="text-align:center;margin-top:12px;">1 = плохо · 10 = отлично</div>
-  `);
+  let html = '<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;">';
+  for (let i = 0; i < moods.length; i++) {
+    html += '<button class="btn btn-ghost" style="font-size:32px;padding:20px 0;height:auto;" onclick="saveMood(' + ((i+1)*2) + ')">' + moods[i] + '</button>';
+  }
+  html += '</div><div class="footnote text-tertiary" style="text-align:center;margin-top:12px;">1 = плохо · 10 = отлично</div>';
+  openSheet('Как настроение?', html);
 }
 
 function saveMood(score) {
   const t = today();
-  const existing = state.mood.find(m => m.date === t);
+  const existing = state.mood.find(function(m) { return m.date === t; });
   if (existing) existing.score = score;
-  else state.mood.push({ id: uid(), date: t, score, created_at: nowISO() });
+  else state.mood.push({ id: uid(), date: t, score: score, created_at: nowISO() });
   save();
   closeSheet();
   toast('Записано', 'success');
@@ -1221,95 +816,73 @@ function saveMood(score) {
   else if (currentPage === 'mood') renderMood();
 }
 
-/* ─────── TASKS ─────── */
+/* ═══ TASKS ═══ */
 let taskFilter = 'all';
 let taskSearch = '';
 
 function renderTasks() {
   const counts = {
     all: state.tasks.length,
-    pending: state.tasks.filter(t => t.status === 'pending').length,
-    completed: state.tasks.filter(t => t.status === 'completed').length
+    pending: state.tasks.filter(function(t) { return t.status === 'pending'; }).length,
+    completed: state.tasks.filter(function(t) { return t.status === 'completed'; }).length
   };
-  let filtered = [...state.tasks];
-  if (taskFilter !== 'all') filtered = filtered.filter(t => t.status === taskFilter);
+  let filtered = state.tasks.slice();
+  if (taskFilter !== 'all') filtered = filtered.filter(function(t) { return t.status === taskFilter; });
   if (taskSearch) {
     const q = taskSearch.toLowerCase();
-    filtered = filtered.filter(t => t.title.toLowerCase().includes(q));
+    filtered = filtered.filter(function(t) { return t.title.toLowerCase().indexOf(q) >= 0; });
   }
 
-  document.getElementById('app').innerHTML = `
-    <div class="page">
-      <div class="row-between" style="margin-bottom:16px;">
-        <div class="title-xl" style="margin:0;">Задачи</div>
-        <button class="btn btn-primary btn-sm" onclick="addTask()">+ Новая</button>
-      </div>
+  let html = '<div class="page">';
+  html += '<div class="row-between" style="margin-bottom:16px;"><div class="title-xl" style="margin:0;">Задачи</div>';
+  html += '<button class="btn btn-primary btn-sm" onclick="addTask()">+ Новая</button></div>';
 
-      <div class="search-bar">
-        ${icon('search', 20)}
-        <input type="search" placeholder="Поиск..." value="${esc(taskSearch)}" oninput="taskSearch=this.value;renderTasks()"/>
-      </div>
+  html += '<div class="search-bar"><span style="color:var(--text-3);">🔍</span>';
+  html += '<input type="search" placeholder="Поиск..." value="' + esc(taskSearch) + '" oninput="taskSearch=this.value;renderTasks()"/></div>';
 
-      <div class="segmented" style="margin-bottom:16px;">
-        <button class="segmented-item ${taskFilter === 'all' ? 'active' : ''}" onclick="taskFilter='all';renderTasks()">Все (${counts.all})</button>
-        <button class="segmented-item ${taskFilter === 'pending' ? 'active' : ''}" onclick="taskFilter='pending';renderTasks()">Активные (${counts.pending})</button>
-        <button class="segmented-item ${taskFilter === 'completed' ? 'active' : ''}" onclick="taskFilter='completed';renderTasks()">Готовые (${counts.completed})</button>
-      </div>
+  html += '<div class="segmented" style="margin-bottom:16px;">';
+  html += '<button class="segmented-item ' + (taskFilter === 'all' ? 'active' : '') + '" onclick="taskFilter=\'all\';renderTasks()">Все (' + counts.all + ')</button>';
+  html += '<button class="segmented-item ' + (taskFilter === 'pending' ? 'active' : '') + '" onclick="taskFilter=\'pending\';renderTasks()">Активные (' + counts.pending + ')</button>';
+  html += '<button class="segmented-item ' + (taskFilter === 'completed' ? 'active' : '') + '" onclick="taskFilter=\'completed\';renderTasks()">Готовые (' + counts.completed + ')</button>';
+  html += '</div>';
 
-      ${filtered.length ? filtered.map(t => taskRow(t)).join('') : `
-        <div class="empty">
-          <div class="empty-icon">${icon('tasks', 56)}</div>
-          <div class="empty-title">${taskSearch ? 'Ничего не найдено' : 'Нет задач'}</div>
-          <div class="empty-text">${taskSearch ? 'Попробуй другой запрос' : 'Нажми "+ Новая"'}</div>
-        </div>
-      `}
-    </div>
-  `;
+  if (filtered.length) {
+    for (let i = 0; i < filtered.length; i++) html += taskRow(filtered[i]);
+  } else {
+    html += '<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">' + (taskSearch ? 'Ничего не найдено' : 'Нет задач') + '</div>';
+    html += '<div class="empty-text">' + (taskSearch ? 'Попробуй другой запрос' : 'Нажми "+ Новая"') + '</div></div>';
+  }
+  html += '</div>';
+  document.getElementById('app').innerHTML = html;
 }
 
 function addTask() {
-  openSheet('Новая задача', `
-    <div class="field"><input type="text" id="t-title" placeholder="Название" autofocus/></div>
-    <div class="field"><textarea id="t-desc" placeholder="Описание (необязательно)" rows="2"></textarea></div>
-    <div class="row" style="gap:8px;">
-      <div style="flex:1;min-width:120px;">
-        <label class="field-label">Время (мин)</label>
-        <input type="number" id="t-time" value="30" min="5" step="5"/>
-      </div>
-      <div style="flex:1;min-width:120px;">
-        <label class="field-label">Приоритет</label>
-        <select id="t-priority">
-          <option value="low">🟢 Низкий</option>
-          <option value="medium" selected>🟡 Средний</option>
-          <option value="high">🔴 Высокий</option>
-        </select>
-      </div>
-    </div>
-    <div class="field" style="margin-top:12px;">
-      <label class="field-label">Категория</label>
-      <select id="t-category">
-        <option value="Работа">Работа</option>
-        <option value="Обучение">Обучение</option>
-        <option value="Личное">Личное</option>
-        <option value="Здоровье">Здоровье</option>
-        <option value="Бытовые">Бытовые</option>
-      </select>
-    </div>
-    <button class="btn btn-primary btn-block" onclick="saveTask()">Добавить</button>
-  `);
-  setTimeout(() => document.getElementById('t-title')?.focus(), 100);
+  openSheet('Новая задача',
+    '<div class="field"><input type="text" id="t-title" placeholder="Название" autofocus/></div>' +
+    '<div class="field"><textarea id="t-desc" placeholder="Описание (необязательно)" rows="2"></textarea></div>' +
+    '<div class="row" style="gap:8px;">' +
+    '<div style="flex:1;min-width:120px;"><label class="field-label">Время (мин)</label><input type="number" id="t-time" value="30" min="5" step="5"/></div>' +
+    '<div style="flex:1;min-width:120px;"><label class="field-label">Приоритет</label>' +
+    '<select id="t-priority"><option value="low">🟢 Низкий</option><option value="medium" selected>🟡 Средний</option><option value="high">🔴 Высокий</option></select></div>' +
+    '</div>' +
+    '<div class="field" style="margin-top:12px;"><label class="field-label">Категория</label>' +
+    '<select id="t-category"><option value="Работа">Работа</option><option value="Обучение">Обучение</option><option value="Личное">Личное</option><option value="Здоровье">Здоровье</option><option value="Бытовые">Бытовые</option></select></div>' +
+    '<button class="btn btn-primary btn-block" onclick="saveTask()">Добавить</button>'
+  );
+  setTimeout(function() { const el = document.getElementById('t-title'); if (el) el.focus(); }, 100);
 }
 
 function saveTask() {
-  const title = document.getElementById('t-title')?.value.trim();
+  const titleEl = document.getElementById('t-title');
+  const title = titleEl ? titleEl.value.trim() : '';
   if (!title) return toast('Введите название', 'error');
   state.tasks.unshift({
-    id: uid(), title,
-    description: document.getElementById('t-desc')?.value.trim() || '',
-    planned_time: parseInt(document.getElementById('t-time')?.value) || 30,
+    id: uid(), title: title,
+    description: (document.getElementById('t-desc') || {}).value || '',
+    planned_time: parseInt((document.getElementById('t-time') || {}).value) || 30,
     actual_time: 0, status: 'pending',
-    priority: document.getElementById('t-priority')?.value || 'medium',
-    category: document.getElementById('t-category')?.value || 'Работа',
+    priority: (document.getElementById('t-priority') || {}).value || 'medium',
+    category: (document.getElementById('t-category') || {}).value || 'Работа',
     created_at: nowISO()
   });
   save();
@@ -1321,7 +894,7 @@ function saveTask() {
 }
 
 function toggleTask(id) {
-  const t = state.tasks.find(x => x.id === id);
+  const t = state.tasks.find(function(x) { return x.id === id; });
   if (!t) return;
   t.status = t.status === 'completed' ? 'pending' : 'completed';
   t.actual_time = t.status === 'completed' ? (t.planned_time || 0) : 0;
@@ -1333,37 +906,30 @@ function toggleTask(id) {
 }
 
 function editTask(id) {
-  const t = state.tasks.find(x => x.id === id);
+  const t = state.tasks.find(function(x) { return x.id === id; });
   if (!t) return;
-  openSheet('Редактировать', `
-    <div class="field"><input type="text" id="e-title" value="${esc(t.title)}"/></div>
-    <div class="field"><textarea id="e-desc" rows="2">${esc(t.description || '')}</textarea></div>
-    <div class="row" style="gap:8px;">
-      <div style="flex:1;">
-        <label class="field-label">Время</label>
-        <input type="number" id="e-time" value="${t.planned_time || 30}"/>
-      </div>
-      <div style="flex:1;">
-        <label class="field-label">Приоритет</label>
-        <select id="e-priority">
-          <option value="low" ${t.priority === 'low' ? 'selected' : ''}>Низкий</option>
-          <option value="medium" ${t.priority === 'medium' ? 'selected' : ''}>Средний</option>
-          <option value="high" ${t.priority === 'high' ? 'selected' : ''}>Высокий</option>
-        </select>
-      </div>
-    </div>
-    <button class="btn btn-primary btn-block mt-3" onclick="updateTask('${id}')">Сохранить</button>
-    <button class="btn btn-danger btn-block mt-2" onclick="deleteTask('${id}')">Удалить</button>
-  `);
+  openSheet('Редактировать',
+    '<div class="field"><input type="text" id="e-title" value="' + esc(t.title) + '"/></div>' +
+    '<div class="field"><textarea id="e-desc" rows="2">' + esc(t.description || '') + '</textarea></div>' +
+    '<div class="row" style="gap:8px;">' +
+    '<div style="flex:1;"><label class="field-label">Время</label><input type="number" id="e-time" value="' + (t.planned_time || 30) + '"/></div>' +
+    '<div style="flex:1;"><label class="field-label">Приоритет</label><select id="e-priority">' +
+    '<option value="low"' + (t.priority === 'low' ? ' selected' : '') + '>Низкий</option>' +
+    '<option value="medium"' + (t.priority === 'medium' ? ' selected' : '') + '>Средний</option>' +
+    '<option value="high"' + (t.priority === 'high' ? ' selected' : '') + '>Высокий</option>' +
+    '</select></div></div>' +
+    '<button class="btn btn-primary btn-block mt-3" onclick="updateTask(\'' + id + '\')">Сохранить</button>' +
+    '<button class="btn btn-danger btn-block mt-2" onclick="deleteTask(\'' + id + '\')">Удалить</button>'
+  );
 }
 
 function updateTask(id) {
-  const t = state.tasks.find(x => x.id === id);
+  const t = state.tasks.find(function(x) { return x.id === id; });
   if (!t) return;
-  t.title = document.getElementById('e-title').value.trim() || t.title;
-  t.description = document.getElementById('e-desc').value.trim();
-  t.planned_time = parseInt(document.getElementById('e-time').value) || 30;
-  t.priority = document.getElementById('e-priority').value;
+  t.title = (document.getElementById('e-title') || {}).value || t.title;
+  t.description = (document.getElementById('e-desc') || {}).value || '';
+  t.planned_time = parseInt((document.getElementById('e-time') || {}).value) || 30;
+  t.priority = (document.getElementById('e-priority') || {}).value || 'medium';
   save();
   closeSheet();
   toast('Сохранено', 'success');
@@ -1373,7 +939,7 @@ function updateTask(id) {
 
 function deleteTask(id) {
   if (!confirm('Удалить задачу?')) return;
-  state.tasks = state.tasks.filter(t => t.id !== id);
+  state.tasks = state.tasks.filter(function(t) { return t.id !== id; });
   save();
   closeSheet();
   toast('Удалено', 'info');
@@ -1381,11 +947,11 @@ function deleteTask(id) {
   else if (currentPage === 'dashboard') renderDashboard();
 }
 
-/* ─────── AI ─────── */
+/* ═══ AI ═══ */
 function renderAI() {
   const active = state.settings.activePersona || 'coach';
-  const persona = PERSONAS[active];
-  const messages = state.chats.filter(c => c.persona === active);
+  const persona = PERSONAS[active] || PERSONAS.coach;
+  const messages = state.chats.filter(function(c) { return c.persona === active; });
   const hasKey = !!state.settings.apiKey;
 
   const quick = {
@@ -1398,59 +964,51 @@ function renderAI() {
     finance: ['Бюджет', 'Накопления']
   };
 
-  document.getElementById('app').innerHTML = `
-    <div class="page">
-      <div class="title-xl">AI-Экосистема</div>
+  let html = '<div class="page">';
+  html += '<div class="title-xl">AI-Экосистема</div>';
 
-      <div class="persona-bar">
-        ${Object.entries(PERSONAS).map(([k, p]) => `
-          <button class="persona-item ${active === k ? 'active' : ''}" data-p="${k}" onclick="switchPersona('${k}')">
-            <span>${p.name}</span>
-          </button>
-        `).join('')}
-      </div>
+  html += '<div class="persona-bar">';
+  const keys = Object.keys(PERSONAS);
+  for (let i = 0; i < keys.length; i++) {
+    const k = keys[i];
+    const p = PERSONAS[k];
+    html += '<button class="persona-item ' + (active === k ? 'active' : '') + '" data-p="' + k + '" onclick="switchPersona(\'' + k + '\')">' + p.name + '</button>';
+  }
+  html += '</div>';
 
-      <div class="card" style="padding:14px 16px;">
-        <div class="row-between">
-          <div class="row" style="gap:10px;">
-            <div style="width:36px;height:36px;border-radius:10px;background:var(--${persona.color});display:grid;place-items:center;color:#000;">
-              ${icon(persona.icon, 20)}
-            </div>
-            <div>
-              <div style="font-weight:700;font-size:15px;">${persona.name}</div>
-              <div class="caption text-tertiary">${persona.label}${!hasKey ? ' · Demo' : ''}</div>
-            </div>
-          </div>
-          <button class="btn btn-ghost btn-sm" onclick="openAISettings()">${icon('settings', 18)}</button>
-        </div>
-      </div>
+  html += '<div class="card" style="padding:14px 16px;"><div class="row-between">';
+  html += '<div class="row" style="gap:10px;"><div style="font-size:26px;">' + persona.emoji + '</div>';
+  html += '<div><div style="font-weight:700;font-size:15px;">' + persona.name + '</div>';
+  html += '<div class="caption text-tertiary">' + persona.label + (hasKey ? '' : ' · Demo') + '</div></div></div>';
+  html += '<button class="btn btn-ghost btn-sm" onclick="openAISettings()">⚙️</button>';
+  html += '</div></div>';
 
-      <div class="card" style="min-height:340px;max-height:60vh;overflow-y:auto;padding:16px;" id="chatBox">
-        <div class="chat">
-          ${messages.length ? messages.map(m => `
-            <div class="msg msg-${m.role === 'user' ? 'user' : 'bot'}">
-              ${m.role === 'user' ? esc(m.text) : renderMd(m.text)}
-            </div>
-          `).join('') : `
-            <div class="empty">
-              <div class="empty-icon">${icon(persona.icon, 56)}</div>
-              <div class="empty-title">${persona.name}</div>
-              <div class="empty-text">Задай вопрос — начни диалог</div>
-            </div>
-          `}
-        </div>
-      </div>
+  html += '<div class="card" style="min-height:340px;max-height:60vh;overflow-y:auto;padding:16px;" id="chatBox"><div class="chat">';
+  if (messages.length) {
+    for (let i = 0; i < messages.length; i++) {
+      const m = messages[i];
+      html += '<div class="msg msg-' + (m.role === 'user' ? 'user' : 'bot') + '">' + (m.role === 'user' ? esc(m.text) : renderMd(m.text)) + '</div>';
+    }
+  } else {
+    html += '<div class="empty"><div class="empty-icon">' + persona.emoji + '</div>';
+    html += '<div class="empty-title">' + persona.name + '</div>';
+    html += '<div class="empty-text">Задай вопрос — начни диалог</div></div>';
+  }
+  html += '</div></div>';
 
-      <div class="chips">
-        ${(quick[active] || []).map(q => `<button class="chip" onclick="quickAsk('${esc(q)}')">${q}</button>`).join('')}
-      </div>
+  html += '<div class="chips">';
+  const qs = quick[active] || [];
+  for (let i = 0; i < qs.length; i++) {
+    html += '<button class="chip" onclick="quickAsk(\'' + esc(qs[i]) + '\')">' + qs[i] + '</button>';
+  }
+  html += '</div>';
 
-      <div class="row" style="margin-top:12px;">
-        <input type="text" id="chatInput" placeholder="Сообщение..." style="flex:1;" onkeydown="if(event.key==='Enter'){event.preventDefault();sendMsg();}"/>
-        <button class="btn btn-primary btn-icon" onclick="sendMsg()">${icon('send', 20)}</button>
-      </div>
-    </div>
-  `;
+  html += '<div class="row" style="margin-top:12px;">';
+  html += '<input type="text" id="chatInput" placeholder="Сообщение..." style="flex:1;" onkeydown="if(event.key===\'Enter\'){event.preventDefault();sendMsg();}"/>';
+  html += '<button class="btn btn-primary btn-icon" onclick="sendMsg()">➤</button>';
+  html += '</div></div>';
+
+  document.getElementById('app').innerHTML = html;
   const box = document.getElementById('chatBox');
   if (box) box.scrollTop = box.scrollHeight;
 }
@@ -1470,13 +1028,14 @@ function quickAsk(text) {
 
 async function sendMsg() {
   const input = document.getElementById('chatInput');
-  const text = input?.value.trim();
+  if (!input) return;
+  const text = input.value.trim();
   if (!text) return;
   input.value = '';
   input.disabled = true;
 
   const persona = state.settings.activePersona || 'coach';
-  state.chats.push({ id: uid(), persona, role: 'user', text, timestamp: nowISO() });
+  state.chats.push({ id: uid(), persona: persona, role: 'user', text: text, timestamp: nowISO() });
   save();
   renderAI();
 
@@ -1484,15 +1043,20 @@ async function sendMsg() {
   const typing = document.createElement('div');
   typing.className = 'typing';
   typing.innerHTML = '<span></span><span></span><span></span>';
-  box.appendChild(typing);
-  box.scrollTop = box.scrollHeight;
+  if (box) {
+    box.appendChild(typing);
+    box.scrollTop = box.scrollHeight;
+  }
 
   let reply;
-  if (state.settings.apiKey) reply = await callAI(persona, text);
-  else reply = fallbackReply(persona, text);
+  if (state.settings.apiKey) {
+    reply = await callAI(persona, text);
+  } else {
+    reply = fallbackReply(persona, text);
+  }
 
-  typing.remove();
-  state.chats.push({ id: uid(), persona, role: 'coach', text: reply, timestamp: nowISO() });
+  if (typing) typing.remove();
+  state.chats.push({ id: uid(), persona: persona, role: 'coach', text: reply, timestamp: nowISO() });
   save();
   renderAI();
   haptic('light');
@@ -1501,27 +1065,28 @@ async function sendMsg() {
 }
 
 async function callAI(persona, userText) {
-  const { provider, apiKey } = state.settings;
+  const provider = state.settings.provider;
+  const apiKey = state.settings.apiKey;
   const p = PERSONAS[persona];
-  const history = state.chats.filter(c => c.persona === persona).slice(-10);
-  const messages = [
-    { role: 'system', content: p.prompt },
-    ...history.map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.text }))
-  ];
+  const history = state.chats.filter(function(c) { return c.persona === persona; }).slice(-10);
+  const messages = [{ role: 'system', content: p.prompt }];
+  for (let i = 0; i < history.length; i++) {
+    messages.push({ role: history[i].role === 'user' ? 'user' : 'assistant', content: history[i].text });
+  }
 
   try {
     if (provider === 'openai') {
       const resp = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-        body: JSON.stringify({ model: 'gpt-4o-mini', messages, temperature: 0.8, max_tokens: 800 })
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+        body: JSON.stringify({ model: 'gpt-4o-mini', messages: messages, temperature: 0.8, max_tokens: 800 })
       });
-      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
       const data = await resp.json();
-      return data.choices?.[0]?.message?.content || fallbackReply(persona, userText);
+      return (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || fallbackReply(persona, userText);
     } else if (provider === 'anthropic') {
-      const sys = messages.find(m => m.role === 'system')?.content || '';
-      const rest = messages.filter(m => m.role !== 'system');
+      const sys = p.prompt;
+      const rest = history.map(function(m) { return { role: m.role === 'user' ? 'user' : 'assistant', content: m.text }; });
       const resp = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: {
@@ -1532,34 +1097,35 @@ async function callAI(persona, userText) {
         },
         body: JSON.stringify({ model: 'claude-3-5-sonnet-20241022', system: sys, messages: rest, max_tokens: 800 })
       });
-      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
       const data = await resp.json();
-      return data.content?.[0]?.text || fallbackReply(persona, userText);
+      return (data.content && data.content[0] && data.content[0].text) || fallbackReply(persona, userText);
     } else if (provider === 'gemini') {
-      const sys = messages.find(m => m.role === 'system')?.content || '';
-      const rest = messages.filter(m => m.role !== 'system');
-      const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+      const sys = p.prompt;
+      const rest = history.map(function(m) { return { role: m.role === 'user' ? 'user' : 'model', parts: [{ text: m.text }] }; });
+      const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + apiKey, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           system_instruction: { parts: [{ text: sys }] },
-          contents: rest.map(m => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] })),
+          contents: rest,
           generationConfig: { temperature: 0.8, maxOutputTokens: 800 }
         })
       });
-      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
       const data = await resp.json();
-      return data.candidates?.[0]?.content?.parts?.[0]?.text || fallbackReply(persona, userText);
+      return (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) || fallbackReply(persona, userText);
     }
-  } catch (e) {
+  } catch(e) {
     console.error('AI error:', e);
-    toast(`AI: ${e.message}`, 'error');
+    toast('AI: ' + e.message, 'error');
     return fallbackReply(persona, userText);
   }
   return fallbackReply(persona, userText);
 }
 
-function fallbackReply(persona, text = '') {
+function fallbackReply(persona, text) {
+  text = text || '';
   if (/суицид|покончить|не хочу жить|умереть/i.test(text)) {
     return '🆘 Важно. Позвони прямо сейчас:\n• 8-800-2000-122 (РФ, 24/7)\n• 103 / 112\n• https://findahelpline.com\n\nТы важен. Ты не один. 💙';
   }
@@ -1582,320 +1148,236 @@ function renderMd(text) {
   h = h.replace(/(<li>[\s\S]*?<\/li>)(?!\s*<li>)/g, '<ul>$1</ul>');
   h = h.replace(/\n\n/g, '</p><p>');
   h = h.replace(/\n/g, '<br>');
-  return `<p>${h}</p>`;
+  return '<p>' + h + '</p>';
 }
 
 function openAISettings() {
-  openSheet('Настройки AI', `
-    <div class="field">
-      <label class="field-label">Провайдер</label>
-      <select id="ai-p">
-        <option value="openai" ${state.settings.provider === 'openai' ? 'selected' : ''}>OpenAI GPT-4o</option>
-        <option value="anthropic" ${state.settings.provider === 'anthropic' ? 'selected' : ''}>Anthropic Claude</option>
-        <option value="gemini" ${state.settings.provider === 'gemini' ? 'selected' : ''}>Google Gemini</option>
-      </select>
-    </div>
-    <div class="field">
-      <label class="field-label">API ключ</label>
-      <input type="password" id="ai-k" value="${esc(state.settings.apiKey || '')}" placeholder="sk-..."/>
-    </div>
-    <div class="footnote text-tertiary mb-4" style="line-height:1.5;">
-      Ключ хранится только в браузере.<br>
-      <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--brand);">Gemini (бесплатно)</a> ·
-      <a href="https://platform.openai.com/api-keys" target="_blank" style="color:var(--brand);">OpenAI</a>
-    </div>
-    <button class="btn btn-primary btn-block" onclick="saveAISettings()">Сохранить</button>
-  `);
+  openSheet('Настройки AI',
+    '<div class="field"><label class="field-label">Провайдер</label><select id="ai-p">' +
+    '<option value="openai"' + (state.settings.provider === 'openai' ? ' selected' : '') + '>OpenAI GPT-4o</option>' +
+    '<option value="anthropic"' + (state.settings.provider === 'anthropic' ? ' selected' : '') + '>Anthropic Claude</option>' +
+    '<option value="gemini"' + (state.settings.provider === 'gemini' ? ' selected' : '') + '>Google Gemini</option>' +
+    '</select></div>' +
+    '<div class="field"><label class="field-label">API ключ</label><input type="password" id="ai-k" value="' + esc(state.settings.apiKey || '') + '" placeholder="sk-..."/></div>' +
+    '<div class="footnote text-tertiary mb-4" style="line-height:1.5;">Ключ хранится только в браузере.<br>' +
+    '<a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--brand);">Gemini (бесплатно)</a> · ' +
+    '<a href="https://platform.openai.com/api-keys" target="_blank" style="color:var(--brand);">OpenAI</a></div>' +
+    '<button class="btn btn-primary btn-block" onclick="saveAISettings()">Сохранить</button>'
+  );
 }
 
 function saveAISettings() {
-  state.settings.provider = document.getElementById('ai-p').value;
-  state.settings.apiKey = document.getElementById('ai-k').value.trim();
+  state.settings.provider = (document.getElementById('ai-p') || {}).value || 'openai';
+  state.settings.apiKey = ((document.getElementById('ai-k') || {}).value || '').trim();
   save();
   closeSheet();
   toast('Сохранено', 'success');
   renderAI();
 }
 
-/* ─────── HEALTH ─────── */
+/* ═══ HEALTH ═══ */
 function renderHealth() {
-  const water = state.water.find(w => w.date === today())?.count || 0;
-  const lastMood = state.mood?.[state.mood.length - 1];
+  const waterEntry = state.water.find(function(w) { return w.date === today(); });
+  const water = waterEntry ? waterEntry.count : 0;
+  const lastMood = state.mood.length ? state.mood[state.mood.length - 1] : null;
   const waterGoal = state.settings.waterGoal || 8;
 
-  document.getElementById('app').innerHTML = `
-    <div class="page">
-      <div class="title-xl">Здоровье</div>
+  let html = '<div class="page"><div class="title-xl">Здоровье</div>';
+  html += '<div class="card"><h2>Сегодня</h2><div class="stat-grid">';
+  html += '<div class="stat-item" onclick="quickMoodLog()" style="cursor:pointer;"><div class="stat-value">' + (lastMood ? lastMood.score + '/10' : '—') + '</div><div class="stat-label">Настроение</div></div>';
+  html += '<div class="stat-item" onclick="addWater()" style="cursor:pointer;"><div class="stat-value">' + water + '/' + waterGoal + '</div><div class="stat-label">Вода</div></div>';
+  html += '<div class="stat-item"><div class="stat-value">' + state.workouts.length + '</div><div class="stat-label">Тренировок</div></div>';
+  html += '</div></div>';
 
-      <div class="card">
-        <h2>Сегодня</h2>
-        <div class="stat-grid">
-          <div class="stat-item" onclick="quickMoodLog()" style="cursor:pointer;">
-            <div class="stat-value">${lastMood ? lastMood.score + '/10' : '—'}</div>
-            <div class="stat-label">Настроение</div>
-          </div>
-          <div class="stat-item" onclick="addWater()" style="cursor:pointer;">
-            <div class="stat-value">${water}/${waterGoal}</div>
-            <div class="stat-label">Вода</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-value">${state.workouts.length}</div>
-            <div class="stat-label">Тренировок</div>
-          </div>
-        </div>
-      </div>
+  html += '<div class="card"><h2>AI-специалисты</h2>';
+  const specs = ['doctor', 'nutrition', 'fitness'];
+  for (let i = 0; i < specs.length; i++) {
+    const k = specs[i];
+    const p = PERSONAS[k];
+    html += '<div class="list-row" onclick="openPersona(\'' + k + '\')">';
+    html += '<div class="list-icon" style="background:var(--' + p.color + ');color:#000;">' + p.emoji + '</div>';
+    html += '<div class="list-body"><div class="list-title">' + p.name + '</div><div class="list-subtitle">' + p.label + '</div></div>';
+    html += '<div class="list-chevron">›</div></div>';
+  }
+  html += '</div>';
 
-      <div class="card">
-        <h2>AI-специалисты</h2>
-        ${['doctor', 'nutrition', 'fitness'].map(k => {
-          const p = PERSONAS[k];
-          return `
-            <div class="list-row" onclick="openPersona('${k}')">
-              <div class="list-icon" style="background:var(--${p.color});color:#000;">${icon(p.icon, 22)}</div>
-              <div class="list-body"><div class="list-title">${p.name}</div><div class="list-subtitle">${p.label}</div></div>
-              <div class="list-chevron">${icon('chevR', 18)}</div>
-            </div>
-          `;
-        }).join('')}
-      </div>
-
-      <div class="card">
-        <h2>Трекинг</h2>
-        ${[
-          { k: 'mood', name: 'Настроение', color: 'psych', icon: 'mood' },
-          { k: 'workouts', name: 'Тренировки', color: 'fitness', icon: 'dumbbell' },
-          { k: 'meds', name: 'Лекарства', color: 'danger', icon: 'pill' },
-          { k: 'meditation', name: 'Медитации', color: 'coach', icon: 'lotus' }
-        ].map(x => `
-          <div class="list-row" onclick="navigate('${x.k}')">
-            <div class="list-icon" style="background:var(--${x.color});color:#000;">${icon(x.icon, 22)}</div>
-            <div class="list-body"><div class="list-title">${x.name}</div></div>
-            <div class="list-chevron">${icon('chevR', 18)}</div>
-          </div>
-        `).join('')}
-      </div>
-    </div>
-  `;
+  html += '<div class="card"><h2>Трекинг</h2>';
+  const trackers = [
+    { k: 'mood', name: 'Настроение', color: 'psych', emoji: '💭' },
+    { k: 'workouts', name: 'Тренировки', color: 'fitness', emoji: '🏋️' },
+    { k: 'meds', name: 'Лекарства', color: 'danger', emoji: '💊' },
+    { k: 'meditation', name: 'Медитации', color: 'coach', emoji: '🧘' }
+  ];
+  for (let i = 0; i < trackers.length; i++) {
+    const x = trackers[i];
+    html += '<div class="list-row" onclick="navigate(\'' + x.k + '\')">';
+    html += '<div class="list-icon" style="background:var(--' + x.color + ');color:#000;">' + x.emoji + '</div>';
+    html += '<div class="list-body"><div class="list-title">' + x.name + '</div></div>';
+    html += '<div class="list-chevron">›</div></div>';
+  }
+  html += '</div></div>';
+  document.getElementById('app').innerHTML = html;
 }
 
-/* ─────── MORE ─────── */
+/* ═══ MORE ═══ */
 function renderMore() {
   const items = [
-    { key: 'calendar', icon: 'calendar', label: 'Календарь' },
-    { key: 'gcal', icon: 'google', label: 'Google Calendar' },
-    { key: 'stats', icon: 'chart', label: 'Статистика' },
-    { key: 'habits', icon: 'refresh', label: 'Привычки' },
-    { key: 'goals', icon: 'target', label: 'Цели' },
-    { key: 'timer', icon: 'clock', label: 'Таймер' },
-    { key: 'notes', icon: 'note', label: 'Заметки' },
-    { key: 'learning', icon: 'book', label: 'Обучение' },
-    { key: 'matrix', icon: 'grid', label: 'Матрица' },
-    { key: 'focus', icon: 'focus', label: 'Фокус' },
-    { key: 'mood', icon: 'mood', label: 'Настроение' },
-    { key: 'water', icon: 'water', label: 'Вода' },
-    { key: 'meds', icon: 'pill', label: 'Лекарства' },
-    { key: 'workouts', icon: 'dumbbell', label: 'Тренировки' },
-    { key: 'meditation', icon: 'lotus', label: 'Медитации' },
-    { key: 'journal', icon: 'journal', label: 'Дневник' },
-    { key: 'media', icon: 'film', label: 'Медиатека' },
-    { key: 'finance', icon: 'wallet', label: 'Финансы' },
-    { key: 'history', icon: 'chart', label: 'История' },
-    { key: 'dbmanager', icon: 'database', label: 'База данных' },
-    { key: 'settings', icon: 'settings', label: 'Настройки' }
+    { key: 'calendar', emoji: '📅', label: 'Календарь' },
+    { key: 'stats', emoji: '📊', label: 'Статистика' },
+    { key: 'habits', emoji: '🔄', label: 'Привычки' },
+    { key: 'goals', emoji: '🎯', label: 'Цели' },
+    { key: 'timer', emoji: '⏱', label: 'Таймер' },
+    { key: 'notes', emoji: '📝', label: 'Заметки' },
+    { key: 'learning', emoji: '📚', label: 'Обучение' },
+    { key: 'matrix', emoji: '🔢', label: 'Матрица' },
+    { key: 'focus', emoji: '🧘', label: 'Фокус' },
+    { key: 'mood', emoji: '💭', label: 'Настроение' },
+    { key: 'water', emoji: '💧', label: 'Вода' },
+    { key: 'meds', emoji: '💊', label: 'Лекарства' },
+    { key: 'workouts', emoji: '🏋️', label: 'Тренировки' },
+    { key: 'meditation', emoji: '🧘', label: 'Медитации' },
+    { key: 'journal', emoji: '📓', label: 'Дневник' },
+    { key: 'media', emoji: '📖', label: 'Медиатека' },
+    { key: 'finance', emoji: '💰', label: 'Финансы' },
+    { key: 'history', emoji: '📋', label: 'История' },
+    { key: 'dbmanager', emoji: '🗄', label: 'База данных' },
+    { key: 'settings', emoji: '⚙️', label: 'Настройки' }
   ];
-  document.getElementById('app').innerHTML = `
-    <div class="page">
-      <div class="title-xl">Все разделы</div>
-      ${items.map(it => `
-        <div class="list-row" onclick="navigate('${it.key}')">
-          <div class="list-icon" style="background:var(--surface-2);color:var(--text);">${icon(it.icon, 22)}</div>
-          <div class="list-body"><div class="list-title">${it.label}</div></div>
-          <div class="list-chevron">${icon('chevR', 18)}</div>
-        </div>
-      `).join('')}
-    </div>
-  `;
+  let html = '<div class="page"><div class="title-xl">Все разделы</div>';
+  for (let i = 0; i < items.length; i++) {
+    const it = items[i];
+    html += '<div class="list-row" onclick="navigate(\'' + it.key + '\')">';
+    html += '<div class="list-icon" style="background:var(--surface-2);">' + it.emoji + '</div>';
+    html += '<div class="list-body"><div class="list-title">' + it.label + '</div></div>';
+    html += '<div class="list-chevron">›</div></div>';
+  }
+  html += '</div>';
+  document.getElementById('app').innerHTML = html;
 }
 
-/* ─────── CALENDAR ─────── */
+/* ═══ CALENDAR ═══ */
 let calOffset = 0;
 
 function renderCalendar() {
   const now = new Date();
   const month = new Date(now.getFullYear(), now.getMonth() + calOffset, 1);
-  const year = month.getFullYear(), m = month.getMonth();
+  const year = month.getFullYear();
+  const m = month.getMonth();
   const firstDay = (new Date(year, m, 1).getDay() + 6) % 7;
   const daysInMonth = new Date(year, m + 1, 0).getDate();
   const monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
   const weekdays = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
   const todayStr = today();
 
-  const events = state.schedule.filter(b => {
+  const events = state.schedule.filter(function(b) {
     const d = new Date(b.start_time);
     return d.getMonth() === m && d.getFullYear() === year;
   });
 
-  let grid = weekdays.map(w => `<div style="text-align:center;font-size:11px;font-weight:700;color:var(--text-3);padding:8px 0;text-transform:uppercase;">${w}</div>`).join('');
+  let grid = '';
+  for (let i = 0; i < weekdays.length; i++) {
+    grid += '<div style="text-align:center;font-size:11px;font-weight:700;color:var(--text-3);padding:8px 0;text-transform:uppercase;">' + weekdays[i] + '</div>';
+  }
   for (let i = 0; i < firstDay; i++) grid += '<div></div>';
   for (let day = 1; day <= daysInMonth; day++) {
-    const ds = `${year}-${String(m+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-    const dayEvents = events.filter(b => new Date(b.start_time).toISOString().slice(0, 10) === ds);
+    const ds = year + '-' + String(m+1).padStart(2,'0') + '-' + String(day).padStart(2,'0');
+    const dayEvents = events.filter(function(b) { return new Date(b.start_time).toISOString().slice(0, 10) === ds; });
     const isToday = ds === todayStr;
-    grid += `
-      <button style="aspect-ratio:1;border-radius:14px;border:none;background:${isToday ? 'var(--brand)' : 'transparent'};color:${isToday ? '#fff' : 'var(--text)'};font-family:inherit;font-size:14px;font-weight:${isToday ? '800' : '600'};cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px;" onclick="showDayDetails('${ds}')">
-        <span>${day}</span>
-        ${dayEvents.length ? `<span style="display:flex;gap:1px;">${dayEvents.slice(0,3).map(() => `<span style="width:3px;height:3px;border-radius:50%;background:${isToday ? '#fff' : 'var(--brand)'};"></span>`).join('')}</span>` : ''}
-      </button>
-    `;
+    grid += '<button style="aspect-ratio:1;border-radius:14px;border:none;background:' + (isToday ? 'var(--brand)' : 'transparent') + ';color:' + (isToday ? '#fff' : 'var(--text)') + ';font-family:inherit;font-size:14px;font-weight:' + (isToday ? '800' : '600') + ';cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px;" onclick="showDayDetails(\'' + ds + '\')">';
+    grid += '<span>' + day + '</span>';
+    if (dayEvents.length) {
+      grid += '<span style="display:flex;gap:1px;">';
+      for (let j = 0; j < Math.min(3, dayEvents.length); j++) {
+        grid += '<span style="width:3px;height:3px;border-radius:50%;background:' + (isToday ? '#fff' : 'var(--brand)') + ';"></span>';
+      }
+      grid += '</span>';
+    }
+    grid += '</button>';
   }
 
-  const gcalConnected = state.settings.googleSyncEnabled && state.settings.googleAccessToken;
-  document.getElementById('app').innerHTML = `
-    <div class="page">
-      <div class="row-between" style="margin-bottom:20px;">
-        <div class="title-xl" style="margin:0;">Календарь</div>
-        <button class="icon-btn" onclick="navigate('gcal')" style="${gcalConnected ? 'background:var(--success);color:#000;' : ''}">
-          ${icon('google', 20)}
-        </button>
-      </div>
+  let html = '<div class="page"><div class="title-xl">Календарь</div>';
+  html += '<div class="card">';
+  html += '<div class="row-between" style="margin-bottom:16px;">';
+  html += '<button class="icon-btn" onclick="calOffset--;renderCalendar()">‹</button>';
+  html += '<div class="title-m" style="margin:0;">' + monthNames[m] + ' ' + year + '</div>';
+  html += '<button class="icon-btn" onclick="calOffset++;renderCalendar()">›</button>';
+  html += '</div>';
+  html += '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;">' + grid + '</div>';
+  html += '</div>';
 
-      ${gcalConnected ? `
-        <div class="card" style="padding:12px 16px;background:rgba(52,211,153,0.1);border:1px solid var(--success);margin-bottom:16px;">
-          <div class="row" style="gap:10px;">
-            ${icon('google', 20)}
-            <div style="flex:1;font-size:13px;font-weight:600;">Синхронизация с Google активна</div>
-            <button class="btn btn-xs btn-ghost" onclick="fullSync()">Синхр.</button>
-          </div>
-        </div>
-      ` : ''}
+  html += '<div class="card"><h2>➕ Новое событие</h2>';
+  html += '<div class="field"><input type="text" id="ev-title" placeholder="Название"/></div>';
+  html += '<div class="field"><input type="datetime-local" id="ev-start"/></div>';
+  html += '<div class="field"><input type="datetime-local" id="ev-end"/></div>';
+  html += '<button class="btn btn-primary btn-block" onclick="addEvent()">Создать</button></div>';
 
-      <div class="card">
-        <div class="row-between" style="margin-bottom:16px;">
-          <button class="icon-btn" onclick="calOffset--;renderCalendar()">${icon('chevL', 18)}</button>
-          <div class="title-m" style="margin:0;">${monthNames[m]} ${year}</div>
-          <button class="icon-btn" onclick="calOffset++;renderCalendar()">${icon('chevR', 18)}</button>
-        </div>
-        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;">${grid}</div>
-      </div>
-
-      <div class="card">
-        <h2>${icon('plus', 20)} Новое событие</h2>
-        <div class="field"><input type="text" id="ev-title" placeholder="Название"/></div>
-        <div class="field"><input type="datetime-local" id="ev-start"/></div>
-        <div class="field"><input type="datetime-local" id="ev-end"/></div>
-        <button class="btn btn-primary btn-block" onclick="addEvent()">Создать${gcalConnected ? ' и синхронизировать' : ''}</button>
-      </div>
-
-      <div class="card">
-        <h2>${icon('calendar', 20)} Предстоящие</h2>
-        ${state.schedule.filter(b => new Date(b.start_time) >= new Date()).sort((a,b) => new Date(a.start_time) - new Date(b.start_time)).slice(0, 8).map(b => `
-          <div class="list-row" onclick="editEvent('${b.id}')">
-            <div style="width:4px;height:40px;border-radius:2px;background:${b.source === 'google' ? 'var(--success)' : 'var(--brand)'};flex-shrink:0;"></div>
-            <div class="list-body">
-              <div class="list-title">${esc(b.title)}</div>
-              <div class="list-subtitle">${fmtDate(b.start_time)} · ${fmtTime(b.start_time)}–${fmtTime(b.end_time)}${b.source === 'google' ? ' · Google' : ''}</div>
-            </div>
-            <div class="list-chevron">${icon('chevR', 18)}</div>
-          </div>
-        `).join('') || '<div class="footnote text-tertiary">Нет событий</div>'}
-      </div>
-    </div>
-  `;
-}
-
-async function addEvent() {
-  const title = document.getElementById('ev-title').value.trim();
-  const start = document.getElementById('ev-start').value;
-  const end = document.getElementById('ev-end').value;
-  if (!title || !start || !end) return toast('Заполните поля', 'error');
-  if (new Date(start) >= new Date(end)) return toast('Неверный интервал', 'error');
-
-  const ev = {
-    id: uid(), title,
-    start_time: new Date(start).toISOString(),
-    end_time: new Date(end).toISOString(),
-    source: 'app', created_at: nowISO()
-  };
-  state.schedule.push(ev);
-  save();
-
-  if (state.settings.googleSyncEnabled && state.settings.googleAccessToken) {
-    try {
-      const calId = state.settings.googleCalendarId || 'primary';
-      const created = await gcalRequest(`/calendars/${encodeURIComponent(calId)}/events`, {
-        method: 'POST',
-        body: JSON.stringify({
-          summary: title,
-          start: { dateTime: ev.start_time, timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone },
-          end: { dateTime: ev.end_time, timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone }
-        })
-      });
-      ev.googleEventId = created.id;
-      save();
-      toast('Создано и синхронизировано', 'success');
-    } catch(e) {
-      toast('Создано локально', 'warning');
+  html += '<div class="card"><h2>📅 Предстоящие</h2>';
+  const upcoming = state.schedule.filter(function(b) { return new Date(b.start_time) >= new Date(); })
+    .sort(function(a,b) { return new Date(a.start_time) - new Date(b.start_time); }).slice(0, 8);
+  if (upcoming.length) {
+    for (let i = 0; i < upcoming.length; i++) {
+      const b = upcoming[i];
+      html += '<div class="list-row" onclick="editEvent(\'' + b.id + '\')">';
+      html += '<div style="width:4px;height:40px;border-radius:2px;background:var(--brand);flex-shrink:0;"></div>';
+      html += '<div class="list-body"><div class="list-title">' + esc(b.title) + '</div>';
+      html += '<div class="list-subtitle">' + fmtDate(b.start_time) + ' · ' + fmtTime(b.start_time) + '–' + fmtTime(b.end_time) + '</div></div>';
+      html += '<div class="list-chevron">›</div></div>';
     }
   } else {
-    toast('Событие создано', 'success');
+    html += '<div class="footnote text-tertiary">Нет событий</div>';
   }
+  html += '</div></div>';
+  document.getElementById('app').innerHTML = html;
+}
+
+function addEvent() {
+  const titleEl = document.getElementById('ev-title');
+  const startEl = document.getElementById('ev-start');
+  const endEl = document.getElementById('ev-end');
+  const title = titleEl ? titleEl.value.trim() : '';
+  const start = startEl ? startEl.value : '';
+  const end = endEl ? endEl.value : '';
+  if (!title || !start || !end) return toast('Заполните поля', 'error');
+  if (new Date(start) >= new Date(end)) return toast('Неверный интервал', 'error');
+  state.schedule.push({
+    id: uid(), title: title,
+    start_time: new Date(start).toISOString(),
+    end_time: new Date(end).toISOString(),
+    created_at: nowISO()
+  });
+  save();
+  toast('Создано', 'success');
   haptic('success');
   renderCalendar();
 }
 
 function editEvent(id) {
-  const b = state.schedule.find(x => x.id === id);
+  const b = state.schedule.find(function(x) { return x.id === id; });
   if (!b) return;
-  openSheet('Событие', `
-    <div class="field"><input type="text" id="ee-title" value="${esc(b.title)}"/></div>
-    <div class="field"><input type="datetime-local" id="ee-start" value="${new Date(b.start_time).toISOString().slice(0,16)}"/></div>
-    <div class="field"><input type="datetime-local" id="ee-end" value="${new Date(b.end_time).toISOString().slice(0,16)}"/></div>
-    <button class="btn btn-primary btn-block" onclick="saveEvent('${id}')">Сохранить</button>
-    <button class="btn btn-danger btn-block mt-2" onclick="deleteEvent('${id}')">Удалить</button>
-  `);
+  openSheet('Событие',
+    '<div class="field"><input type="text" id="ee-title" value="' + esc(b.title) + '"/></div>' +
+    '<div class="field"><input type="datetime-local" id="ee-start" value="' + new Date(b.start_time).toISOString().slice(0,16) + '"/></div>' +
+    '<div class="field"><input type="datetime-local" id="ee-end" value="' + new Date(b.end_time).toISOString().slice(0,16) + '"/></div>' +
+    '<button class="btn btn-primary btn-block" onclick="saveEvent(\'' + id + '\')">Сохранить</button>' +
+    '<button class="btn btn-danger btn-block mt-2" onclick="deleteEvent(\'' + id + '\')">Удалить</button>'
+  );
 }
 
-async function saveEvent(id) {
-  const b = state.schedule.find(x => x.id === id);
+function saveEvent(id) {
+  const b = state.schedule.find(function(x) { return x.id === id; });
   if (!b) return;
-  b.title = document.getElementById('ee-title').value.trim() || b.title;
-  b.start_time = new Date(document.getElementById('ee-start').value).toISOString();
-  b.end_time = new Date(document.getElementById('ee-end').value).toISOString();
+  b.title = (document.getElementById('ee-title') || {}).value || b.title;
+  b.start_time = new Date((document.getElementById('ee-start') || {}).value).toISOString();
+  b.end_time = new Date((document.getElementById('ee-end') || {}).value).toISOString();
   save();
-
-  if (b.googleEventId && state.settings.googleAccessToken) {
-    try {
-      const calId = state.settings.googleCalendarId || 'primary';
-      await gcalRequest(`/calendars/${encodeURIComponent(calId)}/events/${b.googleEventId}`, {
-        method: 'PATCH',
-        body: JSON.stringify({
-          summary: b.title,
-          start: { dateTime: b.start_time },
-          end: { dateTime: b.end_time }
-        })
-      });
-      toast('Обновлено и синхронизировано', 'success');
-    } catch(e) { toast('Обновлено локально', 'warning'); }
-  } else {
-    toast('Сохранено', 'success');
-  }
   closeSheet();
+  toast('Сохранено', 'success');
   renderCalendar();
 }
 
-async function deleteEvent(id) {
-  const b = state.schedule.find(x => x.id === id);
-  if (!b) return;
+function deleteEvent(id) {
   if (!confirm('Удалить?')) return;
-
-  if (b.googleEventId && state.settings.googleAccessToken) {
-    try {
-      const calId = state.settings.googleCalendarId || 'primary';
-      await gcalRequest(`/calendars/${encodeURIComponent(calId)}/events/${b.googleEventId}`, { method: 'DELETE' });
-    } catch(e) {}
-  }
-
-  state.schedule = state.schedule.filter(x => x.id !== id);
+  state.schedule = state.schedule.filter(function(x) { return x.id !== id; });
   save();
   closeSheet();
   toast('Удалено', 'info');
@@ -1903,111 +1385,95 @@ async function deleteEvent(id) {
 }
 
 function showDayDetails(dateStr) {
-  const events = state.schedule.filter(b => new Date(b.start_time).toISOString().slice(0, 10) === dateStr);
-  const tasks = state.tasks.filter(t => t.created_at?.slice(0, 10) === dateStr);
-  openSheet(fmtDate(dateStr), `
-    <div class="stat-grid mb-4">
-      <div class="stat-item"><div class="stat-value">${tasks.length}</div><div class="stat-label">Задач</div></div>
-      <div class="stat-item"><div class="stat-value">${tasks.filter(t => t.status === 'completed').length}</div><div class="stat-label">Готово</div></div>
-      <div class="stat-item"><div class="stat-value">${events.length}</div><div class="stat-label">Событий</div></div>
-    </div>
-    <div class="headline mb-2">События</div>
-    ${events.length ? events.map(b => `
-      <div class="list-row" onclick="closeSheet();editEvent('${b.id}')">
-        <div class="list-body"><div class="list-title">${esc(b.title)}</div><div class="list-subtitle">${fmtTime(b.start_time)}–${fmtTime(b.end_time)}</div></div>
-      </div>
-    `).join('') : '<div class="footnote text-tertiary">Нет событий</div>'}
-  `);
+  const events = state.schedule.filter(function(b) { return new Date(b.start_time).toISOString().slice(0, 10) === dateStr; });
+  const tasks = state.tasks.filter(function(t) { return t.created_at && t.created_at.slice(0, 10) === dateStr; });
+  let html = '<div class="stat-grid mb-4">';
+  html += '<div class="stat-item"><div class="stat-value">' + tasks.length + '</div><div class="stat-label">Задач</div></div>';
+  html += '<div class="stat-item"><div class="stat-value">' + tasks.filter(function(t) { return t.status === 'completed'; }).length + '</div><div class="stat-label">Готово</div></div>';
+  html += '<div class="stat-item"><div class="stat-value">' + events.length + '</div><div class="stat-label">Событий</div></div>';
+  html += '</div><div class="headline mb-2">События</div>';
+  if (events.length) {
+    for (let i = 0; i < events.length; i++) {
+      const b = events[i];
+      html += '<div class="list-row" onclick="closeSheet();editEvent(\'' + b.id + '\')">';
+      html += '<div class="list-body"><div class="list-title">' + esc(b.title) + '</div>';
+      html += '<div class="list-subtitle">' + fmtTime(b.start_time) + '–' + fmtTime(b.end_time) + '</div></div></div>';
+    }
+  } else {
+    html += '<div class="footnote text-tertiary">Нет событий</div>';
+  }
+  openSheet(fmtDate(dateStr), html);
 }
 
-/* ─────── STATS ─────── */
+/* ═══ STATS ═══ */
 function renderStats() {
   const total = state.tasks.length;
-  const done = state.tasks.filter(t => t.status === 'completed').length;
-  const chats = state.chats.filter(c => c.role === 'user').length;
-  const waterTotal = state.water.reduce((s, w) => s + w.count, 0);
+  const done = state.tasks.filter(function(t) { return t.status === 'completed'; }).length;
+  const chats = state.chats.filter(function(c) { return c.role === 'user'; }).length;
+  const waterTotal = state.water.reduce(function(s, w) { return s + w.count; }, 0);
 
-  document.getElementById('app').innerHTML = `
-    <div class="page">
-      <div class="title-xl">Статистика</div>
-      <div class="stat-grid mb-4">
-        <div class="stat-item"><div class="stat-value">${done}</div><div class="stat-label">Задач</div></div>
-        <div class="stat-item"><div class="stat-value">${state.stats.streak || 0}</div><div class="stat-label">Streak</div></div>
-        <div class="stat-item"><div class="stat-value">${chats}</div><div class="stat-label">Диалогов</div></div>
-      </div>
-      <div class="card">
-        <h2>Прогресс задач</h2>
-        <div class="row-between mb-2">
-          <span class="subhead">Выполнено</span>
-          <span class="subhead text-secondary">${done} из ${total}</span>
-        </div>
-        <div class="progress"><div class="progress-fill" style="width:${total ? (done/total*100) : 0}%;"></div></div>
-      </div>
-      <div class="card">
-        <h2>Трекинг</h2>
-        <div class="list-row">
-          <div class="list-icon" style="background:var(--psych);color:#000;">${icon('water', 22)}</div>
-          <div class="list-body"><div class="list-title">Вода всего</div></div>
-          <div class="list-value">${waterTotal} ст.</div>
-        </div>
-        <div class="list-row">
-          <div class="list-icon" style="background:var(--fitness);">${icon('dumbbell', 22)}</div>
-          <div class="list-body"><div class="list-title">Тренировок</div></div>
-          <div class="list-value">${state.workouts.length}</div>
-        </div>
-      </div>
-    </div>
-  `;
+  let html = '<div class="page"><div class="title-xl">Статистика</div>';
+  html += '<div class="stat-grid mb-4">';
+  html += '<div class="stat-item"><div class="stat-value">' + done + '</div><div class="stat-label">Задач</div></div>';
+  html += '<div class="stat-item"><div class="stat-value">' + (state.stats.streak || 0) + '</div><div class="stat-label">Streak</div></div>';
+  html += '<div class="stat-item"><div class="stat-value">' + chats + '</div><div class="stat-label">Диалогов</div></div>';
+  html += '</div>';
+  html += '<div class="card"><h2>Прогресс задач</h2>';
+  html += '<div class="row-between mb-2"><span class="subhead">Выполнено</span>';
+  html += '<span class="subhead text-secondary">' + done + ' из ' + total + '</span></div>';
+  html += '<div class="progress"><div class="progress-fill" style="width:' + (total ? (done/total*100) : 0) + '%;"></div></div></div>';
+  html += '<div class="card"><h2>Трекинг</h2>';
+  html += '<div class="list-row"><div class="list-icon" style="background:var(--psych);color:#000;">💧</div>';
+  html += '<div class="list-body"><div class="list-title">Вода всего</div></div>';
+  html += '<div class="list-value">' + waterTotal + ' ст.</div></div>';
+  html += '<div class="list-row"><div class="list-icon" style="background:var(--fitness);">🏋️</div>';
+  html += '<div class="list-body"><div class="list-title">Тренировок</div></div>';
+  html += '<div class="list-value">' + state.workouts.length + '</div></div>';
+  html += '</div></div>';
+  document.getElementById('app').innerHTML = html;
 }
 
-/* ─────── HABITS ─────── */
+/* ═══ HABITS ═══ */
 function calcStreak(history) {
-  if (!history?.length) return 0;
-  let s = 0; const d = new Date();
+  if (!history || !history.length) return 0;
+  let s = 0;
+  const d = new Date();
   while (s < 365) {
     const ds = d.toISOString().slice(0, 10);
-    if (history.includes(ds)) { s++; d.setDate(d.getDate() - 1); } else break;
+    if (history.indexOf(ds) >= 0) { s++; d.setDate(d.getDate() - 1); } else break;
   }
   return s;
 }
 
 function renderHabits() {
-  document.getElementById('app').innerHTML = `
-    <div class="page">
-      <div class="title-xl">Привычки</div>
-      ${state.habits.length ? `
-        <div class="card">
-          ${state.habits.map(h => {
-            const done = h.history?.includes(today());
-            const streak = calcStreak(h.history || []);
-            return `
-              <div class="list-row">
-                <button class="task-checkbox ${done ? 'checked' : ''}" onclick="event.stopPropagation();toggleHabit('${h.id}')">
-                  ${done ? icon('check', 14) : ''}
-                </button>
-                <div class="list-body">
-                  <div class="list-title">${esc(h.title)}</div>
-                  <div class="list-subtitle">${streak > 0 ? '🔥 ' + streak + ' дней' : 'Начни серию'}</div>
-                </div>
-                <button class="btn btn-icon btn-sm btn-ghost" onclick="event.stopPropagation();deleteHabit('${h.id}')">${icon('trash', 16)}</button>
-              </div>
-            `;
-          }).join('')}
-        </div>
-      ` : `<div class="empty"><div class="empty-icon">${icon('refresh', 56)}</div><div class="empty-title">Нет привычек</div><div class="empty-text">Начни с одной</div></div>`}
-      <div class="card">
-        <h2>Новая привычка</h2>
-        <div class="field"><input type="text" id="h-title" placeholder="Например: Чтение 30 мин"/></div>
-        <button class="btn btn-primary btn-block" onclick="addHabit()">Добавить</button>
-      </div>
-    </div>
-  `;
+  let html = '<div class="page"><div class="title-xl">Привычки</div>';
+  if (state.habits.length) {
+    html += '<div class="card">';
+    for (let i = 0; i < state.habits.length; i++) {
+      const h = state.habits[i];
+      const done = h.history && h.history.indexOf(today()) >= 0;
+      const streak = calcStreak(h.history || []);
+      html += '<div class="list-row">';
+      html += '<button class="task-checkbox ' + (done ? 'checked' : '') + '" onclick="event.stopPropagation();toggleHabit(\'' + h.id + '\')">' + (done ? '✓' : '') + '</button>';
+      html += '<div class="list-body"><div class="list-title">' + esc(h.title) + '</div>';
+      html += '<div class="list-subtitle">' + (streak > 0 ? '🔥 ' + streak + ' дней' : 'Начни серию') + '</div></div>';
+      html += '<button class="btn btn-icon btn-sm btn-ghost" onclick="event.stopPropagation();deleteHabit(\'' + h.id + '\')">🗑</button>';
+      html += '</div>';
+    }
+    html += '</div>';
+  } else {
+    html += '<div class="empty"><div class="empty-icon">🔄</div><div class="empty-title">Нет привычек</div><div class="empty-text">Начни с одной</div></div>';
+  }
+  html += '<div class="card"><h2>Новая привычка</h2>';
+  html += '<div class="field"><input type="text" id="h-title" placeholder="Например: Чтение 30 мин"/></div>';
+  html += '<button class="btn btn-primary btn-block" onclick="addHabit()">Добавить</button></div></div>';
+  document.getElementById('app').innerHTML = html;
 }
 
 function addHabit() {
-  const title = document.getElementById('h-title').value.trim();
+  const title = ((document.getElementById('h-title') || {}).value || '').trim();
   if (!title) return toast('Введите название', 'error');
-  state.habits.push({ id: uid(), title, history: [], created_at: nowISO() });
+  state.habits.push({ id: uid(), title: title, history: [], created_at: nowISO() });
   save();
   toast('Добавлено', 'success');
   haptic('success');
@@ -2015,16 +1481,16 @@ function addHabit() {
 }
 
 function toggleHabit(id) {
-  const h = state.habits.find(x => x.id === id);
+  const h = state.habits.find(function(x) { return x.id === id; });
   if (!h) return;
   if (!h.history) h.history = [];
   const t = today();
-  if (h.history.includes(t)) {
-    h.history = h.history.filter(d => d !== t);
+  if (h.history.indexOf(t) >= 0) {
+    h.history = h.history.filter(function(d) { return d !== t; });
     toast('Отменено', 'info');
   } else {
     h.history.push(t);
-    toast(`Серия ${calcStreak(h.history)} 🔥`, 'success');
+    toast('Серия ' + calcStreak(h.history) + ' 🔥', 'success');
     haptic('success');
   }
   save();
@@ -2033,43 +1499,38 @@ function toggleHabit(id) {
 
 function deleteHabit(id) {
   if (!confirm('Удалить?')) return;
-  state.habits = state.habits.filter(h => h.id !== id);
+  state.habits = state.habits.filter(function(h) { return h.id !== id; });
   save();
   renderHabits();
 }
 
-/* ─────── GOALS ─────── */
+/* ═══ GOALS ═══ */
 function renderGoals() {
-  document.getElementById('app').innerHTML = `
-    <div class="page">
-      <div class="title-xl">Цели</div>
-      ${state.goals.length ? state.goals.map(g => `
-        <div class="card">
-          <div class="row-between mb-3">
-            <div style="font-weight:700;font-size:17px;">${esc(g.title)}</div>
-            <button class="btn btn-icon btn-sm btn-ghost" onclick="deleteGoal('${g.id}')">${icon('trash', 16)}</button>
-          </div>
-          <div class="progress mb-2"><div class="progress-fill" style="width:${g.progress || 0}%;"></div></div>
-          <div class="row-between">
-            <span class="footnote text-secondary">${g.progress || 0}%</span>
-            <button class="btn btn-sm btn-ghost" onclick="updateGoal('${g.id}')">Изменить</button>
-          </div>
-        </div>
-      `).join('') : `<div class="empty"><div class="empty-icon">${icon('target', 56)}</div><div class="empty-title">Нет целей</div></div>`}
-      <div class="card">
-        <h2>Новая цель</h2>
-        <div class="field"><input type="text" id="g-title" placeholder="Название"/></div>
-        <div class="field"><input type="number" id="g-progress" placeholder="Прогресс %" value="0" min="0" max="100"/></div>
-        <button class="btn btn-primary btn-block" onclick="addGoal()">Добавить</button>
-      </div>
-    </div>
-  `;
+  let html = '<div class="page"><div class="title-xl">Цели</div>';
+  if (state.goals.length) {
+    for (let i = 0; i < state.goals.length; i++) {
+      const g = state.goals[i];
+      html += '<div class="card"><div class="row-between mb-3">';
+      html += '<div style="font-weight:700;font-size:17px;">' + esc(g.title) + '</div>';
+      html += '<button class="btn btn-icon btn-sm btn-ghost" onclick="deleteGoal(\'' + g.id + '\')">🗑</button></div>';
+      html += '<div class="progress mb-2"><div class="progress-fill" style="width:' + (g.progress || 0) + '%;"></div></div>';
+      html += '<div class="row-between"><span class="footnote text-secondary">' + (g.progress || 0) + '%</span>';
+      html += '<button class="btn btn-sm btn-ghost" onclick="updateGoal(\'' + g.id + '\')">Изменить</button></div></div>';
+    }
+  } else {
+    html += '<div class="empty"><div class="empty-icon">🎯</div><div class="empty-title">Нет целей</div></div>';
+  }
+  html += '<div class="card"><h2>Новая цель</h2>';
+  html += '<div class="field"><input type="text" id="g-title" placeholder="Название"/></div>';
+  html += '<div class="field"><input type="number" id="g-progress" placeholder="Прогресс %" value="0" min="0" max="100"/></div>';
+  html += '<button class="btn btn-primary btn-block" onclick="addGoal()">Добавить</button></div></div>';
+  document.getElementById('app').innerHTML = html;
 }
 
 function addGoal() {
-  const title = document.getElementById('g-title').value.trim();
+  const title = ((document.getElementById('g-title') || {}).value || '').trim();
   if (!title) return toast('Введите название', 'error');
-  state.goals.push({ id: uid(), title, progress: parseInt(document.getElementById('g-progress').value) || 0, created_at: nowISO() });
+  state.goals.push({ id: uid(), title: title, progress: parseInt((document.getElementById('g-progress') || {}).value) || 0, created_at: nowISO() });
   save();
   toast('Цель добавлена', 'success');
   haptic('success');
@@ -2077,7 +1538,7 @@ function addGoal() {
 }
 
 function updateGoal(id) {
-  const g = state.goals.find(x => x.id === id);
+  const g = state.goals.find(function(x) { return x.id === id; });
   if (!g) return;
   const p = prompt('Прогресс (0-100):', g.progress);
   if (p === null) return;
@@ -2089,12 +1550,12 @@ function updateGoal(id) {
 
 function deleteGoal(id) {
   if (!confirm('Удалить?')) return;
-  state.goals = state.goals.filter(g => g.id !== id);
+  state.goals = state.goals.filter(function(g) { return g.id !== id; });
   save();
   renderGoals();
 }
 
-/* ─────── TIMER ─────── */
+/* ═══ TIMER ═══ */
 let timerTick = null;
 
 function computeElapsed(s) {
@@ -2103,49 +1564,41 @@ function computeElapsed(s) {
 }
 
 function renderTimer() {
-  const active = state.timer.find(s => s.status === 'active' || s.status === 'paused');
-  let html = '';
+  const active = state.timer.find(function(s) { return s.status === 'active' || s.status === 'paused'; });
+  let body = '';
   if (active) {
     const elapsed = computeElapsed(active);
-    const mins = Math.floor(elapsed / 60), secs = elapsed % 60;
-    html = `
-      <div style="text-align:center;padding:32px 16px;">
-        <div class="subhead text-secondary mb-2">${esc(active.title)}</div>
-        <div style="font-size:72px;font-weight:800;letter-spacing:-3px;font-variant-numeric:tabular-nums;background:linear-gradient(135deg,var(--brand),var(--brand-2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin:20px 0;">${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}</div>
-        <div class="btn-row" style="justify-content:center;">
-          ${active.status === 'active'
-            ? `<button class="btn btn-warning" onclick="pauseTimer()">⏸ Пауза</button>`
-            : `<button class="btn btn-success" onclick="resumeTimer()">▶ Продолжить</button>`}
-          <button class="btn btn-danger" onclick="stopTimer()">⏹ Завершить</button>
-        </div>
-      </div>
-    `;
+    const mins = Math.floor(elapsed / 60);
+    const secs = elapsed % 60;
+    body = '<div style="text-align:center;padding:32px 16px;">';
+    body += '<div class="subhead text-secondary mb-2">' + esc(active.title) + '</div>';
+    body += '<div style="font-size:72px;font-weight:800;letter-spacing:-3px;font-variant-numeric:tabular-nums;background:linear-gradient(135deg,var(--brand),var(--brand-2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin:20px 0;">' + String(mins).padStart(2,'0') + ':' + String(secs).padStart(2,'0') + '</div>';
+    body += '<div class="btn-row" style="justify-content:center;">';
+    if (active.status === 'active') body += '<button class="btn btn-warning" onclick="pauseTimer()">⏸ Пауза</button>';
+    else body += '<button class="btn btn-success" onclick="resumeTimer()">▶ Продолжить</button>';
+    body += '<button class="btn btn-danger" onclick="stopTimer()">⏹ Завершить</button></div></div>';
   } else {
-    html = `
-      <div class="field"><input type="text" id="tm-title" placeholder="Что делаем?"/></div>
-      <button class="btn btn-success btn-block" onclick="startTimer()">▶ Запустить</button>
-    `;
+    body = '<div class="field"><input type="text" id="tm-title" placeholder="Что делаем?"/></div>';
+    body += '<button class="btn btn-success btn-block" onclick="startTimer()">▶ Запустить</button>';
   }
-  const history = state.timer.filter(s => s.status === 'done').slice(-5).reverse();
-  document.getElementById('app').innerHTML = `
-    <div class="page">
-      <div class="title-xl">Таймер</div>
-      <div class="card">${html}</div>
-      <div class="card">
-        <h2>История</h2>
-        ${history.length ? history.map(s => `
-          <div class="list-row">
-            <div class="list-body">
-              <div class="list-title">${esc(s.title)}</div>
-              <div class="list-subtitle">${Math.floor((s.total_time||0)/60)} мин · ${fmtDate(s.end_time)}</div>
-            </div>
-          </div>
-        `).join('') : '<div class="footnote text-tertiary">Пока нет сессий</div>'}
-      </div>
-    </div>
-  `;
-  if (active?.status === 'active' && !timerTick) {
-    timerTick = setInterval(() => { if (currentPage === 'timer') renderTimer(); }, 1000);
+  const history = state.timer.filter(function(s) { return s.status === 'done'; }).slice(-5).reverse();
+  let html = '<div class="page"><div class="title-xl">Таймер</div>';
+  html += '<div class="card">' + body + '</div>';
+  html += '<div class="card"><h2>История</h2>';
+  if (history.length) {
+    for (let i = 0; i < history.length; i++) {
+      const s = history[i];
+      html += '<div class="list-row"><div class="list-body">';
+      html += '<div class="list-title">' + esc(s.title) + '</div>';
+      html += '<div class="list-subtitle">' + Math.floor((s.total_time||0)/60) + ' мин · ' + fmtDate(s.end_time) + '</div></div></div>';
+    }
+  } else {
+    html += '<div class="footnote text-tertiary">Пока нет сессий</div>';
+  }
+  html += '</div></div>';
+  document.getElementById('app').innerHTML = html;
+  if (active && active.status === 'active' && !timerTick) {
+    timerTick = setInterval(function() { if (currentPage === 'timer') renderTimer(); }, 1000);
   } else if (!active && timerTick) {
     clearInterval(timerTick);
     timerTick = null;
@@ -2153,8 +1606,8 @@ function renderTimer() {
 }
 
 function startTimer() {
-  const title = document.getElementById('tm-title').value.trim() || 'Фокус-сессия';
-  state.timer.push({ id: uid(), title, start_time: nowISO(), paused_time: 0, status: 'active', created_at: nowISO() });
+  const title = ((document.getElementById('tm-title') || {}).value || '').trim() || 'Фокус-сессия';
+  state.timer.push({ id: uid(), title: title, start_time: nowISO(), paused_time: 0, status: 'active', created_at: nowISO() });
   save();
   toast('Запущено', 'success');
   haptic('success');
@@ -2162,7 +1615,7 @@ function startTimer() {
 }
 
 function pauseTimer() {
-  const s = state.timer.find(x => x.status === 'active');
+  const s = state.timer.find(function(x) { return x.status === 'active'; });
   if (!s) return;
   s.paused_time += Date.now() - new Date(s.start_time).getTime() - s.paused_time;
   s.status = 'paused';
@@ -2171,7 +1624,7 @@ function pauseTimer() {
 }
 
 function resumeTimer() {
-  const s = state.timer.find(x => x.status === 'paused');
+  const s = state.timer.find(function(x) { return x.status === 'paused'; });
   if (!s) return;
   s.start_time = nowISO();
   s.status = 'active';
@@ -2180,49 +1633,48 @@ function resumeTimer() {
 }
 
 function stopTimer() {
-  const s = state.timer.find(x => x.status === 'active' || x.status === 'paused');
+  const s = state.timer.find(function(x) { return x.status === 'active' || x.status === 'paused'; });
   if (!s) return;
   s.total_time = computeElapsed(s);
   s.status = 'done';
   s.end_time = nowISO();
   save();
-  toast(`Готово: ${Math.floor(s.total_time/60)} мин`, 'success');
+  toast('Готово: ' + Math.floor(s.total_time/60) + ' мин', 'success');
   haptic('success');
   renderTimer();
 }
 
-/* ─────── NOTES ─────── */
+/* ═══ NOTES ═══ */
 function renderNotes() {
-  document.getElementById('app').innerHTML = `
-    <div class="page">
-      <div class="title-xl">Заметки</div>
-      ${state.notes.length ? state.notes.slice().reverse().map(n => `
-        <div class="card" style="cursor:pointer;" onclick="editNote('${n.id}')">
-          <div class="row-between mb-2">
-            <div style="font-weight:700;font-size:17px;">${esc(n.title)}</div>
-            <span class="caption text-tertiary">${fmtDate(n.created_at)}</span>
-          </div>
-          <div class="footnote text-secondary" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${esc(n.content)}</div>
-        </div>
-      `).join('') : `<div class="empty"><div class="empty-icon">${icon('note', 56)}</div><div class="empty-title">Нет заметок</div></div>`}
-      <button class="btn btn-primary btn-block" onclick="addNote()">+ Новая заметка</button>
-    </div>
-  `;
+  let html = '<div class="page"><div class="title-xl">Заметки</div>';
+  if (state.notes.length) {
+    for (let i = state.notes.length - 1; i >= 0; i--) {
+      const n = state.notes[i];
+      html += '<div class="card" style="cursor:pointer;" onclick="editNote(\'' + n.id + '\')">';
+      html += '<div class="row-between mb-2"><div style="font-weight:700;font-size:17px;">' + esc(n.title) + '</div>';
+      html += '<span class="caption text-tertiary">' + fmtDate(n.created_at) + '</span></div>';
+      html += '<div class="footnote text-secondary" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">' + esc(n.content) + '</div></div>';
+    }
+  } else {
+    html += '<div class="empty"><div class="empty-icon">📝</div><div class="empty-title">Нет заметок</div></div>';
+  }
+  html += '<button class="btn btn-primary btn-block" onclick="addNote()">+ Новая заметка</button></div>';
+  document.getElementById('app').innerHTML = html;
 }
 
 function addNote() {
-  openSheet('Новая заметка', `
-    <div class="field"><input type="text" id="n-title" placeholder="Заголовок" autofocus/></div>
-    <div class="field"><textarea id="n-content" placeholder="Содержание..." rows="6"></textarea></div>
-    <button class="btn btn-primary btn-block" onclick="saveNote()">Сохранить</button>
-  `);
+  openSheet('Новая заметка',
+    '<div class="field"><input type="text" id="n-title" placeholder="Заголовок" autofocus/></div>' +
+    '<div class="field"><textarea id="n-content" placeholder="Содержание..." rows="6"></textarea></div>' +
+    '<button class="btn btn-primary btn-block" onclick="saveNote()">Сохранить</button>'
+  );
 }
 
 function saveNote() {
-  const title = document.getElementById('n-title').value.trim();
-  const content = document.getElementById('n-content').value.trim();
+  const title = ((document.getElementById('n-title') || {}).value || '').trim();
+  const content = ((document.getElementById('n-content') || {}).value || '').trim();
   if (!title || !content) return toast('Заполните поля', 'error');
-  state.notes.push({ id: uid(), title, content, created_at: nowISO() });
+  state.notes.push({ id: uid(), title: title, content: content, created_at: nowISO() });
   save();
   closeSheet();
   toast('Сохранено', 'success');
@@ -2231,21 +1683,21 @@ function saveNote() {
 }
 
 function editNote(id) {
-  const n = state.notes.find(x => x.id === id);
+  const n = state.notes.find(function(x) { return x.id === id; });
   if (!n) return;
-  openSheet('Заметка', `
-    <div class="field"><input type="text" id="en-title" value="${esc(n.title)}"/></div>
-    <div class="field"><textarea id="en-content" rows="8">${esc(n.content)}</textarea></div>
-    <button class="btn btn-primary btn-block" onclick="updateNote('${id}')">Сохранить</button>
-    <button class="btn btn-danger btn-block mt-2" onclick="deleteNote('${id}')">Удалить</button>
-  `);
+  openSheet('Заметка',
+    '<div class="field"><input type="text" id="en-title" value="' + esc(n.title) + '"/></div>' +
+    '<div class="field"><textarea id="en-content" rows="8">' + esc(n.content) + '</textarea></div>' +
+    '<button class="btn btn-primary btn-block" onclick="updateNote(\'' + id + '\')">Сохранить</button>' +
+    '<button class="btn btn-danger btn-block mt-2" onclick="deleteNote(\'' + id + '\')">Удалить</button>'
+  );
 }
 
 function updateNote(id) {
-  const n = state.notes.find(x => x.id === id);
+  const n = state.notes.find(function(x) { return x.id === id; });
   if (!n) return;
-  n.title = document.getElementById('en-title').value.trim();
-  n.content = document.getElementById('en-content').value.trim();
+  n.title = ((document.getElementById('en-title') || {}).value || '').trim();
+  n.content = ((document.getElementById('en-content') || {}).value || '').trim();
   save();
   closeSheet();
   toast('Сохранено', 'success');
@@ -2254,44 +1706,39 @@ function updateNote(id) {
 
 function deleteNote(id) {
   if (!confirm('Удалить?')) return;
-  state.notes = state.notes.filter(n => n.id !== id);
+  state.notes = state.notes.filter(function(n) { return n.id !== id; });
   save();
   closeSheet();
   renderNotes();
 }
 
-/* ─────── LEARNING ─────── */
+/* ═══ LEARNING ═══ */
 function renderLearning() {
-  document.getElementById('app').innerHTML = `
-    <div class="page">
-      <div class="title-xl">Обучение</div>
-      ${state.learning.length ? state.learning.map(l => `
-        <div class="card">
-          <div class="row-between mb-2">
-            <div style="font-weight:700;font-size:17px;">${esc(l.title)}</div>
-            <span style="background:var(--surface-3);color:var(--text-2);padding:4px 10px;border-radius:100px;font-size:11px;font-weight:700;">${l.progress || 0}%</span>
-          </div>
-          <div class="progress mb-3"><div class="progress-fill" style="width:${l.progress || 0}%;"></div></div>
-          <div class="row-between">
-            <button class="btn btn-sm btn-ghost" onclick="updateLearning('${l.id}')">Прогресс</button>
-            <button class="btn btn-sm btn-ghost" onclick="deleteLearning('${l.id}')">${icon('trash', 16)}</button>
-          </div>
-        </div>
-      `).join('') : `<div class="empty"><div class="empty-icon">${icon('book', 56)}</div><div class="empty-title">Нет курсов</div></div>`}
-      <div class="card">
-        <h2>Новый курс</h2>
-        <div class="field"><input type="text" id="l-title" placeholder="Название"/></div>
-        <div class="field"><input type="text" id="l-material" placeholder="Ссылка (необязательно)"/></div>
-        <button class="btn btn-primary btn-block" onclick="addLearning()">Добавить</button>
-      </div>
-    </div>
-  `;
+  let html = '<div class="page"><div class="title-xl">Обучение</div>';
+  if (state.learning.length) {
+    for (let i = 0; i < state.learning.length; i++) {
+      const l = state.learning[i];
+      html += '<div class="card"><div class="row-between mb-2">';
+      html += '<div style="font-weight:700;font-size:17px;">' + esc(l.title) + '</div>';
+      html += '<span style="background:var(--surface-3);color:var(--text-2);padding:4px 10px;border-radius:100px;font-size:11px;font-weight:700;">' + (l.progress || 0) + '%</span></div>';
+      html += '<div class="progress mb-3"><div class="progress-fill" style="width:' + (l.progress || 0) + '%;"></div></div>';
+      html += '<div class="row-between"><button class="btn btn-sm btn-ghost" onclick="updateLearning(\'' + l.id + '\')">Прогресс</button>';
+      html += '<button class="btn btn-sm btn-ghost" onclick="deleteLearning(\'' + l.id + '\')">🗑</button></div></div>';
+    }
+  } else {
+    html += '<div class="empty"><div class="empty-icon">📚</div><div class="empty-title">Нет курсов</div></div>';
+  }
+  html += '<div class="card"><h2>Новый курс</h2>';
+  html += '<div class="field"><input type="text" id="l-title" placeholder="Название"/></div>';
+  html += '<div class="field"><input type="text" id="l-material" placeholder="Ссылка (необязательно)"/></div>';
+  html += '<button class="btn btn-primary btn-block" onclick="addLearning()">Добавить</button></div></div>';
+  document.getElementById('app').innerHTML = html;
 }
 
 function addLearning() {
-  const title = document.getElementById('l-title').value.trim();
+  const title = ((document.getElementById('l-title') || {}).value || '').trim();
   if (!title) return toast('Введите название', 'error');
-  state.learning.push({ id: uid(), title, material: document.getElementById('l-material').value.trim(), progress: 0, created_at: nowISO() });
+  state.learning.push({ id: uid(), title: title, material: ((document.getElementById('l-material') || {}).value || '').trim(), progress: 0, created_at: nowISO() });
   save();
   toast('Добавлено', 'success');
   haptic('success');
@@ -2299,7 +1746,7 @@ function addLearning() {
 }
 
 function updateLearning(id) {
-  const l = state.learning.find(x => x.id === id);
+  const l = state.learning.find(function(x) { return x.id === id; });
   if (!l) return;
   const p = prompt('Прогресс (0-100):', l.progress || 0);
   if (p === null) return;
@@ -2310,57 +1757,58 @@ function updateLearning(id) {
 
 function deleteLearning(id) {
   if (!confirm('Удалить?')) return;
-  state.learning = state.learning.filter(l => l.id !== id);
+  state.learning = state.learning.filter(function(l) { return l.id !== id; });
   save();
   renderLearning();
 }
 
-/* ─────── MATRIX ─────── */
+/* ═══ MATRIX ═══ */
 function renderMatrix() {
   const m = { q1: [], q2: [], q3: [], q4: [] };
-  state.matrix.forEach(x => { if (m[x.quadrant]) m[x.quadrant].push(x); });
+  state.matrix.forEach(function(x) { if (m[x.quadrant]) m[x.quadrant].push(x); });
   const qs = [
     { key: 'q1', title: 'Важно и срочно', color: 'var(--danger)', emoji: '🔥' },
     { key: 'q2', title: 'Важно, не срочно', color: 'var(--brand)', emoji: '📌' },
     { key: 'q3', title: 'Не важно, срочно', color: 'var(--warning)', emoji: '⚡' },
     { key: 'q4', title: 'Не важно, не срочно', color: 'var(--text-3)', emoji: '🗑' }
   ];
-  document.getElementById('app').innerHTML = `
-    <div class="page">
-      <div class="title-xl">Матрица Эйзенхауэра</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-        ${qs.map(q => `
-          <div class="card" style="margin:0;cursor:pointer;border-top:3px solid ${q.color};" onclick="addMatrixTask('${q.key}')">
-            <div class="footnote text-secondary mb-2">${q.emoji} ${q.title}</div>
-            <div style="font-size:32px;font-weight:800;color:${q.color};letter-spacing:-1px;">${m[q.key].length}</div>
-          </div>
-        `).join('')}
-      </div>
-      <div class="card mt-4">
-        <h2>Задачи в матрице</h2>
-        ${Object.entries(m).flatMap(([q, items]) => items.map(x => `
-          <div class="list-row">
-            <div class="list-icon" style="background:${qs.find(qq => qq.key === q).color};">${qs.find(qq => qq.key === q).emoji}</div>
-            <div class="list-body"><div class="list-title">${esc(x.title)}</div></div>
-            <button class="btn btn-icon btn-sm btn-ghost" onclick="event.stopPropagation();removeMatrixTask('${x.id}')">${icon('trash', 16)}</button>
-          </div>
-        `))).join('') || '<div class="footnote text-tertiary">Матрица пуста</div>'}
-      </div>
-    </div>
-  `;
+  let html = '<div class="page"><div class="title-xl">Матрица Эйзенхауэра</div>';
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">';
+  for (let i = 0; i < qs.length; i++) {
+    const q = qs[i];
+    html += '<div class="card" style="margin:0;cursor:pointer;border-top:3px solid ' + q.color + ';" onclick="addMatrixTask(\'' + q.key + '\')">';
+    html += '<div class="footnote text-secondary mb-2">' + q.emoji + ' ' + q.title + '</div>';
+    html += '<div style="font-size:32px;font-weight:800;color:' + q.color + ';letter-spacing:-1px;">' + m[q.key].length + '</div></div>';
+  }
+  html += '</div>';
+  html += '<div class="card mt-4"><h2>Задачи в матрице</h2>';
+  let hasAny = false;
+  for (let i = 0; i < qs.length; i++) {
+    const q = qs[i];
+    for (let j = 0; j < m[q.key].length; j++) {
+      hasAny = true;
+      const x = m[q.key][j];
+      html += '<div class="list-row"><div class="list-icon" style="background:' + q.color + ';">' + q.emoji + '</div>';
+      html += '<div class="list-body"><div class="list-title">' + esc(x.title) + '</div></div>';
+      html += '<button class="btn btn-icon btn-sm btn-ghost" onclick="event.stopPropagation();removeMatrixTask(\'' + x.id + '\')">🗑</button></div>';
+    }
+  }
+  if (!hasAny) html += '<div class="footnote text-tertiary">Матрица пуста</div>';
+  html += '</div></div>';
+  document.getElementById('app').innerHTML = html;
 }
 
 function addMatrixTask(quadrant) {
-  openSheet('Добавить в матрицу', `
-    <div class="field"><input type="text" id="mx-title" placeholder="Задача" autofocus/></div>
-    <button class="btn btn-primary btn-block" onclick="saveMatrixTask('${quadrant}')">Добавить</button>
-  `);
+  openSheet('Добавить в матрицу',
+    '<div class="field"><input type="text" id="mx-title" placeholder="Задача" autofocus/></div>' +
+    '<button class="btn btn-primary btn-block" onclick="saveMatrixTask(\'' + quadrant + '\')">Добавить</button>'
+  );
 }
 
 function saveMatrixTask(quadrant) {
-  const title = document.getElementById('mx-title').value.trim();
+  const title = ((document.getElementById('mx-title') || {}).value || '').trim();
   if (!title) return toast('Введите название', 'error');
-  state.matrix.push({ id: uid(), title, quadrant, created_at: nowISO() });
+  state.matrix.push({ id: uid(), title: title, quadrant: quadrant, created_at: nowISO() });
   save();
   closeSheet();
   toast('Добавлено', 'success');
@@ -2369,31 +1817,23 @@ function saveMatrixTask(quadrant) {
 }
 
 function removeMatrixTask(id) {
-  state.matrix = state.matrix.filter(x => x.id !== id);
+  state.matrix = state.matrix.filter(function(x) { return x.id !== id; });
   save();
   renderMatrix();
 }
 
-/* ─────── FOCUS ─────── */
+/* ═══ FOCUS ═══ */
 function renderFocus() {
   const f = state.flags;
-  document.getElementById('app').innerHTML = `
-    <div class="page">
-      <div class="title-xl">Фокус-режимы</div>
-      <div class="card">
-        <div class="list-row mb-2">
-          <div class="list-icon" style="background:var(--brand);">${icon('focus', 22)}</div>
-          <div class="list-body"><div class="list-title">Глубокий фокус</div><div class="list-subtitle">Меньше уведомлений</div></div>
-          <button class="switch ${f.focus ? 'on' : ''}" onclick="toggleFlag('focus')"></button>
-        </div>
-        <div class="list-row">
-          <div class="list-icon" style="background:var(--coach);color:#000;">${icon('mood', 22)}</div>
-          <div class="list-body"><div class="list-title">Не беспокоить</div><div class="list-subtitle">Тихий режим</div></div>
-          <button class="switch ${f.dnd ? 'on' : ''}" onclick="toggleFlag('dnd')"></button>
-        </div>
-      </div>
-    </div>
-  `;
+  let html = '<div class="page"><div class="title-xl">Фокус-режимы</div><div class="card">';
+  html += '<div class="list-row mb-2"><div class="list-icon" style="background:var(--brand);">🎯</div>';
+  html += '<div class="list-body"><div class="list-title">Глубокий фокус</div><div class="list-subtitle">Меньше уведомлений</div></div>';
+  html += '<button class="switch ' + (f.focus ? 'on' : '') + '" onclick="toggleFlag(\'focus\')"></button></div>';
+  html += '<div class="list-row"><div class="list-icon" style="background:var(--coach);color:#000;">🔇</div>';
+  html += '<div class="list-body"><div class="list-title">Не беспокоить</div><div class="list-subtitle">Тихий режим</div></div>';
+  html += '<button class="switch ' + (f.dnd ? 'on' : '') + '" onclick="toggleFlag(\'dnd\')"></button></div>';
+  html += '</div></div>';
+  document.getElementById('app').innerHTML = html;
 }
 
 function toggleFlag(key) {
@@ -2403,94 +1843,79 @@ function toggleFlag(key) {
   renderFocus();
 }
 
-/* ─────── MOOD ─────── */
+/* ═══ MOOD ═══ */
 function renderMood() {
   const mood = state.mood.slice(-30);
-  document.getElementById('app').innerHTML = `
-    <div class="page">
-      <div class="title-xl">Настроение</div>
-      <div class="card">
-        <h2>Сегодня</h2>
-        <div style="font-size:48px;font-weight:800;text-align:center;padding:16px 0;letter-spacing:-2px;">${mood.length ? mood[mood.length-1].score + '/10' : '—'}</div>
-        <button class="btn btn-primary btn-block" onclick="quickMoodLog()">Записать</button>
-      </div>
-      ${mood.length ? `
-        <div class="card">
-          <h2>Динамика · 30 дней</h2>
-          <div style="display:flex;gap:4px;align-items:end;height:120px;margin-top:12px;">
-            ${mood.map(m => `<div style="flex:1;height:${(m.score/10)*100}%;background:linear-gradient(180deg,var(--brand-2),var(--brand));border-radius:6px 6px 0 0;min-height:4px;"></div>`).join('')}
-          </div>
-        </div>
-      ` : ''}
-    </div>
-  `;
+  let html = '<div class="page"><div class="title-xl">Настроение</div>';
+  html += '<div class="card"><h2>Сегодня</h2>';
+  html += '<div style="font-size:48px;font-weight:800;text-align:center;padding:16px 0;letter-spacing:-2px;">' + (mood.length ? mood[mood.length-1].score + '/10' : '—') + '</div>';
+  html += '<button class="btn btn-primary btn-block" onclick="quickMoodLog()">Записать</button></div>';
+  if (mood.length) {
+    html += '<div class="card"><h2>Динамика · 30 дней</h2>';
+    html += '<div style="display:flex;gap:4px;align-items:end;height:120px;margin-top:12px;">';
+    for (let i = 0; i < mood.length; i++) {
+      html += '<div style="flex:1;height:' + (mood[i].score/10*100) + '%;background:linear-gradient(180deg,var(--brand-2),var(--brand));border-radius:6px 6px 0 0;min-height:4px;"></div>';
+    }
+    html += '</div></div>';
+  }
+  html += '</div>';
+  document.getElementById('app').innerHTML = html;
 }
 
-/* ─────── WATER ─────── */
+/* ═══ WATER ═══ */
 function renderWater() {
   const t = today();
-  const entry = state.water.find(w => w.date === t);
-  const count = entry?.count || 0;
+  const entry = state.water.find(function(w) { return w.date === t; });
+  const count = entry ? entry.count : 0;
   const goal = state.settings.waterGoal || 8;
-  document.getElementById('app').innerHTML = `
-    <div class="page">
-      <div class="title-xl">Вода</div>
-      <div class="card card-gradient" style="text-align:center;padding:32px 20px;">
-        <div style="display:flex;justify-content:center;margin-bottom:16px;">${icon('water', 64)}</div>
-        <div style="font-size:56px;font-weight:800;letter-spacing:-3px;line-height:1;">${count}/${goal}</div>
-        <div style="opacity:0.9;font-size:14px;margin-top:8px;">стаканов</div>
-        <div class="progress" style="margin-top:20px;background:rgba(255,255,255,0.25);height:8px;">
-          <div class="progress-fill" style="width:${Math.min(100, count/goal*100)}%;background:#fff;"></div>
-        </div>
-      </div>
-      <button class="btn btn-primary btn-block mb-3" onclick="addWater()">+1 стакан</button>
-      <div class="card">
-        <h2>Цель</h2>
-        <div class="field"><input type="number" id="w-goal" value="${goal}" min="1" max="20"/></div>
-        <button class="btn btn-primary btn-block" onclick="saveWaterGoal()">Сохранить</button>
-      </div>
-    </div>
-  `;
+  let html = '<div class="page"><div class="title-xl">Вода</div>';
+  html += '<div class="card card-gradient" style="text-align:center;padding:32px 20px;">';
+  html += '<div style="font-size:64px;margin-bottom:16px;">💧</div>';
+  html += '<div style="font-size:56px;font-weight:800;letter-spacing:-3px;line-height:1;">' + count + '/' + goal + '</div>';
+  html += '<div style="opacity:0.9;font-size:14px;margin-top:8px;">стаканов</div>';
+  html += '<div class="progress" style="margin-top:20px;background:rgba(255,255,255,0.25);height:8px;">';
+  html += '<div class="progress-fill" style="width:' + Math.min(100, count/goal*100) + '%;background:#fff;"></div></div></div>';
+  html += '<button class="btn btn-primary btn-block mb-3" onclick="addWater()">+1 стакан</button>';
+  html += '<div class="card"><h2>Цель</h2>';
+  html += '<div class="field"><input type="number" id="w-goal" value="' + goal + '" min="1" max="20"/></div>';
+  html += '<button class="btn btn-primary btn-block" onclick="saveWaterGoal()">Сохранить</button></div></div>';
+  document.getElementById('app').innerHTML = html;
 }
 
 function saveWaterGoal() {
-  state.settings.waterGoal = parseInt(document.getElementById('w-goal').value) || 8;
+  state.settings.waterGoal = parseInt((document.getElementById('w-goal') || {}).value) || 8;
   save();
   toast('Сохранено', 'success');
   renderWater();
 }
 
-/* ─────── MEDS ─────── */
+/* ═══ MEDS ═══ */
 function renderMeds() {
-  document.getElementById('app').innerHTML = `
-    <div class="page">
-      <div class="title-xl">Лекарства</div>
-      ${state.meds.length ? state.meds.map(m => `
-        <div class="list-row">
-          <div class="list-icon" style="background:var(--danger);">${icon('pill', 22)}</div>
-          <div class="list-body">
-            <div class="list-title">${esc(m.name)}</div>
-            <div class="list-subtitle">${esc(m.dose || '')} ${m.time ? '· ' + m.time : ''}</div>
-          </div>
-          <button class="btn btn-icon btn-sm btn-ghost" onclick="deleteMed('${m.id}')">${icon('trash', 16)}</button>
-        </div>
-      `).join('') : `<div class="empty"><div class="empty-icon">${icon('pill', 56)}</div><div class="empty-title">Нет лекарств</div></div>`}
-      <div class="card">
-        <h2>Добавить</h2>
-        <div class="field"><input type="text" id="m-name" placeholder="Название"/></div>
-        <div class="field"><input type="text" id="m-dose" placeholder="Дозировка"/></div>
-        <div class="field"><input type="time" id="m-time"/></div>
-        <button class="btn btn-primary btn-block" onclick="addMed()">Добавить</button>
-      </div>
-      <div class="footnote text-tertiary" style="text-align:center;margin-top:16px;">Не заменяет врача</div>
-    </div>
-  `;
+  let html = '<div class="page"><div class="title-xl">Лекарства</div>';
+  if (state.meds.length) {
+    for (let i = 0; i < state.meds.length; i++) {
+      const m = state.meds[i];
+      html += '<div class="list-row"><div class="list-icon" style="background:var(--danger);">💊</div>';
+      html += '<div class="list-body"><div class="list-title">' + esc(m.name) + '</div>';
+      html += '<div class="list-subtitle">' + esc(m.dose || '') + (m.time ? ' · ' + m.time : '') + '</div></div>';
+      html += '<button class="btn btn-icon btn-sm btn-ghost" onclick="deleteMed(\'' + m.id + '\')">🗑</button></div>';
+    }
+  } else {
+    html += '<div class="empty"><div class="empty-icon">💊</div><div class="empty-title">Нет лекарств</div></div>';
+  }
+  html += '<div class="card"><h2>Добавить</h2>';
+  html += '<div class="field"><input type="text" id="m-name" placeholder="Название"/></div>';
+  html += '<div class="field"><input type="text" id="m-dose" placeholder="Дозировка"/></div>';
+  html += '<div class="field"><input type="time" id="m-time"/></div>';
+  html += '<button class="btn btn-primary btn-block" onclick="addMed()">Добавить</button></div>';
+  html += '<div class="footnote text-tertiary" style="text-align:center;margin-top:16px;">Не заменяет врача</div></div>';
+  document.getElementById('app').innerHTML = html;
 }
 
 function addMed() {
-  const name = document.getElementById('m-name').value.trim();
+  const name = ((document.getElementById('m-name') || {}).value || '').trim();
   if (!name) return toast('Введите название', 'error');
-  state.meds.push({ id: uid(), name, dose: document.getElementById('m-dose').value.trim(), time: document.getElementById('m-time').value, created_at: nowISO() });
+  state.meds.push({ id: uid(), name: name, dose: ((document.getElementById('m-dose') || {}).value || '').trim(), time: ((document.getElementById('m-time') || {}).value || ''), created_at: nowISO() });
   save();
   toast('Добавлено', 'success');
   haptic('success');
@@ -2498,54 +1923,42 @@ function addMed() {
 }
 
 function deleteMed(id) {
-  state.meds = state.meds.filter(m => m.id !== id);
+  state.meds = state.meds.filter(function(m) { return m.id !== id; });
   save();
   renderMeds();
 }
 
-/* ─────── WORKOUTS ─────── */
+/* ═══ WORKOUTS ═══ */
 function renderWorkouts() {
-  const total = state.workouts.reduce((s, w) => s + (w.duration || 0), 0);
-  document.getElementById('app').innerHTML = `
-    <div class="page">
-      <div class="title-xl">Тренировки</div>
-      <div class="stat-grid mb-4">
-        <div class="stat-item"><div class="stat-value">${state.workouts.length}</div><div class="stat-label">Сессий</div></div>
-        <div class="stat-item"><div class="stat-value">${total}</div><div class="stat-label">Минут</div></div>
-        <div class="stat-item"><div class="stat-value">${Math.floor(total/60)}ч</div><div class="stat-label">Часов</div></div>
-      </div>
-      ${state.workouts.length ? state.workouts.slice().reverse().slice(0, 10).map(w => `
-        <div class="list-row">
-          <div class="list-icon" style="background:var(--fitness);">${icon('dumbbell', 22)}</div>
-          <div class="list-body">
-            <div class="list-title">${esc(w.type)}</div>
-            <div class="list-subtitle">${w.duration} мин · ${fmtDate(w.timestamp)}</div>
-          </div>
-        </div>
-      `).join('') : `<div class="empty"><div class="empty-icon">${icon('dumbbell', 56)}</div><div class="empty-title">Нет тренировок</div></div>`}
-      <div class="card">
-        <h2>Добавить</h2>
-        <div class="field">
-          <select id="w-type">
-            <option value="Кардио">Кардио</option>
-            <option value="Силовая">Силовая</option>
-            <option value="Йога">Йога</option>
-            <option value="Плавание">Плавание</option>
-            <option value="Прогулка">Прогулка</option>
-          </select>
-        </div>
-        <div class="field"><input type="number" id="w-duration" placeholder="Минут" value="30"/></div>
-        <button class="btn btn-primary btn-block" onclick="addWorkout()">Добавить</button>
-      </div>
-    </div>
-  `;
+  const total = state.workouts.reduce(function(s, w) { return s + (w.duration || 0); }, 0);
+  let html = '<div class="page"><div class="title-xl">Тренировки</div>';
+  html += '<div class="stat-grid mb-4">';
+  html += '<div class="stat-item"><div class="stat-value">' + state.workouts.length + '</div><div class="stat-label">Сессий</div></div>';
+  html += '<div class="stat-item"><div class="stat-value">' + total + '</div><div class="stat-label">Минут</div></div>';
+  html += '<div class="stat-item"><div class="stat-value">' + Math.floor(total/60) + 'ч</div><div class="stat-label">Часов</div></div>';
+  html += '</div>';
+  if (state.workouts.length) {
+    for (let i = state.workouts.length - 1; i >= 0 && i >= state.workouts.length - 10; i--) {
+      const w = state.workouts[i];
+      html += '<div class="list-row"><div class="list-icon" style="background:var(--fitness);">🏋️</div>';
+      html += '<div class="list-body"><div class="list-title">' + esc(w.type) + '</div>';
+      html += '<div class="list-subtitle">' + w.duration + ' мин · ' + fmtDate(w.timestamp) + '</div></div></div>';
+    }
+  } else {
+    html += '<div class="empty"><div class="empty-icon">🏋️</div><div class="empty-title">Нет тренировок</div></div>';
+  }
+  html += '<div class="card"><h2>Добавить</h2>';
+  html += '<div class="field"><select id="w-type"><option value="Кардио">Кардио</option><option value="Силовая">Силовая</option><option value="Йога">Йога</option><option value="Плавание">Плавание</option><option value="Прогулка">Прогулка</option></select></div>';
+  html += '<div class="field"><input type="number" id="w-duration" placeholder="Минут" value="30"/></div>';
+  html += '<button class="btn btn-primary btn-block" onclick="addWorkout()">Добавить</button></div></div>';
+  document.getElementById('app').innerHTML = html;
 }
 
 function addWorkout() {
   state.workouts.push({
     id: uid(),
-    type: document.getElementById('w-type').value,
-    duration: parseInt(document.getElementById('w-duration').value) || 30,
+    type: ((document.getElementById('w-type') || {}).value || 'Кардио'),
+    duration: parseInt((document.getElementById('w-duration') || {}).value) || 30,
     timestamp: nowISO(),
     created_at: nowISO()
   });
@@ -2555,7 +1968,7 @@ function addWorkout() {
   renderWorkouts();
 }
 
-/* ─────── MEDITATION ─────── */
+/* ═══ MEDITATION ═══ */
 function renderMeditation() {
   const practices = [
     { name: 'Дыхание 4-7-8', duration: 5, desc: 'Успокоение нервной системы' },
@@ -2564,74 +1977,61 @@ function renderMeditation() {
     { name: 'Наблюдение за мыслями', duration: 10, desc: 'Отстранение от мыслей' },
     { name: 'Заземление 5-4-3-2-1', duration: 3, desc: 'При тревоге' }
   ];
-  document.getElementById('app').innerHTML = `
-    <div class="page">
-      <div class="title-xl">Медитации</div>
-      <div class="card">
-        <h2>Практики</h2>
-        ${practices.map(p => `
-          <div class="list-row" onclick="startMeditation('${p.name}', ${p.duration})">
-            <div class="list-icon" style="background:var(--coach);color:#000;">${icon('lotus', 22)}</div>
-            <div class="list-body">
-              <div class="list-title">${p.name}</div>
-              <div class="list-subtitle">${p.duration} мин · ${p.desc}</div>
-            </div>
-            <div class="list-chevron">${icon('chevR', 18)}</div>
-          </div>
-        `).join('')}
-      </div>
-      ${state.meditations.length ? `
-        <div class="card">
-          <h2>Мои сессии (${state.meditations.length})</h2>
-          ${state.meditations.slice(-5).reverse().map(m => `
-            <div class="list-row">
-              <div class="list-body">
-                <div class="list-title">${esc(m.name)}</div>
-                <div class="list-subtitle">${m.duration} мин · ${fmtDate(m.timestamp)}</div>
-              </div>
-            </div>
-          `).join('')}
-        </div>
-      ` : ''}
-    </div>
-  `;
+  let html = '<div class="page"><div class="title-xl">Медитации</div><div class="card"><h2>Практики</h2>';
+  for (let i = 0; i < practices.length; i++) {
+    const p = practices[i];
+    html += '<div class="list-row" onclick="startMeditation(\'' + p.name + '\', ' + p.duration + ')">';
+    html += '<div class="list-icon" style="background:var(--coach);color:#000;">🧘</div>';
+    html += '<div class="list-body"><div class="list-title">' + p.name + '</div>';
+    html += '<div class="list-subtitle">' + p.duration + ' мин · ' + p.desc + '</div></div>';
+    html += '<div class="list-chevron">›</div></div>';
+  }
+  html += '</div>';
+  if (state.meditations.length) {
+    html += '<div class="card"><h2>Мои сессии (' + state.meditations.length + ')</h2>';
+    for (let i = state.meditations.length - 1; i >= 0 && i >= state.meditations.length - 5; i--) {
+      const m = state.meditations[i];
+      html += '<div class="list-row"><div class="list-body">';
+      html += '<div class="list-title">' + esc(m.name) + '</div>';
+      html += '<div class="list-subtitle">' + m.duration + ' мин · ' + fmtDate(m.timestamp) + '</div></div></div>';
+    }
+    html += '</div>';
+  }
+  html += '</div>';
+  document.getElementById('app').innerHTML = html;
 }
 
 function startMeditation(name, duration) {
-  state.meditations.push({ id: uid(), name, duration, timestamp: nowISO(), created_at: nowISO() });
+  state.meditations.push({ id: uid(), name: name, duration: duration, timestamp: nowISO(), created_at: nowISO() });
   save();
-  toast(`🧘 ${name} — записано`, 'success');
+  toast('🧘 ' + name + ' — записано', 'success');
   haptic('success');
   renderMeditation();
 }
 
-/* ─────── JOURNAL ─────── */
+/* ═══ JOURNAL ═══ */
 function renderJournal() {
-  document.getElementById('app').innerHTML = `
-    <div class="page">
-      <div class="title-xl">Дневник</div>
-      <div class="card">
-        <h2>Новая запись</h2>
-        <div class="field"><textarea id="j-text" placeholder="Что сегодня было важного?" rows="5"></textarea></div>
-        <button class="btn btn-primary btn-block" onclick="saveJournal()">Сохранить</button>
-      </div>
-      ${state.journal.length ? state.journal.slice().reverse().map(j => `
-        <div class="card">
-          <div class="row-between mb-2">
-            <span class="caption text-tertiary">${fmtDate(j.timestamp)} ${fmtTime(j.timestamp)}</span>
-            <button class="btn btn-icon btn-sm btn-ghost" onclick="deleteJournal('${j.id}')">${icon('trash', 16)}</button>
-          </div>
-          <div style="white-space:pre-wrap;line-height:1.55;">${esc(j.text)}</div>
-        </div>
-      `).join('') : ''}
-    </div>
-  `;
+  let html = '<div class="page"><div class="title-xl">Дневник</div>';
+  html += '<div class="card"><h2>Новая запись</h2>';
+  html += '<div class="field"><textarea id="j-text" placeholder="Что сегодня было важного?" rows="5"></textarea></div>';
+  html += '<button class="btn btn-primary btn-block" onclick="saveJournal()">Сохранить</button></div>';
+  if (state.journal.length) {
+    for (let i = state.journal.length - 1; i >= 0; i--) {
+      const j = state.journal[i];
+      html += '<div class="card"><div class="row-between mb-2">';
+      html += '<span class="caption text-tertiary">' + fmtDate(j.timestamp) + ' ' + fmtTime(j.timestamp) + '</span>';
+      html += '<button class="btn btn-icon btn-sm btn-ghost" onclick="deleteJournal(\'' + j.id + '\')">🗑</button></div>';
+      html += '<div style="white-space:pre-wrap;line-height:1.55;">' + esc(j.text) + '</div></div>';
+    }
+  }
+  html += '</div>';
+  document.getElementById('app').innerHTML = html;
 }
 
 function saveJournal() {
-  const text = document.getElementById('j-text').value.trim();
+  const text = ((document.getElementById('j-text') || {}).value || '').trim();
   if (!text) return toast('Введите текст', 'error');
-  state.journal.push({ id: uid(), text, timestamp: nowISO(), created_at: nowISO() });
+  state.journal.push({ id: uid(), text: text, timestamp: nowISO(), created_at: nowISO() });
   save();
   toast('Сохранено', 'success');
   haptic('success');
@@ -2640,53 +2040,40 @@ function saveJournal() {
 
 function deleteJournal(id) {
   if (!confirm('Удалить?')) return;
-  state.journal = state.journal.filter(j => j.id !== id);
+  state.journal = state.journal.filter(function(j) { return j.id !== id; });
   save();
   renderJournal();
 }
 
-/* ─────── MEDIA ─────── */
+/* ═══ MEDIA ═══ */
 function renderMedia() {
-  document.getElementById('app').innerHTML = `
-    <div class="page">
-      <div class="title-xl">Медиатека</div>
-      ${state.media.length ? state.media.map(m => `
-        <div class="list-row">
-          <div class="list-icon" style="background:var(--nutrition);color:#000;">${icon('film', 22)}</div>
-          <div class="list-body">
-            <div class="list-title">${esc(m.title)}</div>
-            <div class="list-subtitle">${esc(m.author || '')} · ${m.type}</div>
-          </div>
-          <button class="btn btn-icon btn-sm btn-ghost" onclick="deleteMedia('${m.id}')">${icon('trash', 16)}</button>
-        </div>
-      `).join('') : `<div class="empty"><div class="empty-icon">${icon('film', 56)}</div><div class="empty-title">Пусто</div></div>`}
-      <div class="card">
-        <h2>Добавить</h2>
-        <div class="field"><input type="text" id="md-title" placeholder="Название"/></div>
-        <div class="field"><input type="text" id="md-author" placeholder="Автор"/></div>
-        <div class="field">
-          <select id="md-type">
-            <option value="Книга">Книга</option>
-            <option value="Подкаст">Подкаст</option>
-            <option value="Статья">Статья</option>
-            <option value="Курс">Курс</option>
-            <option value="Фильм">Фильм</option>
-          </select>
-        </div>
-        <button class="btn btn-primary btn-block" onclick="addMedia()">Добавить</button>
-      </div>
-    </div>
-  `;
+  let html = '<div class="page"><div class="title-xl">Медиатека</div>';
+  if (state.media.length) {
+    for (let i = 0; i < state.media.length; i++) {
+      const m = state.media[i];
+      html += '<div class="list-row"><div class="list-icon" style="background:var(--nutrition);color:#000;">📖</div>';
+      html += '<div class="list-body"><div class="list-title">' + esc(m.title) + '</div>';
+      html += '<div class="list-subtitle">' + esc(m.author || '') + ' · ' + m.type + '</div></div>';
+      html += '<button class="btn btn-icon btn-sm btn-ghost" onclick="deleteMedia(\'' + m.id + '\')">🗑</button></div>';
+    }
+  } else {
+    html += '<div class="empty"><div class="empty-icon">📖</div><div class="empty-title">Пусто</div></div>';
+  }
+  html += '<div class="card"><h2>Добавить</h2>';
+  html += '<div class="field"><input type="text" id="md-title" placeholder="Название"/></div>';
+  html += '<div class="field"><input type="text" id="md-author" placeholder="Автор"/></div>';
+  html += '<div class="field"><select id="md-type"><option value="Книга">Книга</option><option value="Подкаст">Подкаст</option><option value="Статья">Статья</option><option value="Курс">Курс</option><option value="Фильм">Фильм</option></select></div>';
+  html += '<button class="btn btn-primary btn-block" onclick="addMedia()">Добавить</button></div></div>';
+  document.getElementById('app').innerHTML = html;
 }
 
 function addMedia() {
-  const title = document.getElementById('md-title').value.trim();
+  const title = ((document.getElementById('md-title') || {}).value || '').trim();
   if (!title) return toast('Введите название', 'error');
   state.media.push({
-    id: uid(),
-    title,
-    author: document.getElementById('md-author').value.trim(),
-    type: document.getElementById('md-type').value,
+    id: uid(), title: title,
+    author: ((document.getElementById('md-author') || {}).value || '').trim(),
+    type: ((document.getElementById('md-type') || {}).value || 'Книга'),
     created_at: nowISO()
   });
   save();
@@ -2695,57 +2082,48 @@ function addMedia() {
 }
 
 function deleteMedia(id) {
-  state.media = state.media.filter(m => m.id !== id);
+  state.media = state.media.filter(function(m) { return m.id !== id; });
   save();
   renderMedia();
 }
 
-/* ─────── FINANCE ─────── */
+/* ═══ FINANCE ═══ */
 function renderFinance() {
-  const income = state.finance.filter(f => f.type === 'income').reduce((s, f) => s + f.amount, 0);
-  const expense = state.finance.filter(f => f.type === 'expense').reduce((s, f) => s + f.amount, 0);
-  document.getElementById('app').innerHTML = `
-    <div class="page">
-      <div class="title-xl">Финансы</div>
-      <div class="stat-grid mb-4">
-        <div class="stat-item"><div class="stat-value" style="color:var(--success);">+${income}</div><div class="stat-label">Доход</div></div>
-        <div class="stat-item"><div class="stat-value" style="color:var(--danger);">-${expense}</div><div class="stat-label">Расход</div></div>
-        <div class="stat-item"><div class="stat-value">${income - expense}</div><div class="stat-label">Баланс</div></div>
-      </div>
-      ${state.finance.length ? state.finance.slice().reverse().slice(0, 15).map(f => `
-        <div class="list-row">
-          <div class="list-icon" style="background:${f.type === 'income' ? 'var(--success)' : 'var(--danger)'};color:#000;">${f.type === 'income' ? '+' : '−'}</div>
-          <div class="list-body">
-            <div class="list-title">${esc(f.category || 'Без категории')}</div>
-            <div class="list-subtitle">${fmtDate(f.timestamp)}</div>
-          </div>
-          <div class="list-value" style="color:${f.type === 'income' ? 'var(--success)' : 'var(--danger)'};">${f.amount}</div>
-        </div>
-      `).join('') : ''}
-      <div class="card">
-        <h2>Добавить</h2>
-        <div class="field">
-          <select id="f-type">
-            <option value="expense">➖ Расход</option>
-            <option value="income">➕ Доход</option>
-          </select>
-        </div>
-        <div class="field"><input type="number" id="f-amount" placeholder="Сумма"/></div>
-        <div class="field"><input type="text" id="f-cat" placeholder="Категория"/></div>
-        <button class="btn btn-primary btn-block" onclick="addFinance()">Добавить</button>
-      </div>
-    </div>
-  `;
+  const income = state.finance.filter(function(f) { return f.type === 'income'; }).reduce(function(s, f) { return s + f.amount; }, 0);
+  const expense = state.finance.filter(function(f) { return f.type === 'expense'; }).reduce(function(s, f) { return s + f.amount; }, 0);
+  let html = '<div class="page"><div class="title-xl">Финансы</div>';
+  html += '<div class="stat-grid mb-4">';
+  html += '<div class="stat-item"><div class="stat-value" style="color:var(--success);">+' + income + '</div><div class="stat-label">Доход</div></div>';
+  html += '<div class="stat-item"><div class="stat-value" style="color:var(--danger);">-' + expense + '</div><div class="stat-label">Расход</div></div>';
+  html += '<div class="stat-item"><div class="stat-value">' + (income - expense) + '</div><div class="stat-label">Баланс</div></div>';
+  html += '</div>';
+  if (state.finance.length) {
+    const recent = state.finance.slice().reverse().slice(0, 15);
+    for (let i = 0; i < recent.length; i++) {
+      const f = recent[i];
+      const color = f.type === 'income' ? 'var(--success)' : 'var(--danger)';
+      html += '<div class="list-row"><div class="list-icon" style="background:' + color + ';color:#000;">' + (f.type === 'income' ? '+' : '−') + '</div>';
+      html += '<div class="list-body"><div class="list-title">' + esc(f.category || 'Без категории') + '</div>';
+      html += '<div class="list-subtitle">' + fmtDate(f.timestamp) + '</div></div>';
+      html += '<div class="list-value" style="color:' + color + ';">' + f.amount + '</div></div>';
+    }
+  }
+  html += '<div class="card"><h2>Добавить</h2>';
+  html += '<div class="field"><select id="f-type"><option value="expense">➖ Расход</option><option value="income">➕ Доход</option></select></div>';
+  html += '<div class="field"><input type="number" id="f-amount" placeholder="Сумма"/></div>';
+  html += '<div class="field"><input type="text" id="f-cat" placeholder="Категория"/></div>';
+  html += '<button class="btn btn-primary btn-block" onclick="addFinance()">Добавить</button></div></div>';
+  document.getElementById('app').innerHTML = html;
 }
 
 function addFinance() {
-  const amount = parseFloat(document.getElementById('f-amount').value);
+  const amount = parseFloat((document.getElementById('f-amount') || {}).value);
   if (!amount || amount <= 0) return toast('Введите сумму', 'error');
   state.finance.push({
     id: uid(),
-    type: document.getElementById('f-type').value,
-    amount,
-    category: document.getElementById('f-cat').value.trim(),
+    type: ((document.getElementById('f-type') || {}).value || 'expense'),
+    amount: amount,
+    category: ((document.getElementById('f-cat') || {}).value || '').trim(),
     timestamp: nowISO(),
     created_at: nowISO()
   });
@@ -2755,90 +2133,58 @@ function addFinance() {
   renderFinance();
 }
 
-/* ─────── HISTORY ─────── */
+/* ═══ HISTORY ═══ */
 function renderHistory() {
-  document.getElementById('app').innerHTML = `
-    <div class="page">
-      <div class="title-xl">История</div>
-      <div class="card">
-        <h2>Сводка</h2>
-        <div class="list-row">
-          <div class="list-icon" style="background:var(--brand);">${icon('tasks', 22)}</div>
-          <div class="list-body"><div class="list-title">Задач всего</div></div>
-          <div class="list-value">${state.tasks.length}</div>
-        </div>
-        <div class="list-row">
-          <div class="list-icon" style="background:var(--info);">${icon('sparkle', 22)}</div>
-          <div class="list-body"><div class="list-title">Сообщений AI</div></div>
-          <div class="list-value">${state.chats.length}</div>
-        </div>
-        <div class="list-row">
-          <div class="list-icon" style="background:var(--success);">${icon('calendar', 22)}</div>
-          <div class="list-body"><div class="list-title">Событий</div></div>
-          <div class="list-value">${state.schedule.length}</div>
-        </div>
-        <div class="list-row">
-          <div class="list-icon" style="background:var(--warning);color:#000;">${icon('note', 22)}</div>
-          <div class="list-body"><div class="list-title">Заметок</div></div>
-          <div class="list-value">${state.notes.length}</div>
-        </div>
-      </div>
-    </div>
-  `;
+  let html = '<div class="page"><div class="title-xl">История</div><div class="card"><h2>Сводка</h2>';
+  html += '<div class="list-row"><div class="list-icon" style="background:var(--brand);">✅</div><div class="list-body"><div class="list-title">Задач всего</div></div><div class="list-value">' + state.tasks.length + '</div></div>';
+  html += '<div class="list-row"><div class="list-icon" style="background:var(--info);">✨</div><div class="list-body"><div class="list-title">Сообщений AI</div></div><div class="list-value">' + state.chats.length + '</div></div>';
+  html += '<div class="list-row"><div class="list-icon" style="background:var(--success);">📅</div><div class="list-body"><div class="list-title">Событий</div></div><div class="list-value">' + state.schedule.length + '</div></div>';
+  html += '<div class="list-row"><div class="list-icon" style="background:var(--warning);color:#000;">📝</div><div class="list-body"><div class="list-title">Заметок</div></div><div class="list-value">' + state.notes.length + '</div></div>';
+  html += '</div></div>';
+  document.getElementById('app').innerHTML = html;
 }
 
-/* ─────── DB MANAGER ─────── */
+/* ═══ DB MANAGER ═══ */
 function renderDBManager() {
   const tables = ['tasks', 'schedule', 'habits', 'goals', 'notes', 'learning', 'timer', 'chats', 'mood', 'water', 'meds', 'workouts', 'meditations', 'journal', 'media', 'finance', 'matrix'];
-  const total = tables.reduce((s, t) => s + (state[t]?.length || 0), 0);
-  document.getElementById('app').innerHTML = `
-    <div class="page">
-      <div class="title-xl">База данных</div>
-      <div class="card">
-        <h2>Статус</h2>
-        <div class="list-row">
-          <div class="list-icon" style="background:var(--success);color:#000;">${icon('check', 22)}</div>
-          <div class="list-body"><div class="list-title">LocalStorage</div><div class="list-subtitle">${STORAGE_KEY}</div></div>
-        </div>
-        <div class="list-row">
-          <div class="list-icon" style="background:var(--brand);">${icon('database', 22)}</div>
-          <div class="list-body"><div class="list-title">Всего записей</div></div>
-          <div class="list-value">${total}</div>
-        </div>
-      </div>
-      <div class="card">
-        <h2>Таблицы</h2>
-        ${tables.map(t => `
-          <div class="list-row" onclick="manageTable('${t}')">
-            <div class="list-icon" style="background:var(--surface-3);">${icon('database', 22)}</div>
-            <div class="list-body"><div class="list-title">${t}</div></div>
-            <div class="list-value">${state[t]?.length || 0}</div>
-          </div>
-        `).join('')}
-      </div>
-      <div class="card">
-        <h2>Операции</h2>
-        <button class="btn btn-primary btn-block mb-2" onclick="exportDB()">${icon('download', 18)} Экспорт JSON</button>
-        <button class="btn btn-ghost btn-block mb-2" onclick="document.getElementById('importDB').click()">${icon('upload', 18)} Импорт JSON</button>
-        <input type="file" id="importDB" accept=".json" style="display:none" onchange="importDB(event)"/>
-        <button class="btn btn-danger btn-block" onclick="if(confirm('Сбросить всё?')){localStorage.removeItem('${STORAGE_KEY}');location.reload();}">${icon('trash', 18)} Полный сброс</button>
-      </div>
-    </div>
-  `;
+  let total = 0;
+  for (let i = 0; i < tables.length; i++) total += (state[tables[i]] || []).length;
+  let html = '<div class="page"><div class="title-xl">База данных</div>';
+  html += '<div class="card"><h2>Статус</h2>';
+  html += '<div class="list-row"><div class="list-icon" style="background:var(--success);color:#000;">✓</div>';
+  html += '<div class="list-body"><div class="list-title">LocalStorage</div><div class="list-subtitle">' + STORAGE_KEY + '</div></div></div>';
+  html += '<div class="list-row"><div class="list-icon" style="background:var(--brand);">📦</div>';
+  html += '<div class="list-body"><div class="list-title">Всего записей</div></div>';
+  html += '<div class="list-value">' + total + '</div></div></div>';
+  html += '<div class="card"><h2>Таблицы</h2>';
+  for (let i = 0; i < tables.length; i++) {
+    const t = tables[i];
+    html += '<div class="list-row" onclick="manageTable(\'' + t + '\')">';
+    html += '<div class="list-icon" style="background:var(--surface-3);">🗄</div>';
+    html += '<div class="list-body"><div class="list-title">' + t + '</div></div>';
+    html += '<div class="list-value">' + (state[t] || []).length + '</div></div>';
+  }
+  html += '</div>';
+  html += '<div class="card"><h2>Операции</h2>';
+  html += '<button class="btn btn-primary btn-block mb-2" onclick="exportDB()">📤 Экспорт JSON</button>';
+  html += '<button class="btn btn-ghost btn-block mb-2" onclick="document.getElementById(\'importDB\').click()">📥 Импорт JSON</button>';
+  html += '<input type="file" id="importDB" accept=".json" style="display:none" onchange="importDB(event)"/>';
+  html += '<button class="btn btn-danger btn-block" onclick="if(confirm(\'Сбросить всё?\')){localStorage.removeItem(\'' + STORAGE_KEY + '\');location.reload();}">🗑 Полный сброс</button></div></div>';
+  document.getElementById('app').innerHTML = html;
 }
 
 function manageTable(table) {
   const items = state[table] || [];
-  openSheet(`${table} (${items.length})`, `
-    <div style="max-height:60vh;overflow-y:auto;">
-      ${items.slice(0, 100).map(item => `
-        <div style="padding:12px 0;border-bottom:0.5px solid var(--divider);">
-          <div style="font-weight:600;margin-bottom:4px;">${esc(item.title || item.name || item.date || item.id?.slice(0, 12))}</div>
-          <div class="caption text-tertiary" style="font-family:monospace;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(JSON.stringify(item).slice(0, 80))}</div>
-        </div>
-      `).join('')}
-    </div>
-  `);
+  let html = '<div style="max-height:60vh;overflow-y:auto;">';
+  const slice = items.slice(0, 100);
+  for (let i = 0; i < slice.length; i++) {
+    const item = slice[i];
+    html += '<div style="padding:12px 0;border-bottom:0.5px solid var(--divider);">';
+    html += '<div style="font-weight:600;margin-bottom:4px;">' + esc(item.title || item.name || item.date || (item.id ? item.id.slice(0, 12) : '')) + '</div>';
+    html += '<div class="caption text-tertiary" style="font-family:monospace;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc(JSON.stringify(item).slice(0, 80)) + '</div></div>';
+  }
+  html += '</div>';
+  openSheet(table + ' (' + items.length + ')', html);
 }
 
 function exportDB() {
@@ -2846,7 +2192,7 @@ function exportDB() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `ai-health-${today()}.json`;
+  a.download = 'ai-health-' + today() + '.json';
   a.click();
   URL.revokeObjectURL(url);
   toast('Экспорт готов', 'success');
@@ -2856,89 +2202,57 @@ function importDB(e) {
   const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = (ev) => {
+  reader.onload = function(ev) {
     try {
       const data = JSON.parse(ev.target.result);
       if (!confirm('Заменить все данные?')) return;
-      state = { ...DEFAULT_STATE(), ...data };
+      state = Object.assign(defaultState(), data);
       save();
       toast('Импорт успешен', 'success');
       location.reload();
-    } catch (err) { toast('Ошибка: ' + err.message, 'error'); }
+    } catch(err) { toast('Ошибка: ' + err.message, 'error'); }
   };
   reader.readAsText(file);
 }
 
-/* ─────── SETTINGS ─────── */
+/* ═══ SETTINGS ═══ */
 function renderSettings() {
-  document.getElementById('app').innerHTML = `
-    <div class="page">
-      <div class="title-xl">Настройки</div>
-      <div class="card">
-        <h2>Профиль</h2>
-        <div class="field">
-          <label class="field-label">Имя</label>
-          <input type="text" id="s-name" value="${esc(state.settings.username)}" onchange="saveName(this.value)"/>
-        </div>
-        <div class="list-row">
-          <div class="list-body"><div class="list-title">Тёмная тема</div></div>
-          <button class="switch ${state.settings.theme === 'dark' ? 'on' : ''}" onclick="toggleTheme()"></button>
-        </div>
-      </div>
-      <div class="card">
-        <h2>Google Calendar</h2>
-        <div class="list-row" onclick="navigate('gcal')">
-          <div class="list-icon" style="background:var(--success);">${icon('google', 22)}</div>
-          <div class="list-body">
-            <div class="list-title">${state.settings.googleSyncEnabled ? 'Подключено' : 'Не подключено'}</div>
-            <div class="list-subtitle">Двусторонняя синхронизация</div>
-          </div>
-          <div class="list-chevron">${icon('chevR', 18)}</div>
-        </div>
-      </div>
-      <div class="card">
-        <h2>AI</h2>
-        <div class="list-row" onclick="openAISettings()">
-          <div class="list-icon" style="background:var(--brand);">${icon('sparkle', 22)}</div>
-          <div class="list-body">
-            <div class="list-title">${state.settings.provider}</div>
-            <div class="list-subtitle">${state.settings.apiKey ? 'Ключ установлен' : 'Ключ не задан'}</div>
-          </div>
-          <div class="list-chevron">${icon('chevR', 18)}</div>
-        </div>
-      </div>
-      <div class="card">
-        <h2>Данные</h2>
-        <div class="list-row" onclick="navigate('dbmanager')">
-          <div class="list-icon" style="background:var(--coach);color:#000;">${icon('database', 22)}</div>
-          <div class="list-body"><div class="list-title">База данных</div></div>
-          <div class="list-chevron">${icon('chevR', 18)}</div>
-        </div>
-      </div>
-      <div class="footnote text-tertiary" style="text-align:center;margin-top:32px;">
-        AI Health Ecosystem<br>Ultra Edition v15.0
-      </div>
-    </div>
-  `;
+  let html = '<div class="page"><div class="title-xl">Настройки</div>';
+  html += '<div class="card"><h2>Профиль</h2>';
+  html += '<div class="field"><label class="field-label">Имя</label>';
+  html += '<input type="text" id="s-name" value="' + esc(state.settings.username) + '" onchange="saveName(this.value)"/></div>';
+  html += '<div class="list-row"><div class="list-body"><div class="list-title">Тёмная тема</div></div>';
+  html += '<button class="switch ' + (state.settings.theme === 'dark' ? 'on' : '') + '" onclick="toggleTheme()"></button></div></div>';
+  html += '<div class="card"><h2>AI</h2>';
+  html += '<div class="list-row" onclick="openAISettings()">';
+  html += '<div class="list-icon" style="background:var(--brand);">✨</div>';
+  html += '<div class="list-body"><div class="list-title">' + state.settings.provider + '</div>';
+  html += '<div class="list-subtitle">' + (state.settings.apiKey ? 'Ключ установлен' : 'Ключ не задан') + '</div></div>';
+  html += '<div class="list-chevron">›</div></div></div>';
+  html += '<div class="card"><h2>Данные</h2>';
+  html += '<div class="list-row" onclick="navigate(\'dbmanager\')">';
+  html += '<div class="list-icon" style="background:var(--coach);color:#000;">🗄</div>';
+  html += '<div class="list-body"><div class="list-title">База данных</div></div>';
+  html += '<div class="list-chevron">›</div></div></div>';
+  html += '<div class="footnote text-tertiary" style="text-align:center;margin-top:32px;">AI Health Ecosystem<br>v16.0</div></div>';
+  document.getElementById('app').innerHTML = html;
 }
 
 function saveName(name) {
   state.settings.username = name || 'Пользователь';
   save();
-  document.getElementById('userChip').textContent = state.settings.username;
+  const chip = document.getElementById('userChip');
+  if (chip) chip.textContent = state.settings.username;
   toast('Сохранено', 'success');
 }
 
-/* ══════════════════════════════════════════════════════════════════
-   THEME
-   ══════════════════════════════════════════════════════════════════ */
+/* ═══ THEME ═══ */
 function applyTheme(theme) {
   document.body.classList.toggle('light', theme === 'light');
   const btn = document.getElementById('themeBtn');
-  if (btn) btn.innerHTML = theme === 'light'
-    ? '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>'
-    : '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'light' ? '#f4f4f8' : '#000000');
+  if (btn) btn.textContent = theme === 'light' ? '☀️' : '🌙';
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', theme === 'light' ? '#f4f4f8' : '#000000');
 }
 
 function toggleTheme() {
@@ -2949,15 +2263,10 @@ function toggleTheme() {
   if (currentPage === 'settings') renderSettings();
 }
 
-/* ══════════════════════════════════════════════════════════════════
-   INIT
-   ══════════════════════════════════════════════════════════════════ */
+/* ═══ INIT ═══ */
 function init() {
   try {
     applyTheme(state.settings.theme);
-    // Logo icon
-    const logo = document.getElementById('logoIcon');
-    if (logo) logo.innerHTML = SVG.brain;
     
     if (state.tasks.length === 0) {
       state.tasks = [
@@ -2971,10 +2280,6 @@ function init() {
     renderTabBar();
     renderDashboard();
     
-    // Google auth init
-    setTimeout(() => { initGoogleAuth(); }, 1000);
-    
-    // Streak
     const t = today();
     if (state.stats.lastActiveDay !== t) {
       const y = new Date();
@@ -2985,41 +2290,101 @@ function init() {
       state.stats.lastActiveDay = t;
       save();
     }
-  } catch (e) {
+  } catch(e) {
     console.error('Init error:', e);
-    document.getElementById('app').innerHTML = `<div class="empty"><div class="empty-icon">${icon('close', 56)}</div><div class="empty-title">Ошибка</div><div class="empty-text">${esc(e.message)}</div></div>`;
+    const app = document.getElementById('app');
+    if (app) app.innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-title">Ошибка загрузки</div><div class="empty-text">' + esc(e.message) + '</div></div>';
   }
 }
 
-/* ══════════════════════════════════════════════════════════════════
-   EXPOSE TO WINDOW (для inline onclick)
-   ══════════════════════════════════════════════════════════════════ */
-Object.assign(window, {
-  navigate, openSheet, closeSheet, toggleTheme,
-  openPersona, addWater, quickMoodLog, saveMood,
-  addTask, saveTask, toggleTask, editTask, updateTask, deleteTask,
-  switchPersona, quickAsk, sendMsg, openAISettings, saveAISettings,
-  addHabit, toggleHabit, deleteHabit,
-  addGoal, updateGoal, deleteGoal,
-  startTimer, pauseTimer, resumeTimer, stopTimer,
-  addNote, saveNote, editNote, updateNote, deleteNote,
-  addLearning, updateLearning, deleteLearning,
-  addMatrixTask, saveMatrixTask, removeMatrixTask,
-  toggleFlag, saveWaterGoal,
-  addMed, deleteMed, addWorkout, startMeditation,
-  saveJournal, deleteJournal, addMedia, deleteMedia, addFinance,
-  addEvent, editEvent, saveEvent, deleteEvent, showDayDetails,
-  manageTable, exportDB, importDB, saveName,
-  connectGoogle, disconnectGoogle, saveGoogleClientId,
-  syncFromGoogle, syncToGoogle, fullSync,
-  renderCalendar, renderTasks, renderHabits, renderGoals, renderNotes,
-  renderLearning, renderMatrix, renderFocus, renderMood, renderWater,
-  renderMeds, renderWorkouts, renderMeditation, renderJournal, renderMedia,
-  renderFinance, renderSettings, renderStats, renderHistory, renderDBManager,
-  renderGoogleCalendar
-});
+// Экспорт функций в window для inline onclick
+window.navigate = navigate;
+window.openSheet = openSheet;
+window.closeSheet = closeSheet;
+window.toggleTheme = toggleTheme;
+window.openPersona = openPersona;
+window.addWater = addWater;
+window.quickMoodLog = quickMoodLog;
+window.saveMood = saveMood;
+window.addTask = addTask;
+window.saveTask = saveTask;
+window.toggleTask = toggleTask;
+window.editTask = editTask;
+window.updateTask = updateTask;
+window.deleteTask = deleteTask;
+window.switchPersona = switchPersona;
+window.quickAsk = quickAsk;
+window.sendMsg = sendMsg;
+window.openAISettings = openAISettings;
+window.saveAISettings = saveAISettings;
+window.addHabit = addHabit;
+window.toggleHabit = toggleHabit;
+window.deleteHabit = deleteHabit;
+window.addGoal = addGoal;
+window.updateGoal = updateGoal;
+window.deleteGoal = deleteGoal;
+window.startTimer = startTimer;
+window.pauseTimer = pauseTimer;
+window.resumeTimer = resumeTimer;
+window.stopTimer = stopTimer;
+window.addNote = addNote;
+window.saveNote = saveNote;
+window.editNote = editNote;
+window.updateNote = updateNote;
+window.deleteNote = deleteNote;
+window.addLearning = addLearning;
+window.updateLearning = updateLearning;
+window.deleteLearning = deleteLearning;
+window.addMatrixTask = addMatrixTask;
+window.saveMatrixTask = saveMatrixTask;
+window.removeMatrixTask = removeMatrixTask;
+window.toggleFlag = toggleFlag;
+window.saveWaterGoal = saveWaterGoal;
+window.addMed = addMed;
+window.deleteMed = deleteMed;
+window.addWorkout = addWorkout;
+window.startMeditation = startMeditation;
+window.saveJournal = saveJournal;
+window.deleteJournal = deleteJournal;
+window.addMedia = addMedia;
+window.deleteMedia = deleteMedia;
+window.addFinance = addFinance;
+window.addEvent = addEvent;
+window.editEvent = editEvent;
+window.saveEvent = saveEvent;
+window.deleteEvent = deleteEvent;
+window.showDayDetails = showDayDetails;
+window.manageTable = manageTable;
+window.exportDB = exportDB;
+window.importDB = importDB;
+window.saveName = saveName;
+window.renderCalendar = renderCalendar;
+window.renderTasks = renderTasks;
+window.renderHabits = renderHabits;
+window.renderGoals = renderGoals;
+window.renderNotes = renderNotes;
+window.renderLearning = renderLearning;
+window.renderMatrix = renderMatrix;
+window.renderFocus = renderFocus;
+window.renderMood = renderMood;
+window.renderWater = renderWater;
+window.renderMeds = renderMeds;
+window.renderWorkouts = renderWorkouts;
+window.renderMeditation = renderMeditation;
+window.renderJournal = renderJournal;
+window.renderMedia = renderMedia;
+window.renderFinance = renderFinance;
+window.renderSettings = renderSettings;
+window.renderStats = renderStats;
+window.renderHistory = renderHistory;
+window.renderDBManager = renderDBManager;
 
-init();
+// Запуск
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
 </script>
 </body>
 </html>
