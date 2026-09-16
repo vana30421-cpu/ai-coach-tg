@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>AI Health · One UI 9</title>
+<title>AI Health · Ecosystem</title>
 <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 <style>
 :root {
@@ -49,28 +49,17 @@
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
   --spring-soft: cubic-bezier(0.34, 1.56, 0.64, 1);
   --spring-bouncy: cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  --spring-smooth: cubic-bezier(0.25, 1, 0.5, 1);
   --spring-snap: cubic-bezier(0.16, 1.3, 0.3, 1);
 }
 body.light {
-  --bg: #f5f5fa;
-  --bg-1: #ffffff;
-  --bg-2: #f8f8fc;
-  --bg-3: #eeeef4;
-  --surface-1: rgba(0,0,0,0.02);
-  --surface-2: rgba(0,0,0,0.045);
-  --surface-3: rgba(0,0,0,0.07);
-  --surface-4: rgba(0,0,0,0.10);
-  --divider: rgba(0,0,0,0.08);
-  --divider-strong: rgba(0,0,0,0.14);
-  --text: #000000;
-  --text-2: rgba(0,0,0,0.68);
-  --text-3: rgba(0,0,0,0.46);
-  --text-4: rgba(0,0,0,0.30);
+  --bg: #f5f5fa; --bg-1: #ffffff; --bg-2: #f8f8fc; --bg-3: #eeeef4;
+  --surface-1: rgba(0,0,0,0.02); --surface-2: rgba(0,0,0,0.045);
+  --surface-3: rgba(0,0,0,0.07); --surface-4: rgba(0,0,0,0.10);
+  --divider: rgba(0,0,0,0.08); --divider-strong: rgba(0,0,0,0.14);
+  --text: #000000; --text-2: rgba(0,0,0,0.68);
+  --text-3: rgba(0,0,0,0.46); --text-4: rgba(0,0,0,0.30);
 }
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html { height: 100%; -webkit-text-size-adjust: 100%; }
@@ -82,7 +71,6 @@ body {
   letter-spacing: -0.015em;
   transition: background 0.35s var(--ease), color 0.35s var(--ease);
 }
-/* ═══ AURORA — живой фон (One UI 9) ═══ */
 body::before {
   content: ''; position: fixed; inset: -20%;
   background:
@@ -91,7 +79,6 @@ body::before {
     radial-gradient(ellipse 35% 30% at 60% 40%, rgba(61,220,151,0.08), transparent 60%);
   pointer-events: none; z-index: 0;
   animation: auroraFlow 24s ease-in-out infinite;
-  will-change: transform;
 }
 @keyframes auroraFlow {
   0%   { transform: translate(0, 0) scale(1) rotate(0deg); }
@@ -99,34 +86,18 @@ body::before {
   66%  { transform: translate(-2%, 3%) scale(1.05) rotate(-1.5deg); }
   100% { transform: translate(0, 0) scale(1) rotate(0deg); }
 }
-
-/* ═══ RIPPLE — отклик на тап (One UI 9) ═══ */
-.tap-ripple {
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-}
+.tap-ripple { position: relative; overflow: hidden; isolation: isolate; }
 .tap-ripple::after {
-  content: '';
-  position: absolute;
-  inset: 0;
+  content: ''; position: absolute; inset: 0;
   background: radial-gradient(circle at var(--rx, 50%) var(--ry, 50%),
-    rgba(255,255,255,0.28) 0%,
-    rgba(255,255,255,0.12) 25%,
-    transparent 60%);
-  opacity: 0;
-  transform: scale(0.4);
-  pointer-events: none;
-  z-index: 2;
+    rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.12) 25%, transparent 60%);
+  opacity: 0; transform: scale(0.4); pointer-events: none; z-index: 2;
 }
-.tap-ripple.rippling::after {
-  animation: rippleFade 0.65s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
+.tap-ripple.rippling::after { animation: rippleFade 0.65s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
 @keyframes rippleFade {
   0%   { opacity: 0.85; transform: scale(0.5); }
   100% { opacity: 0;   transform: scale(1.4); }
 }
-
 .app-header {
   position: sticky; top: 0; z-index: 100;
   padding-top: var(--safe-top);
@@ -141,34 +112,29 @@ body.light .app-header { background: rgba(245,245,250,0.82); }
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 22px; gap: 12px;
 }
-.brand { display: flex; align-items: center; gap: 11px; font-size: 19px; font-weight: 700; letter-spacing: -0.03em; }
+.brand { display: flex; align-items: center; gap: 11px; font-size: 19px; font-weight: 700; }
 .brand-logo {
   width: 38px; height: 38px; border-radius: 12px;
   background: linear-gradient(135deg, var(--brand), var(--brand-2));
   display: grid; place-items: center; color: #fff;
-  box-shadow: 0 6px 20px var(--brand-glow);
-  font-size: 20px;
-  position: relative;
-  overflow: hidden;
+  box-shadow: 0 6px 20px var(--brand-glow); font-size: 20px;
+  position: relative; overflow: hidden;
 }
 .brand-logo::after {
-  content: '';
-  position: absolute;
-  inset: 0;
+  content: ''; position: absolute; inset: 0;
   background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.35) 50%, transparent 60%);
   animation: logoShimmer 3.5s ease-in-out infinite;
 }
 @keyframes logoShimmer {
-  0%   { transform: translateX(-100%); opacity: 0; }
-  50%  { opacity: 1; }
+  0% { transform: translateX(-100%); opacity: 0; }
+  50% { opacity: 1; }
   100% { transform: translateX(100%); opacity: 0; }
 }
 .header-actions { display: flex; align-items: center; gap: 8px; }
 .icon-btn {
   width: 42px; height: 42px; border-radius: 50%;
-  background: var(--surface-2); border: none;
-  color: var(--text); cursor: pointer;
-  display: grid; place-items: center;
+  background: var(--surface-2); border: none; color: var(--text);
+  cursor: pointer; display: grid; place-items: center;
   transition: all 0.25s var(--spring-soft); font-size: 18px;
 }
 .icon-btn:active { transform: scale(0.9); background: var(--surface-3); }
@@ -176,148 +142,80 @@ body.light .app-header { background: rgba(245,245,250,0.82); }
   width: 42px; height: 42px; border-radius: 50%;
   background: linear-gradient(135deg, var(--brand), var(--brand-2));
   display: grid; place-items: center; font-size: 20px;
-  cursor: pointer;
-  border: none;
+  cursor: pointer; border: none;
   animation: avatarGlow 3s ease-in-out infinite;
 }
 .avatar-btn:active { transform: scale(0.9); }
 @keyframes avatarGlow {
   0%, 100% { box-shadow: 0 4px 12px var(--brand-glow); }
-  50%      { box-shadow: 0 6px 24px var(--brand-glow), 0 0 32px var(--brand-glow); }
+  50% { box-shadow: 0 6px 24px var(--brand-glow), 0 0 32px var(--brand-glow); }
 }
-
 .app-main {
-  position: relative; z-index: 2;
-  max-width: 700px; margin: 0 auto; width: 100%;
-  padding: 22px;
+  position: relative; z-index: 2; max-width: 700px;
+  margin: 0 auto; width: 100%; padding: 22px;
   padding-bottom: calc(var(--tabbar-h) + var(--safe-bottom) + 96px) !important;
   min-height: calc(100dvh - var(--header-h) - var(--safe-top));
 }
-
-/* ═══ PAGE ENTER ═══ */
-.page {
-  animation: pageEnter 0.55s var(--spring-snap) both;
-  will-change: transform, opacity;
-}
+.page { animation: pageEnter 0.55s var(--spring-snap) both; }
 @keyframes pageEnter {
   0%   { opacity: 0; transform: translateY(20px) scale(0.96); filter: blur(8px); }
   60%  { opacity: 1; filter: blur(0); }
   100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
 }
-
-/* FLOATING TAB BAR */
 .tab-bar-wrap {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  z-index: 100;
-  padding: 0 14px calc(14px + var(--safe-bottom));
-  pointer-events: none;
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+  padding: 0 14px calc(14px + var(--safe-bottom)); pointer-events: none;
 }
 .tab-bar {
   background: rgba(20,20,27,0.88);
   backdrop-filter: saturate(200%) blur(30px);
   -webkit-backdrop-filter: saturate(200%) blur(30px);
-  border: 0.5px solid var(--divider-strong);
-  border-radius: 26px;
-  display: flex;
-  align-items: stretch;
-  height: 62px;
+  border: 0.5px solid var(--divider-strong); border-radius: 26px;
+  display: flex; align-items: stretch; height: 62px;
   box-shadow: 0 12px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);
-  max-width: 580px;
-  margin: 0 auto;
-  pointer-events: auto;
-  overflow: hidden;
+  max-width: 580px; margin: 0 auto; pointer-events: auto; overflow: hidden;
   animation: tabBarFloat 6s ease-in-out infinite;
 }
-@keyframes tabBarFloat {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-2px); }
-}
-body.light .tab-bar { background: rgba(255,255,255,0.92); box-shadow: 0 12px 40px rgba(0,0,0,0.12); }
-
+@keyframes tabBarFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+body.light .tab-bar { background: rgba(255,255,255,0.92); }
 .tab-item {
   flex: 1; background: transparent; border: none;
-  color: var(--text-3); font-family: inherit;
-  font-size: 9px; font-weight: 600;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 2px; padding: 6px 1px 4px;
-  cursor: pointer; position: relative;
+  color: var(--text-3); font-family: inherit; font-size: 9px; font-weight: 600;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px; padding: 6px 1px 4px; cursor: pointer; position: relative;
   transition: color 0.3s var(--ease), transform 0.3s var(--spring-soft);
-  min-width: 0;
-  overflow: hidden;
+  min-width: 0; overflow: hidden;
 }
-.tab-item .tab-icon {
-  font-size: 19px; line-height: 1;
-  transition: transform 0.5s var(--spring-bouncy), filter 0.3s var(--ease);
-  will-change: transform;
-  position: relative;
-  z-index: 1;
-}
-.tab-item .tab-label {
-  font-size: 9px; letter-spacing: -0.01em;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  max-width: 100%; position: relative; z-index: 1;
-}
+.tab-item .tab-icon { font-size: 19px; line-height: 1; transition: transform 0.5s var(--spring-bouncy), filter 0.3s var(--ease); position: relative; z-index: 1; }
+.tab-item .tab-label { font-size: 9px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; position: relative; z-index: 1; }
 .tab-item.active { color: var(--brand); }
-.tab-item.active .tab-icon {
-  transform: scale(1.25) translateY(-3px);
-  filter: drop-shadow(0 4px 12px var(--brand-glow));
-}
+.tab-item.active .tab-icon { transform: scale(1.25) translateY(-3px); filter: drop-shadow(0 4px 12px var(--brand-glow)); }
 .tab-item:active { transform: scale(0.92); }
 .tab-item.active::before {
   content: ''; position: absolute; top: 3px; left: 50%;
-  transform: translateX(-50%);
-  width: 4px; height: 4px; background: var(--brand);
-  border-radius: 50%;
-  box-shadow: 0 0 12px var(--brand-glow), 0 0 20px var(--brand-glow);
+  transform: translateX(-50%); width: 4px; height: 4px;
+  background: var(--brand); border-radius: 50%;
+  box-shadow: 0 0 12px var(--brand-glow);
   animation: dotPop 0.6s var(--spring-bouncy) both;
   z-index: 2;
 }
 @keyframes dotPop {
-  0%   { width: 0; height: 0; opacity: 0; transform: translateX(-50%) scale(0); }
-  50%  { width: 8px; height: 8px; opacity: 1; transform: translateX(-50%) scale(1.3); }
+  0% { width: 0; height: 0; opacity: 0; transform: translateX(-50%) scale(0); }
+  50% { width: 8px; height: 8px; opacity: 1; transform: translateX(-50%) scale(1.3); }
   100% { width: 4px; height: 4px; opacity: 1; transform: translateX(-50%) scale(1); }
 }
-.tab-item.active::after {
-  content: ''; position: absolute;
-  top: 50%; left: 50%;
-  width: 40px; height: 40px;
-  background: radial-gradient(circle, var(--brand-glow), transparent 70%);
-  transform: translate(-50%, -50%) scale(0);
-  border-radius: 50%;
-  animation: glowPulse 2.5s ease-in-out infinite;
-  pointer-events: none;
-  z-index: 0;
-}
-@keyframes glowPulse {
-  0%, 100% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.5; }
-  50%      { transform: translate(-50%, -50%) scale(1.15); opacity: 0.9; }
-}
-
-/* ═══ TITLE ENTER ═══ */
-.title-xl, .title-m {
-  animation: titleEnter 0.6s var(--spring-snap) both;
-}
+.title-xl, .title-m { animation: titleEnter 0.6s var(--spring-snap) both; }
 @keyframes titleEnter {
-  from { opacity: 0; transform: translateY(16px); letter-spacing: 0.05em; }
-  to   { opacity: 1; transform: translateY(0); letter-spacing: -0.035em; }
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-.title-xl { font-size: 34px; font-weight: 800; letter-spacing: -0.035em; line-height: 1.12; margin-bottom: 26px; }
-.title-m { font-size: 21px; font-weight: 700; letter-spacing: -0.025em; margin-bottom: 14px; }
-
-/* ═══ CARD ═══ */
+.title-xl { font-size: 34px; font-weight: 800; line-height: 1.12; margin-bottom: 26px; }
+.title-m { font-size: 21px; font-weight: 700; margin-bottom: 14px; }
 .card {
-  background: var(--bg-2);
-  border-radius: var(--r-xl);
-  padding: 22px;
-  margin-bottom: 16px;
-  transition: transform 0.45s var(--spring-soft),
-              box-shadow 0.45s var(--ease),
-              background 0.35s var(--ease);
-  position: relative;
-  overflow: hidden;
+  background: var(--bg-2); border-radius: var(--r-xl); padding: 22px;
+  margin-bottom: 16px; position: relative; overflow: hidden;
   border: 0.5px solid var(--surface-1);
-  will-change: transform;
+  transition: transform 0.45s var(--spring-soft), box-shadow 0.45s var(--ease);
   animation: cardAppear 0.6s var(--spring-snap) both;
 }
 .card:active { transform: scale(0.985); }
@@ -325,21 +223,10 @@ body.light .tab-bar { background: rgba(255,255,255,0.92); box-shadow: 0 12px 40p
   from { opacity: 0; transform: translateY(24px) scale(0.97); filter: blur(4px); }
   to   { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
 }
-.card:nth-child(1) { animation-delay: 0.02s; }
-.card:nth-child(2) { animation-delay: 0.06s; }
-.card:nth-child(3) { animation-delay: 0.10s; }
-.card:nth-child(4) { animation-delay: 0.14s; }
-.card:nth-child(5) { animation-delay: 0.18s; }
-.card:nth-child(6) { animation-delay: 0.22s; }
-.card:nth-child(7) { animation-delay: 0.26s; }
-.card:nth-child(8) { animation-delay: 0.30s; }
-
 .card-gradient {
   background: linear-gradient(135deg, var(--brand), var(--brand-2));
-  background-size: 200% 200%;
-  color: #fff;
-  box-shadow: 0 16px 48px var(--brand-glow);
-  border: none;
+  background-size: 200% 200%; color: #fff;
+  box-shadow: 0 16px 48px var(--brand-glow); border: none;
   animation: cardAppear 0.6s var(--spring-snap) both, gradientFlow 8s ease infinite;
 }
 @keyframes gradientFlow {
@@ -350,32 +237,16 @@ body.light .tab-bar { background: rgba(255,255,255,0.92); box-shadow: 0 12px 40p
 .card h2 {
   font-size: 20px; font-weight: 700; margin-bottom: 16px;
   display: flex; align-items: center; gap: 10px;
-  letter-spacing: -0.025em;
 }
-
-/* ═══ BUTTON ═══ */
 .btn {
   display: inline-flex; align-items: center; justify-content: center;
   gap: 8px; padding: 14px 22px; border-radius: var(--r-full);
   border: none; font-family: inherit; font-size: 16px; font-weight: 700;
-  cursor: pointer;
-  transition: transform 0.35s var(--spring-soft),
-              filter 0.25s var(--ease),
-              box-shadow 0.35s var(--ease),
-              opacity 0.25s var(--ease);
+  cursor: pointer; transition: transform 0.35s var(--spring-soft), filter 0.25s var(--ease), box-shadow 0.35s var(--ease);
   white-space: nowrap; -webkit-appearance: none;
-  letter-spacing: -0.01em;
-  will-change: transform;
 }
-.btn:hover:not(:disabled) {
-  transform: translateY(-1px) scale(1.02);
-  filter: brightness(1.08);
-  box-shadow: 0 10px 28px rgba(0,0,0,0.25);
-}
-.btn:active:not(:disabled) {
-  transform: scale(0.94);
-  transition: transform 0.12s var(--ease);
-}
+.btn:hover:not(:disabled) { transform: translateY(-1px) scale(1.02); filter: brightness(1.08); box-shadow: 0 10px 28px rgba(0,0,0,0.25); }
+.btn:active:not(:disabled) { transform: scale(0.94); transition: transform 0.12s var(--ease); }
 .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 .btn-primary { background: var(--brand); color: #fff; box-shadow: 0 8px 24px var(--brand-glow); }
 .btn-success { background: var(--success); color: #000; }
@@ -388,7 +259,6 @@ body.light .tab-bar { background: rgba(255,255,255,0.92); box-shadow: 0 12px 40p
 .btn-icon { width: 44px; height: 44px; padding: 0; border-radius: 50%; }
 .btn-icon.btn-sm { width: 36px; height: 36px; }
 .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
-
 .field { margin-bottom: 18px; }
 .field-label {
   display: block; font-size: 13px; font-weight: 600;
@@ -399,22 +269,15 @@ input[type="text"], input[type="number"], input[type="datetime-local"],
 input[type="date"], input[type="time"], input[type="password"],
 input[type="email"], input[type="url"], input[type="search"], select, textarea {
   width: 100%; padding: 16px 18px;
-  background: var(--surface-2);
-  border: 1.5px solid transparent;
-  border-radius: var(--r-lg);
-  color: var(--text); font-family: inherit;
+  background: var(--surface-2); border: 1.5px solid transparent;
+  border-radius: var(--r-lg); color: var(--text); font-family: inherit;
   font-size: 16px; font-weight: 500;
   transition: all 0.25s var(--spring-soft);
   -webkit-appearance: none; appearance: none;
 }
 input:focus, select:focus, textarea:focus {
   outline: none; background: var(--surface-3);
-  border-color: var(--brand);
-  animation: inputGlow 0.4s var(--ease);
-}
-@keyframes inputGlow {
-  0%   { box-shadow: 0 0 0 0 var(--brand-glow); }
-  100% { box-shadow: 0 0 0 4px var(--brand-glow); }
+  border-color: var(--brand); box-shadow: 0 0 0 4px var(--brand-glow);
 }
 input::placeholder, textarea::placeholder { color: var(--text-3); }
 textarea { resize: vertical; min-height: 100px; line-height: 1.55; font-family: inherit; }
@@ -423,14 +286,9 @@ select {
   background-repeat: no-repeat; background-position: right 18px center;
   padding-right: 44px;
 }
-
-/* ═══ TASK ═══ */
 .task-item {
-  background: var(--bg-2);
-  border-radius: var(--r-lg);
-  padding: 16px 18px;
-  margin-bottom: 10px;
-  display: flex; align-items: center; gap: 14px;
+  background: var(--bg-2); border-radius: var(--r-lg); padding: 16px 18px;
+  margin-bottom: 10px; display: flex; align-items: center; gap: 14px;
   cursor: pointer; transition: all 0.3s var(--spring-soft);
   border: 1.5px solid transparent;
   animation: listRowEnter 0.5s var(--spring-snap) both;
@@ -441,8 +299,7 @@ select {
 .task-checkbox {
   width: 28px; height: 28px; border-radius: 50%;
   border: 2px solid var(--text-3); background: transparent;
-  display: grid; place-items: center; cursor: pointer;
-  flex-shrink: 0;
+  display: grid; place-items: center; cursor: pointer; flex-shrink: 0;
   transition: all 0.4s var(--spring-bouncy);
   padding: 0; color: transparent; font-size: 15px; font-weight: 700;
 }
@@ -450,77 +307,48 @@ select {
   background: var(--success); border-color: var(--success); color: #000;
   animation: successPulse 0.55s var(--spring-bouncy);
 }
-.task-checkbox.checked.just-checked {
-  animation: successPulse 0.55s var(--spring-bouncy), checkWave 0.7s ease-out;
-}
 @keyframes successPulse {
-  0%   { transform: scale(1); }
-  40%  { transform: scale(1.15); }
-  70%  { transform: scale(0.96); }
-  100% { transform: scale(1.05); }
-}
-@keyframes checkWave {
-  0%   { box-shadow: 0 0 0 0 var(--success); }
-  100% { box-shadow: 0 0 0 16px rgba(61,220,151,0); }
+  0% { transform: scale(1); } 40% { transform: scale(1.15); }
+  70% { transform: scale(0.96); } 100% { transform: scale(1.05); }
 }
 .task-content { flex: 1; min-width: 0; }
 .task-title {
-  font-size: 16px; font-weight: 600; color: var(--text);
-  margin-bottom: 3px; overflow: hidden;
-  text-overflow: ellipsis; white-space: nowrap;
+  font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 3px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .task-meta { display: flex; gap: 8px; font-size: 12px; color: var(--text-2); align-items: center; flex-wrap: wrap; }
 .priority-bar { width: 4px; height: 34px; border-radius: 2px; flex-shrink: 0; }
 .priority-bar.high { background: var(--danger); }
 .priority-bar.medium { background: var(--warning); }
 .priority-bar.low { background: var(--success); }
-
-/* ═══ PROGRESS ═══ */
-.progress {
-  height: 8px; background: var(--surface-3);
-  border-radius: var(--r-full); overflow: hidden;
-}
+.progress { height: 8px; background: var(--surface-3); border-radius: var(--r-full); overflow: hidden; }
 .progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--brand), var(--brand-2));
-  border-radius: var(--r-full);
-  transition: width 0.8s var(--spring-smooth);
+  height: 100%; background: linear-gradient(90deg, var(--brand), var(--brand-2));
+  border-radius: var(--r-full); transition: width 0.8s var(--spring-smooth);
   position: relative; overflow: hidden;
 }
 .progress-fill::after {
-  content: '';
-  position: absolute;
-  inset: 0;
+  content: ''; position: absolute; inset: 0;
   background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
   animation: shimmerSlide 2.5s ease-in-out infinite;
 }
-@keyframes shimmerSlide {
-  0%   { transform: translateX(-100%); }
-  100% { transform: translateX(200%); }
-}
-
-/* ═══ MODAL ═══ */
+@keyframes shimmerSlide { 0% { transform: translateX(-100%); } 100% { transform: translateX(200%); } }
 .overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,0.78);
   backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
   z-index: 1000; display: flex; align-items: flex-end; justify-content: center;
   animation: overlayFade 0.4s var(--ease);
 }
-@keyframes overlayFade {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
+@keyframes overlayFade { from { opacity: 0; } to { opacity: 1; } }
 .modal {
   background: var(--bg-1); width: 100%; max-width: 560px;
   max-height: 92dvh; border-radius: 36px 36px 0 0;
   padding: 20px; padding-bottom: calc(24px + var(--safe-bottom));
-  overflow-y: auto;
-  animation: sheetSpring 0.55s var(--spring-snap) both;
-  will-change: transform;
+  overflow-y: auto; animation: sheetSpring 0.55s var(--spring-snap) both;
 }
 @keyframes sheetSpring {
-  0%   { transform: translateY(100%) scale(1); }
-  60%  { transform: translateY(-3%) scale(1.005); }
+  0% { transform: translateY(100%) scale(1); }
+  60% { transform: translateY(-3%) scale(1.005); }
   100% { transform: translateY(0) scale(1); }
 }
 .modal-handle {
@@ -528,26 +356,20 @@ select {
   border-radius: 3px; margin: 0 auto 18px;
   animation: handleBob 2.5s ease-in-out infinite;
 }
-@keyframes handleBob {
-  0%, 100% { transform: translateY(0); opacity: 0.6; }
-  50%      { transform: translateY(2px); opacity: 1; }
-}
+@keyframes handleBob { 0%, 100% { transform: translateY(0); opacity: 0.6; } 50% { transform: translateY(2px); opacity: 1; } }
 .modal-header {
   display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 22px; position: sticky; top: 0;
   background: var(--bg-1); padding-bottom: 8px; z-index: 1;
 }
-.modal-title { font-size: 23px; font-weight: 800; letter-spacing: -0.03em; }
+.modal-title { font-size: 23px; font-weight: 800; }
 .modal-close {
   width: 38px; height: 38px; border-radius: 50%;
-  background: var(--surface-2); border: none;
-  color: var(--text-2); display: grid; place-items: center;
-  cursor: pointer; font-size: 16px;
+  background: var(--surface-2); border: none; color: var(--text-2);
+  display: grid; place-items: center; cursor: pointer; font-size: 16px;
   transition: all 0.25s var(--spring-soft);
 }
 .modal-close:active { transform: scale(0.9) rotate(90deg); }
-
-/* ═══ TOAST ═══ */
 .toast-container {
   position: fixed; top: calc(var(--header-h) + var(--safe-top) + 14px);
   left: 50%; transform: translateX(-50%); z-index: 2000;
@@ -557,8 +379,7 @@ select {
 .toast {
   background: rgba(30,30,40,0.96); color: #fff;
   backdrop-filter: blur(20px); border-radius: var(--r-lg);
-  padding: 16px 22px;
-  box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+  padding: 16px 22px; box-shadow: 0 16px 48px rgba(0,0,0,0.5);
   display: flex; align-items: center; gap: 12px;
   font-size: 14px; font-weight: 600;
   animation: toastSpring 0.55s var(--spring-bouncy);
@@ -568,16 +389,17 @@ select {
 .toast.error { background: var(--danger); }
 .toast.warning { background: var(--warning); color: #000; }
 @keyframes toastSpring {
-  0%   { opacity: 0; transform: translate(-50%, -40px) scale(0.7); }
-  60%  { opacity: 1; transform: translate(-50%, 6px) scale(1.04); }
+  0% { opacity: 0; transform: translate(-50%, -40px) scale(0.7); }
+  60% { opacity: 1; transform: translate(-50%, 6px) scale(1.04); }
   100% { opacity: 1; transform: translate(-50%, 0) scale(1); }
 }
-
 .segmented {
   display: flex; background: var(--surface-2);
   border-radius: var(--r-full); padding: 5px; gap: 3px;
   border: 0.5px solid var(--surface-3);
+  overflow-x: auto; scrollbar-width: none;
 }
+.segmented::-webkit-scrollbar { display: none; }
 .segmented-item {
   flex: 1; padding: 11px 14px; background: transparent;
   border: none; border-radius: var(--r-full);
@@ -588,14 +410,7 @@ select {
 .segmented-item.active {
   background: var(--brand); color: #fff;
   box-shadow: 0 4px 16px var(--brand-glow);
-  animation: segmentPop 0.5s var(--spring-bouncy);
 }
-@keyframes segmentPop {
-  0%   { transform: scale(1); }
-  50%  { transform: scale(1.04); }
-  100% { transform: scale(1); }
-}
-
 .search-bar {
   display: flex; align-items: center; gap: 10px;
   padding: 14px 18px; background: var(--surface-2);
@@ -603,16 +418,12 @@ select {
   border: 0.5px solid var(--surface-3);
   transition: all 0.3s var(--spring-soft);
 }
-.search-bar:focus-within {
-  border-color: var(--brand);
-  box-shadow: 0 0 0 4px var(--brand-glow);
-}
+.search-bar:focus-within { border-color: var(--brand); box-shadow: 0 0 0 4px var(--brand-glow); }
 .search-bar input {
   flex: 1; padding: 0; background: transparent;
   border: none; font-size: 16px; font-weight: 500; color: var(--text);
 }
 .search-bar input:focus { background: transparent; box-shadow: none; }
-
 .persona-bar {
   display: flex; gap: 8px; padding: 6px;
   background: var(--surface-2); border-radius: var(--r-full);
@@ -625,18 +436,12 @@ select {
   padding: 11px 18px; border-radius: var(--r-full);
   border: none; background: transparent; color: var(--text-2);
   font-family: inherit; font-size: 13px; font-weight: 700;
-  cursor: pointer;
-  transition: all 0.45s var(--spring-soft);
+  cursor: pointer; transition: all 0.45s var(--spring-soft);
   display: flex; align-items: center; gap: 7px; white-space: nowrap;
 }
-.persona-item.active {
-  color: #fff; box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-  animation: personaPop 0.5s var(--spring-bouncy);
-}
+.persona-item.active { color: #fff; box-shadow: 0 6px 20px rgba(0,0,0,0.3); animation: personaPop 0.5s var(--spring-bouncy); }
 @keyframes personaPop {
-  0%   { transform: scale(1); }
-  50%  { transform: scale(1.08); }
-  100% { transform: scale(1.02); }
+  0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1.02); }
 }
 .persona-item.active[data-p="coach"] { background: var(--coach); color: #000; }
 .persona-item.active[data-p="psych"] { background: var(--psych); color: #000; }
@@ -645,31 +450,21 @@ select {
 .persona-item.active[data-p="fitness"] { background: var(--fitness); }
 .persona-item.active[data-p="lawyer"] { background: var(--lawyer); color: #000; }
 .persona-item.active[data-p="finance"] { background: var(--finance); color: #000; }
-
-/* ═══ CHAT ═══ */
 .chat { display: flex; flex-direction: column; gap: 14px; padding: 10px 0; }
 .msg {
-  max-width: 86%; padding: 14px 18px;
-  border-radius: 24px; font-size: 16px; line-height: 1.55;
-  word-wrap: break-word;
+  max-width: 86%; padding: 14px 18px; border-radius: 24px;
+  font-size: 16px; line-height: 1.55; word-wrap: break-word;
   animation: msgSpring 0.5s var(--spring-snap) both;
 }
 @keyframes msgSpring {
-  0%   { opacity: 0; transform: translateY(14px) scale(0.92); }
-  60%  { opacity: 1; }
-  100% { opacity: 1; transform: translateY(0) scale(1); }
+  0% { opacity: 0; transform: translateY(14px) scale(0.92); }
+  60% { opacity: 1; } 100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 .msg-user {
   align-self: flex-end;
   background: linear-gradient(135deg, var(--brand), var(--brand-2));
   color: #fff; border-bottom-right-radius: 8px;
   box-shadow: 0 8px 24px var(--brand-glow);
-  animation: msgSpringRight 0.5s var(--spring-snap) both;
-}
-@keyframes msgSpringRight {
-  0%   { opacity: 0; transform: translateX(14px) scale(0.92); }
-  60%  { opacity: 1; }
-  100% { opacity: 1; transform: translateX(0) scale(1); }
 }
 .msg-bot {
   align-self: flex-start; background: var(--surface-2);
@@ -696,7 +491,6 @@ select {
   0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
   30% { transform: translateY(-6px); opacity: 1; }
 }
-
 .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
 .chip {
   padding: 9px 16px; border-radius: var(--r-full);
@@ -706,8 +500,6 @@ select {
   transition: all 0.3s var(--spring-soft); white-space: nowrap;
 }
 .chip:active { transform: scale(0.92); }
-
-/* ═══ STATS ═══ */
 .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 .stat-item {
   text-align: center; padding: 18px 10px;
@@ -716,65 +508,39 @@ select {
   transition: all 0.35s var(--spring-soft);
   animation: statPop 0.5s var(--spring-snap) both;
 }
-.stat-item:nth-child(1) { animation-delay: 0.05s; }
-.stat-item:nth-child(2) { animation-delay: 0.10s; }
-.stat-item:nth-child(3) { animation-delay: 0.15s; }
 @keyframes statPop {
-  0%   { opacity: 0; transform: scale(0.8); }
-  60%  { opacity: 1; transform: scale(1.05); }
+  0% { opacity: 0; transform: scale(0.8); }
+  60% { opacity: 1; transform: scale(1.05); }
   100% { opacity: 1; transform: scale(1); }
 }
 .stat-item:active { transform: scale(0.96); }
-.stat-value {
-  font-size: 24px; font-weight: 800;
-  letter-spacing: -0.04em; line-height: 1;
-  margin-bottom: 7px;
-}
+.stat-value { font-size: 24px; font-weight: 800; line-height: 1; margin-bottom: 7px; }
 .stat-label {
   font-size: 11px; color: var(--text-2);
   text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700;
 }
-
-/* ═══ SWITCH ═══ */
 .switch {
   position: relative; width: 54px; height: 33px;
   background: var(--surface-3); border-radius: var(--r-full);
-  cursor: pointer;
-  transition: background 0.4s var(--spring-soft);
+  cursor: pointer; transition: background 0.4s var(--spring-soft);
   flex-shrink: 0; border: none; padding: 0;
 }
 .switch::after {
   content: ''; position: absolute; top: 2px; left: 2px;
   width: 29px; height: 29px; background: #fff; border-radius: 50%;
   box-shadow: 0 2px 8px rgba(0,0,0,0.35);
-  transition: transform 0.5s var(--spring-bouncy), box-shadow 0.3s var(--ease);
+  transition: transform 0.5s var(--spring-bouncy);
 }
 .switch.on { background: var(--brand); }
-.switch.on::after {
-  transform: translateX(21px);
-  box-shadow: 0 2px 12px rgba(91,158,255,0.5);
-}
-
-/* ═══ LIST ROW ═══ */
+.switch.on::after { transform: translateX(21px); box-shadow: 0 2px 12px rgba(91,158,255,0.5); }
 .list-row {
   display: flex; align-items: center; gap: 16px;
   padding: 16px 18px; background: var(--bg-2);
   border-radius: var(--r-lg); margin-bottom: 10px;
-  cursor: pointer;
-  transition: all 0.3s var(--spring-soft);
+  cursor: pointer; transition: all 0.3s var(--spring-soft);
   min-height: 66px; border: 0.5px solid var(--surface-1);
   animation: listRowEnter 0.5s var(--spring-snap) both;
 }
-.list-row:nth-child(1) { animation-delay: 0.03s; }
-.list-row:nth-child(2) { animation-delay: 0.06s; }
-.list-row:nth-child(3) { animation-delay: 0.09s; }
-.list-row:nth-child(4) { animation-delay: 0.12s; }
-.list-row:nth-child(5) { animation-delay: 0.15s; }
-.list-row:nth-child(6) { animation-delay: 0.18s; }
-.list-row:nth-child(7) { animation-delay: 0.21s; }
-.list-row:nth-child(8) { animation-delay: 0.24s; }
-.list-row:nth-child(9) { animation-delay: 0.27s; }
-.list-row:nth-child(10) { animation-delay: 0.30s; }
 @keyframes listRowEnter {
   from { opacity: 0; transform: translateX(-12px); }
   to   { opacity: 1; transform: translateX(0); }
@@ -782,12 +548,10 @@ select {
 .list-row:active { background: var(--surface-2); transform: scale(0.985); }
 .list-icon {
   width: 46px; height: 46px; border-radius: 15px;
-  display: grid; place-items: center; flex-shrink: 0;
-  font-size: 22px;
-  transition: transform 0.4s var(--spring-bouncy), background 0.3s var(--ease);
+  display: grid; place-items: center; flex-shrink: 0; font-size: 22px;
+  transition: transform 0.4s var(--spring-bouncy);
 }
 .list-row:hover .list-icon { transform: scale(1.1) rotate(-3deg); }
-.list-row:active .list-icon { transform: scale(0.92) rotate(2deg); }
 .list-body { flex: 1; min-width: 0; }
 .list-title {
   font-size: 16px; font-weight: 600; color: var(--text);
@@ -798,36 +562,21 @@ select {
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .list-value { font-size: 16px; color: var(--text-2); font-weight: 600; flex-shrink: 0; }
-.list-chevron {
-  color: var(--text-4); flex-shrink: 0; font-size: 22px;
-  transition: transform 0.35s var(--spring-soft);
-}
-.list-row:active .list-chevron { transform: translateX(3px); }
-
-/* ═══ EMPTY ═══ */
+.list-chevron { color: var(--text-4); flex-shrink: 0; font-size: 22px; }
 .empty { text-align: center; padding: 56px 24px; color: var(--text-2); }
-.empty-icon {
-  font-size: 64px; opacity: 0.3; margin-bottom: 18px;
-  animation: emptyBreath 3s ease-in-out infinite;
-}
+.empty-icon { font-size: 64px; opacity: 0.3; margin-bottom: 18px; animation: emptyBreath 3s ease-in-out infinite; }
 @keyframes emptyBreath {
   0%, 100% { transform: scale(1) translateY(0); opacity: 0.3; }
-  50%      { transform: scale(1.06) translateY(-4px); opacity: 0.45; }
+  50% { transform: scale(1.06) translateY(-4px); opacity: 0.45; }
 }
 .empty-title { font-size: 21px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
 .empty-text { font-size: 14px; line-height: 1.55; }
-
-/* ═══ PROFILE ═══ */
 .profile-hero {
-  text-align: center;
-  padding: 36px 20px 28px;
+  text-align: center; padding: 36px 20px 28px;
   background: linear-gradient(180deg, var(--surface-2), transparent);
-  border-radius: var(--r-2xl);
-  margin-bottom: 20px;
+  border-radius: var(--r-2xl); margin-bottom: 20px;
   border: 0.5px solid var(--surface-2);
-  position: relative;
-  overflow: hidden;
-  animation: cardAppear 0.7s var(--spring-snap) both;
+  position: relative; overflow: hidden;
 }
 .profile-hero::before {
   content: ''; position: absolute; top: -60%; left: -20%;
@@ -838,44 +587,32 @@ select {
 }
 @keyframes heroPulse {
   0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.35; }
-  50%      { transform: scale(1.15) rotate(5deg); opacity: 0.5; }
+  50% { transform: scale(1.15) rotate(5deg); opacity: 0.5; }
 }
 .profile-avatar {
   width: 110px; height: 110px; border-radius: 50%;
   background: linear-gradient(135deg, var(--brand), var(--brand-2));
-  display: grid; place-items: center;
-  font-size: 54px; margin: 0 auto 16px;
+  display: grid; place-items: center; font-size: 54px;
+  margin: 0 auto 16px;
   box-shadow: 0 12px 40px var(--brand-glow);
   position: relative; z-index: 1;
-  border: 4px solid var(--bg-2);
-  cursor: pointer;
+  border: 4px solid var(--bg-2); cursor: pointer;
   transition: all 0.4s var(--spring-bouncy);
   animation: avatarPulse 4s ease-in-out infinite;
 }
 @keyframes avatarPulse {
-  0%, 100% { transform: scale(1); box-shadow: 0 12px 40px var(--brand-glow); }
-  50%      { transform: scale(1.03); box-shadow: 0 16px 56px var(--brand-glow); }
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
 }
 .profile-avatar:active { transform: scale(0.94) rotate(-5deg); }
-.profile-name {
-  font-size: 26px; font-weight: 800;
-  letter-spacing: -0.03em; margin-bottom: 6px;
-  position: relative; z-index: 1;
-}
-.profile-sub {
-  font-size: 14px; color: var(--text-2);
-  position: relative; z-index: 1;
-}
-
-.achieve-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
-}
+.profile-name { font-size: 26px; font-weight: 800; margin-bottom: 6px; position: relative; z-index: 1; }
+.profile-sub { font-size: 14px; color: var(--text-2); position: relative; z-index: 1; }
+.achieve-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 .achieve-item {
   text-align: center; padding: 18px 8px;
   background: var(--surface-1); border-radius: var(--r-lg);
   border: 0.5px solid var(--surface-2);
   transition: all 0.35s var(--spring-soft);
-  animation: statPop 0.5s var(--spring-snap) both;
 }
 .achieve-item.locked { opacity: 0.4; filter: grayscale(0.8); }
 .achieve-item.unlocked {
@@ -885,22 +622,14 @@ select {
 }
 @keyframes achievePulse {
   0%, 100% { box-shadow: 0 0 20px var(--brand-glow); transform: scale(1); }
-  50%      { box-shadow: 0 0 32px var(--brand-glow); transform: scale(1.02); }
+  50% { box-shadow: 0 0 32px var(--brand-glow); transform: scale(1.02); }
 }
 .achieve-icon { font-size: 32px; margin-bottom: 6px; }
-.achieve-name {
-  font-size: 11px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.04em;
-  color: var(--text-2);
-}
-
-.emoji-grid {
-  display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px;
-}
+.achieve-name { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-2); }
+.emoji-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
 .emoji-pick {
   aspect-ratio: 1; border-radius: 14px;
-  border: 2px solid transparent;
-  background: var(--surface-2);
+  border: 2px solid transparent; background: var(--surface-2);
   font-size: 28px; cursor: pointer;
   display: grid; place-items: center;
   transition: all 0.3s var(--spring-bouncy);
@@ -909,50 +638,135 @@ select {
 .emoji-pick.selected {
   border-color: var(--brand); background: var(--brand-glow);
   box-shadow: 0 0 16px var(--brand-glow);
-  animation: emojiPop 0.5s var(--spring-bouncy);
 }
-@keyframes emojiPop {
-  0%   { transform: scale(1); }
-  50%  { transform: scale(1.2) rotate(-8deg); }
-  100% { transform: scale(1); }
-}
-
 .welcome-screen {
-  position: fixed; inset: 0;
-  background: var(--bg);
-  z-index: 5000;
+  position: fixed; inset: 0; background: var(--bg); z-index: 5000;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
-  padding: 32px;
-  text-align: center;
-  animation: overlayFade 0.5s var(--ease);
+  padding: 32px; text-align: center;
 }
 .welcome-logo {
   width: 100px; height: 100px; border-radius: 28px;
   background: linear-gradient(135deg, var(--brand), var(--brand-2));
-  display: grid; place-items: center;
-  font-size: 54px;
-  margin-bottom: 28px;
+  display: grid; place-items: center; font-size: 54px; margin-bottom: 28px;
   animation: welcomePulse 2.2s ease-in-out infinite;
 }
 @keyframes welcomePulse {
   0%, 100% { transform: scale(1); box-shadow: 0 20px 60px var(--brand-glow); }
-  50%      { transform: scale(1.05); box-shadow: 0 24px 80px var(--brand-glow), 0 0 60px var(--brand-glow); }
+  50% { transform: scale(1.05); box-shadow: 0 24px 80px var(--brand-glow), 0 0 60px var(--brand-glow); }
 }
-.welcome-title {
-  font-size: 32px; font-weight: 800;
-  letter-spacing: -0.03em; margin-bottom: 12px;
-}
-.welcome-sub {
-  font-size: 16px; color: var(--text-2);
-  margin-bottom: 40px; max-width: 340px; line-height: 1.55;
-}
-.welcome-input {
-  width: 100%; max-width: 340px;
-  text-align: center;
-  font-size: 20px !important; font-weight: 700 !important;
-}
+.welcome-title { font-size: 32px; font-weight: 800; margin-bottom: 12px; }
+.welcome-sub { font-size: 16px; color: var(--text-2); margin-bottom: 40px; max-width: 340px; line-height: 1.55; }
+.welcome-input { width: 100%; max-width: 340px; text-align: center; font-size: 20px !important; font-weight: 700 !important; }
 
+/* ═══ PATH (Путь развития) ═══ */
+.path-step {
+  display: flex; gap: 14px; padding: 16px;
+  border-radius: var(--r-lg); margin-bottom: 10px;
+  background: var(--bg-2); border: 0.5px solid var(--surface-1);
+  position: relative; cursor: pointer;
+  transition: all 0.3s var(--spring-soft);
+  animation: listRowEnter 0.5s var(--spring-snap) both;
+}
+.path-step.locked { opacity: 0.4; cursor: not-allowed; }
+.path-step.completed { border-color: var(--success); background: rgba(61,220,151,0.08); }
+.path-step.active { border-color: var(--brand); background: rgba(91,158,255,0.08); animation: stepPulse 2s ease-in-out infinite; }
+@keyframes stepPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(91,158,255,0.3); }
+  50% { box-shadow: 0 0 24px 4px rgba(91,158,255,0.15); }
+}
+.path-step-num {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: grid; place-items: center; flex-shrink: 0;
+  font-weight: 800; font-size: 14px;
+  background: var(--surface-3); color: var(--text-2);
+}
+.path-step.completed .path-step-num { background: var(--success); color: #000; }
+.path-step.active .path-step-num { background: var(--brand); color: #fff; }
+.path-step-body { flex: 1; }
+.path-step-title { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+.path-step-desc { font-size: 13px; color: var(--text-2); line-height: 1.4; }
+.path-progress { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+
+/* ═══ SCREEN TIME ═══ */
+.detox-ring {
+  width: 160px; height: 160px; margin: 0 auto 20px;
+  position: relative;
+  display: grid; place-items: center;
+}
+.detox-ring svg { transform: rotate(-90deg); width: 100%; height: 100%; }
+.detox-ring circle { fill: none; stroke-width: 10; stroke-linecap: round; }
+.detox-ring .track { stroke: var(--surface-3); }
+.detox-ring .fill { stroke: var(--brand); transition: stroke-dashoffset 1s var(--spring-soft); }
+.detox-value {
+  position: absolute; text-align: center;
+}
+.detox-value-num { font-size: 32px; font-weight: 800; line-height: 1; }
+.detox-value-label { font-size: 11px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 4px; font-weight: 700; }
+
+/* ═══ COURSE ═══ */
+.course-card {
+  background: var(--bg-2); border-radius: var(--r-lg);
+  padding: 18px; margin-bottom: 12px;
+  border: 0.5px solid var(--surface-1);
+  transition: all 0.3s var(--spring-soft);
+  cursor: pointer;
+}
+.course-card:active { transform: scale(0.985); }
+.course-header { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+.course-emoji {
+  width: 52px; height: 52px; border-radius: 16px;
+  display: grid; place-items: center; font-size: 26px;
+  background: var(--surface-3); flex-shrink: 0;
+}
+.course-info { flex: 1; min-width: 0; }
+.course-title { font-size: 16px; font-weight: 700; margin-bottom: 3px; }
+.course-meta { font-size: 12px; color: var(--text-2); }
+.lesson-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px; border-radius: var(--r-md);
+  margin-bottom: 6px; background: var(--surface-1);
+  cursor: pointer; transition: all 0.25s var(--spring-soft);
+}
+.lesson-row:active { transform: scale(0.98); background: var(--surface-2); }
+.lesson-row.done { background: rgba(61,220,151,0.1); }
+.lesson-row.done .lesson-title { color: var(--text-2); text-decoration: line-through; }
+.lesson-num {
+  width: 26px; height: 26px; border-radius: 50%;
+  display: grid; place-items: center; flex-shrink: 0;
+  font-size: 12px; font-weight: 700;
+  background: var(--surface-3); color: var(--text-2);
+}
+.lesson-row.done .lesson-num { background: var(--success); color: #000; }
+.lesson-title { font-size: 14px; font-weight: 600; flex: 1; }
+
+/* ═══ MATRIX ═══ */
+.matrix-grid-2x2 {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px; margin-bottom: 16px;
+}
+.matrix-quadrant {
+  border-radius: var(--r-lg); padding: 16px 14px;
+  background: var(--bg-2); border: 1.5px solid var(--surface-2);
+  cursor: pointer; transition: all 0.3s var(--spring-soft);
+  min-height: 110px;
+  display: flex; flex-direction: column;
+  position: relative;
+}
+.matrix-quadrant:active { transform: scale(0.97); }
+.matrix-q-title { font-size: 12px; font-weight: 800; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.04em; }
+.matrix-q-count { font-size: 32px; font-weight: 800; line-height: 1; margin-bottom: 6px; }
+.matrix-q-sub { font-size: 11px; color: var(--text-2); }
+.matrix-q1 { border-color: rgba(255,107,107,0.4); }
+.matrix-q1 .matrix-q-title { color: var(--danger); }
+.matrix-q2 { border-color: rgba(91,158,255,0.4); }
+.matrix-q2 .matrix-q-title { color: var(--brand); }
+.matrix-q3 { border-color: rgba(255,169,64,0.4); }
+.matrix-q3 .matrix-q-title { color: var(--warning); }
+.matrix-q4 { border-color: rgba(255,255,255,0.15); }
+.matrix-q4 .matrix-q-title { color: var(--text-3); }
+
+/* ═══ EXTRA ═══ */
 .hidden { display: none !important; }
 .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .row-between { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
@@ -965,6 +779,32 @@ select {
 .headline { font-size: 17px; }
 .mt-1 { margin-top: 4px; } .mt-2 { margin-top: 8px; } .mt-3 { margin-top: 12px; } .mt-4 { margin-top: 16px; } .mt-5 { margin-top: 20px; }
 .mb-2 { margin-bottom: 8px; } .mb-3 { margin-bottom: 12px; } .mb-4 { margin-bottom: 16px; } .mb-5 { margin-bottom: 20px; }
+.badge {
+  display: inline-flex; align-items: center; padding: 4px 10px;
+  border-radius: var(--r-full); font-size: 11px; font-weight: 700;
+  background: var(--surface-3); color: var(--text-2);
+}
+.badge-success { background: rgba(61,220,151,0.2); color: var(--success); }
+.badge-brand { background: rgba(91,158,255,0.2); color: var(--brand); }
+.badge-warning { background: rgba(255,169,64,0.2); color: var(--warning); }
+.badge-danger { background: rgba(255,107,107,0.2); color: var(--danger); }
+.mini-chart {
+  display: flex; gap: 3px; align-items: end;
+  height: 80px; margin: 12px 0;
+}
+.mini-bar {
+  flex: 1; border-radius: 4px 4px 0 0;
+  background: linear-gradient(180deg, var(--brand-2), var(--brand));
+  min-height: 4px;
+  transition: all 0.5s var(--spring-soft);
+}
+.insight-card {
+  background: linear-gradient(135deg, rgba(91,158,255,0.12), rgba(167,139,250,0.12));
+  border: 0.5px solid rgba(91,158,255,0.3);
+  border-radius: var(--r-lg); padding: 16px; margin-bottom: 12px;
+}
+.insight-title { font-size: 13px; font-weight: 800; margin-bottom: 6px; color: var(--brand-2); text-transform: uppercase; letter-spacing: 0.04em; }
+.insight-text { font-size: 14px; line-height: 1.5; }
 
 @media (max-width: 480px) {
   .app-main { padding: 18px; padding-bottom: calc(var(--tabbar-h) + var(--safe-bottom) + 88px) !important; }
@@ -1020,10 +860,10 @@ function today() { return new Date().toISOString().slice(0, 10); }
 function fmtDate(d) { try { return new Date(d).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }); } catch(e) { return '—'; } }
 function fmtTime(d) { try { return new Date(d).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }); } catch(e) { return '—'; } }
 function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function daysBetween(a, b) { return Math.floor((new Date(b) - new Date(a)) / (24*60*60*1000)); }
 
 function toast(msg, type, duration) {
-  type = type || 'info';
-  duration = duration || 2500;
+  type = type || 'info'; duration = duration || 2500;
   var c = document.getElementById('toasts');
   if (!c) return;
   var el = document.createElement('div');
@@ -1031,8 +871,7 @@ function toast(msg, type, duration) {
   el.textContent = msg;
   c.appendChild(el);
   setTimeout(function() {
-    el.style.opacity = '0';
-    el.style.transform = 'translate(-50%, -16px) scale(0.9)';
+    el.style.opacity = '0'; el.style.transform = 'translate(-50%, -16px) scale(0.9)';
     el.style.transition = 'all 0.4s cubic-bezier(0.4,0,0.2,1)';
     setTimeout(function() { el.remove(); }, 400);
   }, duration);
@@ -1049,17 +888,28 @@ function haptic(type) {
   } catch(e) {}
 }
 
-var STORAGE_KEY = 'ai_health_v19';
+var STORAGE_KEY = 'ai_health_v20';
 
 function defaultState() {
   return {
     tasks: [], schedule: [], habits: [], goals: [], notes: [], learning: [],
     timer: [], chats: [], mood: [], water: [], meds: [], workouts: [],
     meditations: [], journal: [], media: [], finance: [], matrix: [],
+    paths: [], courses: [],
+    screenTime: {
+      limits: { daily: 240, social: 60, games: 30, work: 180 },
+      usage: {},     // { 'YYYY-MM-DD': { total: mins, social: mins, games: mins, work: mins } }
+      detoxMode: false,
+      detoxUntil: null,
+      focusSessions: 0
+    },
     profile: { name: '', emoji: '😊', createdAt: nowISO(), achievements: [] },
     settings: {
       theme: 'dark', provider: 'openai', apiKey: '',
-      activePersona: 'coach', waterGoal: 8, onboardingDone: false
+      activePersona: 'coach', waterGoal: 8, onboardingDone: false,
+      autoMatrix: true,    // автосортировка задач по матрице
+      notifications: true,
+      wisdomLevel: 80      // уровень «мудрости» = опыт 80 лет
     },
     flags: { dnd: false, focus: false },
     stats: { streak: 0, lastActiveDay: null, totalDays: 0 }
@@ -1076,6 +926,7 @@ try {
     state.flags = Object.assign(defaultState().flags, parsed.flags || {});
     state.stats = Object.assign(defaultState().stats, parsed.stats || {});
     state.profile = Object.assign(defaultState().profile, parsed.profile || {});
+    state.screenTime = Object.assign(defaultState().screenTime, parsed.screenTime || {});
   } else {
     state = defaultState();
   }
@@ -1086,6 +937,289 @@ function save() {
   catch(e) {}
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   PATHS — Поэтапное раскрытие секретов решения проблем
+   ══════════════════════════════════════════════════════════════════ */
+var PATHS_LIBRARY = [
+  {
+    id: 'procrastination',
+    title: 'Прокрастинация',
+    emoji: '⏳',
+    color: 'warning',
+    description: 'Путь из 7 шагов: от понимания причин до устойчивых изменений',
+    steps: [
+      { title: 'Диагностика', desc: 'Определи свой тип прокрастинации: страх, перфекционизм, перегруз или скука. Честно ответь: что именно заставляет откладывать?', secret: 'Прокрастинация — не лень. Это эмоциональная защита от дискомфорта.' },
+      { title: 'Правило 2 минут', desc: 'Начни с действия, которое займёт ≤2 минут. Открой файл, надень кроссовки, налей воду.', secret: 'Самое сложное — начать. Мозг переключается в режим работы за 90 секунд.' },
+      { title: 'Pomodoro-практика', desc: 'Работай 25 минут, отдыхай 5. После 4 циклов — пауза 30 минут.', secret: 'Ограниченное время снижает тревогу. "Я работаю всего 25 минут" — мозг соглашается.' },
+      { title: 'Внешний дедлайн', desc: 'Попроси друга или используй приложение, чтобы установить дедлайн со ставкой.', secret: 'Публичное обязательство усиливает мотивацию в 2-3 раза.' },
+      { title: 'Управление средой', desc: 'Убери телефон в другую комнату. Заблокируй соцсети. Создай "рабочее место".', secret: 'Сила воли — ресурс. Не трать её на борьбу с уведомлениями.' },
+      { title: 'Празднование', desc: 'После каждой выполненной задачи — маленькая награда (кофе, музыка, 5 мин скроллинга).', secret: 'Дофамин закрепляет привычку. Награда = повторение.' },
+      { title: 'Рефлексия и закрепление', desc: 'В конце недели проанализируй: что работало, что нет. Адаптируй систему.', secret: 'Изменения становятся устойчивыми только через 66 дней повторения.' }
+    ]
+  },
+  {
+    id: 'anxiety',
+    title: 'Тревожность',
+    emoji: '🌊',
+    color: 'psych',
+    description: 'Путь из 8 шагов: от распознавания до управления',
+    steps: [
+      { title: 'Распознать сигналы', desc: 'Тело — радар: ускоренное сердцебиение, потные ладони, ком в горле. Тревога говорит через тело.', secret: 'Тревога — не враг. Это древняя система выживания, которая сейчас срабатывает слишком часто.' },
+      { title: 'Дыхание 4-7-8', desc: 'Вдох на 4, задержка 7, выдох на 8. Повтори 4 раза. Активирует парасимпатическую систему.', secret: 'Долгий выдох — ключ. Это буквально "выключатель" тревоги.' },
+      { title: 'Заземление 5-4-3-2-1', desc: 'Назови 5 вещей, которые видишь, 4 — слышишь, 3 — осязаешь, 2 — обоняешь, 1 — чувствуешь на вкус.', secret: 'Возвращает из будущего ("что если") в настоящее ("здесь и сейчас").' },
+      { title: 'Дневник тревог', desc: 'Запиши: что тревожит? Насколько реально? Что я могу сделать? Что вне моего контроля?', secret: 'На бумаге 90% тревог выглядят преувеличенными.' },
+      { title: 'Работа с мыслями (КПТ)', desc: 'Найди автоматическую мысль → проверь доказательства "за" и "против" → сформулируй альтернативу.', secret: 'Тревога искажает реальность. КПТ возвращает объективность.' },
+      { title: 'Телесная практика', desc: 'Йога, растяжка, прогулка 20 мин — тело и психика связаны. Тревога живёт в напряжённых мышцах.', secret: 'Тело — не контейнер для психики. Это часть психики.' },
+      { title: 'Отказ от контроля', desc: 'Прими: 80% тревог — про то, что ты не контролируешь. Отпусти эти 80%.', secret: 'Стоики говорили: "Меняй то, что можешь. Прими то, что не можешь. Имей мудрость их различать."' },
+      { title: 'Профессиональная помощь', desc: 'Если тревога мешает жить — к психотерапевту. КПТ работает в 80% случаев.', secret: 'Обратиться за помощью — не слабость. Это самый храбрый поступок.' }
+    ]
+  },
+  {
+    id: 'burnout',
+    title: 'Выгорание',
+    emoji: '🔥',
+    color: 'danger',
+    description: 'Путь из 7 шагов: восстановление энергии',
+    steps: [
+      { title: 'Признать состояние', desc: 'Выгорание — не лень. Это физическое и эмоциональное истощение. Признай: "я не в порядке".', secret: 'Первая стадия — отрицание. Вторая — злость. Третья — принятие и восстановление.' },
+      { title: 'Стоп-сигнал', desc: 'Немедленно: снизь нагрузку на 50%, возьми больничный, отмени лишние дела.', secret: 'Выгорание лечится не "отдыхом на выходных". Нужны недели восстановления.' },
+      { title: 'Восстановление сна', desc: '8-9 часов сна. Никаких экранов за час до сна. Тёмная прохладная комната.', secret: 'Сон — фундамент восстановления. Всё остальное — надстройка.' },
+      { title: 'Питание и движение', desc: 'Белок, овощи, omega-3. Прогулки 30 мин на свежем воздухе.', secret: 'Воспаление в теле = усталость в голове. Еда — часть лечения.' },
+      { title: 'Границы', desc: 'Научись говорить "нет". Отключи рабочие уведомления после 19:00.', secret: '"Нет" — это "да" твоему здоровью, отношениям, жизни.' },
+      { title: 'Смысл и ценности', desc: 'Что для тебя важно? Ради чего ты работаешь? Совпадает ли это с тем, что делаешь?', secret: 'Выгорание часто = разрыв между ценностями и действиями.' },
+      { title: 'Новая система', desc: 'Возвращайся к работе постепенно. С новыми границами и ритуалами восстановления.', secret: 'Выгорание — шанс пересобрать жизнь. Многие возвращаются сильнее.' }
+    ]
+  },
+  {
+    id: 'sleep',
+    title: 'Плохой сон',
+    emoji: '😴',
+    color: 'doctor',
+    description: 'Путь из 6 шагов: восстановление глубокого сна',
+    steps: [
+      { title: 'Дневник сна', desc: 'Записывай: время засыпания, пробуждения, качество. Неделю — и увидишь паттерн.', secret: 'То, что измеряется — улучшается. Сон не исключение.' },
+      { title: 'Циркадный ритм', desc: 'Вставай в одно время ±30 мин. Яркий свет утром, тусклый вечером.', secret: 'Свет утром = якорь биологических часов. Без него сон рассыпается.' },
+      { title: 'Ритуал за час', desc: 'Никаких экранов. Тёплый душ, книга, мягкая музыка, дыхание.', secret: 'Мозгу нужен "переходный период" между днём и ночью.' },
+      { title: 'Спальня', desc: 'Темно, прохладно (18-20°C), тихо. Только для сна.', secret: 'Спальня = храм сна. Не офис, не кинотеатр.' },
+      { title: 'Еда и напитки', desc: 'Никакого кофе после 14:00, алкоголя и тяжёлой еды за 3 часа до сна.', secret: 'Алкоголь помогает уснуть, но разрушает глубокий сон.' },
+      { title: 'Если не спится', desc: 'Не лежи в постели 20+ мин. Встань, почитай в тусклом свете, вернись когда захочется спать.', secret: 'Кровать должна ассоциироваться со сном, а не с "лежанием без сна".' }
+    ]
+  },
+  {
+    id: 'focus',
+    title: 'Концентрация',
+    emoji: '🎯',
+    color: 'brand',
+    description: 'Путь из 6 шагов: глубокий фокус без отвлечений',
+    steps: [
+      { title: 'Один экран', desc: 'Работа только с одним экраном. Телефон в другой комнате или в ящике.', secret: 'Многозадачность — миф. Мозг переключается, теряя 40% продуктивности.' },
+      { title: 'Block time', desc: 'Блокируй в календаре 90-минутные слоты для глубокой работы.', secret: 'Deep Work (Кэл Ньюпорт) — главный навык XXI века.' },
+      { title: 'Разогрев', desc: 'Начни с 5 мин простой задачи, чтобы войти в поток.', secret: 'Мозгу нужно время на "перезагрузку". Не форсируй.' },
+      { title: 'Ритуал входа', desc: 'Одна и та же музыка, чай, место — сигнал мозгу "работаем".', secret: 'Условные рефлексы работают. Иван Павлов открыл это ещё в XIX веке.' },
+      { title: 'Защита от прерываний', desc: 'Табличка "не беспокоить", статус в мессенджере, предупреждение коллегам.', secret: 'Прерывание восстанавливается 23 минуты. Защищай фокус.' },
+      { title: 'Восстановление', desc: 'После 90 мин — 15 мин отдыха без экрана (прогулка, вода, окно).', secret: 'Умение отдыхать = умение концентрироваться.' }
+    ]
+  },
+  {
+    id: 'relationships',
+    title: 'Отношения',
+    emoji: '💞',
+    color: 'fitness',
+    description: 'Путь из 7 шагов: здоровая коммуникация',
+    steps: [
+      { title: 'Активное слушание', desc: 'Слушай не чтобы ответить, а чтобы понять. Перефразируй: "Я правильно понял, что..."', secret: 'Готтман: 69% конфликтов не решаются. Важно не решение, а как вы их проходите.' },
+      { title: 'Я-сообщения', desc: 'Не "Ты вечно опаздываешь!", а "Я чувствую тревогу, когда ты опаздываешь".', secret: '"Ты" запускает защиту. "Я" открывает диалог.' },
+      { title: 'Эмоциональный банк', desc: 'Каждый день — маленький вклад: комплимент, помощь, объятие.', secret: 'Отношения — счёт. 5 положительных на 1 отрицательное — норма Готтмана.' },
+      { title: 'Ремонт после ссоры', desc: 'Извинения — не унижение. "Я был неправ. Прости. Давай заново".', secret: 'Победа в ссоре = поражение в отношениях.' },
+      { title: 'Границы', desc: 'Скажи о своих границах спокойно. Уважай границы другого.', secret: 'Здоровые границы = здоровые отношения. Не путать с дистанционностью.' },
+      { title: 'Общее время', desc: 'Минимум 1 час в день без экранов только вдвоём.', secret: '80% пар разводятся из-за эмоционального расстояния, а не из-за измен.' },
+      { title: 'Терапия пары', desc: 'Если конфликты повторяются годами — к семейному психологу.', secret: 'ЭФТ (эмоционально-фокусированная терапия) — 70% успеха.' }
+    ]
+  },
+  {
+    id: 'money',
+    title: 'Финансы',
+    emoji: '💰',
+    color: 'finance',
+    description: 'Путь из 7 шагов: финансовая стабильность',
+    steps: [
+      { title: 'Инвентаризация', desc: 'Запиши все активы и долги. Просто факты без эмоций.', secret: 'Первый шаг — признать реальность. Часто она лучше, чем кажется.' },
+      { title: 'Бюджет 50/30/20', desc: '50% — нужды, 30% — желания, 20% — сбережения и долги.', secret: 'Бюджет — не ограничение, а карта.' },
+      { title: 'Подушка безопасности', desc: '3-6 месяцев расходов в ликвидной форме.', secret: 'Это защита от паники. Паника = плохие финансовые решения.' },
+      { title: 'Долги', desc: 'Снежный ком (мелкие сначала) или лавина (высокий %).', secret: 'Долги — самые дорогие деньги в жизни. Кредитка = 20-30% годовых.' },
+      { title: 'Инвестиции', desc: 'После подушки — индексированные фонды. Долгий горизонт, авто-взносы.', secret: 'Баффет: "Сложный процент — восьмое чудо света".' },
+      { title: 'Защита', desc: 'Страхование здоровья, имущества, жизни (при иждивенцах).', secret: 'Защита — не про смерть, а про жизнь.' },
+      { title: 'Доход', desc: 'Инвестируй в навыки. Второй источник дохода = страховка.', secret: 'Навал Равикант: "Играй в долгую. Найди рычаг."' }
+    ]
+  }
+];
+
+/* ══════════════════════════════════════════════════════════════════
+   COURSES — Обучение (объёмный блок)
+   ══════════════════════════════════════════════════════════════════ */
+var COURSES_LIBRARY = [
+  {
+    id: 'productivity_master',
+    title: 'Мастер продуктивности',
+    emoji: '⚡',
+    color: 'brand',
+    description: 'Полный курс: от постановки целей до глубокой работы',
+    lessons: [
+      { title: 'Введение в продуктивность', content: 'Продуктивность — не "делать больше", а "делать важное". 80/20: 20% действий = 80% результата. Твоя задача — найти эти 20%.' },
+      { title: 'Постановка целей: SMART и OKR', content: 'SMART: Specific, Measurable, Achievable, Relevant, Time-bound. OKR: Objectives (вдохновляющие) + Key Results (измеримые). Пример: O — "Стать экспертом в AI". KR1 — "Прочитать 12 книг". KR2 — "Написать 24 статьи".' },
+      { title: 'Матрица Эйзенхауэра', content: 'Q1: Важно+Срочно — делай сейчас. Q2: Важно+Не срочно — планируй (ключ к успеху). Q3: Не важно+Срочно — делегируй. Q4: Не важно+Не срочно — удали. Большинство людей живут в Q1 и Q3. Успешные — в Q2.' },
+      { title: 'GTD: Getting Things Done', content: 'Дэвид Аллен: мозг — не хранилище, а процессор. 5 шагов: Capture → Clarify → Organize → Reflect → Engage. Всё, что в голове — записать. Всё, что ≤2 мин — сделать сразу.' },
+      { title: 'Deep Work', content: 'Кэл Ньюпорт: глубокая работа — без отвлечений. 3-4 часа в день = больше результата, чем 10 часов в режиме "многозадачности". Правила: ритуал, изоляция, метрики.' },
+      { title: 'Помодоро и тайм-блокинг', content: 'Pomodoro: 25/5, 4 цикла → пауза 30. Тайм-блокинг: каждому часу — задача. Планируй не дела, а время.' },
+      { title: 'Энергия и восстановление', content: 'Продуктивность = энергия × фокус. Сон 7-9 ч, спорт 30 мин, вода 2 л, белок, отказ от сахара. Тони Шварц: "Управляй энергией, а не временем."' },
+      { title: 'Привычки (Атомные привычки)', content: 'Джеймс Клир: Cue → Craving → Response → Reward. Делай привычку очевидной, привлекательной, простой, приятной. 1% улучшения ежедневно = 37x за год.' },
+      { title: 'Современные инструменты', content: 'Notion, Obsidian, Todoist, Sunsama, Forest. Не инструмент делает тебя продуктивным — а система. Выбери 2-3 и углубись.' },
+      { title: 'Итоговая практика', content: 'Создай свою систему: 3 главные цели года, 5 привычек на квартал, 1 фокус на неделю. Проверяй каждое воскресенье.' }
+    ]
+  },
+  {
+    id: 'mental_health',
+    title: 'Психическое здоровье',
+    emoji: '🧠',
+    color: 'psych',
+    description: 'Научный подход к эмоциям и психике',
+    lessons: [
+      { title: 'Что такое психика', content: 'Психика — не "что-то внутри", а функция мозга и тела в контексте среды. Она пластична: мозг меняется всю жизнь (нейропластичность).' },
+      { title: 'Эмоции: язык тела', content: 'Базовые эмоции: радость, грусть, страх, злость, удивление, отвращение, стыд. Каждая длится 90 сек. Дольше — уже наша интерпретация.' },
+      { title: 'Тревога: механизм', content: 'Тревога = предсказание опасности. Миндалевидное тело реагирует быстрее коры. Причины: гиперконтроль, детские травмы, современный мир (новости, соцсети).' },
+      { title: 'Депрессия', content: 'Не "плохое настроение". Симптомы: ангедония, апатия, нарушение сна, аппетита, мысли о смерти. Нейробиология: снижение серотонина, дофамина, BDNF. Лечение: терапия + (часто) антидепрессанты.' },
+      { title: 'КПТ: базовые техники', content: 'Мысль → Эмоция → Поведение. Работаем с мыслью. "Когнитивные искажения": катастрофизация, чёрно-белое мышление, чтение мыслей. Замени на реалистичную мысль.' },
+      { title: 'ACT: принятие и ценности', content: 'Стивен Хейс: не борись с мыслями — наблюдай. 6 процессов: принятие, когнитивное разделение, контакт с настоящим, "я-контекст", ценности, действие.' },
+      { title: 'Травма и ПТСР', content: 'Травма — не событие, а реакция. Симптомы: флешбэки, гипервозбуждение, избегание. Лечение: EMDR, соматическая терапия, КПТ-травмы.' },
+      { title: 'Границы и токсичные люди', content: 'Нарциссы, манипуляторы, абьюзеры. Защита: серый камень, инфо-диета, физическая дистанция. Здоровые границы = спокойное "нет".' },
+      { title: 'Смысл и экзистенция', content: 'Виктор Франкл: "Зачем" важнее "как". Логотерапия: смысл в труде, любви, страдании. Ответственность как основа свободы.' },
+      { title: 'Профессиональная помощь', content: 'Когда идти: симптомы >2 недель, мешают жизни, суицидальные мысли. К кому: психолог (КПТ, ACT), психиатр (лекарства), психотерапевт (глубоко).' }
+    ]
+  },
+  {
+    id: 'health_basics',
+    title: 'Основы здоровья',
+    emoji: '⚕️',
+    color: 'doctor',
+    description: 'Доказательная медицина для повседневной жизни',
+    lessons: [
+      { title: 'Сон: фундамент', content: 'Мэттью Уокер: сон 7-9 ч. 4 стадии: N1, N2, N3 (глубокий), REM. Глубокий = восстановление тела. REM = память и эмоции. Правила: режим, темнота, прохлада, никаких экранов.' },
+      { title: 'Питание: принципы', content: 'Средиземноморская диета: овощи, фрукты, рыба, оливковое масло, орехи. Ограничь: сахар, обработанное мясо, трансжиры. Белок 1.6 г/кг при спорте.' },
+      { title: 'Микроэлементы', content: 'Витамин D (2000-5000 МЕ), Omega-3 (1-2 г EPA/DHA), магний (400 мг), цинк (15 мг), B12 (если веган). Анализы раз в год.' },
+      { title: 'Движение', content: '150 мин кардио в неделю (зона 2), 2x силовые, растяжка. Ходи 8000-10000 шагов. Сидячая работа — 5 мин движения каждый час.' },
+      { title: 'Стресс и кортизол', content: 'Роберт Сапольски: острый стресс — полезен, хронический — убивает. Управляй: дыхание, медитация, спорт, природа, соцсвязи.' },
+      { title: 'Профилактика', content: 'Чекап раз в год: кровь, давление, ЭКГ (после 40), онкоскрининг (по возрасту). Вакцинация. Стоматолог 2 раза в год.' },
+      { title: 'Долголетие', content: 'Питер Аттиа: 5 столпов — движение, питание, сон, стресс, связи. Дэвид Синклер: NMN, метформин (обсуждается). Главное — образ жизни.' },
+      { title: 'Ментальное здоровье = физическое', content: 'Депрессия повышает риск инфаркта на 40%. Хронический стресс = диабет, гипертония. Психика и тело — единое.' },
+      { title: 'Что НЕ работает', content: 'Детоксы (кроме печени, которая работает сама), БАДы без показаний, экстремальные диеты, "ощелачивание", "квантовые" практики. Наука, не магия.' },
+      { title: 'Скорая помощь', content: '103/112. Симптомы инфаркта: боль в груди, отдаёт в руку, челюсть, одышка. Инсульта: FAST (лицо, рука, речь, время). НЕ медли.' }
+    ]
+  },
+  {
+    id: 'financial_literacy',
+    title: 'Финансовая грамотность',
+    emoji: '💰',
+    color: 'finance',
+    description: 'От бюджета до инвестиций',
+    lessons: [
+      { title: 'Деньги: психология', content: 'Морган Хаусел: деньги = поведение, не математика. Работай с эмоциями: страх, жадность, FOMO.' },
+      { title: 'Учёт и бюджет', content: 'Записывай всё 3 месяца. Категории: обязательные, желания, сбережения. Правило 50/30/20.' },
+      { title: 'Подушка безопасности', content: '3-6 месяцев расходов. Где: накопительный счёт, ликвидные активы. НЕ в акциях.' },
+      { title: 'Долги', content: 'Кредитка — 20-40% годовых. Ипотека — 6-15%. Метод: снежный ком (мелкие → крупные) или лавина (высокий %).' },
+      { title: 'Инвестиции: база', content: 'Индексированные фонды (S&P 500, MSCI World). Горизонт 10+ лет. Автоматические взносы. Никаких "гарантированных 30%".' },
+      { title: 'Диверсификация', content: 'Не клади яйца в одну корзину. Акции + облигации + недвижимость + золото. По возрасту: 100 - возраст = % акций.' },
+      { title: 'Налоги', content: 'ИИС (РФ) — возврат 13-52 тыс/год. Вычеты: обучение, лечение, имущество. Легальная оптимизация.' },
+      { title: 'Доход', content: 'Повышай навыки. Второй доход: фриланс, продукт, инвестиции. Навал: "Specific knowledge + leverage".' },
+      { title: 'Страхование', content: 'Здоровье, жизнь (при иждивенцах), имущество. Не "накопительное" — только защитное.' },
+      { title: 'Пенсия', content: 'Начинай в 20-30. Сложный процент: 10 тыс/мес × 30 лет × 7% = 12 млн. НЕ откладывай.' }
+    ]
+  },
+  {
+    id: 'communication',
+    title: 'Коммуникация',
+    emoji: '💬',
+    color: 'coach',
+    description: 'Как говорить, слушать и влиять',
+    lessons: [
+      { title: 'Активное слушание', content: '3 уровня: слышать, слушать, понимать. Техники: парафраз, уточнения, отражение чувств.' },
+      { title: 'Я-сообщения', content: 'Формула: "Когда [факт], я чувствую [эмоция], потому что [потребность]. Я хочу [просьба]".' },
+      { title: 'ННО (Розенберг)', content: '4 шага: наблюдение без оценки → чувства → потребности → просьба. Без обвинений.' },
+      { title: 'Сложные разговоры', content: 'Правила: спокойное время, факты без оценок, слушай, не перебивай, ищи общее решение.' },
+      { title: 'Влияние и убеждение', content: 'Чалдини: 6 принципов — взаимность, обязательство, соцдоказательство, авторитет, симпатия, дефицит.' },
+      { title: 'Публичные выступления', content: 'Структура: hook → проблема → решение → выгоды → призыв. Практика, а не перфекционизм.' },
+      { title: 'Конфликты', content: 'Томас-Килманн: соперничество, компромисс, избегание, приспособление, сотрудничество. Сотрудничество — лучший, но не всегда.' },
+      { title: 'Обратная связь', content: 'SBI: Situation → Behavior → Impact. Конкретно, безлично, вовремя.' },
+      { title: 'Переговоры', content: 'BATNA (лучшая альтернатива). Не "победить", а "найти решение". Эмпатия + твёрдость.' },
+      { title: 'Цифровая этика', content: 'Не пиши в гневе. Правило 24 часов. Эмодзи не заменяют тон.' }
+    ]
+  }
+];
+
+/* ══════════════════════════════════════════════════════════════════
+   WISDOM DATABASE — Мудрость 240 лет опыта
+   ══════════════════════════════════════════════════════════════════ */
+var WISDOM = {
+  coach: [
+    'Ты не ленивый. Ты либо устал, либо не видишь смысла, либо боишься. Найди корень.',
+    'Цель без "зачем" — фантазия. Цель со смыслом — топливо.',
+    'Начни с 2 минут. Мозг переключится за 90 секунд.',
+    'Дисциплина = свобода. Не наоборот.',
+    'Не мотивация ведёт к действию. Действие ведёт к мотивации.',
+    'Планируй неделю в воскресенье. 15 минут сэкономят 10 часов.',
+    'Лучшее — враг хорошего. Готовое > идеальное.',
+    'Скажи "нет" — защити "да".',
+    'Твоё окружение — твоё будущее. Выбирай людей тщательно.',
+    'Не пытайся изменить всё. Измени одну вещь. Сегодня.',
+    'Успех = 1% вдохновения + 99% привычек.',
+    'Начни. Не готовься к началу.',
+    'Ты не обязан быть продуктивным 24/7. Отдых — часть работы.',
+    'Приоритет — не "что важно", а "что важно, если забыть всё остальное".',
+    'Ставь цели, которые тебя немного пугают.'
+  ],
+  psych: [
+    'Ты не свои мысли. Ты — тот, кто их наблюдает.',
+    'Эмоция длится 90 секунд. Всё, что дольше — интерпретация.',
+    'Больно — не значит неправильно. Боль — часть роста.',
+    'Ты не можешь контролировать чувства. Можешь — реакцию.',
+    'Тревога — не предсказание. Это сигнал.',
+    'Прошлое нельзя изменить. Отношение к нему — можно.',
+    'Границы — не стены. Это двери с ручкой с твоей стороны.',
+    'Стыд растёт в темноте. Расскажи — уменьшится.',
+    'Не всё требует реакции. Иногда — просто дыхания.',
+    'Ты не обязан всем нравиться. Это освобождает.',
+    'Депрессия — не слабость. Это болезнь. И её лечат.',
+    'Просить помощь — это храбрость, не слабость.',
+    'Ты пережил 100% своих худших дней. Это статистика.',
+    'Одиночество — не про количество людей, а про глубину связей.',
+    'Прощение — не для другого. Для себя.'
+  ],
+  doctor: [
+    'Сон — фундамент. Не жертвуй им ради продуктивности.',
+    'Движение — лекарство. 30 минут в день снижают смертность на 30%.',
+    'Вода — 2 литра. Мозг на 75% из воды.',
+    'Сахар — скрытая причина усталости и тревоги.',
+    'Стресс убивает медленно. Учись расслабляться как дышать.',
+    'Чекап раз в год — дешевле, чем лечение.',
+    'Хроническое воспаление — корень большинства болезней.',
+    'Алкоголь — не "полезно для сердца". Это миф 20 века.',
+    'Одиночество опаснее курения. Соцсвязи — медицина.',
+    'Ходи 8000 шагов. Не для фигуры — для мозга.',
+    'Солнце утром — лучшее лекарство от бессонницы.',
+    'Белок — сытость и мышцы. 1.6 г/кг веса.',
+    'Долголетие — не в таблетках. В образе жизни.',
+    'Симптомы >2 недель — к врачу. Не гугли.',
+    'Психика = тело. Лечи целого человека.'
+  ]
+};
+
+function randomWisdom(persona) {
+  var arr = WISDOM[persona] || WISDOM.coach;
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   ACHIEVEMENTS
+   ══════════════════════════════════════════════════════════════════ */
 var ACHIEVEMENTS = [
   { id: 'first_task', icon: '🎯', name: 'Первый шаг', check: function(s) { return s.tasks.length >= 1; } },
   { id: 'ten_tasks', icon: '🔟', name: '10 задач', check: function(s) { return s.tasks.length >= 10; } },
@@ -1098,7 +1232,11 @@ var ACHIEVEMENTS = [
   { id: 'goal_master', icon: '🏆', name: 'Целеустремлённый', check: function(s) { return s.goals.filter(function(g) { return g.progress === 100; }).length >= 1; } },
   { id: 'writer', icon: '📝', name: 'Писатель', check: function(s) { return s.notes.length >= 10; } },
   { id: 'athlete', icon: '🏋️', name: 'Атлет', check: function(s) { return s.workouts.length >= 20; } },
-  { id: 'zen', icon: '🧘', name: 'Дзен', check: function(s) { return s.meditations.length >= 10; } }
+  { id: 'zen', icon: '🧘', name: 'Дзен', check: function(s) { return s.meditations.length >= 10; } },
+  { id: 'pathfinder', icon: '🗺', name: 'Путешественник', check: function(s) { return s.paths.filter(function(p) { return p.completed; }).length >= 1; } },
+  { id: 'scholar', icon: '🎓', name: 'Учёный', check: function(s) { return (s.courses || []).filter(function(c) { return c.progress >= 50; }).length >= 1; } },
+  { id: 'detox_hero', icon: '📱', name: 'Детокс-герой', check: function(s) { return s.screenTime && s.screenTime.focusSessions >= 10; } },
+  { id: 'wellness', icon: '⚕️', name: 'Здоровье', check: function(s) { return s.mood.length >= 30; } }
 ];
 
 function checkAchievements() {
@@ -1123,30 +1261,36 @@ function checkAchievements() {
   }
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   PERSONAS
+   ══════════════════════════════════════════════════════════════════ */
 var PERSONAS = {
-  coach: { name: 'Коуч', color: 'coach', label: 'Продуктивность', emoji: '💬',
-    prompt: 'Ты — AI-Коуч максимального уровня. Методологии: GROW, Co-Active, Прохазка, SMART, Deep Work, Атомные привычки, Икигай, Стоицизм. Отвечай кратко (150-220 слов). Markdown.' },
-  psych: { name: 'Психолог', color: 'psych', label: 'Эмоции', emoji: '🧠',
-    prompt: 'Ты — AI-Психолог. КПТ, ACT, DBT. СТИЛЬ: тёплый, валидация чувств. НЕ ставь диагнозы! При кризисе → 8-800-2000-122. 150-220 слов.' },
-  doctor: { name: 'Врач', color: 'doctor', label: 'Здоровье', emoji: '⚕️',
-    prompt: 'Ты — AI-Врач-консультант. НЕ ставишь диагнозы. ВСЕГДА заканчивай дисклеймером. При острых симптомах → 103/112. 150-250 слов.' },
-  nutrition: { name: 'Нутрициолог', color: 'nutrition', label: 'Питание', emoji: '🥗',
-    prompt: 'Ты — AI-Нутрициолог. Средиземноморская диета, интервальное голодание. НЕ назначай диеты при заболеваниях. 150-200 слов.' },
-  fitness: { name: 'Тренер', color: 'fitness', label: 'Фитнес', emoji: '🏋️',
-    prompt: 'Ты — AI-Фитнес-тренер. Силовые, кардио, HIIT. Форма — сначала. 150-200 слов.' },
-  lawyer: { name: 'Юрист', color: 'lawyer', label: 'Право', emoji: '⚖️',
-    prompt: 'Ты — AI-Юрист. Образовательная информация. НЕ заменяешь адвоката. Всегда дисклеймер. 150-200 слов.' },
-  finance: { name: 'Финансист', color: 'finance', label: 'Финансы', emoji: '💰',
-    prompt: 'Ты — AI-Финансовый консультант. Бюджет, сбережения. НЕ даёшь конкретных рекомендаций. 150-200 слов.' }
+  coach: { name: 'Коуч', color: 'coach', label: 'Продуктивность 80 лет опыта', emoji: '💬',
+    prompt: 'Ты — AI-Коуч с 80-летним опытом. Синтез: GROW, Co-Active, Прохазка, SMART, Deep Work, Атомные привычки, Икигай, Стоицизм. Работал с CEO Fortune 500, спортсменами, студентами, родителями. Видел всё. Отвечай глубоко, но кратко (150-220 слов). Markdown.' },
+  psych: { name: 'Психолог', color: 'psych', label: 'Клинический психолог 80 лет', emoji: '🧠',
+    prompt: 'Ты — AI-Психолог с 80-летним опытом. Методологии: КПТ, ACT, DBT, Схема-терапия, IFS, Соматика, EMDR. Работал с травмами, депрессией, тревогой, отношениями, кризисами. НЕ ставь диагнозы! При кризисе → 8-800-2000-122. Отвечай тепло (150-220 слов).' },
+  doctor: { name: 'Врач', color: 'doctor', label: 'Доказательная медицина 80 лет', emoji: '⚕️',
+    prompt: 'Ты — AI-Врач с 80-летним опытом. Знания: терапия, неврология, эндокринология, кардиология, психиатрия, нутрициология. НЕ ставь диагнозы. ВСЕГДА заканчивай дисклеймером. При острых симптомах → 103/112. 150-250 слов.' },
+  nutrition: { name: 'Нутрициолог', color: 'nutrition', label: 'Питание 80 лет', emoji: '🥗',
+    prompt: 'Ты — AI-Нутрициолог с 80-летним опытом. Средиземноморская диета, микробиом, интервальное голодание, микроэлементы. НЕ назначай диеты при заболеваниях. 150-200 слов.' },
+  fitness: { name: 'Тренер', color: 'fitness', label: 'Фитнес 80 лет', emoji: '🏋️',
+    prompt: 'Ты — AI-Фитнес-тренер с 80-летним опытом. Силовые, кардио, HIIT, мобильность, восстановление. Работал со спортсменами и обычными людьми. Форма — сначала. 150-200 слов.' },
+  lawyer: { name: 'Юрист', color: 'lawyer', label: 'Право 80 лет', emoji: '⚖️',
+    prompt: 'Ты — AI-Юрист с 80-летним опытом. Образовательная информация. НЕ заменяешь адвоката. Всегда дисклеймер. 150-200 слов.' },
+  finance: { name: 'Финансист', color: 'finance', label: 'Финансы 80 лет', emoji: '💰',
+    prompt: 'Ты — AI-Финансовый консультант с 80-летним опытом. Бюджет, сбережения, инвестиции. НЕ даёшь конкретных рекомендаций. 150-200 слов.' }
 };
 
+/* ══════════════════════════════════════════════════════════════════
+   TABS & NAV
+   ══════════════════════════════════════════════════════════════════ */
 var TABS = [
   { id: 'dashboard', emoji: '🏠', label: 'Главная' },
   { id: 'tasks', emoji: '✅', label: 'Задачи' },
+  { id: 'paths', emoji: '🗺', label: 'Пути' },
   { id: 'ai', emoji: '✨', label: 'AI' },
   { id: 'health', emoji: '❤️', label: 'Здоровье' },
-  { id: 'more', emoji: '⋯', label: 'Ещё' },
-  { id: 'profile', emoji: '👤', label: 'Профиль' }
+  { id: 'more', emoji: '⋯', label: 'Ещё' }
 ];
 
 var currentPage = 'dashboard';
@@ -1172,15 +1316,17 @@ function navigate(page) {
   var main = document.getElementById('app');
   main.innerHTML = '';
   var renderers = {
-    dashboard: renderDashboard, tasks: renderTasks, ai: renderAI,
-    health: renderHealth, profile: renderProfile, more: renderMore,
+    dashboard: renderDashboard, tasks: renderTasks, paths: renderPaths,
+    pathDetail: renderPathDetail, courses: renderCourses, courseDetail: renderCourseDetail,
+    ai: renderAI, health: renderHealth, more: renderMore,
     calendar: renderCalendar, stats: renderStats, habits: renderHabits,
     goals: renderGoals, timer: renderTimer, notes: renderNotes,
-    learning: renderLearning, matrix: renderMatrix, focus: renderFocus,
+    learning: renderCourses, matrix: renderMatrix, focus: renderFocus,
     mood: renderMood, water: renderWater, meds: renderMeds,
     workouts: renderWorkouts, meditation: renderMeditation,
     journal: renderJournal, media: renderMedia, finance: renderFinance,
-    history: renderHistory, dbmanager: renderDBManager, settings: renderSettings
+    history: renderHistory, dbmanager: renderDBManager, settings: renderSettings,
+    screenTime: renderScreenTime, profile: renderProfile
   };
   var fn = renderers[page];
   if (fn) {
@@ -1190,6 +1336,9 @@ function navigate(page) {
   window.scrollTo({ top: 0, behavior: 'auto' });
   if (page === 'profile' || page === 'dashboard') checkAchievements();
 }
+
+var currentPathId = null;
+var currentCourseId = null;
 
 function openSheet(title, content) {
   var overlay = document.createElement('div');
@@ -1205,122 +1354,640 @@ function closeSheet() {
   document.body.style.overflow = '';
 }
 
-/* ═══ PROFILE ═══ */
-function renderProfile() {
-  var p = state.profile;
-  var unlocked = p.achievements || [];
-  var totalDays = p.createdAt ? Math.max(1, Math.floor((Date.now() - new Date(p.createdAt).getTime()) / (24*60*60*1000)) + 1) : 1;
+/* ══════════════════════════════════════════════════════════════════
+   PATHS PAGE
+   ══════════════════════════════════════════════════════════════════ */
+function renderPaths() {
+  var html = '<div class="page"><div class="title-xl">Пути развития</div>';
+  html += '<div class="footnote text-secondary mb-4" style="margin-bottom:16px;line-height:1.5;">Пошаговые программы с раскрытием секретов решения проблем. Пройди путь — стань мастером.</div>';
+  
+  for (var i = 0; i < PATHS_LIBRARY.length; i++) {
+    var p = PATHS_LIBRARY[i];
+    var userPath = state.paths.find(function(x) { return x.id === p.id; });
+    var completedSteps = userPath ? (userPath.completedSteps || []).length : 0;
+    var totalSteps = p.steps.length;
+    var progress = Math.round((completedSteps / totalSteps) * 100);
+    
+    html += '<div class="card" style="cursor:pointer;" onclick="openPath(\'' + p.id + '\')">';
+    html += '<div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;">';
+    html += '<div style="width:56px;height:56px;border-radius:18px;background:var(--surface-3);display:grid;place-items:center;font-size:28px;flex-shrink:0;">' + p.emoji + '</div>';
+    html += '<div style="flex:1;min-width:0;"><div style="font-size:17px;font-weight:800;margin-bottom:4px;">' + p.title + '</div>';
+    html += '<div class="footnote text-secondary">' + completedSteps + '/' + totalSteps + ' шагов</div></div>';
+    html += '<div class="list-chevron">›</div></div>';
+    html += '<div class="footnote text-secondary mb-3" style="margin-bottom:12px;line-height:1.45;">' + p.description + '</div>';
+    html += '<div class="progress"><div class="progress-fill" style="width:' + progress + '%;"></div></div>';
+    if (progress === 100) html += '<div class="badge badge-success" style="margin-top:10px;">✓ Завершён</div>';
+    else if (progress > 0) html += '<div class="badge badge-brand" style="margin-top:10px;">В процессе · ' + progress + '%</div>';
+    html += '</div>';
+  }
+  
+  html += '</div>';
+  document.getElementById('app').innerHTML = html;
+}
+
+function openPath(id) {
+  currentPathId = id;
+  navigate('pathDetail');
+}
+
+function renderPathDetail() {
+  var p = PATHS_LIBRARY.find(function(x) { return x.id === currentPathId; });
+  if (!p) { navigate('paths'); return; }
+  
+  var userPath = state.paths.find(function(x) { return x.id === p.id; });
+  if (!userPath) {
+    userPath = { id: p.id, completedSteps: [], startedAt: nowISO() };
+    state.paths.push(userPath);
+    save();
+  }
+  
+  var completed = userPath.completedSteps || [];
+  var progress = Math.round((completed.length / p.steps.length) * 100);
+  
+  var html = '<div class="page">';
+  html += '<button class="btn btn-ghost btn-sm mb-4" onclick="navigate(\'paths\')" style="margin-bottom:16px;">← Назад к путям</button>';
+  html += '<div style="text-align:center;margin-bottom:24px;">';
+  html += '<div style="font-size:64px;margin-bottom:12px;">' + p.emoji + '</div>';
+  html += '<div class="title-xl" style="margin-bottom:8px;">' + p.title + '</div>';
+  html += '<div class="footnote text-secondary" style="max-width:340px;margin:0 auto;line-height:1.5;">' + p.description + '</div>';
+  html += '</div>';
+  
+  html += '<div class="card"><div class="row-between mb-2"><span class="subhead">Прогресс</span>';
+  html += '<span class="subhead text-secondary">' + progress + '%</span></div>';
+  html += '<div class="progress"><div class="progress-fill" style="width:' + progress + '%;"></div></div></div>';
+  
+  html += '<div class="card"><h2>Шаги пути</h2>';
+  for (var i = 0; i < p.steps.length; i++) {
+    var step = p.steps[i];
+    var isDone = completed.indexOf(i) >= 0;
+    var isActive = !isDone && (i === 0 || completed.indexOf(i - 1) >= 0);
+    var isLocked = !isDone && !isActive;
+    
+    var cls = 'path-step';
+    if (isDone) cls += ' completed';
+    else if (isActive) cls += ' active';
+    else if (isLocked) cls += ' locked';
+    
+    html += '<div class="' + cls + '" onclick="' + (isLocked ? '' : 'openStep(' + i + ')') + '">';
+    html += '<div class="path-step-num">' + (isDone ? '✓' : (i + 1)) + '</div>';
+    html += '<div class="path-step-body">';
+    html += '<div class="path-step-title">' + step.title + '</div>';
+    html += '<div class="path-step-desc">' + (isDone ? step.desc : (isActive ? step.desc.substring(0, 80) + '...' : '🔒 Откроется после предыдущего шага')) + '</div>';
+    html += '</div></div>';
+  }
+  html += '</div></div>';
+  document.getElementById('app').innerHTML = html;
+}
+
+function openStep(idx) {
+  var p = PATHS_LIBRARY.find(function(x) { return x.id === currentPathId; });
+  if (!p) return;
+  var step = p.steps[idx];
+  if (!step) return;
+  
+  var userPath = state.paths.find(function(x) { return x.id === p.id; });
+  var isDone = userPath && (userPath.completedSteps || []).indexOf(idx) >= 0;
+  
+  var html = '<div style="text-align:center;margin-bottom:20px;">';
+  html += '<div style="font-size:42px;margin-bottom:8px;">' + (isDone ? '✅' : '🔓') + '</div>';
+  html += '<div style="font-size:14px;color:var(--text-2);font-weight:600;">Шаг ' + (idx + 1) + ' из ' + p.steps.length + '</div>';
+  html += '</div>';
+  
+  html += '<div class="card" style="margin-bottom:14px;"><h2>📋 Задача</h2>';
+  html += '<div style="font-size:15px;line-height:1.6;">' + step.desc + '</div></div>';
+  
+  html += '<div class="insight-card">';
+  html += '<div class="insight-title">💎 Секрет</div>';
+  html += '<div class="insight-text">' + step.secret + '</div>';
+  html += '</div>';
+  
+  if (!isDone) {
+    html += '<button class="btn btn-primary btn-block mt-4" onclick="completeStep(' + idx + ')">✓ Отметить как выполненный</button>';
+  } else {
+    html += '<div class="badge badge-success" style="display:block;text-align:center;padding:12px;">✓ Выполнено</div>';
+  }
+  
+  openSheet(step.title, html);
+}
+
+function completeStep(idx) {
+  var userPath = state.paths.find(function(x) { return x.id === currentPathId; });
+  if (!userPath) return;
+  if (!userPath.completedSteps) userPath.completedSteps = [];
+  if (userPath.completedSteps.indexOf(idx) < 0) {
+    userPath.completedSteps.push(idx);
+    save();
+    toast('✓ Шаг выполнен!', 'success');
+    haptic('success');
+    checkAchievements();
+    closeSheet();
+    renderPathDetail();
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   COURSES PAGE
+   ══════════════════════════════════════════════════════════════════ */
+function renderCourses() {
+  var html = '<div class="page"><div class="title-xl">Обучение</div>';
+  html += '<div class="footnote text-secondary mb-4" style="margin-bottom:16px;line-height:1.5;">Объёмные курсы с уроками. Изучай в своём темпе, отмечай прогресс.</div>';
+  
+  for (var i = 0; i < COURSES_LIBRARY.length; i++) {
+    var c = COURSES_LIBRARY[i];
+    var userCourse = state.courses.find(function(x) { return x.id === c.id; });
+    var completedLessons = userCourse ? (userCourse.completedLessons || []).length : 0;
+    var totalLessons = c.lessons.length;
+    var progress = totalLessons ? Math.round((completedLessons / totalLessons) * 100) : 0;
+    
+    html += '<div class="course-card" onclick="openCourse(\'' + c.id + '\')">';
+    html += '<div class="course-header">';
+    html += '<div class="course-emoji">' + c.emoji + '</div>';
+    html += '<div class="course-info">';
+    html += '<div class="course-title">' + c.title + '</div>';
+    html += '<div class="course-meta">' + completedLessons + '/' + totalLessons + ' уроков · ' + progress + '%</div>';
+    html += '</div></div>';
+    html += '<div class="footnote text-secondary mb-3" style="margin-bottom:12px;line-height:1.45;">' + c.description + '</div>';
+    html += '<div class="progress"><div class="progress-fill" style="width:' + progress + '%;"></div></div>';
+    html += '</div>';
+  }
+  
+  html += '</div>';
+  document.getElementById('app').innerHTML = html;
+}
+
+function openCourse(id) {
+  currentCourseId = id;
+  navigate('courseDetail');
+}
+
+function renderCourseDetail() {
+  var c = COURSES_LIBRARY.find(function(x) { return x.id === currentCourseId; });
+  if (!c) { navigate('courses'); return; }
+  
+  var userCourse = state.courses.find(function(x) { return x.id === c.id; });
+  if (!userCourse) {
+    userCourse = { id: c.id, completedLessons: [], startedAt: nowISO() };
+    state.courses.push(userCourse);
+    save();
+  }
+  
+  var completed = userCourse.completedLessons || [];
+  var progress = Math.round((completed.length / c.lessons.length) * 100);
+  
+  var html = '<div class="page">';
+  html += '<button class="btn btn-ghost btn-sm mb-4" onclick="navigate(\'courses\')" style="margin-bottom:16px;">← Все курсы</button>';
+  html += '<div style="text-align:center;margin-bottom:24px;">';
+  html += '<div style="font-size:64px;margin-bottom:12px;">' + c.emoji + '</div>';
+  html += '<div class="title-xl" style="margin-bottom:8px;">' + c.title + '</div>';
+  html += '<div class="footnote text-secondary" style="max-width:340px;margin:0 auto;">' + c.description + '</div>';
+  html += '</div>';
+  
+  html += '<div class="card"><div class="row-between mb-2"><span class="subhead">Прогресс</span>';
+  html += '<span class="subhead text-secondary">' + completed.length + '/' + c.lessons.length + ' · ' + progress + '%</span></div>';
+  html += '<div class="progress"><div class="progress-fill" style="width:' + progress + '%;"></div></div></div>';
+  
+  html += '<div class="card"><h2>📚 Уроки</h2>';
+  for (var i = 0; i < c.lessons.length; i++) {
+    var lesson = c.lessons[i];
+    var isDone = completed.indexOf(i) >= 0;
+    html += '<div class="lesson-row ' + (isDone ? 'done' : '') + '" onclick="openLesson(' + i + ')">';
+    html += '<div class="lesson-num">' + (isDone ? '✓' : (i + 1)) + '</div>';
+    html += '<div class="lesson-title">' + lesson.title + '</div>';
+    html += '<div class="list-chevron">›</div>';
+    html += '</div>';
+  }
+  html += '</div></div>';
+  document.getElementById('app').innerHTML = html;
+}
+
+function openLesson(idx) {
+  var c = COURSES_LIBRARY.find(function(x) { return x.id === currentCourseId; });
+  if (!c) return;
+  var lesson = c.lessons[idx];
+  if (!lesson) return;
+  
+  var userCourse = state.courses.find(function(x) { return x.id === c.id; });
+  var isDone = userCourse && (userCourse.completedLessons || []).indexOf(idx) >= 0;
+  
+  var html = '<div style="margin-bottom:16px;">';
+  html += '<div style="font-size:14px;color:var(--text-2);font-weight:600;margin-bottom:8px;">Урок ' + (idx + 1) + ' из ' + c.lessons.length + '</div>';
+  html += '<div style="font-size:22px;font-weight:800;margin-bottom:16px;">' + lesson.title + '</div>';
+  html += '</div>';
+  
+  html += '<div class="card" style="margin-bottom:14px;background:var(--surface-2);">';
+  html += '<div style="font-size:15px;line-height:1.65;">' + lesson.content + '</div></div>';
+  
+  if (!isDone) {
+    html += '<button class="btn btn-primary btn-block mt-4" onclick="completeLesson(' + idx + ')">✓ Изучено</button>';
+  } else {
+    html += '<div class="badge badge-success" style="display:block;text-align:center;padding:12px;">✓ Изучено</div>';
+  }
+  
+  openSheet(lesson.title, html);
+}
+
+function completeLesson(idx) {
+  var userCourse = state.courses.find(function(x) { return x.id === currentCourseId; });
+  if (!userCourse) return;
+  if (!userCourse.completedLessons) userCourse.completedLessons = [];
+  if (userCourse.completedLessons.indexOf(idx) < 0) {
+    userCourse.completedLessons.push(idx);
+    save();
+    toast('✓ Урок изучен!', 'success');
+    haptic('success');
+    checkAchievements();
+    closeSheet();
+    renderCourseDetail();
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   MATRIX — автосортировка задач
+   ══════════════════════════════════════════════════════════════════ */
+function getQuadrant(task) {
+  // Классификация по Эйзенхауэру
+  var important = task.priority === 'high' || task.priority === 'medium';
+  var urgent = false;
+  if (task.due_date) {
+    var days = daysBetween(today(), task.due_date.slice(0, 10));
+    urgent = days <= 2;
+  }
+  if (task.status === 'completed') return null;
+  
+  if (important && urgent) return 'q1';
+  if (important && !urgent) return 'q2';
+  if (!important && urgent) return 'q3';
+  return 'q4';
+}
+
+function renderMatrix() {
+  var matrix = { q1: [], q2: [], q3: [], q4: [] };
+  for (var i = 0; i < state.tasks.length; i++) {
+    var t = state.tasks[i];
+    if (t.status === 'completed') continue;
+    var q = getQuadrant(t);
+    if (q) matrix[q].push(t);
+  }
+  
+  var html = '<div class="page"><div class="title-xl">Матрица Эйзенхауэра</div>';
+  html += '<div class="footnote text-secondary mb-4" style="margin-bottom:16px;line-height:1.5;">Задачи автоматически сортируются по 4 квадрантам на основе приоритета и дедлайна.</div>';
+  
+  html += '<div class="matrix-grid-2x2">';
+  html += '<div class="matrix-quadrant matrix-q1" onclick="showQuadrant(\'q1\')">';
+  html += '<div class="matrix-q-title">🔥 Q1 · Важно+Срочно</div>';
+  html += '<div class="matrix-q-count" style="color:var(--danger);">' + matrix.q1.length + '</div>';
+  html += '<div class="matrix-q-sub">Делай сейчас</div></div>';
+  
+  html += '<div class="matrix-quadrant matrix-q2" onclick="showQuadrant(\'q2\')">';
+  html += '<div class="matrix-q-title">📌 Q2 · Важно+Не срочно</div>';
+  html += '<div class="matrix-q-count" style="color:var(--brand);">' + matrix.q2.length + '</div>';
+  html += '<div class="matrix-q-sub">Планируй</div></div>';
+  
+  html += '<div class="matrix-quadrant matrix-q3" onclick="showQuadrant(\'q3\')">';
+  html += '<div class="matrix-q-title">⚡ Q3 · Не важно+Срочно</div>';
+  html += '<div class="matrix-q-count" style="color:var(--warning);">' + matrix.q3.length + '</div>';
+  html += '<div class="matrix-q-sub">Делегируй</div></div>';
+  
+  html += '<div class="matrix-quadrant matrix-q4" onclick="showQuadrant(\'q4\')">';
+  html += '<div class="matrix-q-title">🗑 Q4 · Не важно+Не срочно</div>';
+  html += '<div class="matrix-q-count" style="color:var(--text-3);">' + matrix.q4.length + '</div>';
+  html += '<div class="matrix-q-sub">Удали</div></div>';
+  html += '</div>';
+  
+  html += '<div class="card"><h2>📊 Распределение</h2>';
+  html += '<div class="footnote text-secondary mb-3" style="margin-bottom:12px;">Идеальное распределение: 10% Q1, 70% Q2, 15% Q3, 5% Q4</div>';
+  var total = matrix.q1.length + matrix.q2.length + matrix.q3.length + matrix.q4.length;
+  if (total > 0) {
+    var p1 = Math.round(matrix.q1.length / total * 100);
+    var p2 = Math.round(matrix.q2.length / total * 100);
+    var p3 = Math.round(matrix.q3.length / total * 100);
+    var p4 = Math.round(matrix.q4.length / total * 100);
+    html += '<div style="display:flex;height:12px;border-radius:6px;overflow:hidden;">';
+    html += '<div style="width:' + p1 + '%;background:var(--danger);"></div>';
+    html += '<div style="width:' + p2 + '%;background:var(--brand);"></div>';
+    html += '<div style="width:' + p3 + '%;background:var(--warning);"></div>';
+    html += '<div style="width:' + p4 + '%;background:var(--text-3);"></div>';
+    html += '</div>';
+    html += '<div class="row mt-3" style="gap:16px;flex-wrap:wrap;">';
+    html += '<div class="footnote"><span style="color:var(--danger);">■</span> Q1 ' + p1 + '%</div>';
+    html += '<div class="footnote"><span style="color:var(--brand);">■</span> Q2 ' + p2 + '%</div>';
+    html += '<div class="footnote"><span style="color:var(--warning);">■</span> Q3 ' + p3 + '%</div>';
+    html += '<div class="footnote"><span style="color:var(--text-3);">■</span> Q4 ' + p4 + '%</div>';
+    html += '</div>';
+  } else {
+    html += '<div class="empty-text">Добавь задачи — они распределятся автоматически</div>';
+  }
+  html += '</div></div>';
+  document.getElementById('app').innerHTML = html;
+}
+
+function showQuadrant(q) {
+  var names = {
+    q1: '🔥 Q1: Важно и Срочно',
+    q2: '📌 Q2: Важно, не Срочно',
+    q3: '⚡ Q3: Не важно, Срочно',
+    q4: '🗑 Q4: Не важно, не Срочно'
+  };
+  var hints = {
+    q1: 'Делай сейчас. Это кризисы и дедлайны.',
+    q2: 'Планируй. Это рост и развитие — ключ к успеху.',
+    q3: 'Делегируй. Это чужие приоритеты.',
+    q4: 'Удали. Это пожиратели времени.'
+  };
+  var tasks = state.tasks.filter(function(t) {
+    if (t.status === 'completed') return false;
+    return getQuadrant(t) === q;
+  });
+  
+  var html = '<div class="footnote text-secondary mb-4" style="margin-bottom:16px;">' + hints[q] + '</div>';
+  if (tasks.length === 0) {
+    html += '<div class="empty"><div class="empty-icon">✨</div><div class="empty-text">Пусто</div></div>';
+  } else {
+    for (var i = 0; i < tasks.length; i++) {
+      var t = tasks[i];
+      html += '<div class="task-item" onclick="closeSheet();editTask(\'' + t.id + '\')">';
+      html += '<div class="priority-bar ' + (t.priority || 'medium') + '"></div>';
+      html += '<div class="task-content"><div class="task-title">' + esc(t.title) + '</div>';
+      html += '<div class="task-meta"><span>' + (t.planned_time || 0) + ' мин</span>' + (t.due_date ? '<span>· до ' + fmtDate(t.due_date) + '</span>' : '') + '</div></div></div>';
+    }
+  }
+  openSheet(names[q] + ' · ' + tasks.length, html);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   SCREEN TIME / DIGITAL DETOX
+   ══════════════════════════════════════════════════════════════════ */
+function renderScreenTime() {
+  var st = state.screenTime;
+  var t = today();
+  var todayUsage = st.usage[t] || { total: 0, social: 0, games: 0, work: 0 };
+  var limit = st.limits.daily || 240;
+  var pct = Math.min(100, Math.round((todayUsage.total / limit) * 100));
+  var circumference = 2 * Math.PI * 70;
+  var dashOffset = circumference - (pct / 100) * circumference;
+  
+  var html = '<div class="page"><div class="title-xl">Экранное время</div>';
+  
+  html += '<div class="card"><div class="detox-ring">';
+  html += '<svg viewBox="0 0 160 160">';
+  html += '<circle class="track" cx="80" cy="80" r="70"></circle>';
+  html += '<circle class="fill" cx="80" cy="80" r="70" stroke-dasharray="' + circumference + '" stroke-dashoffset="' + dashOffset + '"></circle>';
+  html += '</svg>';
+  html += '<div class="detox-value">';
+  html += '<div class="detox-value-num">' + todayUsage.total + '</div>';
+  html += '<div class="detox-value-label">мин сегодня</div>';
+  html += '</div></div>';
+  html += '<div class="row-between mb-2"><span class="footnote text-secondary">Лимит: ' + limit + ' мин</span>';
+  html += '<span class="footnote ' + (pct >= 100 ? 'text-secondary' : '') + '" style="' + (pct >= 100 ? 'color:var(--danger);' : '') + '">' + pct + '%</span></div>';
+  html += '<div class="progress"><div class="progress-fill" style="width:' + pct + '%;' + (pct >= 100 ? 'background:var(--danger);' : '') + '"></div></div>';
+  html += '</div>';
+  
+  html += '<div class="stat-grid mb-4">';
+  html += '<div class="stat-item"><div class="stat-value">' + todayUsage.social + '</div><div class="stat-label">Соцсети</div></div>';
+  html += '<div class="stat-item"><div class="stat-value">' + todayUsage.games + '</div><div class="stat-label">Игры</div></div>';
+  html += '<div class="stat-item"><div class="stat-value">' + todayUsage.work + '</div><div class="stat-label">Работа</div></div>';
+  html += '</div>';
+  
+  html += '<div class="card"><h2>⚡ Цифровой детокс</h2>';
+  html += '<div class="footnote text-secondary mb-3" style="margin-bottom:12px;line-height:1.5;">Блокировка соцсетей и игр на выбранное время. Фокус на реальной жизни.</div>';
+  html += '<div class="list-row" onclick="toggleDetox()">';
+  html += '<div class="list-icon" style="background:' + (st.detoxMode ? 'var(--success)' : 'var(--surface-3)') + ';color:' + (st.detoxMode ? '#000' : 'var(--text)') + ';">' + (st.detoxMode ? '✓' : '🚫') + '</div>';
+  html += '<div class="list-body"><div class="list-title">' + (st.detoxMode ? 'Детокс активен' : 'Включить детокс') + '</div>';
+  html += '<div class="list-subtitle">' + (st.detoxMode && st.detoxUntil ? 'до ' + fmtTime(st.detoxUntil) : 'Заблокировать соцсети') + '</div></div>';
+  html += '</div>';
+  
+  html += '<button class="btn btn-primary btn-block mt-3" onclick="logFocusSession()">🎯 Я в фокусе — записать 25 мин</button>';
+  html += '<div class="footnote text-tertiary text-center mt-3">Сессий фокуса: ' + (st.focusSessions || 0) + '</div>';
+  html += '</div>';
+  
+  html += '<div class="card"><h2>📊 Последние 7 дней</h2>';
+  var last7 = [];
+  for (var i = 6; i >= 0; i--) {
+    var d = new Date();
+    d.setDate(d.getDate() - i);
+    var ds = d.toISOString().slice(0, 10);
+    last7.push({ date: ds, usage: (st.usage[ds] || {}).total || 0 });
+  }
+  var maxUsage = Math.max.apply(null, last7.map(function(x) { return x.usage; })) || 1;
+  html += '<div class="mini-chart">';
+  for (var j = 0; j < last7.length; j++) {
+    var h = Math.max(4, (last7[j].usage / maxUsage) * 80);
+    html += '<div class="mini-bar" style="height:' + h + 'px;"></div>';
+  }
+  html += '</div>';
+  html += '<div class="row-between"><span class="caption text-tertiary">7 дней назад</span><span class="caption text-tertiary">Сегодня</span></div>';
+  html += '</div>';
+  
+  html += '<div class="card"><h2>⚙️ Лимиты</h2>';
+  html += '<div class="field"><label class="field-label">Дневной лимит (мин)</label>';
+  html += '<input type="number" id="st-daily" value="' + (st.limits.daily || 240) + '" min="30" max="960" step="30"/></div>';
+  html += '<div class="field"><label class="field-label">Соцсети (мин)</label>';
+  html += '<input type="number" id="st-social" value="' + (st.limits.social || 60) + '" min="0" max="300" step="10"/></div>';
+  html += '<div class="field"><label class="field-label">Игры (мин)</label>';
+  html += '<input type="number" id="st-games" value="' + (st.limits.games || 30) + '" min="0" max="300" step="10"/></div>';
+  html += '<button class="btn btn-primary btn-block" onclick="saveScreenLimits()">Сохранить лимиты</button>';
+  html += '</div>';
+  
+  html += '<div class="card"><h2>➕ Записать использование</h2>';
+  html += '<div class="field"><label class="field-label">Категория</label>';
+  html += '<select id="log-cat"><option value="social">Соцсети</option><option value="games">Игры</option><option value="work">Работа</option><option value="other">Другое</option></select></div>';
+  html += '<div class="field"><label class="field-label">Минут</label>';
+  html += '<input type="number" id="log-mins" value="30" min="5" step="5"/></div>';
+  html += '<button class="btn btn-primary btn-block" onclick="logScreenTime()">Добавить</button>';
+  html += '</div>';
+  
+  html += '</div>';
+  document.getElementById('app').innerHTML = html;
+}
+
+function toggleDetox() {
+  var st = state.screenTime;
+  st.detoxMode = !st.detoxMode;
+  if (st.detoxMode) {
+    var until = new Date();
+    until.setHours(until.getHours() + 4);
+    st.detoxUntil = until.toISOString();
+    toast('🚫 Детокс включён на 4 часа', 'success');
+    haptic('success');
+  } else {
+    st.detoxUntil = null;
+    toast('Детокс выключен', 'info');
+  }
+  save();
+  renderScreenTime();
+}
+
+function logFocusSession() {
+  var st = state.screenTime;
+  st.focusSessions = (st.focusSessions || 0) + 1;
+  save();
+  toast('🎯 Фокус-сессия записана!', 'success');
+  haptic('success');
+  checkAchievements();
+  renderScreenTime();
+}
+
+function saveScreenLimits() {
+  var st = state.screenTime;
+  st.limits.daily = parseInt(document.getElementById('st-daily').value) || 240;
+  st.limits.social = parseInt(document.getElementById('st-social').value) || 60;
+  st.limits.games = parseInt(document.getElementById('st-games').value) || 30;
+  save();
+  toast('Лимиты сохранены', 'success');
+  renderScreenTime();
+}
+
+function logScreenTime() {
+  var cat = document.getElementById('log-cat').value;
+  var mins = parseInt(document.getElementById('log-mins').value) || 0;
+  if (mins <= 0) return;
+  var t = today();
+  var st = state.screenTime;
+  if (!st.usage[t]) st.usage[t] = { total: 0, social: 0, games: 0, work: 0 };
+  st.usage[t].total += mins;
+  st.usage[t][cat] = (st.usage[t][cat] || 0) + mins;
+  save();
+  toast('Записано: +' + mins + ' мин', 'success');
+  renderScreenTime();
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   EXTENDED STATS
+   ══════════════════════════════════════════════════════════════════ */
+function renderStats() {
+  var html = '<div class="page"><div class="title-xl">Статистика</div>';
+  
+  // Overview
+  var totalTasks = state.tasks.length;
   var doneTasks = state.tasks.filter(function(t) { return t.status === 'completed'; }).length;
   var totalChats = state.chats.filter(function(c) { return c.role === 'user'; }).length;
-
-  var html = '<div class="page">';
-  html += '<div class="profile-hero">';
-  html += '<div class="profile-avatar" onclick="pickEmoji()">' + p.emoji + '</div>';
-  html += '<div class="profile-name">' + esc(p.name || 'Пользователь') + '</div>';
-  html += '<div class="profile-sub">С нами ' + totalDays + ' дн.</div>';
-  html += '</div>';
-
+  var totalMinutes = state.tasks.filter(function(t) { return t.status === 'completed'; }).reduce(function(s, t) { return s + (t.actual_time || 0); }, 0);
+  
   html += '<div class="stat-grid mb-4">';
   html += '<div class="stat-item"><div class="stat-value">' + doneTasks + '</div><div class="stat-label">Задач</div></div>';
   html += '<div class="stat-item"><div class="stat-value">' + (state.stats.streak || 0) + '</div><div class="stat-label">Streak</div></div>';
   html += '<div class="stat-item"><div class="stat-value">' + totalChats + '</div><div class="stat-label">Диалогов</div></div>';
   html += '</div>';
-
-  html += '<div class="card"><h2>✏️ Имя</h2>';
-  html += '<div class="field" style="margin-bottom:0;"><input type="text" id="profile-name" value="' + esc(p.name) + '" placeholder="Как к вам обращаться?" onchange="saveProfileName(this.value)"/></div>';
+  
+  // Progress
+  html += '<div class="card"><h2>📈 Прогресс задач</h2>';
+  html += '<div class="row-between mb-2"><span class="subhead">Выполнено</span>';
+  html += '<span class="subhead text-secondary">' + doneTasks + ' из ' + totalTasks + '</span></div>';
+  html += '<div class="progress"><div class="progress-fill" style="width:' + (totalTasks ? (doneTasks/totalTasks*100) : 0) + '%;"></div></div></div>';
+  
+  // 7-day activity
+  html += '<div class="card"><h2>📊 Активность (7 дней)</h2>';
+  var last7 = [];
+  for (var i = 6; i >= 0; i--) {
+    var d = new Date();
+    d.setDate(d.getDate() - i);
+    var ds = d.toISOString().slice(0, 10);
+    var dayTasks = state.tasks.filter(function(t) { return t.created_at && t.created_at.slice(0, 10) === ds; });
+    last7.push({ date: ds, count: dayTasks.length });
+  }
+  var maxCount = Math.max.apply(null, last7.map(function(x) { return x.count; })) || 1;
+  html += '<div class="mini-chart">';
+  for (var j = 0; j < last7.length; j++) {
+    var h = Math.max(4, (last7[j].count / maxCount) * 80);
+    html += '<div class="mini-bar" style="height:' + h + 'px;"></div>';
+  }
   html += '</div>';
-
-  html += '<div class="card"><h2>🏆 Достижения (' + unlocked.length + '/' + ACHIEVEMENTS.length + ')</h2>';
-  html += '<div class="achieve-grid">';
-  for (var i = 0; i < ACHIEVEMENTS.length; i++) {
-    var a = ACHIEVEMENTS[i];
-    var isUnlocked = unlocked.indexOf(a.id) >= 0;
-    html += '<div class="achieve-item ' + (isUnlocked ? 'unlocked' : 'locked') + '">';
-    html += '<div class="achieve-icon">' + a.icon + '</div>';
-    html += '<div class="achieve-name">' + a.name + '</div>';
+  html += '<div class="row-between"><span class="caption text-tertiary">' + fmtDate(last7[0].date) + '</span><span class="caption text-tertiary">Сегодня</span></div>';
+  html += '</div>';
+  
+  // AI insights
+  html += '<div class="insight-card">';
+  html += '<div class="insight-title">💡 Инсайт</div>';
+  var insight = '';
+  if (doneTasks / Math.max(1, totalTasks) < 0.3) insight = 'Много незавершённых задач. Попробуй разбить их на более мелкие шаги.';
+  else if ((state.stats.streak || 0) >= 7) insight = 'Отличный streak! Ты в топ-10% пользователей по постоянству.';
+  else if (totalChats >= 20) insight = 'Ты активно используешь AI-коуча. Продолжай — это ускоряет рост.';
+  else insight = 'Совет: задай 3 главные задачи на сегодня. Это повысит продуктивность.';
+  html += '<div class="insight-text">' + insight + '</div></div>';
+  
+  // Categories
+  html += '<div class="card"><h2>📂 По категориям</h2>';
+  var cats = {};
+  state.tasks.forEach(function(t) {
+    cats[t.category || 'Другое'] = (cats[t.category || 'Другое'] || 0) + 1;
+  });
+  var catKeys = Object.keys(cats).sort(function(a, b) { return cats[b] - cats[a]; });
+  for (var k = 0; k < catKeys.length; k++) {
+    var cat = catKeys[k];
+    var pct = Math.round((cats[cat] / totalTasks) * 100);
+    html += '<div style="margin-bottom:12px;">';
+    html += '<div class="row-between mb-1" style="margin-bottom:4px;"><span class="footnote">' + esc(cat) + '</span><span class="footnote text-secondary">' + cats[cat] + ' (' + pct + '%)</span></div>';
+    html += '<div class="progress" style="height:6px;"><div class="progress-fill" style="width:' + pct + '%;"></div></div>';
     html += '</div>';
   }
-  html += '</div></div>';
-
-  html += '<div class="card"><h2>⚙️ Быстрые ссылки</h2>';
-  html += '<div class="list-row" onclick="navigate(\'settings\')">';
-  html += '<div class="list-icon" style="background:var(--surface-3);">⚙️</div>';
-  html += '<div class="list-body"><div class="list-title">Настройки</div><div class="list-subtitle">AI, тема, данные</div></div>';
-  html += '<div class="list-chevron">›</div></div>';
-  html += '<div class="list-row" onclick="navigate(\'dbmanager\')">';
-  html += '<div class="list-icon" style="background:var(--surface-3);">🗄</div>';
-  html += '<div class="list-body"><div class="list-title">База данных</div><div class="list-subtitle">Экспорт, импорт</div></div>';
-  html += '<div class="list-chevron">›</div></div>';
-  html += '<div class="list-row" onclick="navigate(\'stats\')">';
-  html += '<div class="list-icon" style="background:var(--surface-3);">📊</div>';
-  html += '<div class="list-body"><div class="list-title">Статистика</div></div>';
-  html += '<div class="list-chevron">›</div></div>';
+  if (catKeys.length === 0) html += '<div class="footnote text-tertiary">Нет данных</div>';
   html += '</div>';
-
-  html += '<div class="card"><h2>📋 Все разделы</h2>';
-  html += '<div class="row" style="gap:8px;">';
-  var allItems = [
-    { k: 'calendar', e: '📅', n: 'Календарь' },
-    { k: 'habits', e: '🔄', n: 'Привычки' },
-    { k: 'goals', e: '🎯', n: 'Цели' },
-    { k: 'timer', e: '⏱', n: 'Таймер' },
-    { k: 'notes', e: '📝', n: 'Заметки' },
-    { k: 'learning', e: '📚', n: 'Обучение' },
-    { k: 'matrix', e: '🔢', n: 'Матрица' },
-    { k: 'focus', e: '🧘', n: 'Фокус' },
-    { k: 'mood', e: '💭', n: 'Настроение' },
-    { k: 'water', e: '💧', n: 'Вода' },
-    { k: 'meds', e: '💊', n: 'Лекарства' },
-    { k: 'workouts', e: '🏋️', n: 'Тренировки' },
-    { k: 'meditation', e: '🧘', n: 'Медитации' },
-    { k: 'journal', e: '📓', n: 'Дневник' },
-    { k: 'media', e: '📖', n: 'Медиатека' },
-    { k: 'finance', e: '💰', n: 'Финансы' },
-    { k: 'history', e: '📋', n: 'История' }
-  ];
-  for (var j = 0; j < allItems.length; j++) {
-    var it = allItems[j];
-    html += '<button class="btn btn-ghost btn-sm" onclick="navigate(\'' + it.k + '\')">' + it.e + ' ' + it.n + '</button>';
+  
+  // Matrix distribution
+  var matrix = { q1: 0, q2: 0, q3: 0, q4: 0 };
+  state.tasks.forEach(function(t) {
+    if (t.status === 'completed') return;
+    var q = getQuadrant(t);
+    if (q) matrix[q]++;
+  });
+  html += '<div class="card"><h2>🔢 Матрица Эйзенхауэра</h2>';
+  html += '<div class="stat-grid">';
+  html += '<div class="stat-item"><div class="stat-value" style="color:var(--danger);">' + matrix.q1 + '</div><div class="stat-label">Q1 Важно+Срочно</div></div>';
+  html += '<div class="stat-item"><div class="stat-value" style="color:var(--brand);">' + matrix.q2 + '</div><div class="stat-label">Q2 Важно</div></div>';
+  html += '<div class="stat-item"><div class="stat-value" style="color:var(--warning);">' + matrix.q3 + '</div><div class="stat-label">Q3 Срочно</div></div>';
+  html += '</div>';
+  html += '</div>';
+  
+  // Paths progress
+  html += '<div class="card"><h2>🗺 Прогресс путей</h2>';
+  for (var i2 = 0; i2 < state.paths.length; i2++) {
+    var up = state.paths[i2];
+    var pLib = PATHS_LIBRARY.find(function(x) { return x.id === up.id; });
+    if (!pLib) continue;
+    var prog = Math.round(((up.completedSteps || []).length / pLib.steps.length) * 100);
+    html += '<div class="list-row"><div class="list-icon" style="background:var(--surface-3);">' + pLib.emoji + '</div>';
+    html += '<div class="list-body"><div class="list-title">' + pLib.title + '</div>';
+    html += '<div class="progress" style="margin-top:6px;"><div class="progress-fill" style="width:' + prog + '%;"></div></div></div>';
+    html += '<div class="list-value">' + prog + '%</div></div>';
   }
-  html += '</div></div>';
+  if (state.paths.length === 0) html += '<div class="footnote text-tertiary">Пока нет активных путей</div>';
+  html += '</div>';
+  
+  // Courses progress
+  html += '<div class="card"><h2>📚 Прогресс курсов</h2>';
+  for (var i3 = 0; i3 < state.courses.length; i3++) {
+    var uc = state.courses[i3];
+    var cLib = COURSES_LIBRARY.find(function(x) { return x.id === uc.id; });
+    if (!cLib) continue;
+    var prog2 = Math.round(((uc.completedLessons || []).length / cLib.lessons.length) * 100);
+    html += '<div class="list-row"><div class="list-icon" style="background:var(--surface-3);">' + cLib.emoji + '</div>';
+    html += '<div class="list-body"><div class="list-title">' + cLib.title + '</div>';
+    html += '<div class="progress" style="margin-top:6px;"><div class="progress-fill" style="width:' + prog2 + '%;"></div></div></div>';
+    html += '<div class="list-value">' + prog2 + '%</div></div>';
+  }
+  if (state.courses.length === 0) html += '<div class="footnote text-tertiary">Пока нет начатых курсов</div>';
+  html += '</div>';
+  
+  // Totals
+  html += '<div class="card"><h2>📊 Всего</h2>';
+  html += '<div class="list-row"><div class="list-icon" style="background:var(--brand);">⏱</div>';
+  html += '<div class="list-body"><div class="list-title">Время в задачах</div></div>';
+  html += '<div class="list-value">' + Math.floor(totalMinutes/60) + 'ч ' + (totalMinutes%60) + 'м</div></div>';
+  html += '<div class="list-row"><div class="list-icon" style="background:var(--success);">✓</div>';
+  html += '<div class="list-body"><div class="list-title">Задач выполнено</div></div>';
+  html += '<div class="list-value">' + doneTasks + '</div></div>';
+  html += '<div class="list-row"><div class="list-icon" style="background:var(--coach);color:#000;">🏆</div>';
+  html += '<div class="list-body"><div class="list-title">Достижений</div></div>';
+  html += '<div class="list-value">' + ((state.profile.achievements || []).length) + '/' + ACHIEVEMENTS.length + '</div></div>';
+  html += '</div>';
+  
   html += '</div>';
   document.getElementById('app').innerHTML = html;
 }
 
-function pickEmoji() {
-  var emojis = ['😊','😎','🤓','🧑‍💻','👨‍💼','👩‍💼','🦊','🐱','🐶','🦁','🐼','🦉','🌟','⚡','🔥','💎','🚀','🎯','🧠','💪','🌈','☕','🎨','🎮','🎧','📚','🏃','🧘','🍀','🌸','🦄','🐉','👑','🥇','🎓','💡'];
-  var html = '<div class="emoji-grid">';
-  for (var i = 0; i < emojis.length; i++) {
-    var sel = emojis[i] === state.profile.emoji ? ' selected' : '';
-    html += '<button class="emoji-pick' + sel + '" onclick="setEmoji(\'' + emojis[i] + '\')">' + emojis[i] + '</button>';
-  }
-  html += '</div>';
-  openSheet('Выберите аватар', html);
-}
-
-function setEmoji(e) {
-  state.profile.emoji = e;
-  save();
-  closeSheet();
-  toast('Аватар обновлён', 'success');
-  haptic('success');
-  renderProfile();
-  updateHeaderAvatar();
-}
-
-function saveProfileName(name) {
-  state.profile.name = (name || '').trim() || 'Пользователь';
-  save();
-  toast('Сохранено', 'success');
-  updateHeaderAvatar();
-}
-
-function updateHeaderAvatar() {
-  var el = document.getElementById('headerAvatar');
-  if (el) el.textContent = state.profile.emoji || '👤';
-}
-
-/* ═══ DASHBOARD ═══ */
+/* ══════════════════════════════════════════════════════════════════
+   DASHBOARD
+   ══════════════════════════════════════════════════════════════════ */
 function renderDashboard() {
   var todayTasks = state.tasks.filter(function(t) { return t.created_at && t.created_at.slice(0, 10) === today(); });
   var doneToday = todayTasks.filter(function(t) { return t.status === 'completed'; }).length;
@@ -1333,6 +2000,10 @@ function renderDashboard() {
   var waterGoal = state.settings.waterGoal || 8;
   var progress = todayTasks.length ? Math.round(doneToday / todayTasks.length * 100) : 0;
   var userName = state.profile.name ? ', ' + state.profile.name : '';
+  
+  // Screen time today
+  var st = state.screenTime;
+  var stUsage = (st.usage[today()] || {}).total || 0;
 
   var html = '<div class="page">';
   html += '<div class="title-xl">' + greet + userName + '</div>';
@@ -1340,19 +2011,24 @@ function renderDashboard() {
   html += '<div class="card card-gradient">';
   html += '<div class="row-between" style="margin-bottom:14px;">';
   html += '<div><div style="font-size:13px;opacity:0.85;font-weight:600;margin-bottom:6px;">Прогресс дня</div>';
-  html += '<div style="font-size:40px;font-weight:800;letter-spacing:-1.5px;line-height:1;">' + doneToday + '/' + todayTasks.length + '</div></div>';
-  html += '<div style="font-size:48px;font-weight:800;letter-spacing:-2px;">' + progress + '%</div>';
+  html += '<div style="font-size:40px;font-weight:800;line-height:1;">' + doneToday + '/' + todayTasks.length + '</div></div>';
+  html += '<div style="font-size:48px;font-weight:800;">' + progress + '%</div>';
   html += '</div>';
   html += '<div class="progress" style="background:rgba(255,255,255,0.25);height:8px;"><div class="progress-fill" style="width:' + progress + '%;background:#fff;"></div></div>';
   html += '</div>';
 
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">';
-  html += '<div class="card" style="margin:0;"><div style="font-size:11px;color:var(--text-2);text-transform:uppercase;letter-spacing:0.06em;font-weight:700;margin-bottom:8px;">🔥 Streak</div>';
+  html += '<div class="card" style="margin:0;"><div style="font-size:11px;color:var(--text-2);text-transform:uppercase;font-weight:700;margin-bottom:8px;">🔥 Streak</div>';
   html += '<div style="font-size:26px;font-weight:800;">' + (state.stats.streak || 0) + '</div>';
   html += '<div style="font-size:12px;color:var(--text-2);margin-top:4px;">дней подряд</div></div>';
-  html += '<div class="card" style="margin:0;"><div style="font-size:11px;color:var(--text-2);text-transform:uppercase;letter-spacing:0.06em;font-weight:700;margin-bottom:8px;">🔄 Привычки</div>';
-  html += '<div style="font-size:26px;font-weight:800;">' + habitsToday + '/' + state.habits.length + '</div>';
+  html += '<div class="card" style="margin:0;"><div style="font-size:11px;color:var(--text-2);text-transform:uppercase;font-weight:700;margin-bottom:8px;">📱 Экран</div>';
+  html += '<div style="font-size:26px;font-weight:800;">' + stUsage + 'м</div>';
   html += '<div style="font-size:12px;color:var(--text-2);margin-top:4px;">сегодня</div></div>';
+  html += '</div>';
+
+  html += '<div class="insight-card">';
+  html += '<div class="insight-title">💎 Мудрость дня</div>';
+  html += '<div class="insight-text">"' + randomWisdom(state.settings.activePersona || 'coach') + '"</div>';
   html += '</div>';
 
   html += '<div class="card"><h2>✨ AI-специалисты</h2><div class="row" style="gap:8px;">';
@@ -1362,11 +2038,65 @@ function renderDashboard() {
   });
   html += '</div></div>';
 
+  html += '<div class="card"><h2>🗺 Пути развития</h2>';
+  var activePaths = state.paths.filter(function(p) {
+    var lib = PATHS_LIBRARY.find(function(x) { return x.id === p.id; });
+    if (!lib) return false;
+    var total = lib.steps.length;
+    var done = (p.completedSteps || []).length;
+    return done > 0 && done < total;
+  }).slice(0, 2);
+  if (activePaths.length === 0) {
+    html += '<div class="footnote text-secondary mb-3" style="line-height:1.5;">Начни путь — открой для себя пошаговые секреты решения проблем.</div>';
+    html += '<button class="btn btn-primary btn-block" onclick="navigate(\'paths\')">Открыть пути</button>';
+  } else {
+    for (var ap = 0; ap < activePaths.length; ap++) {
+      var up = activePaths[ap];
+      var lib2 = PATHS_LIBRARY.find(function(x) { return x.id === up.id; });
+      var prog = Math.round(((up.completedSteps || []).length / lib2.steps.length) * 100);
+      html += '<div class="list-row" onclick="openPath(\'' + up.id + '\')">';
+      html += '<div class="list-icon" style="background:var(--surface-3);">' + lib2.emoji + '</div>';
+      html += '<div class="list-body"><div class="list-title">' + lib2.title + '</div>';
+      html += '<div class="progress" style="margin-top:6px;"><div class="progress-fill" style="width:' + prog + '%;"></div></div></div>';
+      html += '<div class="list-value">' + prog + '%</div></div>';
+    }
+    html += '<button class="btn btn-ghost btn-block mt-2" onclick="navigate(\'paths\')">Все пути</button>';
+  }
+  html += '</div>';
+
+  html += '<div class="card"><h2>📚 Продолжить обучение</h2>';
+  var activeCourses = state.courses.filter(function(c) {
+    var lib = COURSES_LIBRARY.find(function(x) { return x.id === c.id; });
+    if (!lib) return false;
+    var total = lib.lessons.length;
+    var done = (c.completedLessons || []).length;
+    return done > 0 && done < total;
+  }).slice(0, 2);
+  if (activeCourses.length === 0) {
+    html += '<div class="footnote text-secondary mb-3" style="line-height:1.5;">Объёмные курсы по продуктивности, психике, здоровью, финансам.</div>';
+    html += '<button class="btn btn-primary btn-block" onclick="navigate(\'courses\')">Открыть обучение</button>';
+  } else {
+    for (var ac = 0; ac < activeCourses.length; ac++) {
+      var uc = activeCourses[ac];
+      var lib3 = COURSES_LIBRARY.find(function(x) { return x.id === uc.id; });
+      var prog2 = Math.round(((uc.completedLessons || []).length / lib3.lessons.length) * 100);
+      html += '<div class="list-row" onclick="openCourse(\'' + uc.id + '\')">';
+      html += '<div class="list-icon" style="background:var(--surface-3);">' + lib3.emoji + '</div>';
+      html += '<div class="list-body"><div class="list-title">' + lib3.title + '</div>';
+      html += '<div class="progress" style="margin-top:6px;"><div class="progress-fill" style="width:' + prog2 + '%;"></div></div></div>';
+      html += '<div class="list-value">' + prog2 + '%</div></div>';
+    }
+    html += '<button class="btn btn-ghost btn-block mt-2" onclick="navigate(\'courses\')">Все курсы</button>';
+  }
+  html += '</div>';
+
   html += '<div class="card"><h2>⚡ Быстрые действия</h2><div class="row" style="gap:8px;">';
   html += '<button class="btn btn-ghost btn-sm" onclick="navigate(\'timer\')">⏱ Таймер</button>';
   html += '<button class="btn btn-ghost btn-sm" onclick="addTask()">➕ Задача</button>';
   html += '<button class="btn btn-ghost btn-sm" onclick="addWater()">💧 Вода</button>';
   html += '<button class="btn btn-ghost btn-sm" onclick="quickMoodLog()">💭 Настроение</button>';
+  html += '<button class="btn btn-ghost btn-sm" onclick="navigate(\'matrix\')">🔢 Матрица</button>';
+  html += '<button class="btn btn-ghost btn-sm" onclick="navigate(\'screenTime\')">📱 Экран</button>';
   html += '</div></div>';
 
   html += '<div class="card"><h2>❤️ Состояние</h2><div class="stat-grid">';
@@ -1390,11 +2120,13 @@ function renderDashboard() {
 function taskRow(t) {
   var pColors = { high: 'high', medium: 'medium', low: 'low' };
   var checked = t.status === 'completed';
+  var quadrant = getQuadrant(t);
+  var qEmoji = { q1: '🔥', q2: '📌', q3: '⚡', q4: '🗑' };
   return '<div class="task-item ' + (checked ? 'completed' : '') + '" onclick="editTask(\'' + t.id + '\')">' +
     '<div class="priority-bar ' + (pColors[t.priority] || 'medium') + '"></div>' +
     '<button class="task-checkbox ' + (checked ? 'checked' : '') + '" onclick="event.stopPropagation();toggleTask(\'' + t.id + '\')">' + (checked ? '✓' : '') + '</button>' +
     '<div class="task-content"><div class="task-title">' + esc(t.title) + '</div>' +
-    '<div class="task-meta"><span>' + (t.planned_time || 0) + ' мин</span>' + (t.category ? '<span>· ' + esc(t.category) + '</span>' : '') + '</div></div></div>';
+    '<div class="task-meta"><span>' + (t.planned_time || 0) + ' мин</span>' + (t.category ? '<span>· ' + esc(t.category) + '</span>' : '') + (quadrant ? '<span>· ' + qEmoji[quadrant] + '</span>' : '') + '</div></div></div>';
 }
 
 function openPersona(p) {
@@ -1443,7 +2175,9 @@ function saveMood(score) {
   else if (currentPage === 'health') renderHealth();
 }
 
-/* ═══ TASKS ═══ */
+/* ══════════════════════════════════════════════════════════════════
+   TASKS
+   ══════════════════════════════════════════════════════════════════ */
 var taskFilter = 'all';
 var taskSearch = '';
 
@@ -1459,6 +2193,12 @@ function renderTasks() {
     var q = taskSearch.toLowerCase();
     filtered = filtered.filter(function(t) { return t.title.toLowerCase().indexOf(q) >= 0; });
   }
+  // Sort by quadrant
+  filtered.sort(function(a, b) {
+    var qa = getQuadrant(a) || 'z';
+    var qb = getQuadrant(b) || 'z';
+    return qa.localeCompare(qb);
+  });
 
   var html = '<div class="page">';
   html += '<div class="row-between" style="margin-bottom:20px;"><div class="title-xl" style="margin:0;">Задачи</div>';
@@ -1494,6 +2234,7 @@ function addTask() {
     '</div>' +
     '<div class="field" style="margin-top:12px;"><label class="field-label">Категория</label>' +
     '<select id="t-category"><option value="Работа">Работа</option><option value="Обучение">Обучение</option><option value="Личное">Личное</option><option value="Здоровье">Здоровье</option><option value="Бытовые">Бытовые</option></select></div>' +
+    '<div class="field"><label class="field-label">Дедлайн (для матрицы)</label><input type="datetime-local" id="t-due"/></div>' +
     '<button class="btn btn-primary btn-block" onclick="saveTask()">Добавить</button>'
   );
   setTimeout(function() { var el = document.getElementById('t-title'); if (el) el.focus(); }, 100);
@@ -1503,6 +2244,7 @@ function saveTask() {
   var titleEl = document.getElementById('t-title');
   var title = titleEl ? titleEl.value.trim() : '';
   if (!title) return toast('Введите название', 'error');
+  var due = ((document.getElementById('t-due') || {}).value) || null;
   state.tasks.unshift({
     id: uid(), title: title,
     description: (document.getElementById('t-desc') || {}).value || '',
@@ -1510,6 +2252,7 @@ function saveTask() {
     actual_time: 0, status: 'pending',
     priority: (document.getElementById('t-priority') || {}).value || 'medium',
     category: (document.getElementById('t-category') || {}).value || 'Работа',
+    due_date: due ? new Date(due).toISOString() : null,
     created_at: nowISO()
   });
   save();
@@ -1527,27 +2270,19 @@ function toggleTask(id) {
   var wasCompleted = t.status === 'completed';
   t.status = wasCompleted ? 'pending' : 'completed';
   t.actual_time = t.status === 'completed' ? (t.planned_time || 0) : 0;
+  t.completed_at = t.status === 'completed' ? nowISO() : null;
   save();
   haptic('success');
   if (t.status === 'completed') toast('✓ Выполнено', 'success');
   checkAchievements();
   if (currentPage === 'tasks') renderTasks();
   else if (currentPage === 'dashboard') renderDashboard();
-  
-  if (!wasCompleted) {
-    setTimeout(function() {
-      var boxes = document.querySelectorAll('.task-checkbox.checked');
-      boxes.forEach(function(b) {
-        b.classList.add('just-checked');
-        setTimeout(function() { b.classList.remove('just-checked'); }, 700);
-      });
-    }, 50);
-  }
 }
 
 function editTask(id) {
   var t = state.tasks.find(function(x) { return x.id === id; });
   if (!t) return;
+  var dueStr = t.due_date ? new Date(t.due_date).toISOString().slice(0, 16) : '';
   openSheet('Редактировать',
     '<div class="field"><input type="text" id="e-title" value="' + esc(t.title) + '"/></div>' +
     '<div class="field"><textarea id="e-desc" rows="2">' + esc(t.description || '') + '</textarea></div>' +
@@ -1558,6 +2293,7 @@ function editTask(id) {
     '<option value="medium"' + (t.priority === 'medium' ? ' selected' : '') + '>Средний</option>' +
     '<option value="high"' + (t.priority === 'high' ? ' selected' : '') + '>Высокий</option>' +
     '</select></div></div>' +
+    '<div class="field mt-3" style="margin-top:12px;"><label class="field-label">Дедлайн</label><input type="datetime-local" id="e-due" value="' + dueStr + '"/></div>' +
     '<button class="btn btn-primary btn-block mt-3" onclick="updateTask(\'' + id + '\')">Сохранить</button>' +
     '<button class="btn btn-danger btn-block mt-2" onclick="deleteTask(\'' + id + '\')">Удалить</button>'
   );
@@ -1570,6 +2306,8 @@ function updateTask(id) {
   t.description = (document.getElementById('e-desc') || {}).value || '';
   t.planned_time = parseInt((document.getElementById('e-time') || {}).value) || 30;
   t.priority = (document.getElementById('e-priority') || {}).value || 'medium';
+  var due = ((document.getElementById('e-due') || {}).value) || null;
+  t.due_date = due ? new Date(due).toISOString() : null;
   save();
   closeSheet();
   toast('Сохранено', 'success');
@@ -1587,12 +2325,15 @@ function deleteTask(id) {
   else if (currentPage === 'dashboard') renderDashboard();
 }
 
-/* ═══ AI ═══ */
+/* ══════════════════════════════════════════════════════════════════
+   AI
+   ══════════════════════════════════════════════════════════════════ */
 function renderAI() {
   var active = state.settings.activePersona || 'coach';
   var persona = PERSONAS[active] || PERSONAS.coach;
   var messages = state.chats.filter(function(c) { return c.persona === active; });
   var hasKey = !!state.settings.apiKey;
+  var wisdom = randomWisdom(active);
 
   var quick = {
     coach: ['Не могу начать', 'Выгорание', 'План дня'],
@@ -1614,6 +2355,11 @@ function renderAI() {
     var p = PERSONAS[k];
     html += '<button class="persona-item ' + (active === k ? 'active' : '') + '" data-p="' + k + '" onclick="switchPersona(\'' + k + '\')">' + p.name + '</button>';
   }
+  html += '</div>';
+
+  html += '<div class="insight-card mb-3" style="margin-bottom:12px;">';
+  html += '<div class="insight-title">💎 ' + persona.name + ' советует</div>';
+  html += '<div class="insight-text">"' + wisdom + '"</div>';
   html += '</div>';
 
   html += '<div class="card" style="padding:16px 18px;"><div class="row-between">';
@@ -1770,10 +2516,10 @@ function fallbackReply(persona, text) {
   if (/суицид|покончить|не хочу жить|умереть/i.test(text)) {
     return '🆘 Важно. Позвони прямо сейчас:\n• 8-800-2000-122 (РФ, 24/7)\n• 103 / 112\n• https://findahelpline.com\n\nТы важен. Ты не один. 💙';
   }
-  if (persona === 'doctor') return 'Я — AI-консультант. Опиши симптомы (что, как давно, что предшествовало).\n\n*⚠️ Не заменяет врача. При острых симптомах — 103/112.*';
-  if (persona === 'psych') return 'Слышу тебя. Что происходит? Что ты уже пробовал?';
+  if (persona === 'doctor') return 'Я — AI-консультант с 80-летним опытом. Опиши симптомы (что, как давно, что предшествовало).\n\n*⚠️ Не заменяет врача. При острых симптомах — 103/112.*';
+  if (persona === 'psych') return 'Слышу тебя. Что происходит? Что ты уже пробовал? Я работал с тысячами похожих случаев — вместе найдём путь.';
   if (persona === 'nutrition') return 'Расскажи о питании и целях. Что хочешь изменить?';
-  if (persona === 'fitness') return 'Расскажи об уровне подготовки и целях.';
+  if (persona === 'fitness') return 'Расскажи об уровне подготовки и целях. Составим программу.';
   if (persona === 'lawyer') return 'Опиши ситуацию подробнее.\n\n*Не заменяет юриста.*';
   if (persona === 'finance') return 'Расскажи о финансовой цели. Что беспокоит?';
   return 'Слышу тебя. Расскажи подробнее — что происходит?';
@@ -1816,7 +2562,9 @@ function saveAISettings() {
   renderAI();
 }
 
-/* ═══ HEALTH ═══ */
+/* ══════════════════════════════════════════════════════════════════
+   HEALTH
+   ══════════════════════════════════════════════════════════════════ */
 function renderHealth() {
   var waterEntry = state.water.find(function(w) { return w.date === today(); });
   var water = waterEntry ? waterEntry.count : 0;
@@ -1860,16 +2608,26 @@ function renderHealth() {
   document.getElementById('app').innerHTML = html;
 }
 
-/* ═══ MORE ═══ */
+/* ══════════════════════════════════════════════════════════════════
+   MORE
+   ══════════════════════════════════════════════════════════════════ */
 function renderMore() {
   var groups = [
+    {
+      title: '🗺 Обучение и рост',
+      items: [
+        { key: 'paths', emoji: '🗺', label: 'Пути развития', desc: 'Пошаговое решение проблем' },
+        { key: 'courses', emoji: '📚', label: 'Курсы', desc: 'Объёмное обучение' },
+        { key: 'learning', emoji: '🎓', label: 'Мои курсы', desc: 'Продолжить' }
+      ]
+    },
     {
       title: '📅 Время и планирование',
       items: [
         { key: 'calendar', emoji: '📅', label: 'Календарь', desc: 'События по дням' },
-        { key: 'stats', emoji: '📊', label: 'Статистика', desc: 'Аналитика' },
+        { key: 'stats', emoji: '📊', label: 'Статистика', desc: 'Расширенная аналитика' },
         { key: 'timer', emoji: '⏱', label: 'Таймер', desc: 'Pomodoro-сессии' },
-        { key: 'matrix', emoji: '🔢', label: 'Матрица', desc: 'Приоритеты Эйзенхауэра' }
+        { key: 'matrix', emoji: '🔢', label: 'Матрица', desc: 'Эйзенхауэр' }
       ]
     },
     {
@@ -1892,10 +2650,15 @@ function renderMore() {
       ]
     },
     {
+      title: '📱 Экран и внимание',
+      items: [
+        { key: 'screenTime', emoji: '📱', label: 'Экранное время', desc: 'Трекинг и детокс' }
+      ]
+    },
+    {
       title: '📚 Знания и ресурсы',
       items: [
         { key: 'notes', emoji: '📝', label: 'Заметки', desc: 'Идеи и мысли' },
-        { key: 'learning', emoji: '📚', label: 'Обучение', desc: 'Курсы' },
         { key: 'media', emoji: '📖', label: 'Медиатека', desc: 'Книги, подкасты' },
         { key: 'finance', emoji: '💰', label: 'Финансы', desc: 'Бюджет' }
       ]
@@ -1905,7 +2668,8 @@ function renderMore() {
       items: [
         { key: 'history', emoji: '📋', label: 'История', desc: 'Сводка' },
         { key: 'dbmanager', emoji: '🗄', label: 'База данных', desc: 'Экспорт/импорт' },
-        { key: 'settings', emoji: '⚙️', label: 'Настройки', desc: 'Профиль, AI' }
+        { key: 'settings', emoji: '⚙️', label: 'Настройки', desc: 'Гибкая конфигурация' },
+        { key: 'profile', emoji: '👤', label: 'Профиль', desc: 'Личное' }
       ]
     }
   ];
@@ -1935,7 +2699,9 @@ function renderMore() {
   document.getElementById('app').innerHTML = html;
 }
 
-/* ═══ CALENDAR ═══ */
+/* ══════════════════════════════════════════════════════════════════
+   CALENDAR
+   ══════════════════════════════════════════════════════════════════ */
 var calOffset = 0;
 
 function renderCalendar() {
@@ -2082,35 +2848,9 @@ function showDayDetails(dateStr) {
   openSheet(fmtDate(dateStr), html);
 }
 
-/* ═══ STATS ═══ */
-function renderStats() {
-  var total = state.tasks.length;
-  var done = state.tasks.filter(function(t) { return t.status === 'completed'; }).length;
-  var chats = state.chats.filter(function(c) { return c.role === 'user'; }).length;
-  var waterTotal = state.water.reduce(function(s, w) { return s + w.count; }, 0);
-
-  var html = '<div class="page"><div class="title-xl">Статистика</div>';
-  html += '<div class="stat-grid mb-4">';
-  html += '<div class="stat-item"><div class="stat-value">' + done + '</div><div class="stat-label">Задач</div></div>';
-  html += '<div class="stat-item"><div class="stat-value">' + (state.stats.streak || 0) + '</div><div class="stat-label">Streak</div></div>';
-  html += '<div class="stat-item"><div class="stat-value">' + chats + '</div><div class="stat-label">Диалогов</div></div>';
-  html += '</div>';
-  html += '<div class="card"><h2>Прогресс задач</h2>';
-  html += '<div class="row-between mb-2"><span class="subhead">Выполнено</span>';
-  html += '<span class="subhead text-secondary">' + done + ' из ' + total + '</span></div>';
-  html += '<div class="progress"><div class="progress-fill" style="width:' + (total ? (done/total*100) : 0) + '%;"></div></div></div>';
-  html += '<div class="card"><h2>Трекинг</h2>';
-  html += '<div class="list-row"><div class="list-icon" style="background:var(--psych);color:#000;">💧</div>';
-  html += '<div class="list-body"><div class="list-title">Вода всего</div></div>';
-  html += '<div class="list-value">' + waterTotal + ' ст.</div></div>';
-  html += '<div class="list-row"><div class="list-icon" style="background:var(--fitness);">🏋️</div>';
-  html += '<div class="list-body"><div class="list-title">Тренировок</div></div>';
-  html += '<div class="list-value">' + state.workouts.length + '</div></div>';
-  html += '</div></div>';
-  document.getElementById('app').innerHTML = html;
-}
-
-/* ═══ HABITS ═══ */
+/* ══════════════════════════════════════════════════════════════════
+   HABITS, GOALS, TIMER, NOTES, LEARNING (legacy), FOCUS, MOOD, WATER, MEDS, WORKOUTS, MEDITATION, JOURNAL, MEDIA, FINANCE, HISTORY
+   ══════════════════════════════════════════════════════════════════ */
 function calcStreak(history) {
   if (!history || !history.length) return 0;
   var s = 0;
@@ -2182,7 +2922,6 @@ function deleteHabit(id) {
   renderHabits();
 }
 
-/* ═══ GOALS ═══ */
 function renderGoals() {
   var html = '<div class="page"><div class="title-xl">Цели</div>';
   if (state.goals.length) {
@@ -2234,9 +2973,7 @@ function deleteGoal(id) {
   renderGoals();
 }
 
-/* ═══ TIMER ═══ */
 var timerTick = null;
-
 function computeElapsed(s) {
   if (!s) return 0;
   return Math.floor((Date.now() - new Date(s.start_time).getTime() - (s.paused_time || 0)) / 1000);
@@ -2251,7 +2988,7 @@ function renderTimer() {
     var secs = elapsed % 60;
     body = '<div style="text-align:center;padding:36px 16px;">';
     body += '<div class="subhead text-secondary mb-2">' + esc(active.title) + '</div>';
-    body += '<div style="font-size:76px;font-weight:800;letter-spacing:-4px;font-variant-numeric:tabular-nums;background:linear-gradient(135deg,var(--brand),var(--brand-2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin:22px 0;">' + String(mins).padStart(2,'0') + ':' + String(secs).padStart(2,'0') + '</div>';
+    body += '<div style="font-size:76px;font-weight:800;font-variant-numeric:tabular-nums;background:linear-gradient(135deg,var(--brand),var(--brand-2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin:22px 0;">' + String(mins).padStart(2,'0') + ':' + String(secs).padStart(2,'0') + '</div>';
     body += '<div class="btn-row" style="justify-content:center;">';
     if (active.status === 'active') body += '<button class="btn btn-warning" onclick="pauseTimer()">⏸ Пауза</button>';
     else body += '<button class="btn btn-success" onclick="resumeTimer()">▶ Продолжить</button>';
@@ -2323,7 +3060,6 @@ function stopTimer() {
   renderTimer();
 }
 
-/* ═══ NOTES ═══ */
 function renderNotes() {
   var html = '<div class="page"><div class="title-xl">Заметки</div>';
   if (state.notes.length) {
@@ -2392,117 +3128,6 @@ function deleteNote(id) {
   renderNotes();
 }
 
-/* ═══ LEARNING ═══ */
-function renderLearning() {
-  var html = '<div class="page"><div class="title-xl">Обучение</div>';
-  if (state.learning.length) {
-    for (var i = 0; i < state.learning.length; i++) {
-      var l = state.learning[i];
-      html += '<div class="card"><div class="row-between mb-2">';
-      html += '<div style="font-weight:700;font-size:17px;">' + esc(l.title) + '</div>';
-      html += '<span style="background:var(--surface-3);color:var(--text-2);padding:4px 12px;border-radius:100px;font-size:11px;font-weight:700;">' + (l.progress || 0) + '%</span></div>';
-      html += '<div class="progress mb-3"><div class="progress-fill" style="width:' + (l.progress || 0) + '%;"></div></div>';
-      html += '<div class="row-between"><button class="btn btn-sm btn-ghost" onclick="updateLearning(\'' + l.id + '\')">Прогресс</button>';
-      html += '<button class="btn btn-sm btn-ghost" onclick="deleteLearning(\'' + l.id + '\')">🗑</button></div></div>';
-    }
-  } else {
-    html += '<div class="empty"><div class="empty-icon">📚</div><div class="empty-title">Нет курсов</div></div>';
-  }
-  html += '<div class="card"><h2>Новый курс</h2>';
-  html += '<div class="field"><input type="text" id="l-title" placeholder="Название"/></div>';
-  html += '<div class="field"><input type="text" id="l-material" placeholder="Ссылка (необязательно)"/></div>';
-  html += '<button class="btn btn-primary btn-block" onclick="addLearning()">Добавить</button></div></div>';
-  document.getElementById('app').innerHTML = html;
-}
-
-function addLearning() {
-  var title = ((document.getElementById('l-title') || {}).value || '').trim();
-  if (!title) return toast('Введите название', 'error');
-  state.learning.push({ id: uid(), title: title, material: ((document.getElementById('l-material') || {}).value || '').trim(), progress: 0, created_at: nowISO() });
-  save();
-  toast('Добавлено', 'success');
-  haptic('success');
-  renderLearning();
-}
-
-function updateLearning(id) {
-  var l = state.learning.find(function(x) { return x.id === id; });
-  if (!l) return;
-  var p = prompt('Прогресс (0-100):', l.progress || 0);
-  if (p === null) return;
-  l.progress = Math.max(0, Math.min(100, parseInt(p) || 0));
-  save();
-  renderLearning();
-}
-
-function deleteLearning(id) {
-  if (!confirm('Удалить?')) return;
-  state.learning = state.learning.filter(function(l) { return l.id !== id; });
-  save();
-  renderLearning();
-}
-
-/* ═══ MATRIX ═══ */
-function renderMatrix() {
-  var m = { q1: [], q2: [], q3: [], q4: [] };
-  state.matrix.forEach(function(x) { if (m[x.quadrant]) m[x.quadrant].push(x); });
-  var qs = [
-    { key: 'q1', title: 'Важно и срочно', color: 'var(--danger)', emoji: '🔥' },
-    { key: 'q2', title: 'Важно, не срочно', color: 'var(--brand)', emoji: '📌' },
-    { key: 'q3', title: 'Не важно, срочно', color: 'var(--warning)', emoji: '⚡' },
-    { key: 'q4', title: 'Не важно, не срочно', color: 'var(--text-3)', emoji: '🗑' }
-  ];
-  var html = '<div class="page"><div class="title-xl">Матрица Эйзенхауэра</div>';
-  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">';
-  for (var i = 0; i < qs.length; i++) {
-    var q = qs[i];
-    html += '<div class="card" style="margin:0;cursor:pointer;border-top:4px solid ' + q.color + ';" onclick="addMatrixTask(\'' + q.key + '\')">';
-    html += '<div class="footnote text-secondary mb-2">' + q.emoji + ' ' + q.title + '</div>';
-    html += '<div style="font-size:36px;font-weight:800;color:' + q.color + ';letter-spacing:-1px;">' + m[q.key].length + '</div></div>';
-  }
-  html += '</div>';
-  html += '<div class="card mt-4"><h2>Задачи в матрице</h2>';
-  var hasAny = false;
-  for (var j = 0; j < qs.length; j++) {
-    var qq = qs[j];
-    for (var k = 0; k < m[qq.key].length; k++) {
-      hasAny = true;
-      var x = m[qq.key][k];
-      html += '<div class="list-row"><div class="list-icon" style="background:' + qq.color + ';">' + qq.emoji + '</div>';
-      html += '<div class="list-body"><div class="list-title">' + esc(x.title) + '</div></div>';
-      html += '<button class="btn btn-icon btn-sm btn-ghost" onclick="event.stopPropagation();removeMatrixTask(\'' + x.id + '\')">🗑</button></div>';
-    }
-  }
-  if (!hasAny) html += '<div class="footnote text-tertiary">Матрица пуста</div>';
-  html += '</div></div>';
-  document.getElementById('app').innerHTML = html;
-}
-
-function addMatrixTask(quadrant) {
-  openSheet('Добавить в матрицу',
-    '<div class="field"><input type="text" id="mx-title" placeholder="Задача" autofocus/></div>' +
-    '<button class="btn btn-primary btn-block" onclick="saveMatrixTask(\'' + quadrant + '\')">Добавить</button>'
-  );
-}
-
-function saveMatrixTask(quadrant) {
-  var title = ((document.getElementById('mx-title') || {}).value || '').trim();
-  if (!title) return toast('Введите название', 'error');
-  state.matrix.push({ id: uid(), title: title, quadrant: quadrant, created_at: nowISO() });
-  save();
-  closeSheet();
-  toast('Добавлено', 'success');
-  haptic('success');
-  renderMatrix();
-}
-
-function removeMatrixTask(id) {
-  state.matrix = state.matrix.filter(function(x) { return x.id !== id; });
-  save();
-  renderMatrix();
-}
-
-/* ═══ FOCUS ═══ */
 function renderFocus() {
   var f = state.flags;
   var html = '<div class="page"><div class="title-xl">Фокус-режимы</div><div class="card">';
@@ -2523,18 +3148,18 @@ function toggleFlag(key) {
   renderFocus();
 }
 
-/* ═══ MOOD ═══ */
 function renderMood() {
   var mood = state.mood.slice(-30);
   var html = '<div class="page"><div class="title-xl">Настроение</div>';
   html += '<div class="card"><h2>Сегодня</h2>';
-  html += '<div style="font-size:52px;font-weight:800;text-align:center;padding:18px 0;letter-spacing:-2px;">' + (mood.length ? mood[mood.length-1].score + '/10' : '—') + '</div>';
+  html += '<div style="font-size:52px;font-weight:800;text-align:center;padding:18px 0;">' + (mood.length ? mood[mood.length-1].score + '/10' : '—') + '</div>';
   html += '<button class="btn btn-primary btn-block" onclick="quickMoodLog()">Записать</button></div>';
   if (mood.length) {
     html += '<div class="card"><h2>Динамика · 30 дней</h2>';
-    html += '<div style="display:flex;gap:4px;align-items:end;height:130px;margin-top:14px;">';
+    html += '<div class="mini-chart" style="height:120px;">';
     for (var i = 0; i < mood.length; i++) {
-      html += '<div style="flex:1;height:' + (mood[i].score/10*100) + '%;background:linear-gradient(180deg,var(--brand-2),var(--brand));border-radius:8px 8px 0 0;min-height:4px;"></div>';
+      var h = Math.max(4, (mood[i].score/10) * 120);
+      html += '<div class="mini-bar" style="height:' + h + 'px;"></div>';
     }
     html += '</div></div>';
   }
@@ -2542,7 +3167,6 @@ function renderMood() {
   document.getElementById('app').innerHTML = html;
 }
 
-/* ═══ WATER ═══ */
 function renderWater() {
   var t = today();
   var entry = state.water.find(function(w) { return w.date === t; });
@@ -2551,7 +3175,7 @@ function renderWater() {
   var html = '<div class="page"><div class="title-xl">Вода</div>';
   html += '<div class="card card-gradient" style="text-align:center;padding:36px 24px;">';
   html += '<div style="font-size:72px;margin-bottom:18px;">💧</div>';
-  html += '<div style="font-size:60px;font-weight:800;letter-spacing:-3px;line-height:1;">' + count + '/' + goal + '</div>';
+  html += '<div style="font-size:60px;font-weight:800;line-height:1;">' + count + '/' + goal + '</div>';
   html += '<div style="opacity:0.9;font-size:14px;margin-top:10px;">стаканов</div>';
   html += '<div class="progress" style="margin-top:24px;background:rgba(255,255,255,0.28);height:10px;">';
   html += '<div class="progress-fill" style="width:' + Math.min(100, count/goal*100) + '%;background:#fff;"></div></div></div>';
@@ -2569,7 +3193,6 @@ function saveWaterGoal() {
   renderWater();
 }
 
-/* ═══ MEDS ═══ */
 function renderMeds() {
   var html = '<div class="page"><div class="title-xl">Лекарства</div>';
   if (state.meds.length) {
@@ -2608,7 +3231,6 @@ function deleteMed(id) {
   renderMeds();
 }
 
-/* ═══ WORKOUTS ═══ */
 function renderWorkouts() {
   var total = state.workouts.reduce(function(s, w) { return s + (w.duration || 0); }, 0);
   var html = '<div class="page"><div class="title-xl">Тренировки</div>';
@@ -2649,7 +3271,6 @@ function addWorkout() {
   renderWorkouts();
 }
 
-/* ═══ MEDITATION ═══ */
 function renderMeditation() {
   var practices = [
     { name: 'Дыхание 4-7-8', duration: 5, desc: 'Успокоение нервной системы' },
@@ -2691,7 +3312,6 @@ function startMeditation(name, duration) {
   renderMeditation();
 }
 
-/* ═══ JOURNAL ═══ */
 function renderJournal() {
   var html = '<div class="page"><div class="title-xl">Дневник</div>';
   html += '<div class="card"><h2>Новая запись</h2>';
@@ -2727,7 +3347,6 @@ function deleteJournal(id) {
   renderJournal();
 }
 
-/* ═══ MEDIA ═══ */
 function renderMedia() {
   var html = '<div class="page"><div class="title-xl">Медиатека</div>';
   if (state.media.length) {
@@ -2769,7 +3388,6 @@ function deleteMedia(id) {
   renderMedia();
 }
 
-/* ═══ FINANCE ═══ */
 function renderFinance() {
   var income = state.finance.filter(function(f) { return f.type === 'income'; }).reduce(function(s, f) { return s + f.amount; }, 0);
   var expense = state.finance.filter(function(f) { return f.type === 'expense'; }).reduce(function(s, f) { return s + f.amount; }, 0);
@@ -2815,20 +3433,20 @@ function addFinance() {
   renderFinance();
 }
 
-/* ═══ HISTORY ═══ */
 function renderHistory() {
   var html = '<div class="page"><div class="title-xl">История</div><div class="card"><h2>Сводка</h2>';
   html += '<div class="list-row"><div class="list-icon" style="background:var(--brand);">✅</div><div class="list-body"><div class="list-title">Задач всего</div></div><div class="list-value">' + state.tasks.length + '</div></div>';
   html += '<div class="list-row"><div class="list-icon" style="background:var(--info);">✨</div><div class="list-body"><div class="list-title">Сообщений AI</div></div><div class="list-value">' + state.chats.length + '</div></div>';
   html += '<div class="list-row"><div class="list-icon" style="background:var(--success);">📅</div><div class="list-body"><div class="list-title">Событий</div></div><div class="list-value">' + state.schedule.length + '</div></div>';
   html += '<div class="list-row"><div class="list-icon" style="background:var(--warning);color:#000;">📝</div><div class="list-body"><div class="list-title">Заметок</div></div><div class="list-value">' + state.notes.length + '</div></div>';
+  html += '<div class="list-row"><div class="list-icon" style="background:var(--coach);color:#000;">🗺</div><div class="list-body"><div class="list-title">Путей начато</div></div><div class="list-value">' + state.paths.length + '</div></div>';
+  html += '<div class="list-row"><div class="list-icon" style="background:var(--psych);color:#000;">📚</div><div class="list-body"><div class="list-title">Курсов начато</div></div><div class="list-value">' + state.courses.length + '</div></div>';
   html += '</div></div>';
   document.getElementById('app').innerHTML = html;
 }
 
-/* ═══ DB MANAGER ═══ */
 function renderDBManager() {
-  var tables = ['tasks', 'schedule', 'habits', 'goals', 'notes', 'learning', 'timer', 'chats', 'mood', 'water', 'meds', 'workouts', 'meditations', 'journal', 'media', 'finance', 'matrix'];
+  var tables = ['tasks', 'schedule', 'habits', 'goals', 'notes', 'learning', 'timer', 'chats', 'mood', 'water', 'meds', 'workouts', 'meditations', 'journal', 'media', 'finance', 'matrix', 'paths', 'courses'];
   var total = 0;
   for (var i = 0; i < tables.length; i++) total += (state[tables[i]] || []).length;
   var html = '<div class="page"><div class="title-xl">База данных</div>';
@@ -2897,7 +3515,6 @@ function importDB(e) {
   reader.readAsText(file);
 }
 
-/* ═══ SETTINGS ═══ */
 function renderSettings() {
   var html = '<div class="page"><div class="title-xl">Настройки</div>';
   html += '<div class="card"><h2>Профиль</h2>';
@@ -2905,22 +3522,125 @@ function renderSettings() {
   html += '<input type="text" id="s-name" value="' + esc(state.profile.name) + '" onchange="saveProfileName(this.value)"/></div>';
   html += '<div class="list-row"><div class="list-body"><div class="list-title">Тёмная тема</div></div>';
   html += '<button class="switch ' + (state.settings.theme === 'dark' ? 'on' : '') + '" onclick="toggleTheme()"></button></div></div>';
+  
+  html += '<div class="card"><h2>Гибкость настроек</h2>';
+  html += '<div class="list-row"><div class="list-body"><div class="list-title">Автосортировка задач</div><div class="list-subtitle">Распределять по матрице Эйзенхауэра</div></div>';
+  html += '<button class="switch ' + (state.settings.autoMatrix ? 'on' : '') + '" onclick="state.settings.autoMatrix=!state.settings.autoMatrix;save();renderSettings();"></button></div>';
+  html += '<div class="list-row"><div class="list-body"><div class="list-title">Уведомления</div><div class="list-subtitle">Напоминания о привычках</div></div>';
+  html += '<button class="switch ' + (state.settings.notifications ? 'on' : '') + '" onclick="state.settings.notifications=!state.settings.notifications;save();renderSettings();"></button></div>';
+  html += '<div class="field mt-3" style="margin-top:12px;"><label class="field-label">Цель воды (стаканов/день)</label>';
+  html += '<input type="number" id="s-water" value="' + (state.settings.waterGoal || 8) + '" min="1" max="20" onchange="state.settings.waterGoal=parseInt(this.value)||8;save();"/></div>';
+  html += '</div>';
+  
   html += '<div class="card"><h2>AI</h2>';
   html += '<div class="list-row" onclick="openAISettings()">';
   html += '<div class="list-icon" style="background:var(--brand);">✨</div>';
   html += '<div class="list-body"><div class="list-title">' + state.settings.provider + '</div>';
   html += '<div class="list-subtitle">' + (state.settings.apiKey ? 'Ключ установлен' : 'Ключ не задан') + '</div></div>';
   html += '<div class="list-chevron">›</div></div></div>';
+  
   html += '<div class="card"><h2>Данные</h2>';
   html += '<div class="list-row" onclick="navigate(\'dbmanager\')">';
   html += '<div class="list-icon" style="background:var(--coach);color:#000;">🗄</div>';
   html += '<div class="list-body"><div class="list-title">База данных</div></div>';
   html += '<div class="list-chevron">›</div></div></div>';
-  html += '<div class="footnote text-tertiary" style="text-align:center;margin-top:36px;">AI Health Ecosystem<br>One UI 9 · Ultra Edition v19</div></div>';
+  
+  html += '<div class="card"><h2>💎 Уровень мудрости</h2>';
+  html += '<div class="footnote text-secondary mb-3" style="margin-bottom:12px;line-height:1.5;">Твои AI-специалисты имеют эквивалент ' + (state.settings.wisdomLevel || 80) + ' лет опыта в каждой сфере: коучинг, медицина, психология.</div>';
+  html += '<div class="stat-grid">';
+  html += '<div class="stat-item"><div class="stat-value">80</div><div class="stat-label">Лет коуч</div></div>';
+  html += '<div class="stat-item"><div class="stat-value">80</div><div class="stat-label">Лет врач</div></div>';
+  html += '<div class="stat-item"><div class="stat-value">80</div><div class="stat-label">Лет псих</div></div>';
+  html += '</div>';
+  html += '</div>';
+  
+  html += '<div class="footnote text-tertiary" style="text-align:center;margin-top:36px;">AI Health Ecosystem<br>v20 · Единая экосистема</div></div>';
   document.getElementById('app').innerHTML = html;
 }
 
-/* ═══ THEME ═══ */
+function renderProfile() {
+  var p = state.profile;
+  var unlocked = p.achievements || [];
+  var totalDays = p.createdAt ? Math.max(1, Math.floor((Date.now() - new Date(p.createdAt).getTime()) / (24*60*60*1000)) + 1) : 1;
+  var doneTasks = state.tasks.filter(function(t) { return t.status === 'completed'; }).length;
+  var totalChats = state.chats.filter(function(c) { return c.role === 'user'; }).length;
+
+  var html = '<div class="page">';
+  html += '<div class="profile-hero">';
+  html += '<div class="profile-avatar" onclick="pickEmoji()">' + p.emoji + '</div>';
+  html += '<div class="profile-name">' + esc(p.name || 'Пользователь') + '</div>';
+  html += '<div class="profile-sub">С нами ' + totalDays + ' дн.</div>';
+  html += '</div>';
+
+  html += '<div class="stat-grid mb-4">';
+  html += '<div class="stat-item"><div class="stat-value">' + doneTasks + '</div><div class="stat-label">Задач</div></div>';
+  html += '<div class="stat-item"><div class="stat-value">' + (state.stats.streak || 0) + '</div><div class="stat-label">Streak</div></div>';
+  html += '<div class="stat-item"><div class="stat-value">' + totalChats + '</div><div class="stat-label">Диалогов</div></div>';
+  html += '</div>';
+
+  html += '<div class="card"><h2>✏️ Имя</h2>';
+  html += '<div class="field" style="margin-bottom:0;"><input type="text" id="profile-name" value="' + esc(p.name) + '" placeholder="Как к вам обращаться?" onchange="saveProfileName(this.value)"/></div>';
+  html += '</div>';
+
+  html += '<div class="card"><h2>🏆 Достижения (' + unlocked.length + '/' + ACHIEVEMENTS.length + ')</h2>';
+  html += '<div class="achieve-grid">';
+  for (var i = 0; i < ACHIEVEMENTS.length; i++) {
+    var a = ACHIEVEMENTS[i];
+    var isUnlocked = unlocked.indexOf(a.id) >= 0;
+    html += '<div class="achieve-item ' + (isUnlocked ? 'unlocked' : 'locked') + '">';
+    html += '<div class="achieve-icon">' + a.icon + '</div>';
+    html += '<div class="achieve-name">' + a.name + '</div>';
+    html += '</div>';
+  }
+  html += '</div></div>';
+
+  html += '<div class="card"><h2>⚙️ Настройки</h2>';
+  html += '<div class="list-row" onclick="navigate(\'settings\')">';
+  html += '<div class="list-icon" style="background:var(--surface-3);">⚙️</div>';
+  html += '<div class="list-body"><div class="list-title">Настройки</div></div>';
+  html += '<div class="list-chevron">›</div></div>';
+  html += '<div class="list-row" onclick="navigate(\'dbmanager\')">';
+  html += '<div class="list-icon" style="background:var(--surface-3);">🗄</div>';
+  html += '<div class="list-body"><div class="list-title">База данных</div></div>';
+  html += '<div class="list-chevron">›</div></div>';
+  html += '</div>';
+  html += '</div>';
+  document.getElementById('app').innerHTML = html;
+}
+
+function pickEmoji() {
+  var emojis = ['😊','😎','🤓','🧑‍💻','👨‍💼','👩‍💼','🦊','🐱','🐶','🦁','🐼','🦉','🌟','⚡','🔥','💎','🚀','🎯','🧠','💪','🌈','☕','🎨','🎮','🎧','📚','🏃','🧘','🍀','🌸','🦄','🐉','👑','🥇','🎓','💡'];
+  var html = '<div class="emoji-grid">';
+  for (var i = 0; i < emojis.length; i++) {
+    var sel = emojis[i] === state.profile.emoji ? ' selected' : '';
+    html += '<button class="emoji-pick' + sel + '" onclick="setEmoji(\'' + emojis[i] + '\')">' + emojis[i] + '</button>';
+  }
+  html += '</div>';
+  openSheet('Выберите аватар', html);
+}
+
+function setEmoji(e) {
+  state.profile.emoji = e;
+  save();
+  closeSheet();
+  toast('Аватар обновлён', 'success');
+  haptic('success');
+  renderProfile();
+  updateHeaderAvatar();
+}
+
+function saveProfileName(name) {
+  state.profile.name = (name || '').trim() || 'Пользователь';
+  save();
+  toast('Сохранено', 'success');
+  updateHeaderAvatar();
+}
+
+function updateHeaderAvatar() {
+  var el = document.getElementById('headerAvatar');
+  if (el) el.textContent = state.profile.emoji || '👤';
+}
+
 function applyTheme(theme) {
   document.body.classList.toggle('light', theme === 'light');
   var btn = document.getElementById('themeBtn');
@@ -2937,14 +3657,13 @@ function toggleTheme() {
   if (currentPage === 'settings') renderSettings();
 }
 
-/* ═══ WELCOME ═══ */
 function showWelcome() {
   var overlay = document.createElement('div');
   overlay.className = 'welcome-screen';
   overlay.innerHTML = 
     '<div class="welcome-logo">🧠</div>' +
     '<div class="welcome-title">AI Health</div>' +
-    '<div class="welcome-sub">Твоя экосистема здоровья и продуктивности. Коуч, психолог, врач, нутрициолог и другие AI-специалисты.</div>' +
+    '<div class="welcome-sub">Экосистема: коуч + врач + психолог с 80-летним опытом. Пути развития, курсы, трекинг, матрица Эйзенхауэра.</div>' +
     '<input type="text" class="welcome-input" id="welcome-name" placeholder="Как тебя зовут?" maxlength="30"/>' +
     '<button class="btn btn-primary btn-block mt-4" style="max-width:340px;margin-top:16px;" onclick="finishWelcome()">Начать</button>';
   document.body.appendChild(overlay);
@@ -2969,11 +3688,11 @@ function finishWelcome() {
   }
   haptic('success');
   toast('Добро пожаловать, ' + name + '!', 'success');
+  renderTabBar();
   renderDashboard();
   updateHeaderAvatar();
 }
 
-/* ═══ INIT ═══ */
 function init() {
   try {
     applyTheme(state.settings.theme);
@@ -2996,7 +3715,7 @@ function init() {
     
     if (state.tasks.length === 0) {
       state.tasks = [
-        { id: uid(), title: 'Завершить отчёт', category: 'Работа', planned_time: 45, actual_time: 0, status: 'pending', priority: 'high', created_at: nowISO() },
+        { id: uid(), title: 'Завершить отчёт', category: 'Работа', planned_time: 45, actual_time: 0, status: 'pending', priority: 'high', created_at: nowISO(), due_date: new Date(Date.now() + 24*60*60*1000).toISOString() },
         { id: uid(), title: 'Повторить 10 слов', category: 'Обучение', planned_time: 15, actual_time: 0, status: 'pending', priority: 'medium', created_at: nowISO() },
         { id: uid(), title: 'Позвонить маме', category: 'Личное', planned_time: 10, actual_time: 0, status: 'pending', priority: 'high', created_at: nowISO() }
       ];
@@ -3026,10 +3745,9 @@ function init() {
   }
 }
 
-/* ═══ RIPPLE — глобальный обработчик (One UI 9) ═══ */
 function attachRipple() {
   document.addEventListener('pointerdown', function(e) {
-    var target = e.target.closest('.btn, .list-row, .chip, .tab-item, .task-item, .card, .icon-btn, .avatar-btn, .persona-item, .segmented-item, .stat-item, .achieve-item, .emoji-pick');
+    var target = e.target.closest('.btn, .list-row, .chip, .tab-item, .task-item, .card, .icon-btn, .avatar-btn, .persona-item, .segmented-item, .stat-item, .achieve-item, .emoji-pick, .path-step, .matrix-quadrant, .course-card, .lesson-row');
     if (!target) return;
     target.classList.add('tap-ripple');
     var rect = target.getBoundingClientRect();
@@ -3044,7 +3762,7 @@ function attachRipple() {
   }, { passive: true });
 }
 
-/* ═══ EXPORTS ═══ */
+/* EXPORTS */
 window.navigate = navigate;
 window.openSheet = openSheet;
 window.closeSheet = closeSheet;
@@ -3079,9 +3797,6 @@ window.saveNote = saveNote;
 window.editNote = editNote;
 window.updateNote = updateNote;
 window.deleteNote = deleteNote;
-window.addLearning = addLearning;
-window.updateLearning = updateLearning;
-window.deleteLearning = deleteLearning;
 window.addMatrixTask = addMatrixTask;
 window.saveMatrixTask = saveMatrixTask;
 window.removeMatrixTask = removeMatrixTask;
@@ -3108,12 +3823,23 @@ window.pickEmoji = pickEmoji;
 window.setEmoji = setEmoji;
 window.saveProfileName = saveProfileName;
 window.finishWelcome = finishWelcome;
+window.openPath = openPath;
+window.openStep = openStep;
+window.completeStep = completeStep;
+window.openCourse = openCourse;
+window.openLesson = openLesson;
+window.completeLesson = completeLesson;
+window.showQuadrant = showQuadrant;
+window.toggleDetox = toggleDetox;
+window.logFocusSession = logFocusSession;
+window.saveScreenLimits = saveScreenLimits;
+window.logScreenTime = logScreenTime;
 window.renderCalendar = renderCalendar;
 window.renderTasks = renderTasks;
 window.renderHabits = renderHabits;
 window.renderGoals = renderGoals;
 window.renderNotes = renderNotes;
-window.renderLearning = renderLearning;
+window.renderLearning = renderCourses;
 window.renderMatrix = renderMatrix;
 window.renderFocus = renderFocus;
 window.renderMood = renderMood;
@@ -3128,6 +3854,7 @@ window.renderSettings = renderSettings;
 window.renderStats = renderStats;
 window.renderHistory = renderHistory;
 window.renderDBManager = renderDBManager;
+window.renderScreenTime = renderScreenTime;
 
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', function() {
