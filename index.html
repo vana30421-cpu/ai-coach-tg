@@ -3,391 +3,962 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#07070d">
-<title>AI Коуч Pro+ v9</title>
+<meta name="theme-color" content="#05050a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>AI Health Ecosystem</title>
 <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 <style>
+/* ==================== PREMIUM DESIGN SYSTEM ==================== */
 :root {
-  --bg-0: #07070d; --bg-1: #0d0d16; --surface: rgba(255,255,255,0.04);
-  --surface-2: rgba(255,255,255,0.07); --surface-3: rgba(255,255,255,0.11);
-  --border: rgba(255,255,255,0.08); --border-strong: rgba(255,255,255,0.14);
-  --text: #f5f5fa; --text-2: #a4a4b8; --text-3: #6b6b80;
-  --brand: #7c5cff; --brand-2: #a78bfa; --brand-glow: rgba(124,92,255,0.35);
-  --success: #10b981; --warning: #f59e0b; --danger: #ef4444; --info: #3b82f6;
-  --radius-sm: 10px; --radius: 16px; --radius-lg: 24px; --radius-xl: 32px;
-  --shadow-lg: 0 16px 64px rgba(0,0,0,0.55);
-  --header-h: 56px; --nav-h: 68px;
-  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --bg-0: #05050a;
+  --bg-1: #0a0a14;
+  --bg-2: #0f0f1c;
+  --surface: rgba(255,255,255,0.035);
+  --surface-2: rgba(255,255,255,0.06);
+  --surface-3: rgba(255,255,255,0.09);
+  --surface-4: rgba(255,255,255,0.13);
+  --border: rgba(255,255,255,0.07);
+  --border-strong: rgba(255,255,255,0.13);
+  --text: #f7f7fa;
+  --text-2: #a8a8bc;
+  --text-3: #6b6b85;
+  --brand: #7c5cff;
+  --brand-2: #a78bfa;
+  --brand-3: #c4b5fd;
+  --brand-glow: rgba(124,92,255,0.4);
+  --coach: #7c5cff;
+  --psych: #06b6d4;
+  --doctor: #10b981;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --info: #3b82f6;
+  --radius-sm: 12px;
+  --radius: 18px;
+  --radius-lg: 26px;
+  --radius-xl: 34px;
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+  --shadow: 0 8px 32px rgba(0,0,0,0.4);
+  --shadow-lg: 0 20px 80px rgba(0,0,0,0.6);
+  --shadow-glow: 0 0 40px var(--brand-glow);
+  --header-h: 60px;
+  --nav-h: 72px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --ease: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
+
 body.light {
-  --bg-0: #f4f4f8; --bg-1: #ffffff; --surface: rgba(0,0,0,0.03);
-  --surface-2: rgba(0,0,0,0.05); --surface-3: rgba(0,0,0,0.08);
-  --border: rgba(0,0,0,0.07); --border-strong: rgba(0,0,0,0.12);
-  --text: #0f0f1a; --text-2: #55556a; --text-3: #9090a0;
+  --bg-0: #f5f5f9;
+  --bg-1: #ffffff;
+  --bg-2: #fafafc;
+  --surface: rgba(0,0,0,0.025);
+  --surface-2: rgba(0,0,0,0.045);
+  --surface-3: rgba(0,0,0,0.07);
+  --surface-4: rgba(0,0,0,0.1);
+  --border: rgba(0,0,0,0.06);
+  --border-strong: rgba(0,0,0,0.11);
+  --text: #0a0a14;
+  --text-2: #55556a;
+  --text-3: #9090a5;
+  --brand-glow: rgba(124,92,255,0.25);
+  --shadow: 0 8px 32px rgba(0,0,0,0.08);
+  --shadow-lg: 0 20px 80px rgba(0,0,0,0.12);
 }
+
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; overscroll-behavior-y: none; }
+html { height: 100%; }
+html, body {
+  overscroll-behavior-y: none;
+  -webkit-overflow-scrolling: touch;
+}
+
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
-  background: var(--bg-0); color: var(--text); font-size: 15px; line-height: 1.5;
-  -webkit-font-smoothing: antialiased; transition: background 0.3s var(--ease);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'Segoe UI', sans-serif;
+  background: var(--bg-0);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background 0.4s var(--ease);
   overflow-x: hidden;
+  min-height: 100vh;
+  min-height: 100dvh;
 }
+
+/* Aurora background */
 body::before {
-  content: ''; position: fixed; top: -20%; left: -20%; width: 60%; height: 60%;
-  background: radial-gradient(circle, var(--brand-glow) 0%, transparent 70%);
-  filter: blur(80px); opacity: 0.5; pointer-events: none; z-index: 0;
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 0%, rgba(124,92,255,0.15), transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 100%, rgba(6,182,212,0.12), transparent 60%),
+    radial-gradient(ellipse 50% 40% at 50% 50%, rgba(16,185,129,0.06), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  animation: auroraShift 20s ease-in-out infinite alternate;
 }
+@keyframes auroraShift {
+  0% { transform: scale(1) rotate(0deg); opacity: 1; }
+  100% { transform: scale(1.2) rotate(3deg); opacity: 0.85; }
+}
+
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--surface-4); }
 
-/* HEADER */
+/* ==================== HEADER ==================== */
 .app-header {
-  position: sticky; top: 0; z-index: 100; height: var(--header-h);
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 16px;
-  background: color-mix(in srgb, var(--bg-0) 75%, transparent);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding-top: var(--safe-top);
+  background: color-mix(in srgb, var(--bg-0) 72%, transparent);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
   border-bottom: 1px solid var(--border);
 }
-.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 17px; letter-spacing: -0.3px; }
-.brand-icon {
-  width: 32px; height: 32px; border-radius: 10px;
-  background: linear-gradient(135deg, var(--brand), var(--brand-2));
-  display: grid; place-items: center; font-size: 18px;
-  box-shadow: 0 4px 12px var(--brand-glow);
+.header-inner {
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 18px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  font-weight: 800;
+  font-size: 17px;
+  letter-spacing: -0.4px;
+}
+.brand-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 100%);
+  display: grid;
+  place-items: center;
+  font-size: 19px;
+  box-shadow: 0 6px 20px var(--brand-glow), inset 0 1px 0 rgba(255,255,255,0.3);
+  position: relative;
+  overflow: hidden;
+}
+.brand-logo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.2) 50%, transparent 60%);
+  animation: shimmer 4s infinite;
+}
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 .header-actions { display: flex; align-items: center; gap: 8px; }
 .user-chip {
-  padding: 6px 12px; background: var(--surface); border: 1px solid var(--border);
-  border-radius: 100px; font-size: 13px; font-weight: 600; color: var(--text-2);
-  max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  padding: 7px 13px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-2);
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .icon-btn {
-  width: 36px; height: 36px; border-radius: 12px; background: var(--surface);
-  border: 1px solid var(--border); color: var(--text); font-size: 16px;
-  cursor: pointer; display: grid; place-items: center; transition: all 0.2s var(--ease);
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 16px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: all 0.25s var(--ease);
 }
-.icon-btn:active { transform: scale(0.92); background: var(--surface-2); }
+.icon-btn:hover { background: var(--surface-2); }
+.icon-btn:active { transform: scale(0.9); }
 
-/* MAIN */
+/* ==================== MAIN LAYOUT ==================== */
 .app-main {
-  position: relative; z-index: 1; max-width: 720px; margin: 0 auto;
-  width: 100%; padding: 16px; padding-bottom: calc(var(--nav-h) + 24px);
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 18px;
+  /* FIX: достаточный отступ снизу чтобы контент не уходил за навигацию */
+  padding-bottom: calc(var(--nav-h) + var(--safe-bottom) + 40px) !important;
   min-height: calc(100vh - var(--header-h));
+  min-height: calc(100dvh - var(--header-h));
 }
-.page { animation: fadeUp 0.35s var(--ease); }
-.page.hidden { display: none; }
-@keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 
-/* BOTTOM NAV */
+.page {
+  animation: pageIn 0.4s var(--ease-out);
+  /* FIX: чтобы контент не обрезался */
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+.page.hidden { display: none !important; }
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ==================== BOTTOM NAV (FIXED) ==================== */
 .bottom-nav {
-  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; height: var(--nav-h);
-  padding: 0 8px calc(env(safe-area-inset-bottom, 0));
-  background: color-mix(in srgb, var(--bg-0) 85%, transparent);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 8px 8px calc(8px + var(--safe-bottom));
+  background: color-mix(in srgb, var(--bg-0) 82%, transparent);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
   border-top: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-around; gap: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 2px;
+  /* FIX: гарантируем видимость */
+  min-height: var(--nav-h);
 }
 .nav-btn {
-  flex: 1; height: 56px; background: transparent; border: none;
-  color: var(--text-3); font-size: 10px; font-weight: 600;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 3px; border-radius: 14px; cursor: pointer;
-  transition: all 0.2s var(--ease); position: relative;
-  padding: 4px 2px; min-width: 0;
+  flex: 1;
+  min-width: 0;
+  padding: 8px 4px;
+  background: transparent;
+  border: none;
+  color: var(--text-3);
+  font-size: 10px;
+  font-weight: 600;
+  font-family: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.25s var(--ease);
+  position: relative;
 }
-.nav-btn .nav-icon { font-size: 20px; line-height: 1; transition: transform 0.2s var(--ease); }
-.nav-btn .nav-label { font-size: 10px; letter-spacing: -0.2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
-.nav-btn.active { color: var(--brand-2); }
-.nav-btn.active .nav-icon { transform: translateY(-2px) scale(1.1); }
+.nav-btn .nav-icon {
+  font-size: 22px;
+  line-height: 1;
+  transition: transform 0.3s var(--ease-out);
+  filter: grayscale(0.6);
+}
+.nav-btn .nav-label {
+  font-size: 10px;
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.nav-btn.active {
+  color: var(--brand-2);
+}
+.nav-btn.active .nav-icon {
+  transform: translateY(-3px) scale(1.15);
+  filter: grayscale(0);
+  text-shadow: 0 0 20px var(--brand-glow);
+}
 .nav-btn.active::before {
-  content: ''; position: absolute; top: 4px; width: 32px; height: 3px;
+  content: '';
+  position: absolute;
+  top: 2px;
+  width: 28px;
+  height: 3px;
   background: linear-gradient(90deg, var(--brand), var(--brand-2));
-  border-radius: 3px; box-shadow: 0 0 12px var(--brand-glow);
+  border-radius: 3px;
+  box-shadow: 0 0 16px var(--brand-glow);
 }
-.nav-btn:active { transform: scale(0.94); }
+.nav-btn:active { transform: scale(0.92); }
 
-/* CARDS */
+/* ==================== CARDS ==================== */
 .card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius-lg); padding: 18px; margin-bottom: 12px;
-  transition: all 0.2s var(--ease); position: relative; overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 14px;
+  transition: all 0.3s var(--ease);
+  position: relative;
+  overflow: hidden;
 }
-.card h2 { font-size: 16px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; letter-spacing: -0.3px; }
-.card h3 { font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.5px; }
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  opacity: 0.6;
+}
+.card h2 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: -0.3px;
+}
+.card h3 {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--text-2);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
 
-.page-title { font-size: 26px; font-weight: 800; letter-spacing: -0.6px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; line-height: 1.2; }
-.page-title .emoji { font-size: 28px; }
+.card-hero {
+  background: linear-gradient(135deg, var(--brand) 0%, #5b3fd9 60%, var(--brand-2) 100%);
+  color: #fff;
+  border: none;
+  box-shadow: 0 20px 60px var(--brand-glow), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+.card-hero h2 { color: #fff; }
 
-/* BENTO */
-.bento { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-.bento-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+/* ==================== PAGE TITLE ==================== */
+.page-title {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.8px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  line-height: 1.15;
+}
+.page-title .emoji { font-size: 30px; }
+
+/* ==================== BENTO ==================== */
+.bento {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.bento-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  transition: all 0.25s var(--ease);
+  position: relative;
+  overflow: hidden;
+}
 .bento-item.wide { grid-column: span 2; }
-.bento-label { font-size: 11px; font-weight: 700; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 6px; }
-.bento-value { font-size: 24px; font-weight: 800; letter-spacing: -0.6px; }
-.bento-sub { font-size: 12px; color: var(--text-2); margin-top: 4px; }
-
-/* BUTTONS */
-.btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-  padding: 12px 20px; border: none; border-radius: 100px;
-  font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer;
-  transition: all 0.2s var(--ease); color: #fff; background: var(--brand);
-  white-space: nowrap; user-select: none; position: relative; overflow: hidden;
+.bento-label {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 6px;
 }
-.btn:active { transform: scale(0.96); }
-.btn:hover { filter: brightness(1.1); }
-.btn-primary { background: var(--brand); box-shadow: 0 4px 16px var(--brand-glow); }
-.btn-success { background: var(--success); }
+.bento-value {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.8px;
+  line-height: 1;
+}
+.bento-sub {
+  font-size: 12px;
+  color: var(--text-2);
+  margin-top: 6px;
+}
+
+/* ==================== BUTTONS ==================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 13px 22px;
+  border: none;
+  border-radius: 100px;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.25s var(--ease);
+  color: #fff;
+  background: var(--brand);
+  white-space: nowrap;
+  user-select: none;
+  position: relative;
+  overflow: hidden;
+  letter-spacing: -0.2px;
+}
+.btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.15), transparent 50%);
+  pointer-events: none;
+}
+.btn:active { transform: scale(0.95); }
+.btn:not(:disabled):hover { filter: brightness(1.1); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-primary { background: var(--brand); box-shadow: 0 8px 24px var(--brand-glow); }
+.btn-success { background: var(--success); box-shadow: 0 8px 24px rgba(16,185,129,0.3); }
 .btn-warning { background: var(--warning); color: #000; }
-.btn-danger { background: var(--danger); }
-.btn-ghost { background: var(--surface); color: var(--text); border: 1px solid var(--border); box-shadow: none; }
+.btn-danger { background: var(--danger); box-shadow: 0 8px 24px rgba(239,68,68,0.3); }
+.btn-ghost {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  box-shadow: none;
+}
 .btn-ghost:hover { background: var(--surface-2); }
-.btn-sm { padding: 8px 14px; font-size: 13px; }
-.btn-xs { padding: 6px 10px; font-size: 12px; }
+.btn-ghost::after { display: none; }
+.btn-sm { padding: 9px 16px; font-size: 13px; }
+.btn-xs { padding: 7px 12px; font-size: 12px; }
 .btn-block { width: 100%; }
-.btn-icon { width: 36px; height: 36px; padding: 0; border-radius: 50%; font-size: 16px; }
+.btn-icon { width: 40px; height: 40px; padding: 0; border-radius: 50%; font-size: 16px; }
+.btn-icon.btn-sm { width: 34px; height: 34px; font-size: 14px; }
 .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
 
-/* INPUTS */
-.field { margin-bottom: 12px; }
-.field label { display: block; font-size: 12px; font-weight: 600; color: var(--text-2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px; }
-input[type="text"], input[type="number"], input[type="datetime-local"], input[type="password"], input[type="url"], select, textarea {
-  width: 100%; padding: 12px 14px; background: var(--surface);
-  border: 1.5px solid var(--border); border-radius: var(--radius-sm);
-  color: var(--text); font-size: 15px; font-family: inherit;
-  transition: all 0.2s var(--ease); -webkit-appearance: none;
+/* ==================== INPUTS ==================== */
+.field { margin-bottom: 14px; }
+.field label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-2);
+  margin-bottom: 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+input[type="text"], input[type="number"], input[type="datetime-local"],
+input[type="password"], input[type="url"], select, textarea {
+  width: 100%;
+  padding: 13px 16px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 15px;
+  font-family: inherit;
+  transition: all 0.25s var(--ease);
+  -webkit-appearance: none;
+  appearance: none;
 }
 input:focus, select:focus, textarea:focus {
-  outline: none; border-color: var(--brand); background: var(--surface-2);
-  box-shadow: 0 0 0 3px var(--brand-glow);
+  outline: none;
+  border-color: var(--brand);
+  background: var(--surface-2);
+  box-shadow: 0 0 0 4px var(--brand-glow);
 }
-textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+textarea { resize: vertical; min-height: 90px; line-height: 1.55; }
 select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a4a4b8' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a8a8bc' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  padding-right: 40px;
 }
 
-/* ITEMS */
-.list { display: flex; flex-direction: column; gap: 8px; }
+/* ==================== ITEMS ==================== */
+.list { display: flex; flex-direction: column; gap: 10px; }
 .item {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 14px;
-  display: flex; align-items: center; gap: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  transition: all 0.25s var(--ease);
 }
+.item:hover { background: var(--surface-2); }
 .item-body { flex: 1; min-width: 0; }
-.item-title { font-weight: 600; font-size: 14px; margin-bottom: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.item-meta { font-size: 12px; color: var(--text-2); display: flex; gap: 8px; flex-wrap: wrap; }
+.item-title {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.item-meta {
+  font-size: 12px;
+  color: var(--text-2);
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
 .item-actions { display: flex; gap: 6px; flex-shrink: 0; }
 
-/* BADGES */
+/* ==================== BADGES ==================== */
 .badge {
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 3px 10px; border-radius: 100px; font-size: 11px;
-  font-weight: 700; letter-spacing: 0.3px; text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
 }
-.badge-brand { background: var(--brand-glow); color: var(--brand-2); }
-.badge-success { background: rgba(16,185,129,0.15); color: var(--success); }
-.badge-warning { background: rgba(245,158,11,0.15); color: var(--warning); }
-.badge-danger { background: rgba(239,68,68,0.15); color: var(--danger); }
+.badge-brand { background: var(--brand-glow); color: var(--brand-3); }
+.badge-success { background: rgba(16,185,129,0.18); color: #34d399; }
+.badge-warning { background: rgba(245,158,11,0.18); color: #fbbf24; }
+.badge-danger { background: rgba(239,68,68,0.18); color: #f87171; }
+.badge-info { background: rgba(59,130,246,0.18); color: #60a5fa; }
 .badge-muted { background: var(--surface-2); color: var(--text-2); }
 
-/* PROGRESS */
-.progress { height: 8px; background: var(--surface-2); border-radius: 100px; overflow: hidden; margin-top: 8px; }
+/* ==================== PROGRESS ==================== */
+.progress {
+  height: 6px;
+  background: var(--surface-2);
+  border-radius: 100px;
+  overflow: hidden;
+  margin-top: 8px;
+}
 .progress-fill {
-  height: 100%; background: linear-gradient(90deg, var(--brand), var(--brand-2));
-  border-radius: 100px; transition: width 0.6s var(--ease);
+  height: 100%;
+  background: linear-gradient(90deg, var(--brand), var(--brand-2));
+  border-radius: 100px;
+  transition: width 0.8s var(--ease-out);
   box-shadow: 0 0 12px var(--brand-glow);
 }
 
-/* TIMER */
-.timer-hero { text-align: center; padding: 24px 16px; }
+/* ==================== TIMER ==================== */
+.timer-hero { text-align: center; padding: 28px 16px; }
 .timer-time {
-  font-size: 64px; font-weight: 800; letter-spacing: -2px;
+  font-size: 72px;
+  font-weight: 800;
+  letter-spacing: -3px;
   font-variant-numeric: tabular-nums;
-  background: linear-gradient(135deg, var(--brand-2), var(--brand));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  background-clip: text; line-height: 1; margin: 16px 0;
+  background: linear-gradient(135deg, var(--brand-3), var(--brand));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+  margin: 20px 0;
+  filter: drop-shadow(0 8px 24px var(--brand-glow));
 }
 .timer-controls { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 
-/* CHAT */
+/* ==================== CHAT ==================== */
 .chat {
-  display: flex; flex-direction: column; gap: 12px;
-  max-height: 60vh; min-height: 300px; overflow-y: auto; padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 4px;
 }
 .msg {
-  max-width: 88%; padding: 12px 16px; border-radius: 18px;
-  font-size: 14px; line-height: 1.55; word-wrap: break-word;
-  animation: msgIn 0.3s var(--ease);
+  max-width: 88%;
+  padding: 13px 17px;
+  border-radius: 20px;
+  font-size: 14px;
+  line-height: 1.6;
+  word-wrap: break-word;
+  animation: msgIn 0.35s var(--ease-out);
 }
-@keyframes msgIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes msgIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
 .msg-user {
   align-self: flex-end;
   background: linear-gradient(135deg, var(--brand), #5b3fd9);
-  color: #fff; border-bottom-right-radius: 4px;
+  color: #fff;
+  border-bottom-right-radius: 6px;
+  box-shadow: 0 6px 20px var(--brand-glow);
 }
 .msg-bot {
-  align-self: flex-start; background: var(--surface-2);
-  border: 1px solid var(--border); border-bottom-left-radius: 4px;
+  align-self: flex-start;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-bottom-left-radius: 6px;
 }
+.msg-bot.persona-psych { border-left: 3px solid var(--psych); }
+.msg-bot.persona-doctor { border-left: 3px solid var(--doctor); }
+.msg-bot.persona-coach { border-left: 3px solid var(--coach); }
 .msg-bot p { margin: 0 0 8px 0; }
 .msg-bot p:last-child { margin-bottom: 0; }
-.msg-bot strong { color: var(--brand-2); font-weight: 700; }
+.msg-bot strong { color: var(--brand-3); font-weight: 700; }
 .msg-bot em { color: var(--text-2); font-style: italic; }
 .msg-bot code {
-  background: var(--surface-3); padding: 2px 6px; border-radius: 4px;
-  font-family: 'SF Mono', Monaco, monospace; font-size: 12px;
+  background: var(--surface-3);
+  padding: 2px 7px;
+  border-radius: 5px;
+  font-family: 'SF Mono', Monaco, monospace;
+  font-size: 12px;
 }
-.msg-bot ul { margin: 6px 0; padding-left: 18px; }
-.msg-bot li { margin: 3px 0; }
-.msg-meta { font-size: 11px; margin-top: 6px; opacity: 0.85; display: flex; gap: 8px; flex-wrap: wrap; }
+.msg-bot ul { margin: 8px 0; padding-left: 20px; }
+.msg-bot li { margin: 4px 0; }
 .msg-mode {
-  display: inline-block; padding: 2px 8px; border-radius: 100px;
-  background: var(--brand-glow); color: var(--brand-2);
-  font-size: 10px; font-weight: 700; letter-spacing: 0.4px;
-  text-transform: uppercase; margin-bottom: 6px;
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 100px;
+  background: var(--brand-glow);
+  color: var(--brand-3);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 7px;
 }
 
 .typing {
-  display: flex; gap: 4px; padding: 14px 18px;
-  align-self: flex-start; background: var(--surface-2); border-radius: 18px;
+  display: flex;
+  gap: 4px;
+  padding: 16px 20px;
+  align-self: flex-start;
+  background: var(--surface-2);
+  border-radius: 20px;
 }
 .typing span {
-  width: 6px; height: 6px; background: var(--text-3);
-  border-radius: 50%; animation: typing 1.2s infinite;
+  width: 7px; height: 7px;
+  background: var(--text-3);
+  border-radius: 50%;
+  animation: typing 1.3s infinite;
 }
 .typing span:nth-child(2) { animation-delay: 0.15s; }
 .typing span:nth-child(3) { animation-delay: 0.3s; }
 @keyframes typing {
   0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-  30% { transform: translateY(-4px); opacity: 1; }
+  30% { transform: translateY(-5px); opacity: 1; }
 }
 
-/* QUICK CHIPS */
-.chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+/* Persona Switcher */
+.persona-switcher {
+  display: flex;
+  gap: 6px;
+  padding: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  margin-bottom: 14px;
+}
+.persona-btn {
+  flex: 1;
+  padding: 10px 8px;
+  background: transparent;
+  border: none;
+  border-radius: 100px;
+  color: var(--text-3);
+  font-size: 12px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.3s var(--ease);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+.persona-btn .persona-icon { font-size: 16px; }
+.persona-btn.active {
+  background: linear-gradient(135deg, var(--brand), #5b3fd9);
+  color: #fff;
+  box-shadow: 0 4px 16px var(--brand-glow);
+}
+.persona-btn.active[data-persona="psych"] {
+  background: linear-gradient(135deg, var(--psych), #0891b2);
+  box-shadow: 0 4px 16px rgba(6,182,212,0.4);
+}
+.persona-btn.active[data-persona="doctor"] {
+  background: linear-gradient(135deg, var(--doctor), #059669);
+  box-shadow: 0 4px 16px rgba(16,185,129,0.4);
+}
+
+/* ==================== CHIPS ==================== */
+.chips {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
 .chip {
-  padding: 6px 12px; border-radius: 100px; background: var(--surface);
-  border: 1px solid var(--border); color: var(--text-2);
-  font-size: 12px; font-weight: 500; cursor: pointer;
-  transition: all 0.2s var(--ease); font-family: inherit;
+  padding: 7px 13px;
+  border-radius: 100px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s var(--ease);
+  font-family: inherit;
+  white-space: nowrap;
 }
 .chip:hover { background: var(--surface-2); color: var(--text); }
-.chip:active { transform: scale(0.95); }
+.chip:active { transform: scale(0.94); }
 
-/* MODAL */
+/* ==================== MODAL ==================== */
 .overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.65);
-  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-  z-index: 1000; display: flex; align-items: flex-end; justify-content: center;
-  animation: fadeIn 0.2s var(--ease);
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: fadeIn 0.25s var(--ease);
+  padding-top: var(--safe-top);
 }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 .modal {
-  background: var(--bg-1); width: 100%; max-width: 480px; max-height: 88vh;
+  background: var(--bg-1);
+  width: 100%;
+  max-width: 480px;
+  max-height: 88vh;
+  max-height: 88dvh;
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-  padding: 20px; overflow-y: auto; animation: slideUp 0.3s var(--ease);
+  padding: 22px;
+  padding-bottom: calc(22px + var(--safe-bottom));
+  overflow-y: auto;
+  animation: slideUp 0.35s var(--ease-out);
   border-top: 1px solid var(--border-strong);
+  box-shadow: 0 -20px 60px rgba(0,0,0,0.5);
 }
-@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-.modal-handle { width: 40px; height: 4px; background: var(--surface-3); border-radius: 100px; margin: 0 auto 16px; }
-.modal h2 { font-size: 20px; font-weight: 700; margin-bottom: 16px; letter-spacing: -0.4px; }
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+.modal-handle {
+  width: 44px;
+  height: 4px;
+  background: var(--surface-3);
+  border-radius: 100px;
+  margin: 0 auto 18px;
+}
+.modal h2 {
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 18px;
+  letter-spacing: -0.4px;
+}
 
-/* TOASTS */
+/* ==================== TOASTS ==================== */
 .toast-container {
-  position: fixed; top: calc(var(--header-h) + 12px); left: 50%;
-  transform: translateX(-50%); z-index: 2000;
-  display: flex; flex-direction: column; gap: 8px;
-  pointer-events: none; width: 90%; max-width: 400px;
+  position: fixed;
+  top: calc(var(--header-h) + var(--safe-top) + 14px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+  width: 90%;
+  max-width: 420px;
 }
 .toast {
-  background: var(--bg-1); border: 1px solid var(--border-strong);
-  border-radius: var(--radius); padding: 12px 16px;
-  box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 10px;
-  font-size: 14px; font-weight: 500; animation: toastIn 0.3s var(--ease);
+  background: var(--bg-1);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  padding: 13px 17px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  font-size: 14px;
+  font-weight: 600;
+  animation: toastIn 0.35s var(--ease-out);
   pointer-events: auto;
 }
 .toast.success { border-left: 4px solid var(--success); }
 .toast.error { border-left: 4px solid var(--danger); }
 .toast.info { border-left: 4px solid var(--info); }
 .toast.warning { border-left: 4px solid var(--warning); }
-@keyframes toastIn { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(-20px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
 
-/* EMPTY */
-.empty { text-align: center; padding: 32px 16px; color: var(--text-3); }
-.empty-icon { font-size: 48px; margin-bottom: 8px; opacity: 0.5; }
-.empty-text { font-size: 14px; }
+/* ==================== EMPTY ==================== */
+.empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-3);
+}
+.empty-icon {
+  font-size: 56px;
+  margin-bottom: 12px;
+  opacity: 0.4;
+}
+.empty-text { font-size: 14px; line-height: 1.6; }
 
-/* CALENDAR */
-.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
-.cal-weekday { font-size: 11px; font-weight: 700; color: var(--text-3); text-transform: uppercase; padding: 8px 0; letter-spacing: 0.5px; }
+/* ==================== CALENDAR ==================== */
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  text-align: center;
+}
+.cal-weekday {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--text-3);
+  text-transform: uppercase;
+  padding: 8px 0;
+  letter-spacing: 0.6px;
+}
 .cal-day {
-  aspect-ratio: 1; display: grid; place-items: center; border-radius: 12px;
-  font-size: 14px; font-weight: 500; cursor: pointer;
-  transition: all 0.15s var(--ease); background: transparent;
-  border: none; color: var(--text); font-family: inherit; position: relative;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-family: inherit;
+  position: relative;
 }
 .cal-day:hover { background: var(--surface-2); }
-.cal-day.today { background: var(--brand-glow); color: var(--brand-2); font-weight: 700; }
+.cal-day.today {
+  background: var(--brand-glow);
+  color: var(--brand-3);
+  font-weight: 800;
+}
 .cal-day.has-event::after {
-  content: ''; position: absolute; bottom: 4px; width: 4px; height: 4px;
-  background: var(--brand); border-radius: 50%;
+  content: '';
+  position: absolute;
+  bottom: 5px;
+  width: 4px;
+  height: 4px;
+  background: var(--brand);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--brand);
 }
 
-/* STATS */
-.stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.stat-item { text-align: center; padding: 12px 8px; background: var(--surface); border-radius: var(--radius-sm); }
-.stat-value { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
-.stat-label { font-size: 11px; color: var(--text-3); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; }
+/* ==================== STATS ==================== */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.stat-item {
+  text-align: center;
+  padding: 14px 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.stat-value {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.6px;
+  line-height: 1;
+}
+.stat-label {
+  font-size: 10px;
+  color: var(--text-3);
+  margin-top: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  font-weight: 700;
+}
 
-/* SWITCH */
+/* ==================== SWITCH ==================== */
 .switch {
-  position: relative; width: 48px; height: 28px; background: var(--surface-3);
-  border-radius: 100px; cursor: pointer; transition: background 0.2s var(--ease);
-  flex-shrink: 0; border: none;
+  position: relative;
+  width: 50px;
+  height: 30px;
+  background: var(--surface-3);
+  border-radius: 100px;
+  cursor: pointer;
+  transition: background 0.3s var(--ease);
+  flex-shrink: 0;
+  border: none;
 }
 .switch::after {
-  content: ''; position: absolute; top: 3px; left: 3px;
-  width: 22px; height: 22px; background: #fff; border-radius: 50%;
-  transition: transform 0.25s var(--ease); box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 24px;
+  height: 24px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.3s var(--ease-out);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.35);
 }
 .switch.on { background: var(--brand); }
 .switch.on::after { transform: translateX(20px); }
 
 .setting-row {
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
 }
 .setting-row:last-child { border-bottom: none; }
-.setting-label { font-size: 14px; font-weight: 500; }
-.setting-desc { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+.setting-label { font-size: 14px; font-weight: 600; }
+.setting-desc { font-size: 12px; color: var(--text-3); margin-top: 3px; }
 
-/* UTILS */
+/* ==================== UTILS ==================== */
 .hidden { display: none !important; }
 .mt-1 { margin-top: 6px; } .mt-2 { margin-top: 12px; } .mt-3 { margin-top: 20px; }
 .mb-1 { margin-bottom: 6px; } .mb-2 { margin-bottom: 12px; } .mb-3 { margin-bottom: 20px; }
 .flex { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .flex-col { display: flex; flex-direction: column; gap: 8px; }
 .justify-between { justify-content: space-between; }
-.text-2 { color: var(--text-2); } .text-3 { color: var(--text-3); }
-.text-sm { font-size: 13px; } .text-xs { font-size: 11px; }
+.text-2 { color: var(--text-2); }
+.text-3 { color: var(--text-3); }
+.text-sm { font-size: 13px; }
+.text-xs { font-size: 11px; }
 .text-center { text-align: center; }
 .font-bold { font-weight: 700; }
-.divider { height: 1px; background: var(--border); margin: 12px 0; }
+.divider { height: 1px; background: var(--border); margin: 14px 0; }
 
+/* ==================== RESPONSIVE ==================== */
 @media (max-width: 480px) {
-  .app-main { padding: 12px; }
-  .page-title { font-size: 22px; }
-  .timer-time { font-size: 48px; }
+  .app-main { padding: 14px; padding-bottom: calc(var(--nav-h) + var(--safe-bottom) + 32px) !important; }
+  .page-title { font-size: 24px; }
+  .page-title .emoji { font-size: 26px; }
+  .timer-time { font-size: 56px; }
+  .bento-value { font-size: 22px; }
+  .nav-label { font-size: 9px; }
+  .nav-btn .nav-icon { font-size: 20px; }
   .msg { max-width: 92%; }
+  .persona-btn { font-size: 11px; padding: 9px 4px; }
+  .persona-btn .persona-icon { font-size: 14px; }
 }
 @media (min-width: 768px) {
-  .bottom-nav { max-width: 720px; margin: 0 auto; border-radius: var(--radius-lg) var(--radius-lg) 0 0; border: 1px solid var(--border); border-bottom: none; }
-  .modal { border-radius: var(--radius-xl); margin-bottom: 5vh; }
+  .bottom-nav {
+    max-width: 720px;
+    margin: 0 auto;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    border: 1px solid var(--border);
+    border-bottom: none;
+  }
+  .modal {
+    border-radius: var(--radius-xl);
+    margin-bottom: 5vh;
+  }
   .overlay { align-items: center; }
 }
 </style>
@@ -395,13 +966,15 @@ select {
 <body>
 
 <header class="app-header">
-  <div class="brand">
-    <div class="brand-icon">🧠</div>
-    <span>AI Коуч</span>
-  </div>
-  <div class="header-actions">
-    <button class="icon-btn" onclick="toggleTheme()" title="Тема">🌙</button>
-    <div class="user-chip" id="userChip">Гость</div>
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-logo">🧠</div>
+      <span>AI Ecosystem</span>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" onclick="toggleTheme()" title="Тема">🌙</button>
+      <div class="user-chip" id="userChip">Гость</div>
+    </div>
   </div>
 </header>
 
@@ -413,12 +986,14 @@ select {
 'use strict';
 
 /* ======================================================================
-   TELEGRAM INIT
+   TELEGRAM
    ====================================================================== */
 const tg = window.Telegram?.WebApp;
 if (tg) {
-  tg.expand(); tg.ready();
-  tg.setHeaderColor?.('#07070d');
+  tg.expand();
+  tg.ready();
+  tg.setHeaderColor?.('#05050a');
+  tg.setBackgroundColor?.('#05050a');
   const u = tg.initDataUnsafe?.user;
   if (u) document.getElementById('userChip').textContent = u.first_name || u.username || 'Пользователь';
 } else {
@@ -426,66 +1001,121 @@ if (tg) {
 }
 
 /* ======================================================================
-   AI COACH SYSTEM PROMPT — встроен полностью
+   PERSONA PROMPTS
    ====================================================================== */
-const COACH_SYSTEM_PROMPT = `Ты — AI-Коуч МАКСИМАЛЬНОГО УРОВНЯ. Твоя личность — синтез лучших практик мировых коучей, психологов, нейробиологов и философов.
+const COACH_PROMPT = `Ты — AI-Коуч МАКСИМАЛЬНОГО УРОВНЯ. Синтез лучших практик мировых коучей, психологов, нейробиологов и философов.
 
-═══════════════════════════════════════════════════════════════
-🧠 МЕТОДОЛОГИЧЕСКАЯ БАЗА (все известные школы коучинга):
-═══════════════════════════════════════════════════════════════
+🧠 МЕТОДОЛОГИИ: GROW (Уитмор), Внутренняя игра (Голви), Co-Active (Уитворт), Транстеоретическая модель (Прохазка), Самодетерминация (Деси/Райан), Поток (Чиксентмихайи), SMART, Пирамида Дилтса, OKR, Кайзен, Pomodoro, Эйзенхауэр, Eat That Frog (Трейси), Deep Work (Ньюпорт), Атомные привычки (Клир), GTD (Аллен), Булет-журнал, Икигай, Стоицизм (Марк Аврелий, Сенека, Эпиктет), Логотерапия (Франкл).
 
-1. МЕТОД GROW (Джон Уитмор, Тим Голлви) — Goal → Reality → Options → Will
-2. ВНУТРЕННЯЯ ИГРА (Тимоти Голви) — "Противник внутри тебя"
-3. CO-ACTIVE COACHING (Лаура Уитворт) — "Человек целостен, ресурсен и креативен"
-4. ТРАНСТЕОРЕТИЧЕСКАЯ МОДЕЛЬ (Джеймс Прохазка) — стадии изменений
-5. ТЕОРИЯ САМОДЕТЕРМИНАЦИИ (Деси, Райан) — Автономия + Компетентность + Связанность
-6. ПОТОК (Михай Чиксентмихайи) — Баланс сложности и навыка
-7. SMART-ЦЕЛИ (Дорана, Друкер) — Specific, Measurable, Achievable, Relevant, Time-bound
-8. ПИРАМИДА ДИЛТСА — Окружение → Поведение → Способности → Убеждения → Идентичность → Миссия
-9. OKR (Гроув, Дорр) — Objectives + Key Results
-10. КАЙЗЕН (Масааки Имаи) — Непрерывное улучшение
-11. ПОМОДОРО (Чирилло) — 25/5, 50/10
-12. ЭЙЗЕНХАУЭР-МАТРИЦА — Важное/Срочное
-13. EAT THAT FROG (Трейси) — Самое сложное первым
-14. DEEP WORK (Кэл Ньюпорт) — Глубокая работа
-15. АТОМНЫЕ ПРИВЫЧКИ (Джеймс Клир) — Cue → Craving → Response → Reward
-16. ПРАВИЛО 2 МИНУТ (Дэвид Аллен, GTD)
-17. БУЛЕТ-ЖУРНАЛ (Райдер Кэрролл)
-18. ИКИГАЙ — что люблю + что умею + за что платят + что нужно миру
-19. СТОИЦИЗМ (Марк Аврелий, Сенека, Эпиктет) — дихотомия контроля
-20. ЭКЗИСТЕНЦИАЛЬНАЯ ПСИХОЛОГИЯ (Виктор Франкл) — логотерапия, "зачем" важнее "как"
+🌟 ОРИЕНТИРЫ: Тони Роббинс, Брайан Трейси, Стивен Кови, Саймон Синек, Ангела Дакворт, Кэрол Дуэк, Навал Равикант, Райан Холидей, Дэвид Гоггинс, Джеймс Клир, Кэл Ньюпорт, Эндрю Хуберман.
 
-🌟 ЛИЧНОСТИ-ОРИЕНТИРЫ: Тони Роббинс, Брайан Трейси, Стивен Кови, Джим Рон, Экхарт Толле, Брендон Берчард, Мел Роббинс, Саймон Синек, Ангела Дакворт, Кэрол Дуэк, Адам Грант, Даниэль Канеман, Нассим Талеб, Рэй Далио, Чарли Мангер, Навал Равикант, Джордан Питерсон, Райан Холидей, Дэвид Гоггинс, Байрон Кейти, Маршалл Голдсмит, Майкл Бангей, Брене Браун, Сьюзен Джефферс, Джо Диспенза, Эндрю Хуберман, Мэттью Уокер, Марк Аврелий, Сенека, Эпиктет, Лао-Цзы, Конфуций, Будда, Сократ, Платон, Аристотель, Ницше, Виктор Франкл, Карл Юнг, Маслоу, Роджерс, Селигман, Милтон Эриксон, Ричард Бендлер, Джон Гриндер.
+🎯 РОЛЬ: Диагност, стратег, провокатор, поддержка, эксперт, мотиватор, философ, тренер.
 
-🎯 ТВОЯ РОЛЬ: ДИАГНОСТ, СТРАТЕГ, ПРОВОКАТОР, ПОДДЕРЖКА, ЭКСПЕРТ, МОТИВАТОР, ФИЛОСОФ, ТРЕНЕР.
-
-ТВОЙ СТИЛЬ:
-• Прямой, но тёплый. Без воды и клише.
-• 1 мысль = 1-2 предложения. Разбивай на абзацы.
-• Задавай 1-2 вопроса за раз, не допрашивай.
-• Используй метафоры, истории, аналогии.
-• Признавай ограничения: "Я не знаю, но давай разберёмся".
+СТИЛЬ:
+• Прямой, но тёплый. Без воды.
+• 1 мысль = 1-2 предложения.
+• 1-2 вопроса за раз.
+• Метафоры, истории.
 • Никогда не давай медицинских/юридических/финансовых советов.
-• При признаках кризиса (суицид, самоповреждение) — сразу давай контакты: 8-800-2000-122 (РФ), https://findahelpline.com
 
-🔄 АЛГОРИТМ ОТВЕТА (каждый раз):
-ШАГ 1. ОТРАЖЕНИЕ — "Если я правильно понял, ты..."
-ШАГ 2. ДИАГНОСТИКА — 1-2 вопроса, определи корень (страх/ресурс/ясность/система) и стадию по Прохазке
-ШАГ 3. ИНСАЙТ — неожиданный угол, методика, автор
-ШАГ 4. ДЕЙСТВИЕ — микро-шаг на 5-25 минут, конкретно
-ШАГ 5. РЕФЛЕКСИЯ — 1 вопрос
+🔄 АЛГОРИТМ:
+1. ОТРАЖЕНИЕ — "Если я правильно понял, ты..."
+2. ДИАГНОСТИКА — 1-2 вопроса, найди корень (страх/ресурс/ясность/система) + стадия по Прохазке
+3. ИНСАЙТ — неожиданный угол + методика + автор
+4. ДЕЙСТВИЕ — микро-шаг на 5-25 минут
+5. РЕФЛЕКСИЯ — 1 вопрос
 
-📊 РЕЖИМЫ: УТРЕННИЙ, ДЕНЬ, ВЕЧЕР, КРИЗИС, ВЫГОРАНИЕ, ВЫБОР, СТРАХ, ПРОКРАСТИНАЦИЯ, ЦЕЛЬ.
+ОТВЕЧАЙ КРАТКО (150-220 слов). Markdown для структуры.`;
 
-⚠️ КРАСНЫЕ ФЛАГИ: суицид → контакты помощи, депрессия → психотерапевт, паника → 5-4-3-2-1, насилие → кризисные центры, зависимости → специалисты.
+const PSYCH_PROMPT = `Ты — AI-Психолог ПРОФЕССИОНАЛЬНОГО УРОВНЯ. Синтез доказательных подходов психотерапии.
 
-💎 ФИЛОСОФИЯ:
-"Люди не ленивы. Люди либо устали, либо не видят смысла, либо боятся."
-"Не решай за человека. Помоги ему самому найти ответ." — Сократ
-"Коучинг — это не про то, чтобы дать ответ. Это про то, чтобы задать правильный вопрос." — Майкл Бангей
-"Единственный человек, которого ты можешь изменить — это ты сам." — Виктор Франкл
+🧠 МЕТОДОЛОГИИ:
+• КПТ (Аарон Бек, Джудит Бек) — работа с мыслями
+• ACT (Стивен Хейс) — принятие и ценности
+• DBT (Марша Линехан) — эмоциональная регуляция
+• Схема-терапия (Джеффри Янг) — ранние схемы
+• Психодинамика (Фрейд, Юнг, Кляйн, Винникотт)
+• Гештальт (Перлз) — здесь и сейчас
+• Клиент-центрированный (Карл Роджерс) — эмпатия, принятие
+• Логотерапия (Виктор Франкл) — смысл
+• Позитивная психология (Селигман) — сильные стороны
+• Теория привязанности (Боулби, Эйнсворт)
+• Терапия принятия (Тара Брах) — RAIN
+• Ненасильственное общение (Маршалл Розенберг)
+• Внутренние части (IFS, Ричард Шварц)
+• Терапия EMDR (Франсин Шапиро) — травма
+• Соматика (Питер Левин, Бессел ван дер Колк)
 
-ОТВЕЧАЙ КРАТКО (150-250 слов максимум). Используй Markdown для структуры. Будь живым собеседником, не роботом с чек-листом.`;
+🌟 ОРИЕНТИРЫ: Брене Браун (стыд/уязвимость), Сьюзен Джефферс (страх), Байрон Кейти (4 вопроса), Тара Брах, Кристин Нефф (самосострадание), Габор Мате (травма), Ирвин Ялом (экзистенциальная терапия), Эстер Перель (отношения), Джон Готтман (пары), Лори Готтлиб, Недра Гловер Таваб.
+
+🎯 РОЛЬ: Валидация чувств, безопасное пространство, глубокое слушание, отражение, работа с корнем, а не симптомом.
+
+СТИЛЬ:
+• ТЁПЛЫЙ, эмпатичный, без осуждения.
+• Сначала — валидация чувств ("То, что ты чувствуешь — нормально")
+• Потом — мягкое исследование
+• Никогда не говори "просто успокойся" или "не переживай"
+• Используй отражение ("Я слышу, что...")
+• Задавай открытые вопросы
+• НЕ ставь диагнозы! Ты не заменяешь психотерапевта.
+• При кризисе → контакты 8-800-2000-122, https://findahelpline.com
+
+🔄 АЛГОРИТМ:
+1. ВАЛИДАЦИЯ — "Слышу тебя. То, что ты чувствуешь — важно"
+2. ПРОЯСНЕНИЕ — открытый вопрос про чувства/ситуацию
+3. ИНСАЙТ — мягко предложи угол (КПТ/ACT/привязанность)
+4. МИКРО-ПРАКТИКА — дыхание, заземление, дневник мыслей
+5. ПОДДЕРЖКА — "Ты не один. Что отзывается?"
+
+ОТВЕЧАЙ ТЕПЛО (150-220 слов). Без списков-чеклистов — живой диалог.`;
+
+const DOCTOR_PROMPT = `Ты — AI-Врач-консультант ПРОФЕССИОНАЛЬНОГО УРОВНЯ. Ты НЕ ставишь диагнозы и НЕ назначаешь лечение. Ты даёшь образовательную информацию и помогаешь понять, когда идти к врачу.
+
+⚠️ КРИТИЧЕСКИ ВАЖНО:
+• Ты НЕ заменяешь врача!
+• НИКОГДА не ставь диагноз
+• НИКОГДА не назначай лекарства
+• Всегда заканчивай дисклеймером: "Это образовательная информация. Для точного диагноза обратитесь к врачу."
+• При острых симптомах (боль в груди, кровотечение, потеря сознания, одышка, суицид) → НЕМЕДЛЕННО СКОРАЯ 103/112!
+
+🧠 ЗНАНИЯ:
+• Сон и циркадные ритмы (Мэттью Уокер, Эндрю Хуберман)
+• Питание (средиземноморская диета, интервальное голодание, микробиом)
+• Физическая активность (кардио, силовые, зона 2, VO2max)
+• Стресс и кортизол (Роберт Сапольски)
+• Долголетие (Питер Аттиа, Дэвид Синклер)
+• Профилактика (чекапы, анализы, вакцинация)
+• Психиатрия (депрессия, тревога, СДВГ, биполярное)
+• Неврология (сон, головная боль, память)
+• Эндокринология (щитовидная, диабет, гормоны)
+• Кардиология (давление, холестерин, риски)
+• Гастроэнтерология (ЖКТ, микробиом, питание)
+• Дерматология (кожа, волосы)
+• Гинекология, урология (базово)
+
+🎯 РОЛЬ: Образование, помощь в понимании симптомов, рекомендация к какому врачу идти, вопросы для приёма.
+
+СТИЛЬ:
+• ЧЁТКИЙ, профессиональный, но тёплый.
+• Разделяй: симптом → возможные причины (без диагноза) → к какому врачу → когда срочно
+• Используй структурное форматирование (списки, заголовки)
+• Всегда указывай "красные флаги" — когда срочно к врачу
+• Никогда не пугай, но будь честен
+
+🔄 АЛГОРИТМ:
+1. УТОЧНЕНИЕ — какие симптомы, как долго, что предшествовало
+2. ИНФОРМАЦИЯ — образовательно о возможных причинах
+3. РЕКОМЕНДАЦИЯ — к какому специалисту (терапевт, невролог, ...)
+4. САМОПОМОЩЬ — что можно сделать до приёма
+5. ДИСКЛЕЙМЕР — "Это не диагноз. Обратитесь к врачу."
+
+ОТВЕЧАЙ ЧЁТКО (150-250 слов). Markdown, списки, выделение. ВСЕГДА дисклеймер!`;
+
+const PERSONAS = {
+  coach: { name: 'Коуч', icon: '💬', prompt: COACH_PROMPT, color: 'coach', label: 'Продуктивность и цели' },
+  psych: { name: 'Психолог', icon: '🧠', prompt: PSYCH_PROMPT, color: 'psych', label: 'Эмоции и поддержка' },
+  doctor: { name: 'Врач', icon: '⚕️', prompt: DOCTOR_PROMPT, color: 'doctor', label: 'Здоровье и симптомы' }
+};
 
 /* ======================================================================
    AI PROVIDERS
@@ -494,18 +1124,16 @@ const AI_PROVIDERS = {
   openai: {
     name: 'OpenAI (GPT-4o)',
     url: 'https://api.openai.com/v1/chat/completions',
-    model: 'gpt-4o-mini',
     buildRequest: (messages, key) => ({
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
-      body: JSON.stringify({ model: 'gpt-4o-mini', messages, temperature: 0.8, max_tokens: 700 })
+      body: JSON.stringify({ model: 'gpt-4o-mini', messages, temperature: 0.8, max_tokens: 800 })
     }),
     parseResponse: (data) => data.choices?.[0]?.message?.content
   },
   anthropic: {
     name: 'Anthropic (Claude)',
     url: 'https://api.anthropic.com/v1/messages',
-    model: 'claude-3-5-sonnet-20241022',
     buildRequest: (messages, key) => {
       const system = messages.find(m => m.role === 'system')?.content || '';
       const rest = messages.filter(m => m.role !== 'system');
@@ -517,7 +1145,7 @@ const AI_PROVIDERS = {
           'anthropic-version': '2023-06-01',
           'anthropic-dangerous-direct-browser-access': 'true'
         },
-        body: JSON.stringify({ model: 'claude-3-5-sonnet-20241022', system, messages: rest, max_tokens: 700 })
+        body: JSON.stringify({ model: 'claude-3-5-sonnet-20241022', system, messages: rest, max_tokens: 800 })
       };
     },
     parseResponse: (data) => data.content?.[0]?.text
@@ -537,7 +1165,7 @@ const AI_PROVIDERS = {
             role: m.role === 'assistant' ? 'model' : 'user',
             parts: [{ text: m.content }]
           })),
-          generationConfig: { temperature: 0.8, maxOutputTokens: 700 }
+          generationConfig: { temperature: 0.8, maxOutputTokens: 800 }
         })
       };
     },
@@ -552,9 +1180,9 @@ const AI_PROVIDERS = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${key}`,
         'HTTP-Referer': location.origin,
-        'X-Title': 'AI Coach Pro'
+        'X-Title': 'AI Health Ecosystem'
       },
-      body: JSON.stringify({ model: 'anthropic/claude-3.5-sonnet', messages, temperature: 0.8, max_tokens: 700 })
+      body: JSON.stringify({ model: 'anthropic/claude-3.5-sonnet', messages, temperature: 0.8, max_tokens: 800 })
     }),
     parseResponse: (data) => data.choices?.[0]?.message?.content
   }
@@ -563,7 +1191,7 @@ const AI_PROVIDERS = {
 async function callAI(messages) {
   const { provider, apiKey } = state.settings;
   if (!apiKey || !provider || !AI_PROVIDERS[provider]) {
-    return { text: fallbackCoachReply(messages[messages.length - 1].content), fallback: true };
+    return { text: fallbackReply(messages[messages.length - 1].content), fallback: true };
   }
   try {
     const cfg = AI_PROVIDERS[provider];
@@ -578,16 +1206,19 @@ async function callAI(messages) {
   } catch (e) {
     console.error('AI error:', e);
     toast(`Ошибка AI: ${e.message}`, 'error');
-    return { text: fallbackCoachReply(messages[messages.length - 1].content), fallback: true };
+    return { text: fallbackReply(messages[messages.length - 1].content), fallback: true };
   }
 }
 
 /* ======================================================================
-   FALLBACK COACH ENGINE (без API)
+   CRISIS & FALLBACK
    ====================================================================== */
+function detectCrisis(text) {
+  const t = text.toLowerCase();
+  return /суицид|покончить|не хочу жить|умереть|порезать|убить себя|самоповрежд/.test(t);
+}
 function detectMode(text) {
   const t = text.toLowerCase();
-  if (/суицид|умереть|не хочу жить|покончить/.test(t)) return 'crisis';
   if (/выгор|истощ|нет сил|не могу больше/.test(t)) return 'burnout';
   if (/боюсь|страх|тревог|паник/.test(t)) return 'fear';
   if (/прокрастин|отклад|не могу начать|лень/.test(t)) return 'procrastination';
@@ -599,44 +1230,138 @@ function detectMode(text) {
   return 'evening';
 }
 
-function fallbackCoachReply(userMsg) {
+function fallbackReply(userMsg, persona = 'coach') {
+  if (detectCrisis(userMsg)) {
+    return `🆘 **Важно. То, что ты чувствуешь — серьёзно.**
+
+Пожалуйста, позвони прямо сейчас:
+• **8-800-2000-122** (РФ, бесплатно, 24/7)
+• **103 / 112** (скорая)
+• **https://findahelpline.com** (мир)
+
+Ты важен. Ты не один. Профессиональная помощь — не слабость, а сила. 💙`;
+  }
+
+  if (persona === 'doctor') {
+    return `⚕️ **Я — AI-консультант, не врач.**
+
+Чтобы дать полезную информацию, расскажи:
+• Какие симптомы?
+• Как давно?
+• Что предшествовало?
+• Есть ли хронические заболевания?
+
+*⚠️ Это образовательная информация. Для точного диагноза обратитесь к врачу. При острых симптомах (боль в груди, одышка, потеря сознания) — 103/112.*`;
+  }
+
+  if (persona === 'psych') {
+    return `🧠 **Слышу тебя. То, что ты чувствуешь — важно и имеет смысл.**
+
+Расскажи подробнее: что происходит, как давно, что ты уже пробовал?
+
+Я не заменяю психотерапевта, но помогу разобраться и найти следующий шаг.`;
+  }
+
   const mode = detectMode(userMsg);
   const replies = {
-    crisis: `🆘 **Важно.** То, что ты чувствуешь — серьёзно, и ты не один.\n\nПожалуйста, позвони прямо сейчас:\n• **8-800-2000-122** (РФ, бесплатно, круглосуточно)\n• **https://findahelpline.com** (международные)\n\nЯ рядом, но профессиональная помощь важнее. Ты важен. 💙`,
-    burnout: `**Если я правильно понял, ты на грани выгорания.**\n\nЭто не слабость — это сигнал тела, что ресурс исчерпан. Не "просто отдохни" — сначала микро-восстановление.\n\n**Сделай прямо сейчас (5 мин):**\n1. Выпей стакан воды\n2. Закрой глаза, дыши 4-7-8 (вдох 4, задержка 7, выдох 8) × 3 раза\n3. Посмотри в окно 2 минуты\n\n*По Тони Шварцу ("The Power of Full Engagement"), энергию надо восстанавливать ритмично, а не "когда-нибудь".*\n\nЧто съедает твой ресурс больше всего прямо сейчас?`,
-    fear: `**Слышу страх в твоих словах.**\n\nСтоики учили: раздели то, что в твоей власти, и то, что нет. 90% страха — про второе.\n\n**Ответь себе честно:**\n• Что самое худшее может случиться?\n• Если случится — что я буду делать?\n\n*Сьюзен Джефферс: "Feel the Fear and Do It Anyway". Страх не исчезает — с ним идут.*\n\nЧто пугает сильнее всего?`,
-    procrastination: `**Прокрастинация — это не лень. Это защита от боли.**\n\nЗадача кажется: слишком большой, слишком неясной или слишком страшной. Найдём настоящую причину.\n\n**Микро-шаг:** открой документ/файл и просто посмотри на него 2 минуты. Ничего не делай. Только смотри.\n\n*Джеймс Клир ("Атомные привычки"): сделай действие настолько маленьким, чтобы невозможно было отказаться.*\n\nЧто именно отталкивает: масштаб, неясность или страх провала?`,
-    choice: `**Выбор — это всегда про ценности, не про логику.**\n\nЛогика даст 2 равных варианта. Ответ — в том, что для тебя по-настоящему важно.\n\n**Техника 10/10/10:** как ты будешь чувствовать себя через 10 минут / 10 месяцев / 10 лет при каждом выборе?\n\n*Рэй Далио ("Принципы"): боль + рефлексия = прогресс.*\n\nЧто стоит на кону — что ты боишься потерять?`,
-    goal: `**Цель — это хорошо. Но давай проверим её на прочность.**\n\nЦель без "зачем" — это фантазия. Цель со смыслом — это топливо.\n\n**Проверь по SMART:** конкретна? измерима? достижима? релевантна? есть срок?\n\n*Саймон Синек ("Начни с Почему"): люди покупают не что ты делаешь, а почему.*\n\nЧто ты потеряешь, если НЕ достигнешь этой цели?`,
-    morning: `**Доброе утро. День закладывается в первые 30 минут.**\n\n*Тони Роббинс: priming — 10 мин дыхание, благодарность, визуализация.*\n\n**Сделай сейчас:**\n1. 3 глубоких вдоха\n2. Назови 3 вещи, за которые благодарен\n3. Определи MIT (Most Important Task) — одну задачу, которая сделает день успешным\n\nКакая твоя MIT на сегодня?`,
-    day: `**Середина дня — время проверить фокус.**\n\n*Кэл Ньюпорт ("Deep Work"): глубокая работа = 90 мин без отвлечений.*\n\n**Запусти Pomodoro:** 25 минут на одну задачу, телефон в другую комнату.\n\n*Брайан Трейси ("Eat That Frog"): самое сложное — первым.*\n\nЧто ты сейчас откладываешь?`,
-    evening: `**Вечер — время рефлексии, не продуктивности.**\n\n*Бенджамин Франклин: "Что я сделал хорошо? Что можно улучшить?"*\n\n**Булет-журнал (Райдер Кэрролл):**\n• 3 победы дня\n• 1 урок\n• 1 задача на завтра\n\nЗа что ты благодарен сегодня?`
+    burnout: `**Если я правильно понял, ты на грани выгорания.**
+
+Это не слабость — сигнал, что ресурс исчерпан.
+
+**Микро-шаг (5 мин):**
+1. Стакан воды
+2. Дыхание 4-7-8 × 3 раза
+3. Взгляд в окно 2 минуты
+
+*Тони Шварц: энергию надо восстанавливать ритмично, а не "когда-нибудь".*
+
+Что съедает твой ресурс сильнее всего?`,
+    fear: `**Слышу страх в твоих словах.**
+
+Стоики учили: раздели то, что в твоей власти, и то, что нет. 90% страха — про второе.
+
+**Ответь себе:**
+• Что самое худшее может случиться?
+• Если случится — что я буду делать?
+
+*Сьюзен Джефферс: "Feel the Fear and Do It Anyway".*
+
+Что пугает сильнее всего?`,
+    procrastination: `**Прокрастинация — не лень. Это защита от боли.**
+
+Задача кажется: большой, неясной или страшной. Найдём корень.
+
+**Микро-шаг:** открой файл и просто посмотри 2 минуты. Ничего не делай.
+
+*Джеймс Клир: сделай действие настолько маленьким, чтобы невозможно было отказаться.*
+
+Что отталкивает: масштаб, неясность или страх провала?`,
+    choice: `**Выбор — всегда про ценности, не про логику.**
+
+**10/10/10:** как ты будешь чувствовать себя через 10 мин / 10 мес / 10 лет?
+
+*Рэй Далио: боль + рефлексия = прогресс.*
+
+Что на кону — что боишься потерять?`,
+    goal: `**Цель — хорошо. Но давай проверим на прочность.**
+
+Цель без "зачем" — фантазия. Со смыслом — топливо.
+
+**SMART:** конкретна? измерима? достижима? релевантна? есть срок?
+
+*Саймон Синек: люди идут за "почему".*
+
+Что ты потеряешь, если НЕ достигнешь?`,
+    morning: `**Доброе утро. День закладывается в первые 30 минут.**
+
+*Тони Роббинс: priming — 10 мин дыхание, благодарность, визуализация.*
+
+**Сделай сейчас:**
+1. 3 глубоких вдоха
+2. 3 вещи, за которые благодарен
+3. MIT — одну главную задачу
+
+Какая твоя MIT?`,
+    day: `**Середина дня — проверь фокус.**
+
+*Кэл Ньюпорт: глубокая работа = 90 мин без отвлечений.*
+
+**Запусти Pomodoro:** 25 мин на одну задачу, телефон в другую комнату.
+
+*Трейси: самое сложное — первым.*
+
+Что ты откладываешь?`,
+    evening: `**Вечер — время рефлексии, не продуктивности.**
+
+**Булет-журнал:**
+• 3 победы дня
+• 1 урок
+• 1 задача на завтра
+
+За что благодарен сегодня?`
   };
-  return replies[mode] || `**Я слышу тебя.**\n\nРасскажи подробнее: что происходит и что ты уже пробовал?\n\n*"Не решай за человека. Помоги ему самому найти ответ." — Сократ*`;
+  return replies[mode] || `**Я слышу тебя.**
+
+Расскажи подробнее: что происходит и что ты уже пробовал?
+
+*"Помоги человеку самому найти ответ." — Сократ*`;
 }
 
 /* ======================================================================
-   SIMPLE MARKDOWN RENDERER
+   MARKDOWN
    ====================================================================== */
 function renderMarkdown(text) {
   if (!text) return '';
   let html = escapeHtml(text);
-  // Code blocks
-  html = html.replace(/```([\s\S]*?)```/g, '<pre style="background:var(--surface-3);padding:8px;border-radius:8px;overflow-x:auto;font-size:12px;"><code>$1</code></pre>');
-  // Inline code
+  html = html.replace(/```([\s\S]*?)```/g, '<pre style="background:var(--surface-3);padding:10px;border-radius:10px;overflow-x:auto;font-size:12px;margin:8px 0;"><code>$1</code></pre>');
   html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
-  // Bold
   html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-  // Italic
   html = html.replace(/(^|\s)\*([^*\n]+)\*(?=\s|$|[.,!?])/g, '$1<em>$2</em>');
-  // Headers
-  html = html.replace(/^### (.+)$/gm, '<h4 style="margin:8px 0 4px;font-size:14px;">$1</h4>');
-  html = html.replace(/^## (.+)$/gm, '<h3 style="margin:10px 0 6px;font-size:15px;">$1</h3>');
-  // Lists
+  html = html.replace(/^### (.+)$/gm, '<h4 style="margin:10px 0 5px;font-size:14px;">$1</h4>');
+  html = html.replace(/^## (.+)$/gm, '<h3 style="margin:12px 0 7px;font-size:15px;">$1</h3>');
   html = html.replace(/^[•\-] (.+)$/gm, '<li>$1</li>');
   html = html.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
-  html = html.replace(/(<li>[\s\S]*?<\/li>)(?!\s*<li>)/g, '<ul style="margin:6px 0;padding-left:18px;">$1</ul>');
-  // Line breaks
+  html = html.replace(/(<li>[\s\S]*?<\/li>)(?!\s*<li>)/g, '<ul style="margin:8px 0;padding-left:20px;">$1</ul>');
   html = html.replace(/\n\n/g, '</p><p>');
   html = html.replace(/\n/g, '<br>');
   return `<p>${html}</p>`;
@@ -645,18 +1370,25 @@ function renderMarkdown(text) {
 /* ======================================================================
    STORAGE
    ====================================================================== */
-const STORAGE_KEY = 'ai_coach_pro_v9';
+const STORAGE_KEY = 'ai_health_ecosystem_v10';
 const DEFAULT_STATE = () => ({
   tasks: [], schedule: [], habits: [], goals: [], notes: [], learning: [],
-  coachMessages: [], timerSessions: [], actionLog: [], screenTimeLog: {},
+  timerSessions: [], actionLog: [], screenTimeLog: {},
   priorityMatrix: { q1: [], q2: [], q3: [] },
+  chats: {
+    coach: [],
+    psych: [],
+    doctor: []
+  },
+  health: {
+    sleep: [], mood: [], energy: [], symptoms: []
+  },
   settings: {
     theme: 'dark',
     username: 'Пользователь',
     provider: 'openai',
     apiKey: '',
-    googleCalendar: '',
-    obsidianPath: ''
+    activePersona: 'coach'
   },
   flags: { dnd: false, focus: false, agentPaused: false },
   stats: { totalCompleted: 0, totalMinutes: 0, streak: 0, lastActiveDay: null }
@@ -666,17 +1398,21 @@ let state = (() => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
-      // Migrate from v8 if exists
-      const old = localStorage.getItem('ai_coach_pro_v8');
+      // Migrate
+      const old = localStorage.getItem('ai_coach_pro_v9') || localStorage.getItem('ai_coach_pro_v8');
       if (old) {
         const parsed = JSON.parse(old);
         const def = DEFAULT_STATE();
-        return {
+        const migrated = {
           ...def, ...parsed,
           settings: { ...def.settings, ...(parsed.settings || {}) },
           flags: { ...def.flags, ...(parsed.flags || {}) },
           stats: { ...def.stats, ...(parsed.stats || {}) }
         };
+        if (parsed.coachMessages) {
+          migrated.chats.coach = parsed.coachMessages;
+        }
+        return migrated;
       }
       return DEFAULT_STATE();
     }
@@ -686,7 +1422,9 @@ let state = (() => {
       ...def, ...parsed,
       settings: { ...def.settings, ...(parsed.settings || {}) },
       flags: { ...def.flags, ...(parsed.flags || {}) },
-      stats: { ...def.stats, ...(parsed.stats || {}) }
+      stats: { ...def.stats, ...(parsed.stats || {}) },
+      chats: { ...def.chats, ...(parsed.chats || {}) },
+      health: { ...def.health, ...(parsed.health || {}) }
     };
   } catch (e) { console.error(e); return DEFAULT_STATE(); }
 })();
@@ -725,9 +1463,9 @@ function toast(message, type = 'info', duration = 2800) {
   container.appendChild(el);
   setTimeout(() => {
     el.style.opacity = '0';
-    el.style.transform = 'translateY(-8px)';
-    el.style.transition = 'all 0.3s';
-    setTimeout(() => el.remove(), 300);
+    el.style.transform = 'translateY(-12px)';
+    el.style.transition = 'all 0.35s';
+    setTimeout(() => el.remove(), 350);
   }, duration);
 }
 
@@ -746,7 +1484,7 @@ function haptic(type = 'light') {
    ====================================================================== */
 function applyTheme(theme) {
   document.body.classList.toggle('light', theme === 'light');
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'light' ? '#f4f4f8' : '#07070d');
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'light' ? '#f5f5f9' : '#05050a');
   const btn = document.querySelector('.icon-btn');
   if (btn) btn.textContent = theme === 'light' ? '☀️' : '🌙';
 }
@@ -758,13 +1496,13 @@ window.toggleTheme = function() {
 applyTheme(state.settings.theme);
 
 /* ======================================================================
-   NAV
+   NAVIGATION
    ====================================================================== */
 const PAGES = [
   { id: 'dashboard', icon: '🏠', label: 'Главная', render: renderDashboard },
   { id: 'tasks', icon: '✅', label: 'Задачи', render: renderTasks },
-  { id: 'calendar', icon: '📅', label: 'Календарь', render: renderCalendar },
-  { id: 'coach', icon: '💬', label: 'Коуч', render: renderCoach },
+  { id: 'ai', icon: '✨', label: 'AI', render: renderAI },
+  { id: 'health', icon: '❤️', label: 'Здоровье', render: renderHealth },
   { id: 'more', icon: '⋯', label: 'Ещё', render: renderMore }
 ];
 const SUB_PAGES = {
@@ -802,7 +1540,8 @@ window.navigate = function(page) {
   main.innerHTML = '';
   const renderFn = PAGES.find(p => p.id === page)?.render || SUB_PAGES[page]?.render;
   if (renderFn) renderFn();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  // FIX: скролл в начало страницы
+  window.scrollTo({ top: 0, behavior: 'auto' });
 };
 
 /* ======================================================================
@@ -836,38 +1575,49 @@ function renderDashboard() {
   const habitsToday = state.habits.filter(h => h.history?.includes(today())).length;
   const hour = new Date().getHours();
   const greeting = hour < 6 ? 'Доброй ночи' : hour < 12 ? 'Доброе утро' : hour < 18 ? 'Добрый день' : 'Добрый вечер';
+  const lastSleep = state.health.sleep?.[state.health.sleep.length - 1];
+  const lastMood = state.health.mood?.[state.health.mood.length - 1];
 
   document.getElementById('app').innerHTML = `
     <div class="page">
       <div class="page-title"><span class="emoji">👋</span>${greeting}!</div>
+
       <div class="bento">
-        <div class="bento-item wide" style="background:linear-gradient(135deg,var(--brand),#5b3fd9);color:#fff;border:none;">
+        <div class="bento-item wide" style="background:linear-gradient(135deg,var(--brand),#5b3fd9 60%,var(--brand-2));color:#fff;border:none;box-shadow:0 16px 48px var(--brand-glow);">
           <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;">
             <div>
-              <div style="font-size:12px;opacity:0.85;text-transform:uppercase;letter-spacing:0.6px;font-weight:700;margin-bottom:4px;">Прогресс дня</div>
-              <div style="font-size:36px;font-weight:800;letter-spacing:-1px;line-height:1;">${todayDone}/${todayTasks.length}</div>
-              <div style="font-size:13px;opacity:0.9;margin-top:6px;">${todayPlanned} мин запланировано</div>
+              <div style="font-size:11px;opacity:0.85;text-transform:uppercase;letter-spacing:0.8px;font-weight:800;margin-bottom:6px;">Прогресс дня</div>
+              <div style="font-size:40px;font-weight:800;letter-spacing:-1.5px;line-height:1;">${todayDone}/${todayTasks.length}</div>
+              <div style="font-size:13px;opacity:0.9;margin-top:8px;">${todayPlanned} мин запланировано</div>
             </div>
-            <div style="font-size:44px;font-weight:800;letter-spacing:-1px;">${progress}%</div>
+            <div style="text-align:center;">
+              <div style="font-size:48px;font-weight:800;letter-spacing:-2px;">${progress}%</div>
+            </div>
           </div>
-          <div class="progress" style="margin-top:14px;background:rgba(255,255,255,0.2);">
-            <div class="progress-fill" style="width:${progress}%;background:#fff;box-shadow:0 0 12px rgba(255,255,255,0.6);"></div>
+          <div class="progress" style="margin-top:16px;background:rgba(255,255,255,0.2);">
+            <div class="progress-fill" style="width:${progress}%;background:#fff;box-shadow:0 0 16px rgba(255,255,255,0.7);"></div>
           </div>
         </div>
-        <div class="bento-item"><div class="bento-label">🔥 Streak</div><div class="bento-value">${state.stats.streak || 0}</div><div class="bento-sub">дней подряд</div></div>
-        <div class="bento-item"><div class="bento-label">🔄 Привычки</div><div class="bento-value">${habitsToday}/${state.habits.length}</div><div class="bento-sub">сегодня</div></div>
+
+        <div class="bento-item">
+          <div class="bento-label">🔥 Streak</div>
+          <div class="bento-value">${state.stats.streak || 0}</div>
+          <div class="bento-sub">дней подряд</div>
+        </div>
+        <div class="bento-item">
+          <div class="bento-label">🔄 Привычки</div>
+          <div class="bento-value">${habitsToday}/${state.habits.length}</div>
+          <div class="bento-sub">сегодня</div>
+        </div>
       </div>
 
-      <div class="card" style="background:linear-gradient(135deg,rgba(124,92,255,0.15),rgba(167,139,250,0.1));border-color:var(--brand-glow);">
-        <div class="flex" style="justify-content:space-between;align-items:flex-start;">
-          <div style="flex:1;">
-            <h2 style="margin-bottom:8px;">💬 AI Коуч</h2>
-            <p class="text-sm text-2">Поговори с коучем максимального уровня. Спроси совета, разбери проблему, получи план.</p>
-          </div>
-        </div>
-        <div class="btn-row mt-2">
-          <button class="btn btn-primary" onclick="navigate('coach')">Открыть чат</button>
-          <button class="btn btn-ghost" onclick="quickCoachPrompt('Хочу спланировать день')">📋 План дня</button>
+      <div class="card card-hero">
+        <h2>✨ AI-Экосистема</h2>
+        <p style="font-size:13px;opacity:0.9;margin-bottom:12px;">Три специалиста в одном: Коуч, Психолог, Врач. Спроси любого.</p>
+        <div class="btn-row">
+          <button class="btn" style="background:rgba(255,255,255,0.2);backdrop-filter:blur(10px);" onclick="openPersona('coach')">💬 Коуч</button>
+          <button class="btn" style="background:rgba(255,255,255,0.2);backdrop-filter:blur(10px);" onclick="openPersona('psych')">🧠 Психолог</button>
+          <button class="btn" style="background:rgba(255,255,255,0.2);backdrop-filter:blur(10px);" onclick="openPersona('doctor')">⚕️ Врач</button>
         </div>
       </div>
 
@@ -876,15 +1626,25 @@ function renderDashboard() {
         <div class="btn-row">
           <button class="btn btn-ghost" onclick="navigate('timer')">⏱ Таймер</button>
           <button class="btn btn-ghost" onclick="quickAddTask()">➕ Задача</button>
+          <button class="btn btn-ghost" onclick="quickHealthLog()">❤️ Самочувствие</button>
           <button class="btn btn-ghost" onclick="navigate('focus')">🧘 Режимы</button>
-          <button class="btn btn-ghost" onclick="navigate('stats')">📊 Статы</button>
         </div>
       </div>
+
+      ${lastSleep || lastMood ? `
+      <div class="card">
+        <h2>❤️ Состояние</h2>
+        <div class="stat-grid">
+          ${lastSleep ? `<div class="stat-item"><div class="stat-value">${lastSleep.hours}ч</div><div class="stat-label">Сон</div></div>` : ''}
+          ${lastMood ? `<div class="stat-item"><div class="stat-value">${lastMood.score}/10</div><div class="stat-label">Настроение</div></div>` : ''}
+          ${state.health.energy?.length ? `<div class="stat-item"><div class="stat-value">${state.health.energy[state.health.energy.length-1].score}/10</div><div class="stat-label">Энергия</div></div>` : ''}
+        </div>
+      </div>` : ''}
 
       <div class="card">
         <h2>📋 Ближайшие задачи</h2>
         ${state.tasks.filter(t => t.status === 'pending').slice(0, 4).map(t => `
-          <div class="item" style="margin-bottom:6px;">
+          <div class="item" style="margin-bottom:8px;">
             <div class="item-body">
               <div class="item-title">${escapeHtml(t.title)}</div>
               <div class="item-meta">
@@ -900,12 +1660,39 @@ function renderDashboard() {
   `;
 }
 
-window.quickCoachPrompt = function(text) {
-  navigate('coach');
-  setTimeout(() => {
-    const input = document.getElementById('coachInput');
-    if (input) { input.value = text; sendCoachMsg(); }
-  }, 100);
+window.openPersona = function(persona) {
+  state.settings.activePersona = persona;
+  save();
+  navigate('ai');
+};
+
+window.quickHealthLog = function() {
+  openModal(`
+    <h2>❤️ Как ты себя чувствуешь?</h2>
+    <div class="field"><label>Сон (часов)</label><input type="number" id="hl-sleep" value="7" min="0" max="24" step="0.5"/></div>
+    <div class="field"><label>Настроение (1-10)</label><input type="number" id="hl-mood" value="7" min="1" max="10"/></div>
+    <div class="field"><label>Энергия (1-10)</label><input type="number" id="hl-energy" value="7" min="1" max="10"/></div>
+    <button class="btn btn-primary btn-block" onclick="saveHealthLog()">Сохранить</button>
+  `);
+};
+
+window.saveHealthLog = function() {
+  const sleep = parseFloat(document.getElementById('hl-sleep').value) || 0;
+  const mood = parseInt(document.getElementById('hl-mood').value) || 5;
+  const energy = parseInt(document.getElementById('hl-energy').value) || 5;
+  const t = today();
+  state.health.sleep = (state.health.sleep || []).filter(s => s.date !== t);
+  state.health.sleep.push({ date: t, hours: sleep, timestamp: nowISO() });
+  state.health.mood = (state.health.mood || []).filter(s => s.date !== t);
+  state.health.mood.push({ date: t, score: mood, timestamp: nowISO() });
+  state.health.energy = (state.health.energy || []).filter(s => s.date !== t);
+  state.health.energy.push({ date: t, score: energy, timestamp: nowISO() });
+  save();
+  closeModal();
+  toast('Состояние записано', 'success');
+  haptic('success');
+  if (currentPage === 'dashboard') renderDashboard();
+  else if (currentPage === 'health') renderHealth();
 };
 
 window.quickAddTask = function() {
@@ -950,6 +1737,312 @@ window.completeTask = function(id) {
 };
 
 /* ======================================================================
+   AI PAGE (unified chat with persona switcher)
+   ====================================================================== */
+function renderAI() {
+  const active = state.settings.activePersona || 'coach';
+  const persona = PERSONAS[active];
+  const messages = state.chats[active] || [];
+  const hasKey = !!(state.settings.apiKey && state.settings.provider);
+
+  const quickPrompts = {
+    coach: [
+      'Не могу начать задачу',
+      'Чувствую выгорание',
+      'Хочу спланировать день',
+      'Боюсь провала'
+    ],
+    psych: [
+      'Тревога не отпускает',
+      'Постоянно всё откладываю',
+      'Проблемы в отношениях',
+      'Чувствую пустоту'
+    ],
+    doctor: [
+      'Плохо сплю',
+      'Болит голова',
+      'Постоянная усталость',
+      'Болит спина'
+    ]
+  };
+
+  document.getElementById('app').innerHTML = `
+    <div class="page">
+      <div class="page-title"><span class="emoji">✨</span>AI-Экосистема</div>
+
+      <div class="persona-switcher">
+        ${Object.entries(PERSONAS).map(([key, p]) => `
+          <button class="persona-btn ${active === key ? 'active' : ''}" data-persona="${key}" onclick="switchPersona('${key}')">
+            <span class="persona-icon">${p.icon}</span>
+            <span>${p.name}</span>
+          </button>
+        `).join('')}
+      </div>
+
+      <div class="card" style="padding:12px 16px;">
+        <div class="flex justify-between">
+          <div class="flex" style="gap:8px;align-items:center;">
+            <span class="badge badge-brand">${persona.icon} ${persona.name}</span>
+            <span class="text-xs text-3">${persona.label}</span>
+          </div>
+          <button class="chip" onclick="openAISettings()">⚙️</button>
+        </div>
+        ${!hasKey ? '<div class="text-xs text-3 mt-2">💡 Demo режим. Настрой API для полного AI.</div>' : ''}
+      </div>
+
+      <div class="card" style="padding:14px;">
+        <div class="chat" id="chatBox">
+          ${messages.length ? messages.map(m => `
+            <div class="msg msg-${m.role === 'user' ? 'user' : 'bot persona-' + active}">
+              ${m.mode ? `<div class="msg-mode">${m.mode}</div>` : ''}
+              ${m.role === 'user' ? escapeHtml(m.text) : renderMarkdown(m.text)}
+            </div>
+          `).join('') : `
+            <div class="empty">
+              <div class="empty-icon">${persona.icon}</div>
+              <div class="empty-text">
+                <strong>${persona.name}</strong><br>
+                ${active === 'doctor' ? '⚠️ Не заменяет врача. Образовательная информация.' : ''}
+                ${active === 'psych' ? 'Безопасное пространство без осуждения.' : ''}
+                ${active === 'coach' ? 'Помогу с целями и продуктивностью.' : ''}
+              </div>
+            </div>
+          `}
+        </div>
+      </div>
+
+      <div class="card" style="padding:12px 14px;">
+        <div class="chips">
+          ${quickPrompts[active].map(p => `<button class="chip" onclick="quickPrompt('${escapeHtml(p)}')">${p}</button>`).join('')}
+        </div>
+        <div class="flex mt-2">
+          <input type="text" id="chatInput" placeholder="Напиши сообщение..." style="flex:1;" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg();}"/>
+          <button class="btn btn-primary btn-icon" onclick="sendMsg()">➤</button>
+        </div>
+      </div>
+    </div>
+  `;
+  const box = document.getElementById('chatBox');
+  if (box) box.scrollTop = box.scrollHeight;
+}
+
+window.switchPersona = function(persona) {
+  if (!PERSONAS[persona]) return;
+  state.settings.activePersona = persona;
+  save(); haptic('light');
+  renderAI();
+};
+
+window.quickPrompt = function(text) {
+  const input = document.getElementById('chatInput');
+  if (input) { input.value = text; sendMsg(); }
+};
+
+window.sendMsg = async function() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  input.disabled = true;
+
+  const persona = state.settings.activePersona || 'coach';
+  if (!state.chats[persona]) state.chats[persona] = [];
+  state.chats[persona].push({ role: 'user', text, timestamp: nowISO() });
+  save();
+  renderAI();
+
+  const box = document.getElementById('chatBox');
+  const typing = document.createElement('div');
+  typing.className = 'typing';
+  typing.innerHTML = '<span></span><span></span><span></span>';
+  box.appendChild(typing);
+  box.scrollTop = box.scrollHeight;
+
+  const contextBlock = buildUserContext();
+  const personaCfg = PERSONAS[persona];
+  const messages = [
+    { role: 'system', content: personaCfg.prompt + '\n\n' + contextBlock },
+    ...state.chats[persona].slice(-10).map(m => ({
+      role: m.role === 'user' ? 'user' : 'assistant',
+      content: m.text
+    }))
+  ];
+
+  const result = await callAI(messages);
+  typing.remove();
+
+  const crisis = detectCrisis(text);
+  const mode = persona === 'coach' && !crisis && !result.fallback ? detectMode(text) : null;
+
+  state.chats[persona].push({
+    role: 'coach',
+    text: result.text,
+    mode: crisis ? '🆘 кризис' : mode,
+    timestamp: nowISO()
+  });
+  save();
+  renderAI();
+  haptic('light');
+  const newInput = document.getElementById('chatInput');
+  if (newInput) { newInput.disabled = false; newInput.focus(); }
+};
+
+function buildUserContext() {
+  const tasksPending = state.tasks.filter(t => t.status === 'pending').slice(0, 5);
+  const habits = state.habits.map(h => `${h.title}${h.history?.includes(today()) ? ' ✓' : ''}`);
+  const goals = state.goals.map(g => `${g.title} (${g.progress || 0}%)`);
+  const lastSleep = state.health.sleep?.[state.health.sleep.length - 1];
+  const lastMood = state.health.mood?.[state.health.mood.length - 1];
+  const lastEnergy = state.health.energy?.[state.health.energy.length - 1];
+  const hour = new Date().getHours();
+
+  return `КОНТЕКСТ ПОЛЬЗОВАТЕЛЯ:
+• Время: ${hour}:00, ${new Date().toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' })}
+• Streak: ${state.stats.streak || 0} дней
+• Сон сегодня: ${lastSleep ? lastSleep.hours + 'ч' : 'не записан'}
+• Настроение: ${lastMood ? lastMood.score + '/10' : 'не записано'}
+• Энергия: ${lastEnergy ? lastEnergy.score + '/10' : 'не записана'}
+• Активные задачи: ${tasksPending.length ? tasksPending.map(t => `"${t.title}" (${t.planned_time}мин)`).join('; ') : 'нет'}
+• Привычки: ${habits.length ? habits.join(', ') : 'нет'}
+• Цели: ${goals.length ? goals.join(', ') : 'нет'}
+• Выполнено сегодня: ${state.tasks.filter(t => t.status === 'completed' && t.created_at?.slice(0,10) === today()).length}
+
+Используй контекст для персонализации. НЕ перечисляй его в ответе.`;
+}
+
+/* AI Settings */
+window.openAISettings = function() {
+  const s = state.settings;
+  openModal(`
+    <h2>⚙️ Настройки AI</h2>
+    <div class="field"><label>Провайдер</label>
+      <select id="ai-provider">
+        ${Object.entries(AI_PROVIDERS).map(([k, v]) => `<option value="${k}" ${s.provider === k ? 'selected' : ''}>${v.name}</option>`).join('')}
+      </select>
+    </div>
+    <div class="field"><label>API ключ</label>
+      <input type="password" id="ai-key" value="${escapeHtml(s.apiKey || '')}" placeholder="sk-..."/>
+    </div>
+    <div class="text-xs text-3 mb-2">
+      💡 Ключ хранится только в браузере.<br>
+      <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--brand-2);">Gemini (бесплатно)</a> •
+      <a href="https://platform.openai.com/api-keys" target="_blank" style="color:var(--brand-2);">OpenAI</a> •
+      <a href="https://console.anthropic.com/" target="_blank" style="color:var(--brand-2);">Anthropic</a>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="saveAISettings()">Сохранить</button>
+    ${s.apiKey ? `<button class="btn btn-ghost btn-block mt-2" onclick="clearAISettings()">🗑 Удалить ключ</button>` : ''}
+  `);
+};
+window.saveAISettings = function() {
+  state.settings.provider = document.getElementById('ai-provider').value;
+  state.settings.apiKey = document.getElementById('ai-key').value.trim();
+  save(); toast('Сохранено', 'success'); closeModal(); renderAI();
+};
+window.clearAISettings = function() {
+  if (!confirm('Удалить API ключ?')) return;
+  state.settings.apiKey = ''; save(); toast('Удалён', 'info'); closeModal(); renderAI();
+};
+
+/* ======================================================================
+   HEALTH PAGE
+   ====================================================================== */
+function renderHealth() {
+  const sleep = state.health.sleep || [];
+  const mood = state.health.mood || [];
+  const energy = state.health.energy || [];
+  const last7 = (arr) => arr.slice(-7);
+
+  const avg = (arr, key) => arr.length ? (arr.reduce((s, x) => s + (x[key] || 0), 0) / arr.length).toFixed(1) : '—';
+
+  document.getElementById('app').innerHTML = `
+    <div class="page">
+      <div class="page-title"><span class="emoji">❤️</span>Здоровье</div>
+
+      <div class="card">
+        <h2>📊 Сегодня</h2>
+        <div class="stat-grid">
+          <div class="stat-item">
+            <div class="stat-value">${sleep.length ? sleep[sleep.length-1].hours + 'ч' : '—'}</div>
+            <div class="stat-label">Сон</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">${mood.length ? mood[mood.length-1].score : '—'}</div>
+            <div class="stat-label">Настроение</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">${energy.length ? energy[energy.length-1].score : '—'}</div>
+            <div class="stat-label">Энергия</div>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-block mt-3" onclick="quickHealthLog()">➕ Записать состояние</button>
+      </div>
+
+      <div class="card">
+        <h2>📈 Среднее за 7 дней</h2>
+        <div class="stat-grid">
+          <div class="stat-item"><div class="stat-value">${avg(last7(sleep), 'hours')}ч</div><div class="stat-label">Сон</div></div>
+          <div class="stat-item"><div class="stat-value">${avg(last7(mood), 'score')}</div><div class="stat-label">Настроение</div></div>
+          <div class="stat-item"><div class="stat-value">${avg(last7(energy), 'score')}</div><div class="stat-label">Энергия</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>⚕️ AI-Врач</h2>
+        <p class="text-sm text-2 mb-2">Есть симптомы? Задай вопрос AI-консультанту. Он подскажет, к какому врачу обратиться.</p>
+        <button class="btn btn-success btn-block" onclick="openPersona('doctor')">Открыть чат с врачом</button>
+        <div class="text-xs text-3 mt-2 text-center">
+          ⚠️ AI не ставит диагнозы. Это образовательная информация.
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>🩺 Симптомы (последние)</h2>
+        ${(state.health.symptoms || []).length ? (state.health.symptoms || []).slice(-5).reverse().map(s => `
+          <div class="item mb-1"><div class="item-body">
+            <div class="item-title">${escapeHtml(s.text)}</div>
+            <div class="item-meta">${fmtDate(s.timestamp)}</div>
+          </div></div>
+        `).join('') : '<div class="empty"><div class="empty-text">Нет записей симптомов</div></div>'}
+        <button class="btn btn-ghost btn-block mt-2" onclick="logSymptom()">➕ Записать симптом</button>
+      </div>
+
+      <div class="card">
+        <h2>💡 Напоминания</h2>
+        <div class="setting-row">
+          <div><div class="setting-label">💧 Пить воду</div><div class="setting-desc">каждые 2 часа</div></div>
+          <button class="switch" onclick="toast('Напоминания в разработке', 'info')"></button>
+        </div>
+        <div class="setting-row">
+          <div><div class="setting-label">🚶 Разминка</div><div class="setting-desc">каждый час</div></div>
+          <button class="switch" onclick="toast('Напоминания в разработке', 'info')"></button>
+        </div>
+        <div class="setting-row">
+          <div><div class="setting-label">😴 Время сна</div><div class="setting-desc">в 23:00</div></div>
+          <button class="switch" onclick="toast('Напоминания в разработке', 'info')"></button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+window.logSymptom = function() {
+  openModal(`
+    <h2>🩺 Записать симптом</h2>
+    <div class="field"><label>Что беспокоит?</label>
+      <textarea id="symp-text" placeholder="Например: головная боль, давящая, справа..."></textarea>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="saveSymptom()">Сохранить</button>
+  `);
+};
+window.saveSymptom = function() {
+  const text = document.getElementById('symp-text').value.trim();
+  if (!text) return toast('Введите описание', 'error');
+  if (!state.health.symptoms) state.health.symptoms = [];
+  state.health.symptoms.push({ id: uid(), text, timestamp: nowISO() });
+  save(); closeModal(); toast('Записано', 'success'); renderHealth();
+};
+
+/* ======================================================================
    TASKS
    ====================================================================== */
 let taskFilter = { status: 'all', query: '' };
@@ -968,7 +2061,7 @@ function renderTasks() {
         </div>
       </div>
       <div id="tasks-list"></div>
-      <button class="btn btn-primary btn-block" onclick="quickAddTask()" style="position:fixed;bottom:calc(var(--nav-h) + 16px);left:50%;transform:translateX(-50%);z-index:50;max-width:300px;box-shadow:0 8px 32px var(--brand-glow);">
+      <button class="btn btn-primary btn-block" onclick="quickAddTask()" style="position:fixed;bottom:calc(var(--nav-h) + var(--safe-bottom) + 20px);left:50%;transform:translateX(-50%);z-index:50;max-width:280px;box-shadow:0 12px 40px var(--brand-glow);">
         ➕ Новая задача
       </button>
     </div>
@@ -996,9 +2089,8 @@ function renderTasksList() {
           <div class="item-body">
             <div class="item-title" style="${t.status === 'completed' ? 'text-decoration:line-through;opacity:0.5;' : ''}">${escapeHtml(t.title)}</div>
             <div class="item-meta">
-              <span class="badge ${t.priority === 'high' ? 'badge-danger' : t.priority === 'medium' ? 'badge-warning' : 'badge-muted'}">${t.priority === 'high' ? '🔴' : t.priority === 'medium' ? '🟡' : '🟢'} ${t.priority}</span>
+              <span class="badge ${t.priority === 'high' ? 'badge-danger' : t.priority === 'medium' ? 'badge-warning' : 'badge-muted'}">${t.priority}</span>
               <span>${t.planned_time || 0} мин</span>
-              ${t.status === 'completed' ? '<span class="badge badge-success">✓</span>' : ''}
             </div>
           </div>
           <div class="item-actions">
@@ -1019,245 +2111,6 @@ window.deleteTask = function(id) {
 };
 
 /* ======================================================================
-   CALENDAR
-   ====================================================================== */
-let calOffset = 0;
-function renderCalendar() {
-  const now = new Date();
-  const month = new Date(now.getFullYear(), now.getMonth() + calOffset, 1);
-  const year = month.getFullYear(), m = month.getMonth();
-  const firstDay = (new Date(year, m, 1).getDay() + 6) % 7;
-  const daysInMonth = new Date(year, m + 1, 0).getDate();
-  const monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-  const weekdays = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
-  const todayStr = today();
-  const events = state.schedule.filter(b => {
-    const d = new Date(b.start_time);
-    return d.getMonth() === m && d.getFullYear() === year;
-  });
-  let gridHtml = weekdays.map(w => `<div class="cal-weekday">${w}</div>`).join('');
-  for (let i = 0; i < firstDay; i++) gridHtml += `<div></div>`;
-  for (let day = 1; day <= daysInMonth; day++) {
-    const ds = `${year}-${String(m+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-    const hasEvent = events.some(b => new Date(b.start_time).toISOString().slice(0, 10) === ds);
-    gridHtml += `<button class="cal-day ${ds === todayStr ? 'today' : ''} ${hasEvent ? 'has-event' : ''}" onclick="showDayDetails('${ds}')">${day}</button>`;
-  }
-  document.getElementById('app').innerHTML = `
-    <div class="page">
-      <div class="page-title"><span class="emoji">📅</span>Календарь</div>
-      <div class="card">
-        <div class="flex justify-between mb-2">
-          <button class="btn btn-ghost btn-icon" onclick="calOffset--;renderCalendar()">◀</button>
-          <div style="font-size:17px;font-weight:700;">${monthNames[m]} ${year}</div>
-          <button class="btn btn-ghost btn-icon" onclick="calOffset++;renderCalendar()">▶</button>
-        </div>
-        <div class="cal-grid">${gridHtml}</div>
-      </div>
-      <div class="card">
-        <h2>➕ Добавить событие</h2>
-        <input type="text" id="ev-title" placeholder="Название"/>
-        <input type="datetime-local" id="ev-start" style="margin-top:8px;"/>
-        <input type="datetime-local" id="ev-end" style="margin-top:8px;"/>
-        <button class="btn btn-primary btn-block mt-2" onclick="addEvent()">Добавить</button>
-      </div>
-    </div>
-  `;
-}
-window.showDayDetails = function(dateStr) {
-  const events = state.schedule.filter(b => new Date(b.start_time).toISOString().slice(0, 10) === dateStr);
-  const tasks = state.tasks.filter(t => t.created_at?.slice(0, 10) === dateStr);
-  const completed = tasks.filter(t => t.status === 'completed').length;
-  const minutes = tasks.filter(t => t.status === 'completed').reduce((s, t) => s + (t.actual_time || 0), 0);
-  openModal(`
-    <h2>📅 ${fmtDate(dateStr)}</h2>
-    <div class="stat-grid mb-2">
-      <div class="stat-item"><div class="stat-value">${tasks.length}</div><div class="stat-label">Задач</div></div>
-      <div class="stat-item"><div class="stat-value">${completed}</div><div class="stat-label">Готово</div></div>
-      <div class="stat-item"><div class="stat-value">${minutes}</div><div class="stat-label">Минут</div></div>
-    </div>
-    <h3>📆 События</h3>
-    ${events.length ? events.map(b => `<div class="item mb-1"><div class="item-body"><div class="item-title">${escapeHtml(b.title)}</div><div class="item-meta">${fmtTime(b.start_time)} — ${fmtTime(b.end_time)}</div></div></div>`).join('') : '<div class="empty"><div class="empty-text">Нет событий</div></div>'}
-    <button class="btn btn-ghost btn-block mt-2" onclick="closeModal()">Закрыть</button>
-  `);
-};
-window.addEvent = function() {
-  const title = document.getElementById('ev-title').value.trim();
-  const start = document.getElementById('ev-start').value;
-  const end = document.getElementById('ev-end').value;
-  if (!title || !start || !end) return toast('Заполните поля', 'error');
-  if (new Date(start) >= new Date(end)) return toast('Неверный интервал', 'error');
-  state.schedule.push({ id: uid(), title, start_time: new Date(start).toISOString(), end_time: new Date(end).toISOString() });
-  save(); toast('Добавлено', 'success'); haptic('success');
-  renderCalendar();
-};
-
-/* ======================================================================
-   COACH — главная фича
-   ====================================================================== */
-function renderCoach() {
-  const hasKey = !!(state.settings.apiKey && state.settings.provider);
-  const mode = detectMode('');
-  const modeLabels = {
-    morning: '🌅 Утро', day: '☀️ День', evening: '🌙 Вечер',
-    crisis: '🆘 Кризис', burnout: '🔥 Выгорание', fear: '😰 Страх',
-    procrastination: '⏳ Прокрастинация', choice: '🤔 Выбор', goal: '🎯 Цель'
-  };
-
-  document.getElementById('app').innerHTML = `
-    <div class="page">
-      <div class="page-title"><span class="emoji">💬</span>AI Коуч</div>
-
-      <div class="card" style="padding:12px 14px;">
-        <div class="flex justify-between">
-          <div class="flex" style="gap:6px;align-items:center;">
-            <span class="badge badge-brand">${modeLabels[mode] || '🤖 AI'}</span>
-            ${!hasKey ? '<span class="badge badge-warning">⚠️ Demo режим</span>' : '<span class="badge badge-success">✓ AI активен</span>'}
-          </div>
-          <button class="chip" onclick="openAISettings()">⚙️</button>
-        </div>
-      </div>
-
-      <div class="card" style="padding:14px;">
-        <div class="chat" id="chatBox">
-          ${(state.coachMessages || []).length ? state.coachMessages.map(m => `
-            <div class="msg msg-${m.role === 'user' ? 'user' : 'bot'}">
-              ${m.mode ? `<div class="msg-mode">${modeLabels[m.mode] || m.mode}</div>` : ''}
-              ${m.role === 'user' ? escapeHtml(m.text) : renderMarkdown(m.text)}
-            </div>
-          `).join('') : `
-            <div class="empty">
-              <div class="empty-icon">🧠</div>
-              <div class="empty-text">Привет! Я твой AI-коуч.<br>Расскажи, с чем пришёл сегодня?</div>
-            </div>
-          `}
-        </div>
-      </div>
-
-      <div class="card" style="padding:12px 14px;">
-        <div class="chips">
-          <button class="chip" onclick="quickCoachPrompt('Не могу начать задачу')">😩 Не могу начать</button>
-          <button class="chip" onclick="quickCoachPrompt('Постоянно отвлекаюсь')">📱 Отвлекаюсь</button>
-          <button class="chip" onclick="quickCoachPrompt('Чувствую выгорание')">🔥 Выгорание</button>
-          <button class="chip" onclick="quickCoachPrompt('Не могу выбрать между вариантами')">🤔 Выбор</button>
-          <button class="chip" onclick="quickCoachPrompt('Хочу спланировать неделю')">📋 План недели</button>
-          <button class="chip" onclick="quickCoachPrompt('Боюсь провала')">😰 Страх</button>
-        </div>
-        <div class="flex mt-2">
-          <input type="text" id="coachInput" placeholder="Напиши сообщение..." style="flex:1;" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendCoachMsg();}"/>
-          <button class="btn btn-primary btn-icon" onclick="sendCoachMsg()">➤</button>
-        </div>
-      </div>
-    </div>
-  `;
-  const box = document.getElementById('chatBox');
-  if (box) box.scrollTop = box.scrollHeight;
-}
-
-window.openAISettings = function() {
-  const s = state.settings;
-  openModal(`
-    <h2>⚙️ Настройки AI</h2>
-    <div class="field"><label>Провайдер</label>
-      <select id="ai-provider">
-        ${Object.entries(AI_PROVIDERS).map(([k, v]) => `<option value="${k}" ${s.provider === k ? 'selected' : ''}>${v.name}</option>`).join('')}
-      </select>
-    </div>
-    <div class="field"><label>API ключ</label>
-      <input type="password" id="ai-key" value="${escapeHtml(s.apiKey || '')}" placeholder="sk-... или ваш ключ"/>
-    </div>
-    <div class="text-xs text-3 mb-2">
-      💡 Ключ хранится только в вашем браузере. Не отправляется на наши серверы.<br>
-      Получить: <a href="https://platform.openai.com/api-keys" target="_blank" style="color:var(--brand-2);">OpenAI</a> •
-      <a href="https://console.anthropic.com/" target="_blank" style="color:var(--brand-2);">Anthropic</a> •
-      <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--brand-2);">Gemini</a>
-    </div>
-    <button class="btn btn-primary btn-block" onclick="saveAISettings()">Сохранить</button>
-    ${s.apiKey ? `<button class="btn btn-ghost btn-block mt-2" onclick="clearAISettings()">🗑 Удалить ключ</button>` : ''}
-  `);
-};
-
-window.saveAISettings = function() {
-  state.settings.provider = document.getElementById('ai-provider').value;
-  state.settings.apiKey = document.getElementById('ai-key').value.trim();
-  save();
-  toast('AI настройки сохранены', 'success');
-  closeModal();
-  renderCoach();
-};
-
-window.clearAISettings = function() {
-  if (!confirm('Удалить API ключ?')) return;
-  state.settings.apiKey = '';
-  save();
-  toast('Ключ удалён', 'info');
-  closeModal();
-  renderCoach();
-};
-
-window.sendCoachMsg = async function() {
-  const input = document.getElementById('coachInput');
-  const text = input.value.trim();
-  if (!text) return;
-  input.value = '';
-  input.disabled = true;
-
-  const mode = detectMode(text);
-  if (!state.coachMessages) state.coachMessages = [];
-  state.coachMessages.push({ role: 'user', text, timestamp: nowISO() });
-  save();
-  renderCoach();
-
-  // Typing indicator
-  const box = document.getElementById('chatBox');
-  const typing = document.createElement('div');
-  typing.className = 'typing';
-  typing.innerHTML = '<span></span><span></span><span></span>';
-  box.appendChild(typing);
-  box.scrollTop = box.scrollHeight;
-
-  // Build context with user data
-  const contextBlock = buildUserContext();
-  const messages = [
-    { role: 'system', content: COACH_SYSTEM_PROMPT + '\n\n' + contextBlock },
-    ...state.coachMessages.slice(-10).map(m => ({
-      role: m.role === 'user' ? 'user' : 'assistant',
-      content: m.text
-    }))
-  ];
-
-  const result = await callAI(messages);
-
-  typing.remove();
-  state.coachMessages.push({
-    role: 'coach',
-    text: result.text,
-    mode: result.fallback ? null : mode,
-    timestamp: nowISO()
-  });
-  save();
-  renderCoach();
-  haptic('light');
-  const newInput = document.getElementById('coachInput');
-  if (newInput) { newInput.disabled = false; newInput.focus(); }
-};
-
-function buildUserContext() {
-  const tasksPending = state.tasks.filter(t => t.status === 'pending').slice(0, 5);
-  const habits = state.habits.map(h => `${h.title}${h.history?.includes(today()) ? ' ✓' : ''}`);
-  const goals = state.goals.map(g => `${g.title} (${g.progress || 0}%)`);
-  const hour = new Date().getHours();
-  return `КОНТЕКСТ ПОЛЬЗОВАТЕЛЯ:
-• Время: ${hour}:00, день недели: ${new Date().toLocaleDateString('ru-RU', { weekday: 'long' })}
-• Streak: ${state.stats.streak || 0} дней
-• Активные задачи: ${tasksPending.length ? tasksPending.map(t => `"${t.title}" (${t.priority}, ${t.planned_time}мин)`).join('; ') : 'нет'}
-• Привычки: ${habits.length ? habits.join(', ') : 'нет'}
-• Цели: ${goals.length ? goals.join(', ') : 'нет'}
-• Сегодня выполнено: ${state.tasks.filter(t => t.status === 'completed' && t.created_at?.slice(0,10) === today()).length} задач
-
-Используй этот контекст, чтобы давать персональные советы. НЕ перечисляй контекст в ответе — просто учитывай его.`;
-}
-
-/* ======================================================================
    MORE
    ====================================================================== */
 function renderMore() {
@@ -1268,9 +2121,9 @@ function renderMore() {
         <div class="list">
           ${Object.entries(SUB_PAGES).map(([key, p]) => `
             <div class="item" onclick="navigate('${key}')" style="cursor:pointer;">
-              <div style="width:40px;height:40px;border-radius:12px;background:var(--surface-2);display:grid;place-items:center;font-size:20px;">${p.icon}</div>
+              <div style="width:42px;height:42px;border-radius:12px;background:var(--surface-2);display:grid;place-items:center;font-size:20px;flex-shrink:0;">${p.icon}</div>
               <div class="item-body"><div class="item-title">${p.label}</div></div>
-              <span style="color:var(--text-3);">›</span>
+              <span style="color:var(--text-3);font-size:20px;">›</span>
             </div>
           `).join('')}
         </div>
@@ -1426,7 +2279,7 @@ function renderGoals() {
           <div class="item mb-2">
             <div class="item-body">
               <div class="item-title">${escapeHtml(g.title)}</div>
-              <div class="progress" style="margin-top:6px;"><div class="progress-fill" style="width:${g.progress || 0}%;"></div></div>
+              <div class="progress" style="margin-top:8px;"><div class="progress-fill" style="width:${g.progress || 0}%;"></div></div>
               <div class="item-meta mt-1"><span>${g.progress || 0}%</span></div>
             </div>
             <button class="btn btn-primary btn-icon btn-sm" onclick="updateGoal('${g.id}')">±</button>
@@ -1534,6 +2387,7 @@ function renderStats() {
   const completed = todayTasks.filter(t => t.status === 'completed');
   const minutes = completed.reduce((s, t) => s + (t.actual_time || 0), 0);
   const allCompleted = state.tasks.filter(t => t.status === 'completed').length;
+  const totalChats = Object.values(state.chats).reduce((s, arr) => s + arr.filter(m => m.role === 'user').length, 0);
   document.getElementById('app').innerHTML = `
     <div class="page">
       <div class="page-title"><span class="emoji">📊</span>Статистика</div>
@@ -1550,8 +2404,19 @@ function renderStats() {
         <div class="stat-grid">
           <div class="stat-item"><div class="stat-value">${allCompleted}</div><div class="stat-label">Задач</div></div>
           <div class="stat-item"><div class="stat-value">${state.stats.streak || 0}</div><div class="stat-label">Streak</div></div>
-          <div class="stat-item"><div class="stat-value">${state.coachMessages?.filter(m => m.role === 'user').length || 0}</div><div class="stat-label">Коуч</div></div>
+          <div class="stat-item"><div class="stat-value">${totalChats}</div><div class="stat-label">Диалогов</div></div>
         </div>
+      </div>
+      <div class="card">
+        <h2>✨ AI диалоги</h2>
+        ${Object.entries(PERSONAS).map(([key, p]) => {
+          const count = (state.chats[key] || []).filter(m => m.role === 'user').length;
+          return `<div class="item mb-1">
+            <div style="font-size:22px;">${p.icon}</div>
+            <div class="item-body"><div class="item-title">${p.name}</div></div>
+            <span class="badge badge-brand">${count}</span>
+          </div>`;
+        }).join('')}
       </div>
     </div>
   `;
@@ -1565,25 +2430,25 @@ function renderMatrix() {
   document.getElementById('app').innerHTML = `
     <div class="page">
       <div class="page-title"><span class="emoji">🔢</span>Матрица Эйзенхауэра</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
         ${[
           { key: 'q1', title: '🔥 Важно и срочно', limit: 1 },
           { key: 'q2', title: '📌 Важно, не срочно', limit: 3 },
           { key: 'q3', title: '🗑 Не важно', limit: 5 }
         ].map(q => `
-          <div class="card" style="cursor:pointer;text-align:center;" onclick="addToMatrix('${q.key}')">
-            <div style="font-size:13px;font-weight:700;color:var(--text-2);margin-bottom:8px;">${q.title}</div>
-            <div style="font-size:32px;font-weight:800;color:var(--brand-2);">${m[q.key].length}</div>
+          <div class="card" style="cursor:pointer;text-align:center;margin-bottom:0;" onclick="addToMatrix('${q.key}')">
+            <div style="font-size:13px;font-weight:700;color:var(--text-2);margin-bottom:10px;">${q.title}</div>
+            <div style="font-size:36px;font-weight:800;color:var(--brand-2);">${m[q.key].length}</div>
             <div class="text-xs text-3 mt-1">макс ${q.limit}</div>
           </div>
         `).join('')}
-        <div class="card" style="opacity:0.5;text-align:center;">
-          <div style="font-size:13px;font-weight:700;color:var(--text-2);margin-bottom:8px;">❌ Не важно, срочно</div>
-          <div style="font-size:32px;font-weight:800;color:var(--text-3);">—</div>
+        <div class="card" style="opacity:0.5;text-align:center;margin-bottom:0;">
+          <div style="font-size:13px;font-weight:700;color:var(--text-2);margin-bottom:10px;">❌ Не важно, срочно</div>
+          <div style="font-size:36px;font-weight:800;color:var(--text-3);">—</div>
           <div class="text-xs text-3 mt-1">Делегировать</div>
         </div>
       </div>
-      <div class="card">
+      <div class="card mt-2">
         <h2>📋 Задачи в матрице</h2>
         ${Object.entries(m).flatMap(([q, ids]) => ids.map(id => {
           const t = state.tasks.find(x => x.id === id);
@@ -1699,7 +2564,7 @@ function renderJournal() {
       <div class="page-title"><span class="emoji">📋</span>Журнал</div>
       <div class="card">
         ${state.actionLog.length ? state.actionLog.slice(0, 100).map(l => `
-          <div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;">
+          <div style="padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;">
             <div class="flex justify-between">
               <span class="font-bold">${escapeHtml(l.action)}</span>
               <span class="text-3 text-xs">${fmtTime(l.timestamp)}</span>
@@ -1751,7 +2616,7 @@ function renderSettings() {
         <button class="btn btn-danger btn-block mt-2" onclick="if(confirm('Удалить ВСЕ данные?')){localStorage.removeItem('${STORAGE_KEY}');location.reload();}">🗑 Сброс</button>
       </div>
       <div class="card text-center text-3 text-sm">
-        AI Коуч Pro+ v9.0<br>Сделано с ❤️
+        AI Health Ecosystem v10.0<br>Сделано с ❤️
       </div>
     </div>
   `;
@@ -1767,7 +2632,7 @@ window.exportData = function() {
   const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = `ai-coach-backup-${today()}.json`; a.click();
+  a.href = url; a.download = `ai-ecosystem-backup-${today()}.json`; a.click();
   URL.revokeObjectURL(url); toast('Экспорт готов', 'success');
 };
 window.importData = function(e) {
@@ -1799,15 +2664,21 @@ function init() {
       { id: uid(), title: 'Чтение 30 мин', history: [], created_at: nowISO() }
     ];
     state.goals = [{ id: uid(), title: 'Выучить английский до B2', progress: 25, created_at: nowISO() }];
+    state.health.sleep = [{ date: today(), hours: 7.5, timestamp: nowISO() }];
+    state.health.mood = [{ date: today(), score: 7, timestamp: nowISO() }];
+    state.health.energy = [{ date: today(), score: 6, timestamp: nowISO() }];
     save();
   }
   renderNav();
   renderDashboard();
+
+  // Screen time auto-track
   setInterval(() => {
     const t = today();
     state.screenTimeLog[t] = (state.screenTimeLog[t] || 0) + 1;
     save();
   }, 60000);
+
   updateStreak();
   if ('Notification' in window && Notification.permission === 'default') {
     Notification.requestPermission().catch(() => {});
