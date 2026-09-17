@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="AI Health v31 — Neuro Ecosystem · Vision UI 8.5">
+<title>AI Health v31 · Neuro Ecosystem</title>
+<script src="https://telegram.org/js/telegram-web-app.js?56"></script>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body class="theme-dark">
+<div class="bg-aurora"></div>
+<canvas id="themeCanvas" class="theme-canvas"></canvas>
+<div class="theme-effect" id="themeEffect"></div>
+<header class="app-header glass">
+<div class="header-inner">
+<div class="brand">
+<div class="brand-logo">🧠</div>
+<div class="brand-text">
+<span class="brand-name">AI Health</span>
+<span class="brand-version">v31</span>
+</div>
+</div>
+<div class="header-actions">
+<button class="icon-btn glass" onclick="openLiveControl()" aria-label="Пульт">🎛</button>
+<button class="icon-btn glass" onclick="openStatsQuick()" aria-label="Статистика">📊</button>
+<button class="icon-btn glass" onclick="openThemePicker()" aria-label="Тема">🎨</button>
+<button class="avatar-btn glass" id="headerAvatar" onclick="navigate('profile')" aria-label="Профиль">👤</button>
+</div>
+</div>
+</header>
+<main class="app-main" id="app"></main>
+<div class="tab-bar-wrap"><nav class="tab-bar glass-strong" id="tabBar"></nav></div>
+<div class="toast-container" id="toasts"></div>
+<div class="live-panel" id="livePanel">
+<div class="live-panel-inner glass-strong">
+<div class="live-panel-header">
+<span class="live-panel-title">🎛 Живой пульт</span>
+<button class="icon-btn-sm" onclick="closeLiveControl()">✕</button>
+</div>
+<div class="live-panel-body" id="livePanelBody"></div>
+</div>
+</div>
+<script src="data.js"></script>
+<script src="english.js"></script>
+<script src="skills.js"></script>
+<script src="entertainment.js"></script>
+<script src="screen.js"></script>
+<script src="integrations_ext.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
