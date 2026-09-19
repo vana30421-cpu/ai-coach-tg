@@ -212,6 +212,8 @@ function navigate(page){
   var main=document.getElementById('app');
   if(!main)return;
   main.innerHTML='';
+  
+  // Используем объект с проверкой — все функции гарантированно определены ниже
   var renderers={
     dashboard:renderDashboard,tasks:renderTasks,
     learning:renderLearning,levels:renderLevels,
@@ -221,7 +223,8 @@ function navigate(page){
     domains:renderDomains,plan:renderPersonalPlan,
     ai:renderAI,health:renderHealth,more:renderMore,
     stats:renderStats,detailedStats:renderDetailedStats,
-    matrix:renderMatrix,integrations:renderIntegrations,
+    matrix:renderMatrix,
+    integrations:renderIntegrations,
     profile:renderProfile,settings:renderSettings,
     water:renderWater,mood:renderMood,
     habits:renderHabits,goals:renderGoals,timer:renderTimer,
@@ -233,12 +236,12 @@ function navigate(page){
     screentracker:renderScreenTracker,
     memory:renderMemory,iq:renderIQ,eq:renderEQ,neuromodule:renderNeuro,
     finance:renderFinance,
-    dailyplan:renderDailyPlan,detoxcourse:renderDetoxCourse,
+    dailyplan:renderDailyPlan,
+    detoxcourse:renderDetoxCourse,
     movies:renderMovies,series:renderSeries,books:renderBooks,
     musiclib:renderMusic,gameslib:renderGames,
     podcastslib:renderPodcasts,resources:renderResources,
     dailySurvey:renderDailySurvey,
-    /* НОВЫЕ */
     vision:renderVision,
     visionex:renderVisionExercises,
     visiontrack:renderVisionTracker,
@@ -249,8 +252,10 @@ function navigate(page){
     planmonth:renderPlanMonth,
     obsidian:renderObsidian,
     gcal:renderGcal,
-    learnplan:renderLearnPlan
+    learnplan:renderLearnPlan,
+    survey:renderSurvey
   };
+  
   var fn=renderers[page];
   if(typeof fn!=='function'){
     main.innerHTML='<div class="page">'+backBtn('dashboard')+'<div class="title-xl">🚧 '+page+'</div><div class="card"><div class="empty"><div class="empty-icon">🚧</div><div class="empty-title">Раздел в разработке</div></div></div></div>';
@@ -322,6 +327,10 @@ function openStatsQuick(){navigate('stats')}
 /* ============ THEME PICKER ============ */
 function openThemePicker(){
   var themes=window.THEMES||[];
+  if(!themes.length){
+    toast('Темы не загружены','error');
+    return;
+  }
   var html='<div class="footnote text-tertiary" style="margin-bottom:8px;">🎨 Выбери тему ('+themes.length+')</div>';
   html+='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;max-height:50vh;overflow-y:auto;">';
   themes.forEach(function(t){
@@ -519,7 +528,6 @@ function renderLearnPlanCard(){
 function generateLearnPlan(period){
   var levels=window.LEARNING_LEVELS||[];
   var items=[];
-  var idx=0;
   levels.forEach(function(level){
     level.modules.forEach(function(mod){
       mod.lessons.forEach(function(lesson,i){
@@ -623,6 +631,75 @@ function toggleTask(id){
   if(t.status==='completed')toast('✓ Выполнено','success');
   haptic('success');checkAchievements();
   if(currentPage==='tasks')renderTasks();else renderDashboard();
+}
+
+/* ============ MATRIX (Eisenhower) ============ */
+function renderMatrix(){
+  var pending=state.tasks.filter(function(t){return t.status==='pending'});
+  var q1=[],q2=[],q3=[],q4=[];
+  pending.forEach(function(t){
+    var q=getEisenhowerQuadrant(t);
+    if(q==='q1')q1.push(t);else if(q==='q2')q2.push(t);else if(q==='q3')q3.push(t);else q4.push(t);
+  });
+  var html='<div class="page">'+backBtn('tasks')+'<div class="title-xl">🔢 Матрица Эйзенхауэра</div>';
+  html+='<div class="footnote text-secondary mb-3">🔥 Q1 делай · 📌 Q2 планируй · ⚡ Q3 делегируй · 🗑 Q4 удали</div>';
+  html+='<div class="matrix-grid-2x2">';
+  html+='<div class="matrix-quadrant matrix-q1" onclick="openMatrixQuadrant(\'q1\')"><div class="matrix-q-title">🔥 Срочно + Важно</div><div class="matrix-q-count">'+q1.length+'</div><div class="matrix-q-sub">Делай сейчас</div></div>';
+  html+='<div class="matrix-quadrant matrix-q2" onclick="openMatrixQuadrant(\'q2\')"><div class="matrix-q-title">📌 Не срочно + Важно</div><div class="matrix-q-count">'+q2.length+'</div><div class="matrix-q-sub">Планируй</div></div>';
+  html+='<div class="matrix-quadrant matrix-q3" onclick="openMatrixQuadrant(\'q3\')"><div class="matrix-q-title">⚡ Срочно + Неважно</div><div class="matrix-q-count">'+q3.length+'</div><div class="matrix-q-sub">Делегируй</div></div>';
+  html+='<div class="matrix-quadrant matrix-q4" onclick="openMatrixQuadrant(\'q4\')"><div class="matrix-q-title">🗑 Не срочно + Неважно</div><div class="matrix-q-count">'+q4.length+'</div><div class="matrix-q-sub">Удали</div></div>';
+  html+='</div>';
+  if(pending.length){
+    html+='<div class="card"><h2>📋 Все активные ('+pending.length+')</h2>';
+    pending.forEach(function(t){html+=taskRow(t)});
+    html+='</div>';
+  }else{
+    html+='<div class="card"><div class="empty"><div class="empty-icon">✨</div><div class="empty-title">Нет активных задач</div></div></div>';
+  }
+  html+='</div>';
+  document.getElementById('app').innerHTML=html;
+}
+function openMatrixQuadrant(q){
+  var pending=state.tasks.filter(function(t){return t.status==='pending'&&getEisenhowerQuadrant(t)===q});
+  var titles={q1:'🔥 Срочно + Важно',q2:'📌 Не срочно + Важно',q3:'⚡ Срочно + Неважно',q4:'🗑 Не срочно + Неважно'};
+  var html='<div style="margin-bottom:12px;"><div style="font-size:16px;font-weight:800;">'+titles[q]+'</div></div>';
+  if(!pending.length){html+='<div class="empty"><div class="empty-icon">✨</div><div class="empty-title">Пусто</div></div>';openSheet(titles[q],html);return}
+  html+='<div class="card">';
+  pending.forEach(function(t){html+=taskRow(t)});
+  html+='</div>';
+  openSheet(titles[q],html);
+}
+
+/* ============ DAILY PLAN (from survey) ============ */
+function renderDailyPlan(){
+  var plan=state.todayPlan;
+  var html='<div class="page">'+backBtn('dashboard')+'<div class="title-xl">📅 План дня</div>';
+  if(!plan||plan.date!==today()){
+    html+='<div class="card"><div class="empty"><div class="empty-icon">📋</div><div class="empty-title">План не сформирован</div><div class="empty-text">Пройди опрос дня</div><button class="btn btn-primary btn-block mt-3" onclick="openDailySurvey(true)">Пройти опрос</button></div></div>';
+    html+='</div>';
+    document.getElementById('app').innerHTML=html;
+    return;
+  }
+  html+='<div class="card card-gradient"><div style="opacity:.9;font-size:12px;">Нагрузка</div><div style="font-size:40px;font-weight:800;">'+plan.load+'%</div></div>';
+  html+='<div class="card"><h2>📋 Что делать</h2>';
+  plan.items.forEach(function(item){
+    html+='<div style="display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--divider);">';
+    html+='<div style="font-size:22px;flex-shrink:0;">'+item.icon+'</div>';
+    html+='<div style="flex:1;"><div style="font-weight:700;font-size:14px;">'+esc(item.title)+'</div>';
+    html+='<div class="footnote text-secondary">'+esc(item.time)+' · '+esc(item.desc)+'</div></div></div>';
+  });
+  html+='</div>';
+  if(plan.basedOn){
+    html+='<div class="card"><h2>📊 На основе опроса</h2>';
+    if(plan.basedOn.sleepHours)html+='<div class="stat-row"><span class="stat-row-label">Сон</span><span class="stat-row-value">'+plan.basedOn.sleepHours+' ч</span></div>';
+    if(plan.basedOn.mood)html+='<div class="stat-row"><span class="stat-row-label">Настроение</span><span class="stat-row-value">'+plan.basedOn.mood+'/10</span></div>';
+    if(plan.basedOn.energy)html+='<div class="stat-row"><span class="stat-row-label">Энергия</span><span class="stat-row-value">'+plan.basedOn.energy+'/10</span></div>';
+    if(plan.basedOn.stress)html+='<div class="stat-row"><span class="stat-row-label">Стресс</span><span class="stat-row-value">'+plan.basedOn.stress+'/10</span></div>';
+    html+='</div>';
+  }
+  html+='<button class="btn btn-ghost btn-block mt-3" onclick="openDailySurvey(true)">🔄 Обновить опрос</button>';
+  html+='</div>';
+  document.getElementById('app').innerHTML=html;
 }
 
 /* ============ ENTITY EDITOR ============ */
@@ -1765,7 +1842,7 @@ function renderEntertainment(){
   document.getElementById('app').innerHTML=html;
 }
 function openWatchReflection(title,type){
-  var html='<div class="field"><label class="field-label">Что понял?</label><textarea id="reflection-learn">'+'</textarea></div>';
+  var html='<div class="field"><label class="field-label">Что понял?</label><textarea id="reflection-learn"></textarea></div>';
   html+='<div class="field"><label class="field-label">Что выжил (главная мысль)?</label><textarea id="reflection-main"></textarea></div>';
   html+='<div class="field"><label class="field-label">Оценка 1-10</label><input type="number" id="reflection-rating" min="1" max="10" value="8"/></div>';
   html+='<button class="btn btn-primary btn-block mt-3" onclick="saveWatchReflection(\''+esc(title)+'\',\''+type+'\')">💾 Сохранить</button>';
@@ -1883,21 +1960,45 @@ function renderScreenTracker(){
   html+='</div>';
   document.getElementById('app').innerHTML=html;
 }
+
+/* ============ DETOX COURSE HELPERS ============ */
+function getCurrentDay(){
+  var completed=Object.keys(state.detoxCourseProgress||{}).map(Number).filter(function(n){return !isNaN(n)});
+  if(!completed.length)return 1;
+  var max=Math.max.apply(null,completed);
+  return Math.min(30,max+1);
+}
+function isDayCompleted(day){
+  return !!(state.detoxCourseProgress&&state.detoxCourseProgress[day]);
+}
+function getCompletedDaysCount(){
+  return Object.keys(state.detoxCourseProgress||{}).length;
+}
+function canOpenDay(day){
+  if(day===1)return true;
+  if(isDayCompleted(day))return true;
+  return isDayCompleted(day-1);
+}
+
 function renderDetoxCourse(){
   var course=window.DETOX_COURSE||[];
-  var currentDay=(typeof getCurrentDay==='function')?getCurrentDay():1;
-  var completed=(typeof getCompletedDaysCount==='function')?getCompletedDaysCount():0;
+  var currentDay=getCurrentDay();
+  var completed=getCompletedDaysCount();
   var pct=Math.round(completed/30*100);
   var html='<div class="page">'+backBtn('screentracker')+'<div class="title-xl">📚 Детокс-курс</div>';
   html+='<div class="detox-progress-hero"><h2>Прогресс</h2><div class="big">'+pct+'%</div><div class="small">'+completed+' из 30 · День '+currentDay+'</div><div class="progress" style="margin-top:12px;background:rgba(255,255,255,.25);height:6px;"><div class="progress-fill" style="width:'+pct+'%;background:#fff;"></div></div></div>';
-  course.forEach(function(d){
-    var isDone=(typeof isDayCompleted==='function')?isDayCompleted(d.day):false;
-    var isCurrent=d.day===currentDay;
-    var canOpen=(typeof canOpenDay==='function')?canOpenDay(d.day):(d.day<=currentDay||isDone);
-    var cls='detox-day-card';
-    if(isDone)cls+=' completed';else if(isCurrent)cls+=' current';else if(!canOpen)cls+=' locked';
-    html+='<div class="'+cls+'" onclick="'+(canOpen?'openDetoxDay('+d.day+')':'toast(\'Сначала предыдущий\',\'warning\')')+'"><div class="detox-day-header"><div class="detox-day-number">'+(isDone?'✓ День '+d.day:'День '+d.day)+'</div><div class="footnote text-tertiary">'+esc(d.phase)+'</div></div><div class="detox-day-title">'+esc(d.title)+'</div><div class="detox-day-subtitle">'+esc(d.subtitle)+'</div></div>';
-  });
+  if(!course.length){
+    html+='<div class="card"><div class="empty"><div class="empty-icon">📭</div><div class="empty-title">Курс не загружен</div><div class="empty-text">Проверь content.js</div></div></div>';
+  }else{
+    course.forEach(function(d){
+      var isDone=isDayCompleted(d.day);
+      var isCurrent=d.day===currentDay;
+      var canOpen=canOpenDay(d.day);
+      var cls='detox-day-card';
+      if(isDone)cls+=' completed';else if(isCurrent)cls+=' current';else if(!canOpen)cls+=' locked';
+      html+='<div class="'+cls+'" onclick="'+(canOpen?'openDetoxDay('+d.day+')':'toast(\'Сначала предыдущий\',\'warning\')')+'"><div class="detox-day-header"><div class="detox-day-number">'+(isDone?'✓ День '+d.day:'День '+d.day)+'</div><div class="footnote text-tertiary">'+esc(d.phase)+'</div></div><div class="detox-day-title">'+esc(d.title)+'</div><div class="detox-day-subtitle">'+esc(d.subtitle)+'</div></div>';
+    });
+  }
   html+='</div>';
   document.getElementById('app').innerHTML=html;
 }
@@ -1905,7 +2006,7 @@ function openDetoxDay(day){
   var course=window.DETOX_COURSE||[];
   var d=course.find(function(x){return x.day===day});
   if(!d)return;
-  var isDone=(typeof isDayCompleted==='function')?isDayCompleted(day):false;
+  var isDone=isDayCompleted(day);
   var html='<div style="text-align:center;margin-bottom:16px;"><div class="detox-day-number" style="margin:0 auto 8px;">День '+d.day+'</div><div class="footnote text-secondary">'+esc(d.phase)+'</div></div>';
   html+='<div style="text-align:center;margin-bottom:16px;"><div style="font-size:20px;font-weight:800;">'+esc(d.title)+'</div></div>';
   html+='<div class="detox-section why"><div class="detox-section-title">🧠 Почему</div><div class="detox-section-content">'+formatLesson(d.why)+'</div></div>';
@@ -1917,13 +2018,12 @@ function openDetoxDay(day){
 }
 function completeDetoxDay(day){
   try{
-    var s=window.state||state;
-    if(!s.detoxCourseProgress)s.detoxCourseProgress={};
-    s.detoxCourseProgress[day]=true;
+    if(!state.detoxCourseProgress)state.detoxCourseProgress={};
+    state.detoxCourseProgress[day]=true;
     save();haptic('success');
     toast('🎉 День '+day+'!','success',3500);
     checkAchievements();closeSheet();renderDetoxCourse();
-  }catch(e){}
+  }catch(e){console.error('completeDetoxDay:',e)}
 }
 
 /* ============ RECOVERY ============ */
@@ -2524,7 +2624,7 @@ function init(){
 /* ============ RIPPLE ============ */
 function attachRipple(){
   document.addEventListener('pointerdown',function(e){
-    var target=e.target.closest('.btn,.list-row,.quick-tab,.tab-item,.task-item,.card,.icon-btn,.avatar-btn,.segmented-item,.level-card,.module-card,.lesson-row,.domain-card,.method-card,.course-card,.path-step,.survey-option,.ent-card,.habit-row,.group-item,.back-btn,.live-panel-item,.detox-day-card,.compact-item,.resource-card');
+    var target=e.target.closest('.btn,.list-row,.quick-tab,.tab-item,.task-item,.card,.icon-btn,.avatar-btn,.segmented-item,.level-card,.module-card,.lesson-row,.domain-card,.method-card,.course-card,.path-step,.survey-option,.ent-card,.habit-row,.group-item,.back-btn,.live-panel-item,.detox-day-card,.compact-item,.resource-card,.matrix-quadrant');
     if(!target)return;
     target.classList.add('tap-ripple');
     var rect=target.getBoundingClientRect();
@@ -2629,6 +2729,7 @@ window.completeEyeExercise=completeEyeExercise;
 window.applyWisdom=applyWisdom;
 window.openWatchReflection=openWatchReflection;
 window.saveWatchReflection=saveWatchReflection;
+window.openMatrixQuadrant=openMatrixQuadrant;
 window.save=save;
 window.state=state;
 window.updateHeaderAvatar=updateHeaderAvatar;
