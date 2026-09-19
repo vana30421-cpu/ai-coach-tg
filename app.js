@@ -212,8 +212,6 @@ function navigate(page){
   var main=document.getElementById('app');
   if(!main)return;
   main.innerHTML='';
-  
-  // Используем объект с проверкой — все функции гарантированно определены ниже
   var renderers={
     dashboard:renderDashboard,tasks:renderTasks,
     learning:renderLearning,levels:renderLevels,
@@ -223,8 +221,7 @@ function navigate(page){
     domains:renderDomains,plan:renderPersonalPlan,
     ai:renderAI,health:renderHealth,more:renderMore,
     stats:renderStats,detailedStats:renderDetailedStats,
-    matrix:renderMatrix,
-    integrations:renderIntegrations,
+    matrix:renderMatrix,integrations:renderIntegrations,
     profile:renderProfile,settings:renderSettings,
     water:renderWater,mood:renderMood,
     habits:renderHabits,goals:renderGoals,timer:renderTimer,
@@ -236,8 +233,7 @@ function navigate(page){
     screentracker:renderScreenTracker,
     memory:renderMemory,iq:renderIQ,eq:renderEQ,neuromodule:renderNeuro,
     finance:renderFinance,
-    dailyplan:renderDailyPlan,
-    detoxcourse:renderDetoxCourse,
+    dailyplan:renderDailyPlan,detoxcourse:renderDetoxCourse,
     movies:renderMovies,series:renderSeries,books:renderBooks,
     musiclib:renderMusic,gameslib:renderGames,
     podcastslib:renderPodcasts,resources:renderResources,
@@ -255,7 +251,6 @@ function navigate(page){
     learnplan:renderLearnPlan,
     survey:renderSurvey
   };
-  
   var fn=renderers[page];
   if(typeof fn!=='function'){
     main.innerHTML='<div class="page">'+backBtn('dashboard')+'<div class="title-xl">🚧 '+page+'</div><div class="card"><div class="empty"><div class="empty-icon">🚧</div><div class="empty-title">Раздел в разработке</div></div></div></div>';
@@ -1547,49 +1542,129 @@ function syncObsidian(){
   toast('🔄 Синхронизация... (демо)','success');
 }
 
-/* ============ GOOGLE CALENDAR ============ */
+/* ============ GOOGLE CALENDAR (кнопка) ============ */
 function renderGcal(){
-  var g=state.integrations.gcal||{};
-  var html='<div class="page">'+backBtn('planning')+'<div class="title-xl">📅 Google Calendar</div>';
-  html+='<div class="card"><h2>Настройка</h2>';
-  html+='<div class="field"><label class="field-label">Client ID</label><input type="text" id="gcal-client" value="'+esc(g.clientId||'')+'" placeholder="xxx.apps.googleusercontent.com"/></div>';
-  html+='<button class="btn btn-primary btn-block mt-3" onclick="saveGcal()">💾 Сохранить</button>';
-  if(g.connected)html+='<button class="btn btn-ghost btn-block mt-2" onclick="syncGcal()">🔄 Синхронизировать</button>';
+  var html='<div class="page">'+backBtn('planning')+'<div class="title-xl">📅 Календарь</div>';
+  
+  html+='<div class="card card-gradient">';
+  html+='<div style="font-size:48px;text-align:center;margin-bottom:8px;">🎯</div>';
+  html+='<div style="text-align:center;font-size:18px;font-weight:800;margin-bottom:8px;">Быстрое добавление</div>';
+  html+='<div style="text-align:center;opacity:.9;font-size:13px;margin-bottom:14px;">Нажми на задачу → откроется Google Calendar с готовой формой</div>';
   html+='</div>';
-  html+='<div class="card"><h2>📖 Как подключить</h2>';
-  html+='<ol style="padding-left:20px;line-height:1.8;font-size:13px;">';
-  html+='<li>Открой console.cloud.google.com</li>';
-  html+='<li>Создай проект</li>';
-  html+='<li>APIs & Services → Library → Google Calendar API → Enable</li>';
-  html+='<li>Credentials → Create Credentials → OAuth Client ID</li>';
-  html+='<li>Application type: Web application</li>';
-  html+='<li>Authorized redirect URIs: добавь свой URL</li>';
-  html+='<li>Скопируй Client ID и вставь сюда</li>';
-  html+='</ol></div>';
-  html+='<div class="card"><h2>⚙️ Настройки событий</h2>';
-  html+='<div class="group-card"><div class="group-title">По умолчанию</div>';
-  html+='<div class="stat-row"><span class="stat-row-label">Напоминание</span><span class="stat-row-value">15 мин</span></div>';
-  html+='<div class="stat-row"><span class="stat-row-label">Длительность</span><span class="stat-row-value">30 мин</span></div>';
-  html+='<div class="stat-row"><span class="stat-row-label">Календарь</span><span class="stat-row-value">primary</span></div>';
-  html+='</div></div>';
+  
+  var tasksWithDates=state.tasks.filter(function(t){return t.due_date&&t.status==='pending'});
+  html+='<div class="card"><h2>📋 Задачи с датами ('+tasksWithDates.length+')</h2>';
+  if(tasksWithDates.length){
+    tasksWithDates.forEach(function(t){
+      var url=buildGcalUrl(t);
+      html+='<div style="display:flex;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--divider);">';
+      html+='<div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:14px;">'+esc(t.title)+'</div>';
+      html+='<div class="footnote text-secondary">'+t.due_date.slice(0,16).replace('T',' ')+'</div></div>';
+      html+='<button class="btn btn-primary btn-xs" onclick="window.open(\''+url+'\',\'_blank\')">+ Календарь</button>';
+      html+='</div>';
+    });
+  }else{
+    html+='<div class="empty"><div class="empty-icon">📭</div><div class="empty-title">Нет задач с датами</div><div class="empty-text">Добавь дедлайн в задаче</div></div>';
+  }
+  html+='</div>';
+  
+  html+='<div class="card"><h2>➕ Новое событие</h2>';
+  html+='<div class="field"><label class="field-label">Название</label><input type="text" id="gcal-title" placeholder="Встреча"/></div>';
+  html+='<div class="row" style="gap:8px;"><div style="flex:1;"><label class="field-label">Дата</label><input type="date" id="gcal-date" value="'+today()+'"/></div><div style="flex:1;"><label class="field-label">Время</label><input type="time" id="gcal-time" value="10:00"/></div></div>';
+  html+='<button class="btn btn-primary btn-block mt-3" onclick="addGcalEvent()">📅 Открыть в Google Calendar</button>';
+  html+='</div>';
+  
+  html+='<div class="card"><h2>⚡ Быстрые действия</h2>';
+  html+='<div class="list-row" onclick="window.open(\'https://calendar.google.com\',\'_blank\')"><div class="list-icon">📅</div><div class="list-body"><div class="list-title">Открыть Google Calendar</div><div class="list-subtitle">calendar.google.com</div></div><div class="list-chevron">↗</div></div>';
+  html+='<div class="list-row" onclick="exportTodayPlan()"><div class="list-icon">📤</div><div class="list-body"><div class="list-title">Экспорт плана дня</div><div class="list-subtitle">Быстрая ссылка в GCal</div></div><div class="list-chevron">›</div></div>';
+  html+='</div>';
+  
+  html+='<div class="card"><h2>📖 Как это работает</h2>';
+  html+='<div class="group-card"><div class="group-title">📱 Телефон</div><div class="footnote text-secondary">Нажми "+ Календарь" → откроется Google Calendar → проверь и сохрани</div></div>';
+  html+='<div class="group-card"><div class="group-title">💻 Компьютер</div><div class="footnote text-secondary">Откроется новая вкладка с заполненной формой</div></div>';
+  html+='<div class="group-card"><div class="group-title">✨ Без API</div><div class="footnote text-secondary">Не нужны ключи, OAuth, Client ID. Работает сразу.</div></div>';
+  html+='</div>';
+  
+  html+='</div>';
   document.getElementById('app').innerHTML=html;
 }
+
+function buildGcalUrl(task){
+  if(!task||!task.due_date)return 'https://calendar.google.com';
+  var start=new Date(task.due_date);
+  if(isNaN(start.getTime())){
+    start=new Date();
+    start.setHours(10,0,0,0);
+  }
+  var end=new Date(start.getTime()+(task.planned_time||30)*60000);
+  var fmt=function(d){
+    var p=function(n){return String(n).padStart(2,'0')};
+    return d.getUTCFullYear()+p(d.getUTCMonth()+1)+p(d.getUTCDate())+'T'+p(d.getUTCHours())+p(d.getUTCMinutes())+'00Z';
+  };
+  var params={
+    action:'TEMPLATE',
+    text:'✅ '+task.title,
+    dates:fmt(start)+'/'+fmt(end),
+    details:(task.description||'')+'\n\n📱 Из Life OS',
+    sf:'true'
+  };
+  return 'https://calendar.google.com/calendar/render?'+Object.keys(params).map(function(k){
+    return k+'='+encodeURIComponent(params[k]);
+  }).join('&');
+}
+
+function addGcalEvent(){
+  var title=(document.getElementById('gcal-title')||{}).value||'';
+  var date=(document.getElementById('gcal-date')||{}).value||today();
+  var time=(document.getElementById('gcal-time')||{}).value||'10:00';
+  if(!title.trim()){
+    toast('Введи название','error');
+    return;
+  }
+  var start=new Date(date+'T'+time+':00');
+  if(isNaN(start.getTime())){
+    toast('Некорректная дата','error');
+    return;
+  }
+  var end=new Date(start.getTime()+3600000);
+  var fmt=function(d){
+    var p=function(n){return String(n).padStart(2,'0')};
+    return d.getUTCFullYear()+p(d.getUTCMonth()+1)+p(d.getUTCDate())+'T'+p(d.getUTCHours())+p(d.getUTCMinutes())+'00Z';
+  };
+  var url='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(title)+'&dates='+fmt(start)+'/'+fmt(end)+'&sf=true';
+  window.open(url,'_blank');
+  toast('✓ Открываю календарь','success');
+  haptic('success');
+}
+
+function exportTodayPlan(){
+  var plan=state.todayPlan;
+  if(!plan||plan.date!==today()||!plan.items||!plan.items.length){
+    toast('Нет плана на сегодня','warning');
+    return;
+  }
+  var text='📅 План на '+today()+'\n\n';
+  plan.items.forEach(function(item){
+    text+='• ['+item.time+'] '+item.title+' — '+item.desc+'\n';
+  });
+  var url='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent('📅 План на '+today())+'&details='+encodeURIComponent(text)+'&sf=true';
+  window.open(url,'_blank');
+  toast('✓ Открываю','success');
+}
+
+/* Заглушки для совместимости */
 function saveGcal(){
-  state.integrations.gcal=state.integrations.gcal||{};
-  state.integrations.gcal.clientId=(document.getElementById('gcal-client')||{}).value||'';
-  state.integrations.gcal.connected=!!state.integrations.gcal.clientId;
-  save();toast('✓ Google Calendar сохранён','success');
-  renderGcal();
+  toast('ℹ️ Используй кнопки в разделе "Календарь"','info');
 }
 function syncGcal(){
-  toast('🔄 Синхронизация... (демо)','success');
+  toast('ℹ️ Просто нажми "+ Календарь" у задачи','info');
 }
 
 /* ============ INTEGRATIONS ============ */
 function renderIntegrations(){
   var html='<div class="page">'+backBtn('settings')+'<div class="title-xl">🔗 Интеграции</div>';
   html+='<div class="list-row" onclick="navigate(\'obsidian\')"><div class="list-icon">📓</div><div class="list-body"><div class="list-title">Obsidian</div><div class="list-subtitle">'+(state.integrations.obsidian&&state.integrations.obsidian.connected?'✓ Подключён':'Не подключён')+'</div></div><div class="list-chevron">›</div></div>';
-  html+='<div class="list-row" onclick="navigate(\'gcal\')"><div class="list-icon">📅</div><div class="list-body"><div class="list-title">Google Calendar</div><div class="list-subtitle">'+(state.integrations.gcal&&state.integrations.gcal.connected?'✓ Подключён':'Не подключён')+'</div></div><div class="list-chevron">›</div></div>';
+  html+='<div class="list-row" onclick="navigate(\'gcal\')"><div class="list-icon">📅</div><div class="list-body"><div class="list-title">Google Calendar</div><div class="list-subtitle">Быстрое добавление по кнопке</div></div><div class="list-chevron">›</div></div>';
   html+='<div class="card"><h2>✨ Gemini AI</h2><div class="field"><label class="field-label">API Key</label><input type="password" id="gem-key" value="'+esc((state.integrations.gemini||{}).apiKey||'')+'"/></div><button class="btn btn-primary btn-block" onclick="saveGemini()">💾 Сохранить</button></div>';
   html+='</div>';
   document.getElementById('app').innerHTML=html;
@@ -1961,7 +2036,6 @@ function renderScreenTracker(){
   document.getElementById('app').innerHTML=html;
 }
 
-/* ============ DETOX COURSE HELPERS ============ */
 function getCurrentDay(){
   var completed=Object.keys(state.detoxCourseProgress||{}).map(Number).filter(function(n){return !isNaN(n)});
   if(!completed.length)return 1;
@@ -2284,7 +2358,7 @@ function renderMd(text){
 function renderMore(){
   var groups=[
     {title:'🎓 Обучение',items:[{key:'learning',emoji:'🎓',label:'Обучение'},{key:'learnplan',emoji:'🗓',label:'План обучения'},{key:'english',emoji:'🇬🇧',label:'English'},{key:'skills',emoji:'💎',label:'Навыки'},{key:'courses',emoji:'📖',label:'Курсы'},{key:'paths',emoji:'🗺',label:'Пути'},{key:'methods',emoji:'🎯',label:'Методики'}]},
-    {title:'📅 Планирование',items:[{key:'planning',emoji:'📅',label:'Планирование'},{key:'stats',emoji:'📊',label:'Статистика'},{key:'detailedStats',emoji:'📈',label:'Детальная'},{key:'matrix',emoji:'🔢',label:'Матрица'},{key:'timer',emoji:'⏱',label:'Таймер'},{key:'focus',emoji:'🎯',label:'Фокус'}]},
+    {title:'📅 Планирование',items:[{key:'planning',emoji:'📅',label:'Планирование'},{key:'gcal',emoji:'📅',label:'Календарь'},{key:'stats',emoji:'📊',label:'Статистика'},{key:'detailedStats',emoji:'📈',label:'Детальная'},{key:'matrix',emoji:'🔢',label:'Матрица'},{key:'timer',emoji:'⏱',label:'Таймер'},{key:'focus',emoji:'🎯',label:'Фокус'}]},
     {title:'👁 Зрение',items:[{key:'vision',emoji:'👁',label:'Зрение'},{key:'visionex',emoji:'🤸',label:'Упражнения'},{key:'visiontrack',emoji:'📊',label:'Трекер'}]},
     {title:'🎬 Досуг',items:[{key:'entertainment',emoji:'🎬',label:'Досуг'},{key:'resources',emoji:'🔗',label:'Свои ресурсы'}]},
     {title:'🎯 Цели',items:[{key:'habits',emoji:'🔄',label:'Привычки'},{key:'goals',emoji:'🎯',label:'Цели'},{key:'notes',emoji:'📝',label:'Заметки'},{key:'journal',emoji:'📓',label:'Дневник'}]},
@@ -2715,8 +2789,11 @@ window.openLevelLessonFromSearch=openLevelLessonFromSearch;
 window.saveGemini=saveGemini;
 window.saveObsidian=saveObsidian;
 window.saveGcal=saveGcal;
-window.syncObsidian=syncObsidian;
 window.syncGcal=syncGcal;
+window.syncObsidian=syncObsidian;
+window.buildGcalUrl=buildGcalUrl;
+window.addGcalEvent=addGcalEvent;
+window.exportTodayPlan=exportTodayPlan;
 window.createDayPlan=createDayPlan;
 window.createWeekPlan=createWeekPlan;
 window.createMonthPlan=createMonthPlan;
