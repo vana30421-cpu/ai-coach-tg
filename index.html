@@ -25,7 +25,6 @@
 --info:#4dd4ff;--coach:#b394ff;--psych:#4dd4ff;--doctor:#3ddc97;
 --nutrition:#ffa940;--fitness:#ff7ba9;--lawyer:#c4b5fd;--finance:#ffcc4d;
 --r-xs:8px;--r-sm:14px;--r-md:20px;--r-lg:26px;--r-xl:32px;--r-2xl:40px;--r-full:9999px;
---header-h:56px;--tabbar-h:70px;
 --safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);
 --ease:cubic-bezier(.4,0,.2,1);
 --spring-soft:cubic-bezier(.34,1.56,.64,1);
@@ -107,14 +106,14 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .glass{background:var(--glass-1);backdrop-filter:blur(var(--glass-blur)) saturate(180%);-webkit-backdrop-filter:blur(var(--glass-blur)) saturate(180%);border:1px solid var(--glass-border)}
 .glass-strong{background:var(--glass-2);backdrop-filter:blur(var(--glass-blur-strong)) saturate(200%);-webkit-backdrop-filter:blur(var(--glass-blur-strong)) saturate(200%);border:1px solid var(--glass-border-strong)}
 
-/* ============ ШАПКА — только 3 кнопки по центру, чуть ниже ============ */
+/* ============ ШАПКА: только 👤 📊 🎨 по центру ============ */
 .app-header{
   position:sticky;
   top:0;
   z-index:200;
-  padding-top:calc(env(safe-area-inset-top,0px) + 14px);
-  padding-bottom:10px;
-  background:linear-gradient(180deg, var(--bg) 60%, transparent);
+  padding-top:calc(env(safe-area-inset-top,0px) + 24px);
+  padding-bottom:14px;
+  background:linear-gradient(180deg, var(--bg) 65%, transparent);
   backdrop-filter:blur(20px) saturate(180%);
   -webkit-backdrop-filter:blur(20px) saturate(180%);
 }
@@ -122,22 +121,22 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:8px;
+  gap:10px;
   max-width:760px;
   margin:0 auto;
   padding:0 12px;
 }
 
 .icon-btn{
-  width:42px;
-  height:42px;
+  width:44px;
+  height:44px;
   border-radius:50%;
   border:none;
   color:var(--text);
   cursor:pointer;
   display:grid;
   place-items:center;
-  font-size:18px;
+  font-size:19px;
   background:var(--glass-2);
   border:1px solid var(--glass-border);
   transition:transform .15s var(--spring-soft), background .15s;
@@ -147,13 +146,13 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 }
 .icon-btn:active{transform:scale(.9);background:var(--glass-3)}
 .avatar-btn{
-  width:42px;
-  height:42px;
+  width:44px;
+  height:44px;
   border-radius:50%;
   background:linear-gradient(135deg,var(--brand),var(--brand-2));
   display:grid;
   place-items:center;
-  font-size:18px;
+  font-size:19px;
   cursor:pointer;
   border:2px solid transparent;
   box-shadow:0 4px 14px var(--brand-glow);
@@ -180,10 +179,10 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .tab-item.active{color:var(--brand);background:color-mix(in srgb,var(--brand) 12%,transparent)}
 .tab-item.active .tab-icon{transform:scale(1.15)}
 
-.app-main{position:relative;z-index:2;max-width:760px;margin:0 auto;width:100%;padding:14px;padding-bottom:calc(var(--tabbar-h) + var(--safe-bottom) + 70px)!important;min-height:calc(100dvh - 100px)}
+.app-main{position:relative;z-index:2;max-width:760px;margin:0 auto;width:100%;padding:14px;padding-bottom:calc(70px + var(--safe-bottom) + 70px)!important;min-height:calc(100dvh - 110px)}
 .page{animation:pageIn .35s var(--spring-snap) both}
 @keyframes pageIn{0%{opacity:0;transform:translate3d(0,12px,0) scale(.98)}100%{opacity:1;transform:translate3d(0,0,0) scale(1)}}
-.quick-tabs{position:sticky;top:calc(56px + var(--safe-top) + 18px);z-index:50;display:flex;gap:6px;overflow-x:auto;padding:8px 4px;margin:-6px -4px 12px;background:linear-gradient(180deg,var(--bg) 60%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);scrollbar-width:none}
+.quick-tabs{position:sticky;top:calc(env(safe-area-inset-top,0px) + 90px);z-index:50;display:flex;gap:6px;overflow-x:auto;padding:8px 4px;margin:-6px -4px 12px;background:linear-gradient(180deg,var(--bg) 60%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);scrollbar-width:none}
 .quick-tabs::-webkit-scrollbar{display:none}
 .quick-tab{flex-shrink:0;padding:8px 14px;border-radius:var(--r-full);background:var(--glass-2);border:1px solid var(--glass-border);color:var(--text-2);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .2s}
 .quick-tab.active{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;border-color:transparent;box-shadow:0 4px 12px var(--brand-glow)}
@@ -253,7 +252,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;hei
 .modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;position:sticky;top:0;padding-bottom:6px;z-index:1}
 .modal-title{font-size:20px;font-weight:800}
 .modal-close{width:34px;height:34px;border-radius:50%;background:var(--glass-2);border:1px solid var(--glass-border);color:var(--text-2);display:grid;place-items:center;cursor:pointer;font-size:15px}
-.toast-container{position:fixed;top:calc(80px + var(--safe-top));left:50%;transform:translateX(-50%);z-index:2000;display:flex;flex-direction:column;gap:8px;pointer-events:none;width:90%;max-width:440px}
+.toast-container{position:fixed;top:calc(110px + var(--safe-top));left:50%;transform:translateX(-50%);z-index:2000;display:flex;flex-direction:column;gap:8px;pointer-events:none;width:90%;max-width:440px}
 .toast{background:var(--glass-3);backdrop-filter:blur(24px);border:1px solid var(--glass-border-strong);color:#fff;border-radius:var(--r-md);padding:12px 18px;box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;pointer-events:auto;animation:toastIn .3s var(--spring-snap)}
 @keyframes toastIn{from{opacity:0;transform:translate3d(0,-16px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
 .toast.success{background:linear-gradient(135deg,rgba(61,220,151,.95),rgba(5,150,105,.95));color:#000}
@@ -505,7 +504,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;hei
 ::-webkit-scrollbar-thumb{background:var(--glass-3);border-radius:3px}
 ::selection{background:var(--brand-glow);color:var(--text)}
 @media(max-width:480px){
-.app-main{padding:12px;padding-bottom:calc(var(--tabbar-h) + var(--safe-bottom) + 60px)!important}
+.app-main{padding:12px;padding-bottom:calc(70px + var(--safe-bottom) + 60px)!important}
 .title-xl{font-size:24px}
 .ring-svg,.ring-center{width:56px;height:56px}
 .ring-value{font-size:11px}
@@ -521,12 +520,12 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;hei
 <body class="theme-dark">
 <div class="theme-effect" id="themeEffect"></div>
 
-<!-- ============ ШАПКА: только 🎨 📊 👤 по центру ============ -->
+<!-- ============ ШАПКА: только 👤 📊 🎨 по центру, чуть ниже ============ -->
 <header class="app-header" id="appHeader">
   <div class="header-inner">
-    <button class="icon-btn" onclick="openThemePicker()" aria-label="Темы">🎨</button>
-    <button class="icon-btn" onclick="openStatsQuick()" aria-label="Статистика">📊</button>
     <button class="avatar-btn" id="headerAvatar" onclick="navigate('profile')" aria-label="Профиль">👤</button>
+    <button class="icon-btn" onclick="openStatsQuick()" aria-label="Статистика">📊</button>
+    <button class="icon-btn" onclick="openThemePicker()" aria-label="Темы">🎨</button>
   </div>
 </header>
 
@@ -535,16 +534,6 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;hei
 <div class="tab-bar-wrap"><nav class="tab-bar" id="tabBar"></nav></div>
 
 <div class="toast-container" id="toasts"></div>
-
-<div class="live-panel" id="livePanel">
-<div class="live-panel-inner">
-<div class="live-panel-header">
-<span class="live-panel-title">🎛 Пульт</span>
-<button class="icon-btn-sm" onclick="closeLiveControl()">✕</button>
-</div>
-<div class="live-panel-body" id="livePanelBody"></div>
-</div>
-</div>
 
 <script src="content.js"></script>
 <script src="english.js"></script>
@@ -568,7 +557,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;hei
   }catch(e){}
 })();
 
-/* Обновляем аватар в шапке при смене профиля */
+/* Обновляем аватар когда меняется эмодзи профиля */
 (function(){
   function refreshAvatar(){
     try{
