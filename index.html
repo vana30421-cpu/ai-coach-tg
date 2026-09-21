@@ -25,7 +25,7 @@
 --info:#4dd4ff;--coach:#b394ff;--psych:#4dd4ff;--doctor:#3ddc97;
 --nutrition:#ffa940;--fitness:#ff7ba9;--lawyer:#c4b5fd;--finance:#ffcc4d;
 --r-xs:8px;--r-sm:14px;--r-md:20px;--r-lg:26px;--r-xl:32px;--r-2xl:40px;--r-full:9999px;
---header-h:60px;--tabbar-h:70px;
+--header-h:56px;--tabbar-h:70px;
 --safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);
 --ease:cubic-bezier(.4,0,.2,1);
 --spring-soft:cubic-bezier(.34,1.56,.64,1);
@@ -107,137 +107,114 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .glass{background:var(--glass-1);backdrop-filter:blur(var(--glass-blur)) saturate(180%);-webkit-backdrop-filter:blur(var(--glass-blur)) saturate(180%);border:1px solid var(--glass-border)}
 .glass-strong{background:var(--glass-2);backdrop-filter:blur(var(--glass-blur-strong)) saturate(200%);-webkit-backdrop-filter:blur(var(--glass-blur-strong)) saturate(200%);border:1px solid var(--glass-border-strong)}
 
-/* ============ ШАПКА LIFE OS ============ */
+/* ============ ЕДИНАЯ ШАПКА ============ */
 .app-header{
   position:sticky;
   top:0;
-  z-index:100;
-  padding-top:var(--safe-top);
+  z-index:200;
+  padding-top:env(safe-area-inset-top,0px);
   border-bottom:1px solid var(--glass-border);
   background:var(--glass-1);
   backdrop-filter:blur(var(--glass-blur)) saturate(180%);
   -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(180%);
 }
 .header-inner{
-  height:var(--header-h);
+  height:56px;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:0 16px;
-  gap:10px;
+  padding:0 10px;
+  gap:6px;
   max-width:760px;
   margin:0 auto;
 }
-.header-left{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  flex:1;
-  min-width:0;
-}
-.brand{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  font-weight:700;
-  min-width:0;
-}
-.brand-logo{
-  width:36px;
-  height:36px;
-  border-radius:12px;
-  background:linear-gradient(135deg,var(--brand),var(--brand-2));
-  display:grid;
-  place-items:center;
-  color:#fff;
-  box-shadow:0 6px 20px var(--brand-glow);
-  font-size:18px;
-  flex-shrink:0;
-  transition:transform .4s var(--spring-soft);
-}
-.brand-logo:hover{transform:rotate(15deg)}
-.brand-text{
-  display:flex;
-  flex-direction:column;
-  line-height:1.1;
-  min-width:0;
-}
-.brand-name{font-size:16px;font-weight:800;letter-spacing:-.02em}
-.brand-version{
-  font-size:9px;
-  color:var(--text-3);
-  font-weight:600;
-  text-transform:uppercase;
-  letter-spacing:.1em;
-}
+.header-left{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.header-center{display:flex;align-items:center;gap:4px;flex:1;justify-content:center;min-width:0}
+.header-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
 
-/* Кнопка "Назад" в шапке */
-.header-back-btn{
+.pill-btn{
   display:inline-flex;
   align-items:center;
-  gap:6px;
-  padding:8px 14px 8px 10px;
-  background:var(--glass-2);
-  border:1px solid var(--glass-border);
+  gap:7px;
+  padding:9px 16px 9px 13px;
   border-radius:var(--r-full);
+  background:var(--glass-2);
+  backdrop-filter:blur(10px) saturate(180%);
+  -webkit-backdrop-filter:blur(10px) saturate(180%);
+  border:1px solid var(--glass-border);
   color:var(--text);
   font-family:inherit;
   font-size:14px;
   font-weight:600;
   cursor:pointer;
-  transition:transform .15s var(--spring-soft), background .15s;
+  transition:background .15s, transform .12s var(--spring-soft);
   -webkit-appearance:none;
   appearance:none;
-  min-width:0;
-  max-width:100%;
-}
-.header-back-btn:active{transform:scale(.94);background:var(--glass-3)}
-.header-back-btn svg{
-  flex-shrink:0;
-  color:var(--brand);
-}
-.header-back-label{
-  line-height:1;
   white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  max-width:140px;
 }
+.pill-btn:active{transform:scale(.95);background:var(--glass-3)}
+.pill-btn svg{flex-shrink:0}
+.pill-btn-text{line-height:1}
 
-.header-actions{
-  display:flex;
+.pill-group{
+  display:inline-flex;
   align-items:center;
-  gap:6px;
-  flex-shrink:0;
+  gap:2px;
+  padding:3px;
+  border-radius:var(--r-full);
+  background:var(--glass-2);
+  backdrop-filter:blur(10px) saturate(180%);
+  -webkit-backdrop-filter:blur(10px) saturate(180%);
+  border:1px solid var(--glass-border);
 }
+.pill-icon-btn{
+  display:grid;
+  place-items:center;
+  width:36px;
+  height:36px;
+  border-radius:var(--r-full);
+  background:transparent;
+  border:none;
+  color:var(--text);
+  cursor:pointer;
+  transition:background .15s, transform .12s var(--spring-soft);
+  -webkit-appearance:none;
+  appearance:none;
+}
+.pill-icon-btn:active{transform:scale(.9);background:var(--glass-3)}
+.pill-icon-btn.active{background:var(--glass-3)}
+.pill-icon-btn svg{display:block}
+
 .icon-btn{
-  width:40px;
-  height:40px;
+  width:36px;
+  height:36px;
   border-radius:50%;
   border:none;
   color:var(--text);
   cursor:pointer;
   display:grid;
   place-items:center;
-  font-size:17px;
+  font-size:16px;
   background:var(--glass-2);
   border:1px solid var(--glass-border);
   transition:transform .15s var(--spring-soft);
   -webkit-appearance:none;
   appearance:none;
+  flex-shrink:0;
 }
 .icon-btn:active{transform:scale(.9)}
 .avatar-btn{
-  width:40px;
-  height:40px;
+  width:36px;
+  height:36px;
   border-radius:50%;
   background:linear-gradient(135deg,var(--brand),var(--brand-2));
   display:grid;
   place-items:center;
-  font-size:18px;
+  font-size:16px;
   cursor:pointer;
   border:2px solid transparent;
   box-shadow:0 4px 14px var(--brand-glow);
+  flex-shrink:0;
 }
 .icon-btn-sm{
   width:34px;
@@ -251,6 +228,39 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   cursor:pointer;
   font-size:14px;
 }
+
+.popup-menu{
+  position:absolute;
+  top:calc(100% + 6px);
+  right:12px;
+  min-width:220px;
+  background:var(--glass-3);
+  backdrop-filter:blur(32px) saturate(200%);
+  -webkit-backdrop-filter:blur(32px) saturate(200%);
+  border:1px solid var(--glass-border-strong);
+  border-radius:var(--r-lg);
+  padding:8px;
+  box-shadow:var(--shadow-lg);
+  z-index:210;
+  opacity:0;
+  transform:translateY(-8px) scale(.96);
+  transform-origin:top right;
+  pointer-events:none;
+  transition:opacity .2s var(--ease), transform .25s var(--spring-snap);
+}
+.popup-menu.open{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
+.popup-item{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 14px;border-radius:var(--r-sm);
+  color:var(--text);font-size:14px;font-weight:600;
+  cursor:pointer;transition:background .15s;
+  background:transparent;border:none;width:100%;
+  text-align:left;font-family:inherit;
+}
+.popup-item:active{background:var(--glass-3)}
+.popup-item-icon{font-size:18px;width:22px;text-align:center;flex-shrink:0}
+.popup-divider{height:1px;background:var(--divider);margin:6px 8px}
+
 .tab-bar-wrap{position:fixed;bottom:0;left:0;right:0;z-index:100;padding:0 8px calc(8px + var(--safe-bottom));pointer-events:none}
 .tab-bar{border-radius:22px;display:flex;align-items:stretch;height:64px;box-shadow:var(--shadow-lg);width:100%;max-width:720px;margin:0 auto;pointer-events:auto;padding:4px;gap:1px;overflow:hidden;background:var(--glass-2);backdrop-filter:blur(var(--glass-blur-strong)) saturate(200%);-webkit-backdrop-filter:blur(var(--glass-blur-strong)) saturate(200%);border:1px solid var(--glass-border-strong)}
 .tab-item{flex:1 1 0;min-width:0;background:transparent;border:none;color:var(--text-3);font-family:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px 2px;cursor:pointer;border-radius:16px;transition:color .2s,background .2s;overflow:hidden}
@@ -599,33 +609,68 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;hei
 <body class="theme-dark">
 <div class="theme-effect" id="themeEffect"></div>
 
-<!-- ============ ШАПКА LIFE OS ============ -->
+<!-- ============ ЕДИНАЯ ШАПКА ============ -->
 <header class="app-header" id="appHeader">
-<div class="header-inner">
-<div class="header-left" id="headerLeft">
-<!-- Логотип (по умолчанию) -->
-<div class="brand" id="headerBrand">
-<div class="brand-logo">🧠</div>
-<div class="brand-text">
-<span class="brand-name">Life OS</span>
-<span class="brand-version" id="brandVersion">v33</span>
-</div>
-</div>
-<!-- Кнопка "Назад" (показывается на под-страницах) -->
-<button class="header-back-btn" id="headerBackBtn" onclick="headerGoBack()" style="display:none;" aria-label="Назад">
-<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-<polyline points="15 18 9 12 15 6"></polyline>
-</svg>
-<span class="header-back-label">Назад</span>
-</button>
-</div>
-<div class="header-actions">
-<button class="icon-btn" onclick="openLiveControl()" aria-label="Пульт">🎛</button>
-<button class="icon-btn" onclick="openStatsQuick()" aria-label="Статистика">📊</button>
-<button class="icon-btn" onclick="openThemePicker()" aria-label="Тема">🎨</button>
-<button class="avatar-btn" id="headerAvatar" onclick="navigate('profile')" aria-label="Профиль">👤</button>
-</div>
-</div>
+  <div class="header-inner">
+
+    <!-- ЛЕВО: Закрыть / Назад -->
+    <div class="header-left" id="headerLeft">
+      <button class="pill-btn" id="btnClose" onclick="handleCloseBtn()" aria-label="Закрыть">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+        <span class="pill-btn-text">Закрыть</span>
+      </button>
+      <button class="pill-btn" id="headerBackBtn" onclick="headerGoBack()" style="display:none;" aria-label="Назад">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        <span class="pill-btn-text" id="headerBackLabel">Назад</span>
+      </button>
+    </div>
+
+    <!-- ЦЕНТР: наши иконки -->
+    <div class="header-center">
+      <button class="icon-btn" onclick="openThemePicker()" aria-label="Темы">🎨</button>
+      <button class="icon-btn" onclick="openLiveControl()" aria-label="Пульт">🎛</button>
+      <button class="icon-btn" onclick="openStatsQuick()" aria-label="Статистика">📊</button>
+      <button class="avatar-btn" id="headerAvatar" onclick="navigate('profile')" aria-label="Профиль">👤</button>
+    </div>
+
+    <!-- ПРАВО: ⌄ и ⋮ -->
+    <div class="header-right">
+      <div class="pill-group">
+        <button class="pill-icon-btn" onclick="handleChevronBtn()" id="btnChevron" aria-label="Свернуть">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+        <button class="pill-icon-btn" onclick="handleMenuBtn(event)" id="btnMenu" aria-label="Меню">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+            <circle cx="12" cy="5" r="1.8"></circle>
+            <circle cx="12" cy="12" r="1.8"></circle>
+            <circle cx="12" cy="19" r="1.8"></circle>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- POPUP-МЕНЮ -->
+  <div class="popup-menu" id="popupMenu">
+    <button class="popup-item" onclick="menuAction('pult')"><span class="popup-item-icon">🎛</span><span>Пульт</span></button>
+    <button class="popup-item" onclick="menuAction('stats')"><span class="popup-item-icon">📊</span><span>Статистика</span></button>
+    <button class="popup-item" onclick="menuAction('themes')"><span class="popup-item-icon">🎨</span><span>Темы</span></button>
+    <div class="popup-divider"></div>
+    <button class="popup-item" onclick="menuAction('profile')"><span class="popup-item-icon">👤</span><span>Профиль</span></button>
+    <button class="popup-item" onclick="menuAction('settings')"><span class="popup-item-icon">⚙️</span><span>Настройки</span></button>
+    <button class="popup-item" onclick="menuAction('integrations')"><span class="popup-item-icon">🔗</span><span>Интеграции</span></button>
+    <div class="popup-divider"></div>
+    <button class="popup-item" onclick="menuAction('storage')"><span class="popup-item-icon">🗄</span><span>Хранилище</span></button>
+    <button class="popup-item" onclick="menuAction('close')"><span class="popup-item-icon">✕</span><span>Закрыть приложение</span></button>
+  </div>
 </header>
 
 <main class="app-main" id="app"></main>
@@ -649,5 +694,182 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;hei
 <script src="skills.js"></script>
 <script src="entertainment.js"></script>
 <script src="app.js"></script>
+
+<script>
+'use strict';
+
+/* ЗАКРЫТЬ — умная кнопка */
+function handleCloseBtn(){
+  var overlays = document.querySelectorAll('.overlay');
+  if(overlays.length){
+    if(typeof closeSheet === 'function'){ closeSheet(); return; }
+    overlays.forEach(function(o){ o.remove(); });
+    return;
+  }
+  try{
+    if(typeof currentPage !== 'undefined' && currentPage !== 'dashboard'){
+      navigate('dashboard'); return;
+    }
+  }catch(e){}
+  try{
+    var tg = window.Telegram && window.Telegram.WebApp;
+    if(tg && typeof tg.close === 'function'){ tg.close(); return; }
+  }catch(e){}
+  if(history.length > 1){ history.back(); } else { window.close(); }
+}
+
+/* ⌄ — свернуть/развернуть шапку */
+var headerCollapsed = false;
+function handleChevronBtn(){
+  headerCollapsed = !headerCollapsed;
+  var left = document.getElementById('headerLeft');
+  var center = document.querySelector('.header-center');
+  var btn = document.getElementById('btnChevron');
+  if(left) left.style.display = headerCollapsed ? 'none' : '';
+  if(center) center.style.display = headerCollapsed ? 'none' : '';
+  if(btn) btn.classList.toggle('active', headerCollapsed);
+  try{
+    var tg = window.Telegram && window.Telegram.WebApp;
+    tg && tg.HapticFeedback && tg.HapticFeedback.impactOccurred('light');
+  }catch(e){}
+}
+
+/* ⋮ — popup-меню */
+function handleMenuBtn(e){
+  if(e) e.stopPropagation();
+  var popup = document.getElementById('popupMenu');
+  var btn = document.getElementById('btnMenu');
+  if(!popup) return;
+  var isOpen = popup.classList.toggle('open');
+  if(btn) btn.classList.toggle('active', isOpen);
+  try{
+    var tg = window.Telegram && window.Telegram.WebApp;
+    tg && tg.HapticFeedback && tg.HapticFeedback.impactOccurred('light');
+  }catch(e){}
+}
+
+document.addEventListener('click', function(e){
+  var popup = document.getElementById('popupMenu');
+  var btn = document.getElementById('btnMenu');
+  if(!popup || !btn) return;
+  if(!popup.contains(e.target) && e.target !== btn && !btn.contains(e.target)){
+    popup.classList.remove('open');
+    btn.classList.remove('active');
+  }
+});
+
+function menuAction(action){
+  var popup = document.getElementById('popupMenu');
+  var btn = document.getElementById('btnMenu');
+  if(popup) popup.classList.remove('open');
+  if(btn) btn.classList.remove('active');
+  try{
+    switch(action){
+      case 'pult': if(typeof openLiveControl === 'function') openLiveControl(); break;
+      case 'stats': if(typeof navigate === 'function') navigate('stats'); break;
+      case 'themes': if(typeof openThemePicker === 'function') openThemePicker(); break;
+      case 'profile': if(typeof navigate === 'function') navigate('profile'); break;
+      case 'settings': if(typeof navigate === 'function') navigate('settings'); break;
+      case 'integrations': if(typeof navigate === 'function') navigate('integrations'); break;
+      case 'storage': if(typeof navigate === 'function') navigate('storage'); break;
+      case 'close':
+        try{
+          var tg = window.Telegram && window.Telegram.WebApp;
+          if(tg && typeof tg.close === 'function') tg.close();
+        }catch(e){}
+        break;
+    }
+  }catch(e){ console.error('menuAction:', e); }
+  try{
+    var tg = window.Telegram && window.Telegram.WebApp;
+    tg && tg.HapticFeedback && tg.HapticFeedback.impactOccurred('light');
+  }catch(e){}
+}
+
+/* Обновление шапки: Закрыть/Назад + аватар */
+function refreshHeader(){
+  try{
+    var page = (typeof currentPage !== 'undefined') ? currentPage : 'dashboard';
+    var parents = window.PAGE_PARENTS || (typeof PAGE_PARENTS !== 'undefined' ? PAGE_PARENTS : {});
+    var titles = window.PAGE_TITLES || (typeof PAGE_TITLES !== 'undefined' ? PAGE_TITLES : {});
+
+    var closeBtn = document.getElementById('btnClose');
+    var backBtn = document.getElementById('headerBackBtn');
+    var backLabel = document.getElementById('headerBackLabel');
+    var avatar = document.getElementById('headerAvatar');
+
+    if(avatar && typeof state !== 'undefined' && state.profile){
+      avatar.textContent = state.profile.emoji || '👤';
+    }
+
+    if(parents && parents[page]){
+      if(closeBtn) closeBtn.style.display = 'none';
+      if(backBtn){
+        backBtn.style.display = 'inline-flex';
+        backBtn.setAttribute('data-target', parents[page]);
+      }
+      if(backLabel) backLabel.textContent = titles[page] || 'Назад';
+    } else {
+      if(closeBtn) closeBtn.style.display = 'inline-flex';
+      if(backBtn) backBtn.style.display = 'none';
+    }
+  }catch(e){}
+}
+
+/* headerGoBack — переход на родителя */
+window.headerGoBack = function(){
+  var btn = document.getElementById('headerBackBtn');
+  var target = btn ? btn.getAttribute('data-target') : 'dashboard';
+  if(!target) target = 'dashboard';
+  if(typeof navigate === 'function') navigate(target);
+  try{
+    var tg = window.Telegram && window.Telegram.WebApp;
+    tg && tg.HapticFeedback && tg.HapticFeedback.impactOccurred('light');
+  }catch(e){}
+};
+
+/* Хукаем navigate */
+(function(){
+  function hookNavigate(){
+    if(typeof window.navigate === 'function' && !window.navigate.__hooked){
+      var orig = window.navigate;
+      var wrapped = function(page){
+        orig.apply(this, arguments);
+        setTimeout(refreshHeader, 0);
+      };
+      wrapped.__hooked = true;
+      window.navigate = wrapped;
+    }
+  }
+  var tries = 0;
+  var iv = setInterval(function(){
+    tries++;
+    hookNavigate();
+    if(window.navigate && window.navigate.__hooked){ clearInterval(iv); refreshHeader(); }
+    if(tries > 30) clearInterval(iv);
+  }, 100);
+  setTimeout(refreshHeader, 300);
+  setTimeout(refreshHeader, 1000);
+})();
+
+window.handleCloseBtn = handleCloseBtn;
+window.handleChevronBtn = handleChevronBtn;
+window.handleMenuBtn = handleMenuBtn;
+window.menuAction = menuAction;
+window.refreshHeader = refreshHeader;
+
+/* Telegram init */
+(function(){
+  try{
+    var tg = window.Telegram && window.Telegram.WebApp;
+    if(!tg) return;
+    tg.expand();
+    tg.ready();
+    try{tg.setHeaderColor('#000000');}catch(e){}
+    try{tg.setBackgroundColor('#000000');}catch(e){}
+    try{tg.disableVerticalSwipes && tg.disableVerticalSwipes();}catch(e){}
+  }catch(e){}
+})();
+</script>
 </body>
 </html>
