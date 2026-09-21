@@ -10,6 +10,8 @@ try{
   if(tg){
     tg.expand();tg.ready();
     try{tg.setHeaderColor('#000000')}catch(e){}
+    try{tg.setBackgroundColor('#000000')}catch(e){}
+    try{tg.disableVerticalSwipes&&tg.disableVerticalSwipes()}catch(e){}
     var u=tg.initDataUnsafe&&tg.initDataUnsafe.user;
     if(u&&u.first_name)window.__tgName=u.first_name;
   }
@@ -125,6 +127,169 @@ var currentEnglishFilter='all';
 var currentVisionExercise=null;
 var currentDayPlanDate=today();
 
+/* ============ HEADER NAVIGATION (кнопка "Назад" в шапке) ============ */
+var PAGE_PARENTS={
+  dashboard:null,
+  tasks:'dashboard',
+  matrix:'tasks',
+  dailyplan:'dashboard',
+  learning:'dashboard',
+  learnplan:'learning',
+  levels:'learning',
+  levelDetail:'levels',
+  moduleDetail:'levelDetail',
+  skills:'learning',
+  paths:'learning',
+  pathDetail:'paths',
+  courses:'learning',
+  methods:'learning',
+  english:'learning',
+  memory:'learning',
+  iq:'learning',
+  eq:'learning',
+  finance:'learning',
+  neuromodule:'learning',
+  planning:'dashboard',
+  plantoday:'planning',
+  planweek:'planning',
+  planmonth:'planning',
+  obsidian:'planning',
+  gcal:'planning',
+  vision:'dashboard',
+  visionex:'vision',
+  visiontrack:'vision',
+  visiontips:'vision',
+  ai:'dashboard',
+  health:'dashboard',
+  water:'health',
+  mood:'health',
+  workouts:'health',
+  meditation:'health',
+  meds:'health',
+  recovery:'health',
+  entertainment:'dashboard',
+  resources:'entertainment',
+  movies:'entertainment',
+  series:'entertainment',
+  books:'entertainment',
+  musiclib:'entertainment',
+  gameslib:'entertainment',
+  podcastslib:'entertainment',
+  habits:'more',
+  goals:'more',
+  notes:'more',
+  journal:'more',
+  more:'dashboard',
+  stats:'dashboard',
+  detailedStats:'stats',
+  timer:'dashboard',
+  focus:'dashboard',
+  domains:'dashboard',
+  profile:'dashboard',
+  settings:'dashboard',
+  integrations:'settings',
+  storage:'settings',
+  screentracker:'more',
+  detoxcourse:'screentracker',
+  dailySurvey:'dashboard',
+  survey:'dashboard',
+  plan:'dashboard'
+};
+
+var PAGE_TITLES={
+  tasks:'Задачи',
+  matrix:'Матрица',
+  dailyplan:'План дня',
+  learning:'Обучение',
+  learnplan:'План обучения',
+  levels:'Уровни',
+  levelDetail:'Уровень',
+  moduleDetail:'Модуль',
+  skills:'Навыки',
+  paths:'Пути',
+  pathDetail:'Путь',
+  courses:'Курсы',
+  methods:'Методики',
+  english:'English',
+  memory:'Память',
+  iq:'IQ',
+  eq:'EQ',
+  finance:'Финансы',
+  neuromodule:'Нейро',
+  planning:'Планирование',
+  plantoday:'План дня',
+  planweek:'План недели',
+  planmonth:'План месяца',
+  obsidian:'Obsidian',
+  gcal:'Календарь',
+  vision:'Зрение',
+  visionex:'Упражнения',
+  visiontrack:'Трекер',
+  visiontips:'Советы',
+  ai:'AI',
+  health:'Здоровье',
+  water:'Вода',
+  mood:'Настроение',
+  workouts:'Тренировки',
+  meditation:'Медитации',
+  meds:'Лекарства',
+  recovery:'Восстановление',
+  entertainment:'Досуг',
+  resources:'Ресурсы',
+  movies:'Фильмы',
+  series:'Сериалы',
+  books:'Книги',
+  musiclib:'Музыка',
+  gameslib:'Игры',
+  podcastslib:'Подкасты',
+  habits:'Привычки',
+  goals:'Цели',
+  notes:'Заметки',
+  journal:'Дневник',
+  more:'Ещё',
+  stats:'Статистика',
+  detailedStats:'Детальная',
+  timer:'Таймер',
+  focus:'Фокус',
+  domains:'Домены',
+  profile:'Профиль',
+  settings:'Настройки',
+  integrations:'Интеграции',
+  storage:'Хранилище',
+  screentracker:'Детокс',
+  detoxcourse:'Курс',
+  dailySurvey:'Опрос',
+  survey:'Опрос'
+};
+
+function updateHeader(page){
+  var brand=document.getElementById('headerBrand');
+  var backBtn=document.getElementById('headerBackBtn');
+  var backLabel=document.querySelector('#headerBackBtn .header-back-label');
+  if(!brand||!backBtn)return;
+  var parent=PAGE_PARENTS[page];
+  var title=PAGE_TITLES[page]||'Назад';
+  if(!parent){
+    brand.style.display='';
+    backBtn.style.display='none';
+  }else{
+    brand.style.display='none';
+    backBtn.style.display='inline-flex';
+    backBtn.setAttribute('data-target',parent);
+    if(backLabel)backLabel.textContent=title;
+  }
+}
+
+function headerGoBack(){
+  var btn=document.getElementById('headerBackBtn');
+  var target=btn?btn.getAttribute('data-target'):'dashboard';
+  if(!target)target='dashboard';
+  navigate(target);
+  haptic('light');
+}
+window.headerGoBack=headerGoBack;
+window.updateHeader=updateHeader;
+
 /* ============ THEME ============ */
 function startEffects(){
   var overlay=document.getElementById('themeEffect');
@@ -209,6 +374,7 @@ function navigate(page){
   if(!page)page='dashboard';
   currentPage=page;
   try{renderTabBar()}catch(e){}
+  try{updateHeader(page)}catch(e){console.error('updateHeader:',e)}
   var main=document.getElementById('app');
   if(!main)return;
   main.innerHTML='';
@@ -263,7 +429,14 @@ function navigate(page){
   window.scrollTo({top:0});
   if(page==='profile'||page==='dashboard'){try{checkAchievements()}catch(e){}}
 }
-function backBtn(target){return '<button class="back-btn" onclick="navigate(\''+target+'\')">← Назад</button>'}
+
+/* Кнопка "Назад" теперь в шапке — возвращаем пустую строку.
+   Целевой раздел берётся из PAGE_PARENTS автоматически. */
+function backBtn(target){
+  var btn=document.getElementById('headerBackBtn');
+  if(btn&&target)btn.setAttribute('data-target',target);
+  return '';
+}
 
 /* ============ SHEET ============ */
 function openSheet(title,content){
@@ -2065,7 +2238,7 @@ function canOpenDay(day){
 }
 
 function renderDetoxCourse(){
-  var course=window.DETOX_COURSE||[];
+  var course=window.DETOX_COURSE_DETAILED||window.DETOX_COURSE||[];
   var currentDay=getCurrentDay();
   var completed=getCompletedDaysCount();
   var pct=Math.round(completed/30*100);
@@ -2677,6 +2850,7 @@ function init(){
   try{
     applyTheme(state.settings.theme);
     updateHeaderAvatar();
+    updateHeader('dashboard');
     if(!state.profile.name&&!state.settings.onboardingDone){showWelcome();return}
     if(state.profile.name&&!state.settings.onboardingDone){state.settings.onboardingDone=true;save()}
     if(!state.profile.name&&window.__tgName){state.profile.name=window.__tgName;save();updateHeaderAvatar()}
@@ -2722,7 +2896,7 @@ function init(){
 /* ============ RIPPLE ============ */
 function attachRipple(){
   document.addEventListener('pointerdown',function(e){
-    var target=e.target.closest('.btn,.list-row,.quick-tab,.tab-item,.task-item,.card,.icon-btn,.avatar-btn,.segmented-item,.level-card,.module-card,.lesson-row,.domain-card,.method-card,.course-card,.path-step,.survey-option,.ent-card,.habit-row,.group-item,.back-btn,.live-panel-item,.detox-day-card,.compact-item,.resource-card,.matrix-quadrant');
+    var target=e.target.closest('.btn,.list-row,.quick-tab,.tab-item,.task-item,.card,.icon-btn,.avatar-btn,.segmented-item,.level-card,.module-card,.lesson-row,.domain-card,.method-card,.course-card,.path-step,.survey-option,.ent-card,.habit-row,.group-item,.back-btn,.live-panel-item,.detox-day-card,.compact-item,.resource-card,.matrix-quadrant,.header-back-btn');
     if(!target)return;
     target.classList.add('tap-ripple');
     var rect=target.getBoundingClientRect();
@@ -2844,6 +3018,8 @@ window.toast=toast;
 window.haptic=haptic;
 window.startEffects=startEffects;
 window.applyTheme=applyTheme;
+window.headerGoBack=headerGoBack;
+window.updateHeader=updateHeader;
 
 if(document.readyState==='loading'){
   document.addEventListener('DOMContentLoaded',function(){init();setTimeout(attachRipple,300)});
