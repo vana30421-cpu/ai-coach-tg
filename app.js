@@ -127,7 +127,7 @@ var currentEnglishFilter='all';
 var currentVisionExercise=null;
 var currentDayPlanDate=today();
 
-/* ============ HEADER NAVIGATION (кнопка "Назад" в шапке) ============ */
+/* ============ HEADER NAVIGATION ============ */
 var PAGE_PARENTS={
   dashboard:null,
   tasks:'dashboard',
@@ -263,19 +263,22 @@ var PAGE_TITLES={
 };
 
 function updateHeader(page){
-  var brand=document.getElementById('headerBrand');
+  var closeBtn=document.getElementById('btnClose');
   var backBtn=document.getElementById('headerBackBtn');
-  var backLabel=document.querySelector('#headerBackBtn .header-back-label');
-  if(!brand||!backBtn)return;
+  var backLabel=document.getElementById('headerBackLabel');
+  var avatar=document.getElementById('headerAvatar');
+  if(avatar&&state.profile)avatar.textContent=state.profile.emoji||'👤';
   var parent=PAGE_PARENTS[page];
   var title=PAGE_TITLES[page]||'Назад';
   if(!parent){
-    brand.style.display='';
-    backBtn.style.display='none';
+    if(closeBtn)closeBtn.style.display='inline-flex';
+    if(backBtn)backBtn.style.display='none';
   }else{
-    brand.style.display='none';
-    backBtn.style.display='inline-flex';
-    backBtn.setAttribute('data-target',parent);
+    if(closeBtn)closeBtn.style.display='none';
+    if(backBtn){
+      backBtn.style.display='inline-flex';
+      backBtn.setAttribute('data-target',parent);
+    }
     if(backLabel)backLabel.textContent=title;
   }
 }
@@ -287,8 +290,11 @@ function headerGoBack(){
   navigate(target);
   haptic('light');
 }
+
 window.headerGoBack=headerGoBack;
 window.updateHeader=updateHeader;
+window.PAGE_PARENTS=PAGE_PARENTS;
+window.PAGE_TITLES=PAGE_TITLES;
 
 /* ============ THEME ============ */
 function startEffects(){
@@ -419,19 +425,18 @@ function navigate(page){
   };
   var fn=renderers[page];
   if(typeof fn!=='function'){
-    main.innerHTML='<div class="page">'+backBtn('dashboard')+'<div class="title-xl">🚧 '+page+'</div><div class="card"><div class="empty"><div class="empty-icon">🚧</div><div class="empty-title">Раздел в разработке</div></div></div></div>';
+    main.innerHTML='<div class="page"><div class="title-xl">🚧 '+page+'</div><div class="card"><div class="empty"><div class="empty-icon">🚧</div><div class="empty-title">Раздел в разработке</div></div></div></div>';
     return;
   }
   try{fn()}catch(e){
     console.error('Render ['+page+']:',e);
-    main.innerHTML='<div class="page">'+backBtn('dashboard')+'<div class="title-xl">⚠️ Ошибка</div><div class="card"><div class="empty"><div class="empty-icon">⚠️</div><div class="empty-title">'+esc(e.message||'Ошибка')+'</div><div class="empty-text">'+page+'</div></div></div></div>';
+    main.innerHTML='<div class="page"><div class="title-xl">⚠️ Ошибка</div><div class="card"><div class="empty"><div class="empty-icon">⚠️</div><div class="empty-title">'+esc(e.message||'Ошибка')+'</div><div class="empty-text">'+page+'</div></div></div></div>';
   }
   window.scrollTo({top:0});
   if(page==='profile'||page==='dashboard'){try{checkAchievements()}catch(e){}}
 }
 
-/* Кнопка "Назад" теперь в шапке — возвращаем пустую строку.
-   Целевой раздел берётся из PAGE_PARENTS автоматически. */
+/* Кнопка "Назад" в шапке — возвращаем пустую строку */
 function backBtn(target){
   var btn=document.getElementById('headerBackBtn');
   if(btn&&target)btn.setAttribute('data-target',target);
@@ -495,10 +500,7 @@ function openStatsQuick(){navigate('stats')}
 /* ============ THEME PICKER ============ */
 function openThemePicker(){
   var themes=window.THEMES||[];
-  if(!themes.length){
-    toast('Темы не загружены','error');
-    return;
-  }
+  if(!themes.length){toast('Темы не загружены','error');return}
   var html='<div class="footnote text-tertiary" style="margin-bottom:8px;">🎨 Выбери тему ('+themes.length+')</div>';
   html+='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;max-height:50vh;overflow-y:auto;">';
   themes.forEach(function(t){
@@ -733,7 +735,7 @@ function renderLearnPlan(){
   var target=state.settings.dailyLearnTarget||150;
   var totalMinutes=plan.today.reduce(function(a,x){return a+x.minutes},0);
   var pct=Math.min(100,Math.round(totalMinutes/target*100));
-  var html='<div class="page">'+backBtn('learning')+'<div class="title-xl">🗓 План обучения</div>';
+  var html='<div class="page"><div class="title-xl">🗓 План обучения</div>';
   html+='<div class="card card-gradient"><div style="opacity:.9;font-size:12px;">Сегодня</div><div style="font-size:40px;font-weight:800;">'+totalMinutes+' / '+target+' мин</div>';
   html+='<div class="progress" style="margin-top:10px;background:rgba(255,255,255,.25);height:6px;"><div class="progress-fill" style="width:'+pct+'%;background:#fff;"></div></div></div>';
   html+='<div class="card"><h2>⚙️ Настройки</h2>';
@@ -776,7 +778,7 @@ function renderTasks(){
   var filtered=state.tasks.slice();
   if(taskFilter!=='all')filtered=filtered.filter(function(t){return t.status===taskFilter});
   if(taskSearch){var q=taskSearch.toLowerCase();filtered=filtered.filter(function(t){return t.title.toLowerCase().indexOf(q)>=0})}
-  var html='<div class="page">'+backBtn('dashboard')+'<div class="row-between" style="margin-bottom:14px;"><div class="title-xl" style="margin:0;">✅ Задачи</div><button class="btn btn-primary btn-sm" onclick="openEntityEditor(\'task\',null)">+ Новая</button></div>';
+  var html='<div class="page"><div class="row-between" style="margin-bottom:14px;"><div class="title-xl" style="margin:0;">✅ Задачи</div><button class="btn btn-primary btn-sm" onclick="openEntityEditor(\'task\',null)">+ Новая</button></div>';
   html+=renderQuickTabs('tasks');
   html+='<div class="search-bar"><span style="color:var(--text-3);font-size:18px;">🔍</span><input type="search" placeholder="Поиск..." value="'+esc(taskSearch)+'" oninput="taskSearch=this.value;renderTasks()"/></div>';
   html+='<div class="segmented" style="margin-bottom:14px;"><button class="segmented-item '+(taskFilter==='all'?'active':'')+'" onclick="taskFilter=\'all\';renderTasks()">Все ('+counts.all+')</button><button class="segmented-item '+(taskFilter==='pending'?'active':'')+'" onclick="taskFilter=\'pending\';renderTasks()">Активные ('+counts.pending+')</button><button class="segmented-item '+(taskFilter==='completed'?'active':'')+'" onclick="taskFilter=\'completed\';renderTasks()">Готовые ('+counts.completed+')</button></div>';
@@ -801,7 +803,7 @@ function toggleTask(id){
   if(currentPage==='tasks')renderTasks();else renderDashboard();
 }
 
-/* ============ MATRIX (Eisenhower) ============ */
+/* ============ MATRIX ============ */
 function renderMatrix(){
   var pending=state.tasks.filter(function(t){return t.status==='pending'});
   var q1=[],q2=[],q3=[],q4=[];
@@ -809,7 +811,7 @@ function renderMatrix(){
     var q=getEisenhowerQuadrant(t);
     if(q==='q1')q1.push(t);else if(q==='q2')q2.push(t);else if(q==='q3')q3.push(t);else q4.push(t);
   });
-  var html='<div class="page">'+backBtn('tasks')+'<div class="title-xl">🔢 Матрица Эйзенхауэра</div>';
+  var html='<div class="page"><div class="title-xl">🔢 Матрица Эйзенхауэра</div>';
   html+='<div class="footnote text-secondary mb-3">🔥 Q1 делай · 📌 Q2 планируй · ⚡ Q3 делегируй · 🗑 Q4 удали</div>';
   html+='<div class="matrix-grid-2x2">';
   html+='<div class="matrix-quadrant matrix-q1" onclick="openMatrixQuadrant(\'q1\')"><div class="matrix-q-title">🔥 Срочно + Важно</div><div class="matrix-q-count">'+q1.length+'</div><div class="matrix-q-sub">Делай сейчас</div></div>';
@@ -838,10 +840,10 @@ function openMatrixQuadrant(q){
   openSheet(titles[q],html);
 }
 
-/* ============ DAILY PLAN (from survey) ============ */
+/* ============ DAILY PLAN ============ */
 function renderDailyPlan(){
   var plan=state.todayPlan;
-  var html='<div class="page">'+backBtn('dashboard')+'<div class="title-xl">📅 План дня</div>';
+  var html='<div class="page"><div class="title-xl">📅 План дня</div>';
   if(!plan||plan.date!==today()){
     html+='<div class="card"><div class="empty"><div class="empty-icon">📋</div><div class="empty-title">План не сформирован</div><div class="empty-text">Пройди опрос дня</div><button class="btn btn-primary btn-block mt-3" onclick="openDailySurvey(true)">Пройти опрос</button></div></div>';
     html+='</div>';
@@ -1048,7 +1050,7 @@ function renderLearning(){
   var coursesTotal=(window.COURSES_LIBRARY||[]).length;
   var pathsTotal=(window.PATHS_LIBRARY||[]).length;
   var methodsTotal=(window.METHODS_LIBRARY||[]).length;
-  var html='<div class="page">'+backBtn('dashboard')+'<div class="title-xl">🎓 Обучение</div>';
+  var html='<div class="page"><div class="title-xl">🎓 Обучение</div>';
   html+=renderQuickTabs('learning');
   html+='<div class="card card-gradient"><div style="opacity:.9;font-size:12px;">Прогресс</div><div style="font-size:40px;font-weight:800;line-height:1;margin-bottom:10px;">'+overallPct+'%</div><div class="progress" style="background:rgba(255,255,255,.25);height:6px;"><div class="progress-fill" style="width:'+overallPct+'%;background:#fff;"></div></div></div>';
   html+='<div class="card"><h2>🔍 Поиск</h2>';
@@ -1103,7 +1105,7 @@ function openLevelLessonFromSearch(levelId,moduleId,idx){
   setTimeout(function(){openLesson(idx)},100);
 }
 function renderLevels(){
-  var html='<div class="page">'+backBtn('learning')+'<div class="title-xl">🌱 Уровни</div>';
+  var html='<div class="page"><div class="title-xl">🌱 Уровни</div>';
   (window.LEARNING_LEVELS||[]).forEach(function(level){
     var p=getLevelProgress(level.id);
     var unlocked=isLevelUnlocked(level.id);
@@ -1121,7 +1123,7 @@ function renderLevelDetail(){
   var level=(window.LEARNING_LEVELS||[]).find(function(l){return l.id===currentLevelId});
   if(!level){navigate('learning');return}
   var p=getLevelProgress(level.id);
-  var html='<div class="page">'+backBtn('levels');
+  var html='<div class="page">';
   html+='<div style="text-align:center;margin-bottom:20px;"><div style="font-size:56px;">'+level.emoji+'</div><div class="title-xl">Уровень '+level.num+': '+level.title+'</div></div>';
   html+='<div class="card"><div class="row-between mb-2"><span class="subhead">Прогресс</span><span class="subhead text-secondary">'+p.done+'/'+p.total+'</span></div><div class="progress"><div class="progress-fill" style="width:'+p.pct+'%;"></div></div></div>';
   html+='<div class="card"><h2>📦 Модули</h2>';
@@ -1142,7 +1144,7 @@ function renderModuleDetail(){
   var module=level.modules.find(function(m){return m.id===currentModuleId});
   if(!module){navigate('levelDetail');return}
   var doneCount=module.lessons.filter(function(l,idx){return state.levelProgress[level.id+'_'+module.id+'_'+idx]}).length;
-  var html='<div class="page">'+backBtn('levelDetail');
+  var html='<div class="page">';
   html+='<div style="text-align:center;margin-bottom:20px;"><div style="font-size:48px;">'+module.emoji+'</div><div class="title-xl">'+module.title+'</div></div>';
   html+='<div class="card"><div class="progress"><div class="progress-fill" style="width:'+Math.round(doneCount/module.lessons.length*100)+'%;"></div></div></div>';
   html+='<div class="card"><h2>📖 Уроки</h2>';
@@ -1163,7 +1165,7 @@ function openLesson(idx){
   var lesson=module.lessons[idx];if(!lesson)return;
   var key=level.id+'_'+module.id+'_'+idx;
   var isDone=!!state.levelProgress[key];
-  var html='<div class="page">'+backBtn('moduleDetail');
+  var html='<div class="page">';
   html+='<div style="margin-bottom:16px;"><div class="footnote text-tertiary" style="margin-bottom:6px;">Уровень '+level.num+' · '+module.title+' · '+(idx+1)+'/'+module.lessons.length+'</div><div style="font-size:22px;font-weight:800;line-height:1.2;">'+lesson.title+'</div></div>';
   html+='<div class="card"><div class="lesson-section"><div class="lesson-section-title">📚 Теория</div><div class="lesson-content">'+formatLesson(lesson.theory||'')+'</div></div>';
   if(lesson.example)html+='<div class="lesson-section example"><div class="lesson-section-title">💡 Пример</div><div class="lesson-content">'+esc(lesson.example)+'</div></div>';
@@ -1209,7 +1211,7 @@ function renderSkills(){
   var lib=window.__SKILLS_LIBRARY||[];
   var filtered=skillsFilter==='all'?lib:lib.filter(function(s){return s.cat===skillsFilter});
   var done=Object.keys(state.skillsProgress||{}).length;
-  var html='<div class="page">'+backBtn('learning')+'<div class="title-xl">💎 Навыки</div>';
+  var html='<div class="page"><div class="title-xl">💎 Навыки</div>';
   html+='<div class="card card-gradient"><div style="opacity:.9;font-size:12px;">Прогресс</div><div style="font-size:40px;font-weight:800;">'+done+'/'+lib.length+'</div></div>';
   html+='<div class="quick-tabs"><button class="quick-tab '+(skillsFilter==='all'?'active':'')+'" onclick="skillsFilter=\'all\';renderSkills()">Все ('+lib.length+')</button>';
   cats.forEach(function(c){
@@ -1256,7 +1258,7 @@ function renderModuleList(moduleKey){
   var map={memory:window.__MEMORY_MODULE||[],iq:window.__IQ_MODULE||[],eq:window.__EQ_MODULE||[],finance:window.__FINANCE_MODULE||[],neuro:window.__NEURO_MODULE||[]};
   var list=map[moduleKey]||[];
   var titles={memory:'🧠 Память',iq:'🎯 IQ',eq:'❤️ EQ',finance:'💰 Финансы',neuro:'🔬 Нейро'};
-  var html='<div class="page">'+backBtn('learning')+'<div class="title-xl">'+titles[moduleKey]+'</div>';
+  var html='<div class="page"><div class="title-xl">'+titles[moduleKey]+'</div>';
   if(!list.length){html+='<div class="card"><div class="empty"><div class="empty-icon">📭</div><div class="empty-title">Модуль пуст</div></div></div>';document.getElementById('app').innerHTML=html;return}
   html+='<div class="card"><div class="footnote text-secondary">'+list.length+' уроков</div></div>';
   list.forEach(function(lesson,i){
@@ -1298,7 +1300,7 @@ function renderEnglish(){
   var totalDone=0;
   all.forEach(function(l){if(state.englishProgress&&state.englishProgress[l.id])totalDone++});
   var pct=all.length?Math.round(totalDone/all.length*100):0;
-  var html='<div class="page">'+backBtn('learning')+'<div class="title-xl">🇬🇧 English</div>';
+  var html='<div class="page"><div class="title-xl">🇬🇧 English</div>';
   html+=renderQuickTabs('english');
   html+='<div class="card card-gradient"><div style="opacity:.9;font-size:12px;">Прогресс</div><div style="font-size:40px;font-weight:800;">'+pct+'%</div><div style="opacity:.9;font-size:12px;margin-top:6px;">'+totalDone+'/'+all.length+'</div></div>';
   ['A1','A2','B1','B2','C1'].forEach(function(lvl){
@@ -1315,7 +1317,7 @@ function renderEnglish(){
 function openEnglishLvl(lvl){
   var all=window.__ENGLISH_125||[];
   var lessons=all.filter(function(l){return l.level===lvl});
-  var html='<div class="page">'+backBtn('english')+'<div class="title-xl">'+lvl+'</div>';
+  var html='<div class="page"><div class="title-xl">'+lvl+'</div>';
   html+='<div class="card">';
   lessons.forEach(function(lesson,i){
     var isDone=state.englishProgress&&state.englishProgress[lesson.id];
@@ -1348,7 +1350,7 @@ function completeEnglishLess(id){
 
 /* ============ PATHS ============ */
 function renderPaths(){
-  var html='<div class="page">'+backBtn('learning')+'<div class="title-xl">🗺 Пути</div>';
+  var html='<div class="page"><div class="title-xl">🗺 Пути</div>';
   (window.PATHS_LIBRARY||[]).forEach(function(p){
     var userPath=state.paths.find(function(x){return x.id===p.id});
     var completed=userPath?(userPath.completedSteps||[]).length:0;
@@ -1366,7 +1368,7 @@ function renderPathDetail(){
   if(!userPath){userPath={id:p.id,completedSteps:[],startedAt:nowISO()};state.paths.push(userPath);save()}
   var completed=userPath.completedSteps||[];
   var progress=Math.round(completed.length/p.steps.length*100);
-  var html='<div class="page">'+backBtn('paths');
+  var html='<div class="page">';
   html+='<div style="text-align:center;margin-bottom:16px;"><div style="font-size:56px;">'+p.emoji+'</div><div class="title-xl">'+p.title+'</div></div>';
   html+='<div class="card"><div class="progress"><div class="progress-fill" style="width:'+progress+'%;"></div></div></div>';
   html+='<div class="card"><h2>Шаги</h2>';
@@ -1404,7 +1406,7 @@ function completeStep(idx){
 
 /* ============ COURSES ============ */
 function renderCourses(){
-  var html='<div class="page">'+backBtn('learning')+'<div class="title-xl">📚 Курсы</div>';
+  var html='<div class="page"><div class="title-xl">📚 Курсы</div>';
   (window.COURSES_LIBRARY||[]).forEach(function(c){
     var userCourse=state.courses.find(function(x){return x.id===c.id});
     var completed=userCourse?(userCourse.completedLessons||[]).length:0;
@@ -1420,7 +1422,7 @@ function openCourse(id){
   if(!userCourse){userCourse={id:id,completedLessons:[],startedAt:nowISO()};state.courses.push(userCourse);save()}
   var completed=userCourse.completedLessons||[];
   var progress=Math.round(completed.length/(c.lessons||[]).length*100);
-  var html='<div class="page">'+backBtn('courses');
+  var html='<div class="page">';
   html+='<div style="text-align:center;margin-bottom:16px;"><div style="font-size:56px;">'+c.emoji+'</div><div class="title-xl">'+c.title+'</div><div class="footnote text-secondary">'+c.category+' · '+(c.hours||6)+' ч</div></div>';
   html+='<div class="card"><div class="progress"><div class="progress-fill" style="width:'+progress+'%;"></div></div></div>';
   html+='<div class="card"><h2>📚 Уроки</h2>';
@@ -1458,7 +1460,7 @@ function completeCourseLesson(courseId,idx){
 
 /* ============ METHODS ============ */
 function renderMethods(){
-  var html='<div class="page">'+backBtn('learning')+'<div class="title-xl">🎯 Методики</div>';
+  var html='<div class="page"><div class="title-xl">🎯 Методики</div>';
   (window.METHODS_LIBRARY||[]).forEach(function(m){
     html+='<div class="method-card" onclick="openMethod(\''+m.id+'\')"><div class="method-header"><div class="method-emoji">'+m.emoji+'</div><div style="flex:1;"><div class="method-title">'+m.title+'</div><div class="method-cat">'+m.category+'</div></div><div class="list-chevron">›</div></div><div class="method-desc">'+m.desc+'</div></div>';
   });
@@ -1483,7 +1485,7 @@ function renderVision(){
   var ex=window.VISION_EXERCISES||[];
   var todayDone=state.eyeExercises.filter(function(e){return e.date===today()}).length;
   var total=state.eyeExercises.length;
-  var html='<div class="page">'+backBtn('dashboard')+'<div class="title-xl">👁 Зрение</div>';
+  var html='<div class="page"><div class="title-xl">👁 Зрение</div>';
   html+=renderQuickTabs('vision');
   html+='<div class="card card-gradient"><div style="opacity:.9;font-size:12px;">Сегодня</div><div style="font-size:40px;font-weight:800;">'+todayDone+' упражнений</div><div style="opacity:.9;font-size:12px;margin-top:6px;">Всего: '+total+'</div></div>';
   html+='<div class="card"><h2>⚡ Быстрые упражнения</h2>';
@@ -1503,7 +1505,7 @@ function renderVision(){
 }
 function renderVisionExercises(){
   var ex=window.VISION_EXERCISES||[];
-  var html='<div class="page">'+backBtn('vision')+'<div class="title-xl">🤸 Упражнения</div>';
+  var html='<div class="page"><div class="title-xl">🤸 Упражнения</div>';
   ex.forEach(function(e){
     html+='<div class="method-card" onclick="startEyeExercise(\''+e.id+'\')"><div class="method-header"><div class="method-emoji">'+e.emoji+'</div><div style="flex:1;"><div class="method-title">'+e.title+'</div><div class="method-cat">'+e.duration+' · '+e.benefit+'</div></div><div class="list-chevron">▶</div></div><div class="method-desc">'+esc(e.desc)+'</div><div class="footnote text-tertiary mt-2">Как: '+esc(e.how)+'</div></div>';
   });
@@ -1545,7 +1547,7 @@ function renderVisionTracker(){
   var todayCount=entries.filter(function(e){return e.date===today()}).length;
   var weekAgo=new Date();weekAgo.setDate(weekAgo.getDate()-7);
   var weekEntries=entries.filter(function(e){return new Date(e.time)>=weekAgo});
-  var html='<div class="page">'+backBtn('vision')+'<div class="title-xl">📊 Трекер зрения</div>';
+  var html='<div class="page"><div class="title-xl">📊 Трекер зрения</div>';
   html+='<div class="stat-grid mb-4"><div class="stat-item"><div class="stat-value">'+todayCount+'</div><div class="stat-label">Сегодня</div></div><div class="stat-item"><div class="stat-value">'+weekEntries.length+'</div><div class="stat-label">За неделю</div></div><div class="stat-item"><div class="stat-value">'+entries.length+'</div><div class="stat-label">Всего</div></div></div>';
   html+='<div class="card"><h2>📈 Последние</h2>';
   if(entries.length){
@@ -1559,7 +1561,7 @@ function renderVisionTracker(){
 }
 function renderVisionTips(){
   var tips=(window.SCREEN_TIPS||[]).filter(function(t){return t.category.indexOf('Зрение')>=0});
-  var html='<div class="page">'+backBtn('vision')+'<div class="title-xl">💡 Советы</div>';
+  var html='<div class="page"><div class="title-xl">💡 Советы</div>';
   tips.forEach(function(t){
     html+='<div class="card"><h2>'+esc(t.title)+'</h2><div class="footnote text-secondary mb-2">'+esc(t.desc)+'</div><div class="footnote text-secondary">→ '+esc(t.action)+'</div><div class="footnote text-tertiary mt-1">✨ '+esc(t.effect)+' · ⏱ '+esc(t.time)+'</div></div>';
   });
@@ -1569,7 +1571,7 @@ function renderVisionTips(){
 
 /* ============ PLANNING ============ */
 function renderPlanning(){
-  var html='<div class="page">'+backBtn('dashboard')+'<div class="title-xl">📅 Планирование</div>';
+  var html='<div class="page"><div class="title-xl">📅 Планирование</div>';
   html+=renderQuickTabs('planning');
   html+='<div class="compact-grid">';
   html+='<div class="compact-item" onclick="navigate(\'plantoday\')"><span class="compact-icon">📅</span><span>План дня</span></div>';
@@ -1588,7 +1590,7 @@ function renderPlanning(){
 function renderPlanToday(){
   var date=currentDayPlanDate;
   var plan=state.dayPlans[date];
-  var html='<div class="page">'+backBtn('planning')+'<div class="title-xl">📅 План дня</div>';
+  var html='<div class="page"><div class="title-xl">📅 План дня</div>';
   html+='<div class="card"><h2>Дата</h2><input type="date" value="'+date+'" onchange="currentDayPlanDate=this.value;renderPlanToday()"/></div>';
   if(plan){
     html+='<div class="card"><h2>✅ Задачи</h2>';
@@ -1627,7 +1629,7 @@ function togglePlanTask(type,date,idx){
 function renderPlanWeek(){
   var weekKey=getWeekKey();
   var plan=state.weekPlans[weekKey];
-  var html='<div class="page">'+backBtn('planning')+'<div class="title-xl">🗓 План недели</div>';
+  var html='<div class="page"><div class="title-xl">🗓 План недели</div>';
   html+='<div class="card card-gradient"><div style="opacity:.9;font-size:12px;">Неделя</div><div style="font-size:24px;font-weight:800;">'+weekKey+'</div></div>';
   if(plan){
     html+='<div class="card"><h2>✅ Задачи</h2>';
@@ -1653,7 +1655,7 @@ function createWeekPlan(weekKey){
 function renderPlanMonth(){
   var monthKey=getMonthKey();
   var plan=state.monthPlans[monthKey];
-  var html='<div class="page">'+backBtn('planning')+'<div class="title-xl">📆 План месяца</div>';
+  var html='<div class="page"><div class="title-xl">📆 План месяца</div>';
   html+='<div class="card card-gradient"><div style="opacity:.9;font-size:12px;">Месяц</div><div style="font-size:24px;font-weight:800;">'+monthKey+'</div></div>';
   if(plan){
     html+='<div class="card"><h2>✅ Задачи</h2>';
@@ -1688,7 +1690,7 @@ function getMonthKey(){return new Date().toISOString().slice(0,7)}
 /* ============ OBSIDIAN ============ */
 function renderObsidian(){
   var o=state.integrations.obsidian||{};
-  var html='<div class="page">'+backBtn('planning')+'<div class="title-xl">📓 Obsidian</div>';
+  var html='<div class="page"><div class="title-xl">📓 Obsidian</div>';
   html+='<div class="card"><h2>Настройка</h2>';
   html+='<div class="field"><label class="field-label">API Key</label><input type="password" id="obs-key" value="'+esc(o.apiKey||'')+'" placeholder="Ключ из плагина Local REST API"/></div>';
   html+='<div class="field"><label class="field-label">Vault (название хранилища)</label><input type="text" id="obs-vault" value="'+esc(o.vault||'')+'" placeholder="My Vault"/></div>';
@@ -1725,9 +1727,9 @@ function syncObsidian(){
   toast('🔄 Синхронизация... (демо)','success');
 }
 
-/* ============ GOOGLE CALENDAR (кнопка) ============ */
+/* ============ GOOGLE CALENDAR ============ */
 function renderGcal(){
-  var html='<div class="page">'+backBtn('planning')+'<div class="title-xl">📅 Календарь</div>';
+  var html='<div class="page"><div class="title-xl">📅 Календарь</div>';
   
   html+='<div class="card card-gradient">';
   html+='<div style="font-size:48px;text-align:center;margin-bottom:8px;">🎯</div>';
@@ -1800,15 +1802,9 @@ function addGcalEvent(){
   var title=(document.getElementById('gcal-title')||{}).value||'';
   var date=(document.getElementById('gcal-date')||{}).value||today();
   var time=(document.getElementById('gcal-time')||{}).value||'10:00';
-  if(!title.trim()){
-    toast('Введи название','error');
-    return;
-  }
+  if(!title.trim()){toast('Введи название','error');return;}
   var start=new Date(date+'T'+time+':00');
-  if(isNaN(start.getTime())){
-    toast('Некорректная дата','error');
-    return;
-  }
+  if(isNaN(start.getTime())){toast('Некорректная дата','error');return;}
   var end=new Date(start.getTime()+3600000);
   var fmt=function(d){
     var p=function(n){return String(n).padStart(2,'0')};
@@ -1835,17 +1831,12 @@ function exportTodayPlan(){
   toast('✓ Открываю','success');
 }
 
-/* Заглушки для совместимости */
-function saveGcal(){
-  toast('ℹ️ Используй кнопки в разделе "Календарь"','info');
-}
-function syncGcal(){
-  toast('ℹ️ Просто нажми "+ Календарь" у задачи','info');
-}
+function saveGcal(){toast('ℹ️ Используй кнопки в разделе "Календарь"','info')}
+function syncGcal(){toast('ℹ️ Просто нажми "+ Календарь" у задачи','info')}
 
 /* ============ INTEGRATIONS ============ */
 function renderIntegrations(){
-  var html='<div class="page">'+backBtn('settings')+'<div class="title-xl">🔗 Интеграции</div>';
+  var html='<div class="page"><div class="title-xl">🔗 Интеграции</div>';
   html+='<div class="list-row" onclick="navigate(\'obsidian\')"><div class="list-icon">📓</div><div class="list-body"><div class="list-title">Obsidian</div><div class="list-subtitle">'+(state.integrations.obsidian&&state.integrations.obsidian.connected?'✓ Подключён':'Не подключён')+'</div></div><div class="list-chevron">›</div></div>';
   html+='<div class="list-row" onclick="navigate(\'gcal\')"><div class="list-icon">📅</div><div class="list-body"><div class="list-title">Google Calendar</div><div class="list-subtitle">Быстрое добавление по кнопке</div></div><div class="list-chevron">›</div></div>';
   html+='<div class="card"><h2>✨ Gemini AI</h2><div class="field"><label class="field-label">API Key</label><input type="password" id="gem-key" value="'+esc((state.integrations.gemini||{}).apiKey||'')+'"/></div><button class="btn btn-primary btn-block" onclick="saveGemini()">💾 Сохранить</button></div>';
@@ -1860,7 +1851,7 @@ function saveGemini(){
   renderIntegrations();
 }
 
-/* ============ WATER, MOOD, HABITS ============ */
+/* ============ WATER, MOOD ============ */
 function addWater(){
   var t=today();
   if(!state.customWater)state.customWater=[];
@@ -1909,14 +1900,14 @@ function saveSleep(){
   if(currentPage==='dashboard')renderDashboard();else renderHealth();
 }
 
-/* ============ HEALTH & SIMPLE ============ */
+/* ============ HEALTH ============ */
 function renderHealth(){
   var waterEntry=state.customWater.find(function(w){return w.date===today()});
   var water=waterEntry?waterEntry.count:0;
   var waterGoal=state.settings.waterGoal||8;
   var domains=window.DOMAINS||[];
   var todayScores=(state.domainScores||{})[today()]||{};
-  var html='<div class="page">'+backBtn('dashboard')+'<div class="title-xl">❤️ Здоровье</div>';
+  var html='<div class="page"><div class="title-xl">❤️ Здоровье</div>';
   html+=renderQuickTabs('health');
   html+='<div class="card"><div class="stat-grid"><div class="stat-item" onclick="quickMoodLog()" style="cursor:pointer;"><div class="stat-value">'+(state.customMood.length?state.customMood[state.customMood.length-1].score+'/10':'—')+'</div><div class="stat-label">Настроение</div></div><div class="stat-item" onclick="addWater()" style="cursor:pointer;"><div class="stat-value">'+water+'/'+waterGoal+'</div><div class="stat-label">Вода</div></div><div class="stat-item" onclick="openSleepEditor()" style="cursor:pointer;"><div class="stat-value">'+(state.customSleep&&state.customSleep[today()]?state.customSleep[today()]+'ч':'—')+'</div><div class="stat-label">Сон</div></div></div></div>';
   html+='<div class="card"><h2>🌐 Домены</h2>';
@@ -1933,14 +1924,14 @@ function renderWater(){
   var entry=state.customWater.find(function(w){return w.date===today()});
   var count=entry?entry.count:0;
   var goal=state.settings.waterGoal||8;
-  var html='<div class="page">'+backBtn('health')+'<div class="title-xl">💧 Вода</div>';
+  var html='<div class="page"><div class="title-xl">💧 Вода</div>';
   html+='<div class="card card-gradient" style="text-align:center;"><div style="font-size:56px;">💧</div><div style="font-size:40px;font-weight:800;">'+count+'/'+goal+'</div><div class="progress" style="margin-top:12px;background:rgba(255,255,255,.25);height:8px;"><div class="progress-fill" style="width:'+Math.min(100,count/goal*100)+'%;background:#fff;"></div></div></div>';
   html+='<button class="btn btn-primary btn-block" onclick="addWater()">+1 стакан</button></div>';
   document.getElementById('app').innerHTML=html;
 }
 function renderMood(){
   var m=state.customMood||[];
-  var html='<div class="page">'+backBtn('health')+'<div class="title-xl">💭 Настроение</div>';
+  var html='<div class="page"><div class="title-xl">💭 Настроение</div>';
   html+='<button class="btn btn-primary btn-block mb-4" onclick="quickMoodLog()">Записать</button>';
   if(m.length){m.slice(-10).reverse().forEach(function(e){html+='<div class="list-row"><div class="list-icon">'+(e.score>=7?'😊':e.score>=5?'🙂':'😔')+'</div><div class="list-body"><div class="list-title">'+e.date+'</div><div class="list-subtitle">'+e.score+'/10</div></div></div>'})}
   else{html+='<div class="empty"><div class="empty-icon">💭</div><div class="empty-title">Пусто</div></div>'}
@@ -1949,7 +1940,7 @@ function renderMood(){
 }
 function renderWorkouts(){
   var w=state.customWorkouts||[];
-  var html='<div class="page">'+backBtn('health')+'<div class="row-between" style="margin-bottom:14px;"><div class="title-xl" style="margin:0;">🏋️ Тренировки</div><button class="btn btn-primary btn-sm" onclick="openEntityEditor(\'workout\',null)">+</button></div>';
+  var html='<div class="page"><div class="row-between" style="margin-bottom:14px;"><div class="title-xl" style="margin:0;">🏋️ Тренировки</div><button class="btn btn-primary btn-sm" onclick="openEntityEditor(\'workout\',null)">+</button></div>';
   if(w.length){w.forEach(function(x){html+='<div class="list-row" onclick="openEntityEditor(\'workout\',\''+x.id+'\')"><div class="list-icon">🏋️</div><div class="list-body"><div class="list-title">'+esc(x.title)+'</div><div class="list-subtitle">'+(x.duration||60)+' мин · '+(x.intensity||7)+'</div></div></div>'})}
   else{html+='<div class="empty"><div class="empty-icon">🏋️</div><div class="empty-title">Нет тренировок</div></div>'}
   html+='</div>';
@@ -1957,7 +1948,7 @@ function renderWorkouts(){
 }
 function renderMeditation(){
   var m=state.customMeditation||[];
-  var html='<div class="page">'+backBtn('health')+'<div class="row-between" style="margin-bottom:14px;"><div class="title-xl" style="margin:0;">🧘 Медитации</div><button class="btn btn-primary btn-sm" onclick="openEntityEditor(\'meditation\',null)">+</button></div>';
+  var html='<div class="page"><div class="row-between" style="margin-bottom:14px;"><div class="title-xl" style="margin:0;">🧘 Медитации</div><button class="btn btn-primary btn-sm" onclick="openEntityEditor(\'meditation\',null)">+</button></div>';
   if(m.length){m.forEach(function(x){html+='<div class="list-row" onclick="openEntityEditor(\'meditation\',\''+x.id+'\')"><div class="list-icon">🧘</div><div class="list-body"><div class="list-title">'+esc(x.title)+'</div><div class="list-subtitle">'+(x.duration||10)+' мин</div></div></div>'})}
   else{html+='<div class="empty"><div class="empty-icon">🧘</div><div class="empty-title">Нет медитаций</div></div>'}
   html+='</div>';
@@ -1965,7 +1956,7 @@ function renderMeditation(){
 }
 function renderMeds(){
   var m=state.customMeds||[];
-  var html='<div class="page">'+backBtn('health')+'<div class="row-between" style="margin-bottom:14px;"><div class="title-xl" style="margin:0;">💊 Лекарства</div><button class="btn btn-primary btn-sm" onclick="openEntityEditor(\'med\',null)">+</button></div>';
+  var html='<div class="page"><div class="row-between" style="margin-bottom:14px;"><div class="title-xl" style="margin:0;">💊 Лекарства</div><button class="btn btn-primary btn-sm" onclick="openEntityEditor(\'med\',null)">+</button></div>';
   if(m.length){m.forEach(function(x){html+='<div class="list-row" onclick="openEntityEditor(\'med\',\''+x.id+'\')"><div class="list-icon">💊</div><div class="list-body"><div class="list-title">'+esc(x.title)+'</div><div class="list-subtitle">'+esc(x.dosage||'')+' '+(x.time||'')+'</div></div></div>'})}
   else{html+='<div class="empty"><div class="empty-icon">💊</div><div class="empty-title">Нет лекарств</div></div>'}
   html+='</div>';
@@ -1973,7 +1964,7 @@ function renderMeds(){
 }
 function renderJournal(){
   var entries=state.journalEntries||[];
-  var html='<div class="page">'+backBtn('more')+'<div class="row-between" style="margin-bottom:14px;"><div class="title-xl" style="margin:0;">📓 Дневник</div><button class="btn btn-primary btn-sm" onclick="openEntityEditor(\'journal\',null)">+</button></div>';
+  var html='<div class="page"><div class="row-between" style="margin-bottom:14px;"><div class="title-xl" style="margin:0;">📓 Дневник</div><button class="btn btn-primary btn-sm" onclick="openEntityEditor(\'journal\',null)">+</button></div>';
   if(entries.length){entries.slice().reverse().forEach(function(e){html+='<div class="card" onclick="openEntityEditor(\'journal\',\''+e.id+'\')" style="cursor:pointer;"><div class="footnote text-tertiary">'+e.date+'</div><div style="margin-top:6px;font-weight:600;">'+esc(e.title||'Запись')+'</div>';if(e.wins)html+='<div class="footnote text-secondary mt-2">✅ '+esc(e.wins).slice(0,100)+'</div>';html+='</div>'})}
   else{html+='<div class="empty"><div class="empty-icon">📓</div><div class="empty-title">Пусто</div></div>'}
   html+='</div>';
@@ -1981,7 +1972,7 @@ function renderJournal(){
 }
 function renderNotes(){
   var notes=state.customNotes||[];
-  var html='<div class="page">'+backBtn('more')+'<div class="row-between" style="margin-bottom:14px;"><div class="title-xl" style="margin:0;">📝 Заметки</div><button class="btn btn-primary btn-sm" onclick="openEntityEditor(\'note\',null)">+</button></div>';
+  var html='<div class="page"><div class="row-between" style="margin-bottom:14px;"><div class="title-xl" style="margin:0;">📝 Заметки</div><button class="btn btn-primary btn-sm" onclick="openEntityEditor(\'note\',null)">+</button></div>';
   if(notes.length){notes.forEach(function(n){html+='<div class="card" onclick="openEntityEditor(\'note\',\''+n.id+'\')" style="cursor:pointer;"><div class="list-title">'+esc(n.title||'—')+'</div><div class="footnote text-secondary mt-2">'+esc((n.content||'').slice(0,150))+'</div></div>'})}
   else{html+='<div class="empty"><div class="empty-icon">📝</div><div class="empty-title">Пусто</div></div>'}
   html+='</div>';
@@ -1989,7 +1980,7 @@ function renderNotes(){
 }
 function renderGoals(){
   var goals=state.customGoals||[];
-  var html='<div class="page">'+backBtn('more')+'<div class="row-between" style="margin-bottom:14px;"><div class="title-xl" style="margin:0;">🎯 Цели</div><button class="btn btn-primary btn-sm" onclick="openEntityEditor(\'goal\',null)">+</button></div>';
+  var html='<div class="page"><div class="row-between" style="margin-bottom:14px;"><div class="title-xl" style="margin:0;">🎯 Цели</div><button class="btn btn-primary btn-sm" onclick="openEntityEditor(\'goal\',null)">+</button></div>';
   if(goals.length){goals.forEach(function(g){var pct=g.target?(g.current||0)/g.target*100:0;html+='<div class="card" onclick="openEntityEditor(\'goal\',\''+g.id+'\')" style="cursor:pointer;"><div class="list-title">'+esc(g.title)+'</div><div class="footnote text-secondary">'+(g.metric?'· '+g.current+'/'+g.target+' '+g.metric:'')+'</div>';if(g.target)html+='<div class="progress mt-2"><div class="progress-fill" style="width:'+Math.min(100,pct)+'%;"></div></div>';html+='</div>'})}
   else{html+='<div class="empty"><div class="empty-icon">🎯</div><div class="empty-title">Нет целей</div></div>'}
   html+='</div>';
@@ -1997,7 +1988,7 @@ function renderGoals(){
 }
 function renderHabits(){
   var habits=state.customHabits||[];
-  var html='<div class="page">'+backBtn('more')+'<div class="row-between" style="margin-bottom:14px;"><div class="title-xl" style="margin:0;">🔄 Привычки</div><button class="btn btn-primary btn-sm" onclick="openEntityEditor(\'habit\',null)">+</button></div>';
+  var html='<div class="page"><div class="row-between" style="margin-bottom:14px;"><div class="title-xl" style="margin:0;">🔄 Привычки</div><button class="btn btn-primary btn-sm" onclick="openEntityEditor(\'habit\',null)">+</button></div>';
   if(habits.length){habits.forEach(function(h){html+='<div class="habit-row" onclick="openEntityEditor(\'habit\',\''+h.id+'\')"><div class="habit-icon">'+(h.icon||'✅')+'</div><div class="habit-body"><div class="habit-title">'+esc(h.title)+'</div><div class="habit-streak">'+esc(h.category||'')+'</div></div></div>'})}
   else{html+='<div class="empty"><div class="empty-icon">🔄</div><div class="empty-title">Нет привычек</div></div>'}
   html+='</div>';
@@ -2008,7 +1999,7 @@ function renderHabits(){
 function renderTimer(){
   var h=Math.floor(timerSeconds/3600),m=Math.floor((timerSeconds%3600)/60),s=timerSeconds%60;
   var display=(h>0?pad(h)+':':'')+pad(m)+':'+pad(s);
-  var html='<div class="page">'+backBtn('dashboard')+'<div class="title-xl">⏱ Таймер</div>';
+  var html='<div class="page"><div class="title-xl">⏱ Таймер</div>';
   html+='<div class="card" style="text-align:center;padding:32px 16px;"><div style="font-size:64px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;" id="timerDisplay">'+display+'</div></div>';
   html+='<div class="card"><div class="btn-row" style="justify-content:center;">';
   if(!timerRunning)html+='<button class="btn btn-primary" onclick="startTimer()">▶ Старт</button>';
@@ -2065,7 +2056,7 @@ function finishTimer(){
 /* ============ FOCUS ============ */
 function renderFocus(){
   var sessions=state.focusSessions||[];
-  var html='<div class="page">'+backBtn('dashboard')+'<div class="title-xl">🎯 Фокус</div>';
+  var html='<div class="page"><div class="title-xl">🎯 Фокус</div>';
   html+='<div class="card"><h2>Режимы</h2>';
   html+='<div class="list-row" onclick="startFocusSession(\'Deep Work\',90)"><div class="list-icon">🎯</div><div class="list-body"><div class="list-title">Deep Work</div><div class="list-subtitle">90 мин</div></div></div>';
   html+='<div class="list-row" onclick="startFocusSession(\'Pomodoro\',25)"><div class="list-icon">🍅</div><div class="list-body"><div class="list-title">Pomodoro</div><div class="list-subtitle">25 мин</div></div></div>';
@@ -2085,7 +2076,7 @@ function startFocusSession(name,duration){
 
 /* ============ ENTERTAINMENT ============ */
 function renderEntertainment(){
-  var html='<div class="page">'+backBtn('dashboard')+'<div class="title-xl">🎬 Досуг</div>';
+  var html='<div class="page"><div class="title-xl">🎬 Досуг</div>';
   html+=renderQuickTabs('entertainment');
   html+='<div class="stat-grid mb-4"><div class="stat-item"><div class="stat-value">'+(state.watched||[]).length+'</div><div class="stat-label">Просмотрено</div></div><div class="stat-item"><div class="stat-value">'+(state.watchlist||[]).length+'</div><div class="stat-label">В списке</div></div><div class="stat-item"><div class="stat-value">'+(state.customResources||[]).length+'</div><div class="stat-label">Свои</div></div></div>';
   html+='<div class="compact-grid">';
@@ -2116,10 +2107,9 @@ function saveWatchReflection(title,type){
   save();toast('✓ Рефлексия сохранена +20 XP','success');closeSheet();
   if(currentPage==='entertainment')renderEntertainment();
 }
-
 function renderMovies(){
   var lib=window.__MOVIES_LIBRARY||[];
-  var html='<div class="page">'+backBtn('entertainment')+'<div class="title-xl">🎥 Фильмы</div>';
+  var html='<div class="page"><div class="title-xl">🎥 Фильмы</div>';
   lib.forEach(function(m){
     var watched=(state.watched||[]).find(function(w){return w.title===m.title&&w.type==='movie'});
     html+='<div class="ent-card"><div class="ent-poster">🎬</div><div class="ent-body"><div class="ent-title">'+esc(m.title)+' ('+m.year+')</div><div class="ent-meta">'+esc(m.genre)+' · '+esc(m.director)+'</div><div class="ent-desc">'+esc(m.desc)+'</div><div class="ent-rating">⭐ '+m.rating+'</div>';
@@ -2132,42 +2122,42 @@ function renderMovies(){
 }
 function renderSeries(){
   var lib=window.__SERIES_LIBRARY||[];
-  var html='<div class="page">'+backBtn('entertainment')+'<div class="title-xl">📺 Сериалы</div>';
+  var html='<div class="page"><div class="title-xl">📺 Сериалы</div>';
   lib.forEach(function(m){html+='<div class="ent-card"><div class="ent-poster">📺</div><div class="ent-body"><div class="ent-title">'+esc(m.title)+'</div><div class="ent-meta">'+m.year+' · '+m.seasons+' сезонов</div><div class="ent-desc">'+esc(m.desc)+'</div><div class="ent-rating">⭐ '+m.rating+'</div><button class="btn btn-primary btn-sm mt-2" onclick="openWatchReflection(\''+esc(m.title).replace(/'/g,"\\'")+'\',\'series\')">✓ Смотрел + рефлексия</button></div></div>'});
   html+='</div>';
   document.getElementById('app').innerHTML=html;
 }
 function renderBooks(){
   var lib=window.__BOOKS_LIBRARY||[];
-  var html='<div class="page">'+backBtn('entertainment')+'<div class="title-xl">📚 Книги</div>';
+  var html='<div class="page"><div class="title-xl">📚 Книги</div>';
   lib.forEach(function(m){html+='<div class="ent-card"><div class="ent-poster">📚</div><div class="ent-body"><div class="ent-title">'+esc(m.title)+'</div><div class="ent-meta">'+esc(m.author)+' · '+m.year+'</div><div class="ent-desc">'+esc(m.desc)+'</div><div class="ent-rating">⭐ '+m.rating+'</div><button class="btn btn-primary btn-sm mt-2" onclick="openWatchReflection(\''+esc(m.title).replace(/'/g,"\\'")+'\',\'book\')">✓ Прочитал + рефлексия</button></div></div>'});
   html+='</div>';
   document.getElementById('app').innerHTML=html;
 }
 function renderMusic(){
   var lib=window.__MUSIC_LIBRARY||[];
-  var html='<div class="page">'+backBtn('entertainment')+'<div class="title-xl">🎵 Музыка</div>';
+  var html='<div class="page"><div class="title-xl">🎵 Музыка</div>';
   lib.forEach(function(m){html+='<div class="method-card"><div class="method-header"><div class="method-emoji">🎵</div><div style="flex:1;"><div class="method-title">'+esc(m.title)+'</div><div class="method-cat">'+esc(m.genre)+'</div></div></div><div class="method-desc">'+esc(m.desc)+'</div></div>'});
   html+='</div>';
   document.getElementById('app').innerHTML=html;
 }
 function renderGames(){
   var lib=window.__GAMES_LIBRARY||[];
-  var html='<div class="page">'+backBtn('entertainment')+'<div class="title-xl">🎮 Игры</div>';
+  var html='<div class="page"><div class="title-xl">🎮 Игры</div>';
   lib.forEach(function(m){html+='<div class="ent-card"><div class="ent-poster">🎮</div><div class="ent-body"><div class="ent-title">'+esc(m.title)+'</div><div class="ent-meta">'+esc(m.genre)+' · '+esc(m.time)+'</div><div class="ent-desc">'+esc(m.desc)+'</div><div class="ent-rating">⭐ '+m.rating+'</div></div></div>'});
   html+='</div>';
   document.getElementById('app').innerHTML=html;
 }
 function renderPodcasts(){
   var lib=window.__PODCASTS_LIBRARY||[];
-  var html='<div class="page">'+backBtn('entertainment')+'<div class="title-xl">🎧 Подкасты</div>';
+  var html='<div class="page"><div class="title-xl">🎧 Подкасты</div>';
   lib.forEach(function(m){html+='<div class="method-card"><div class="method-header"><div class="method-emoji">🎧</div><div style="flex:1;"><div class="method-title">'+esc(m.title)+'</div><div class="method-cat">'+esc(m.author)+'</div></div></div><div class="method-desc">'+esc(m.desc)+'</div></div>'});
   html+='</div>';
   document.getElementById('app').innerHTML=html;
 }
 function renderResources(){
   var list=state.customResources||[];
-  var html='<div class="page">'+backBtn('entertainment')+'<div class="title-xl">🔗 Свои ресурсы</div>';
+  var html='<div class="page"><div class="title-xl">🔗 Свои ресурсы</div>';
   html+='<button class="btn btn-primary btn-block mb-4" onclick="openAddResource()">+ Добавить ссылку</button>';
   if(!list.length){html+='<div class="empty"><div class="empty-icon">🔗</div><div class="empty-title">Пока ничего</div></div>'}
   else{
@@ -2204,7 +2194,7 @@ function deleteResource(id){
 /* ============ SCREEN & DETOX ============ */
 function renderScreenTracker(){
   var tips=window.SCREEN_TIPS||[];
-  var html='<div class="page">'+backBtn('dashboard')+'<div class="title-xl">📱 Экранный детокс</div>';
+  var html='<div class="page"><div class="title-xl">📱 Экранный детокс</div>';
   html+='<div class="card" style="background:linear-gradient(135deg,rgba(255,107,107,.15),rgba(255,169,64,.1));"><h2>📚 30-дневный курс</h2><div class="footnote text-secondary mb-3">Постепенное снижение экрана</div><button class="btn btn-primary btn-block" onclick="navigate(\'detoxcourse\')">Открыть</button></div>';
   var categories={};
   tips.forEach(function(t){if(!categories[t.category])categories[t.category]=[];categories[t.category].push(t)});
@@ -2218,31 +2208,22 @@ function renderScreenTracker(){
   html+='</div>';
   document.getElementById('app').innerHTML=html;
 }
-
 function getCurrentDay(){
   var completed=Object.keys(state.detoxCourseProgress||{}).map(Number).filter(function(n){return !isNaN(n)});
   if(!completed.length)return 1;
   var max=Math.max.apply(null,completed);
   return Math.min(30,max+1);
 }
-function isDayCompleted(day){
-  return !!(state.detoxCourseProgress&&state.detoxCourseProgress[day]);
-}
-function getCompletedDaysCount(){
-  return Object.keys(state.detoxCourseProgress||{}).length;
-}
-function canOpenDay(day){
-  if(day===1)return true;
-  if(isDayCompleted(day))return true;
-  return isDayCompleted(day-1);
-}
+function isDayCompleted(day){return !!(state.detoxCourseProgress&&state.detoxCourseProgress[day]);}
+function getCompletedDaysCount(){return Object.keys(state.detoxCourseProgress||{}).length;}
+function canOpenDay(day){if(day===1)return true;if(isDayCompleted(day))return true;return isDayCompleted(day-1);}
 
 function renderDetoxCourse(){
   var course=window.DETOX_COURSE_DETAILED||window.DETOX_COURSE||[];
   var currentDay=getCurrentDay();
   var completed=getCompletedDaysCount();
   var pct=Math.round(completed/30*100);
-  var html='<div class="page">'+backBtn('screentracker')+'<div class="title-xl">📚 Детокс-курс</div>';
+  var html='<div class="page"><div class="title-xl">📚 Детокс-курс</div>';
   html+='<div class="detox-progress-hero"><h2>Прогресс</h2><div class="big">'+pct+'%</div><div class="small">'+completed+' из 30 · День '+currentDay+'</div><div class="progress" style="margin-top:12px;background:rgba(255,255,255,.25);height:6px;"><div class="progress-fill" style="width:'+pct+'%;background:#fff;"></div></div></div>';
   if(!course.length){
     html+='<div class="card"><div class="empty"><div class="empty-icon">📭</div><div class="empty-title">Курс не загружен</div><div class="empty-text">Проверь content.js</div></div></div>';
@@ -2300,10 +2281,10 @@ function completeDetoxDay(day){
 /* ============ RECOVERY ============ */
 function renderRecovery(){
   var list=(window.RECOVERY_LIBRARY||[]);
-  if(!list.length){document.getElementById('app').innerHTML='<div class="page">'+backBtn('more')+'<div class="title-xl">🌿 Восстановление</div><div class="card"><div class="empty"><div class="empty-icon">🌿</div><div class="empty-title">Пусто</div></div></div></div>';return}
+  if(!list.length){document.getElementById('app').innerHTML='<div class="page"><div class="title-xl">🌿 Восстановление</div><div class="card"><div class="empty"><div class="empty-icon">🌿</div><div class="empty-title">Пусто</div></div></div></div>';return}
   var cats={};
   list.forEach(function(r){if(!cats[r.category])cats[r.category]=[];cats[r.category].push(r)});
-  var html='<div class="page">'+backBtn('more')+'<div class="title-xl">🌿 Восстановление</div>';
+  var html='<div class="page"><div class="title-xl">🌿 Восстановление</div>';
   Object.keys(cats).forEach(function(cat){
     html+='<div class="card"><h2>'+cat+'</h2>';
     cats[cat].forEach(function(r){
@@ -2326,7 +2307,7 @@ function getAverageDomainScore(id){
 }
 function renderDomains(){
   var domains=window.DOMAINS||[];
-  var html='<div class="page">'+backBtn('dashboard')+'<div class="title-xl">🌐 Домены</div>';
+  var html='<div class="page"><div class="title-xl">🌐 Домены</div>';
   var todayScores=(state.domainScores||{})[today()]||{};
   var total=0,count=0;
   domains.forEach(function(d){if(todayScores[d.id]){total+=todayScores[d.id];count++}});
@@ -2372,7 +2353,7 @@ function renderProfile(){
   var lessonsDone=Object.keys(state.levelProgress||{}).length;
   var lvl=Math.floor((state.xp||0)/100);
   var achievements=window.ACHIEVEMENTS||[];
-  var html='<div class="page">'+backBtn('dashboard');
+  var html='<div class="page">';
   html+='<div class="profile-hero"><div class="avatar-btn lvl-'+Math.min(lvl,5)+'" onclick="pickEmoji()" style="width:96px;height:96px;margin:0 auto 12px;font-size:48px;">'+p.emoji+'</div><div style="font-size:22px;font-weight:800;">'+esc(p.name||'Пользователь')+'</div></div>';
   html+='<div class="level-hero"><div class="level-badge">🏅 Уровень '+lvl+'</div><div class="xp-bar"><div class="xp-bar-fill" style="width:'+((state.xp||0)%100)+'%;"></div></div><div class="xp-text">'+((state.xp||0)%100)+'/100 XP · Всего: '+(state.xp||0)+' XP</div></div>';
   html+='<div class="stat-grid mb-4"><div class="stat-item"><div class="stat-value">'+doneTasks+'</div><div class="stat-label">Задач</div></div><div class="stat-item"><div class="stat-value">'+lessonsDone+'</div><div class="stat-label">Уроков</div></div><div class="stat-item"><div class="stat-value">'+(state.stats.streak||0)+'</div><div class="stat-label">Streak</div></div></div>';
@@ -2408,7 +2389,7 @@ function updateHeaderAvatar(){
 function renderStats(){
   var doneTasks=state.tasks.filter(function(t){return t.status==='completed'}).length;
   var doneLessons=Object.keys(state.levelProgress||{}).length;
-  var html='<div class="page">'+backBtn('dashboard')+'<div class="title-xl">📊 Статистика</div>';
+  var html='<div class="page"><div class="title-xl">📊 Статистика</div>';
   html+='<div class="card card-gradient"><div style="opacity:.9;font-size:12px;">Уроков</div><div style="font-size:40px;font-weight:800;">'+doneLessons+'</div></div>';
   html+='<div class="stat-grid mb-4"><div class="stat-item"><div class="stat-value">'+doneTasks+'</div><div class="stat-label">Задач</div></div><div class="stat-item"><div class="stat-value">'+Object.keys(state.englishProgress||{}).length+'</div><div class="stat-label">English</div></div><div class="stat-item"><div class="stat-value">'+(state.stats.streak||0)+'</div><div class="stat-label">Streak</div></div></div>';
   html+='<button class="btn btn-primary btn-block" onclick="navigate(\'detailedStats\')">📈 Вся статистика</button></div>';
@@ -2421,7 +2402,7 @@ function renderDetailedStats(){
   var skillsDone=Object.keys(state.skillsProgress||{}).length;
   var waterTotal=(state.customWater||[]).reduce(function(a,w){return a+(w.count||0)},0);
   var domains=window.DOMAINS||[];
-  var html='<div class="page">'+backBtn('stats')+'<div class="title-xl">📈 Всё</div>';
+  var html='<div class="page"><div class="title-xl">📈 Всё</div>';
   html+='<div class="card"><h2>🌐 Домены (%)</h2>';
   var todayScores=(state.domainScores||{})[today()]||{};
   domains.forEach(function(d){
@@ -2441,7 +2422,7 @@ function renderDetailedStats(){
 function renderSettings(){
   var themes=window.THEMES||[];
   var currentTheme=themes.find(function(t){return t.id===state.settings.theme})||{name:'dark'};
-  var html='<div class="page">'+backBtn('dashboard')+'<div class="title-xl">⚙️ Настройки</div>';
+  var html='<div class="page"><div class="title-xl">⚙️ Настройки</div>';
   html+='<div class="card"><h2>Профиль</h2><div class="field"><label class="field-label">Имя</label><input type="text" value="'+esc(state.profile.name)+'" onchange="saveProfileName(this.value)"/></div><div class="list-row" onclick="openThemePicker()"><div class="list-icon">🎨</div><div class="list-body"><div class="list-title">Тема</div></div><div class="list-value">'+currentTheme.name+'</div></div></div>';
   html+='<div class="card"><h2>Обучение</h2><div class="list-row" onclick="changeLearnTarget()"><div class="list-icon">⏱</div><div class="list-body"><div class="list-title">Цель обучения</div></div><div class="list-value">'+(state.settings.dailyLearnTarget||150)+' мин</div></div></div>';
   html+='<div class="card"><h2>Интеграции</h2><div class="list-row" onclick="navigate(\'integrations\')"><div class="list-icon">🔗</div><div class="list-body"><div class="list-title">Все интеграции</div></div><div class="list-chevron">›</div></div></div>';
@@ -2452,7 +2433,7 @@ function renderSettings(){
 function renderStorage(){
   var totalSize=0;
   try{var raw=localStorage.getItem(STORAGE_KEY);totalSize=raw?raw.length:0}catch(e){}
-  var html='<div class="page">'+backBtn('settings')+'<div class="title-xl">🗄 Хранилище</div>';
+  var html='<div class="page"><div class="title-xl">🗄 Хранилище</div>';
   html+='<div class="card"><div class="list-row"><div class="list-icon">✓</div><div class="list-body"><div class="list-title">'+STORAGE_KEY+'</div></div><div class="list-value">'+(totalSize/1024).toFixed(1)+' KB</div></div></div>';
   html+='<div class="card"><h2>Операции</h2><button class="btn btn-primary btn-block mb-2" onclick="exportDB()">📤 Экспорт</button><button class="btn btn-ghost btn-block mb-2" onclick="document.getElementById(\'impDB\').click()">📥 Импорт</button><input type="file" id="impDB" accept=".json" style="display:none" onchange="importDB(event)"/><button class="btn btn-danger btn-block" onclick="if(confirm(\'Сброс?\')){localStorage.clear();location.reload();}">🗑 Полный сброс</button></div>';
   html+='</div>';
@@ -2487,7 +2468,7 @@ function renderAI(){
   var persona=personas[active]||personas.coach||{name:'AI',emoji:'✨',prompt:'Помощник'};
   var messages=state.chats.filter(function(c){return c.persona===active});
   var hasKey=!!state.settings.apiKey;
-  var html='<div class="page">'+backBtn('dashboard')+'<div class="title-xl">✨ AI</div>';
+  var html='<div class="page"><div class="title-xl">✨ AI</div>';
   html+='<div class="quick-tabs">';
   Object.keys(personas).forEach(function(k){
     var p=personas[k];
@@ -2562,7 +2543,7 @@ function renderMore(){
     {title:'🌿 Восстановление',items:[{key:'recovery',emoji:'🌿',label:'Восстановление'},{key:'screentracker',emoji:'📱',label:'Детокс'},{key:'detoxcourse',emoji:'📚',label:'30-дневный курс'}]},
     {title:'⚙️ Система',items:[{key:'storage',emoji:'🗄',label:'Хранилище'},{key:'integrations',emoji:'🔗',label:'Интеграции'},{key:'settings',emoji:'⚙️',label:'Настройки'},{key:'profile',emoji:'👤',label:'Профиль'}]}
   ];
-  var html='<div class="page">'+backBtn('dashboard')+'<div class="title-xl">Все разделы</div>';
+  var html='<div class="page"><div class="title-xl">Все разделы</div>';
   groups.forEach(function(g){
     html+='<div class="card"><h2>'+g.title+'</h2>';
     g.items.forEach(function(it){
@@ -2574,13 +2555,13 @@ function renderMore(){
   document.getElementById('app').innerHTML=html;
 }
 function renderPersonalPlan(){
-  var html='<div class="page">'+backBtn('dashboard')+'<div class="title-xl">🎯 План</div>';
+  var html='<div class="page"><div class="title-xl">🎯 План</div>';
   html+='<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">Пройди опрос</div><button class="btn btn-primary btn-block mt-3" onclick="startSurvey()">Пройти</button></div>';
   html+='</div>';
   document.getElementById('app').innerHTML=html;
 }
 
-/* ============ SURVEY (базовый) ============ */
+/* ============ SURVEY ============ */
 function startSurvey(){state.profile.surveyStep=0;save();renderSurvey()}
 function renderSurvey(){
   var step=state.profile.surveyStep||0;
@@ -2672,7 +2653,6 @@ var DAILY_SURVEY_QUESTIONS=[
 {id:'wins',question:'Главная победа вчера?',type:'text'},
 {id:'lessons',question:'Что ты понял/узнал?',type:'text'}
 ];
-
 function needsDailySurvey(){return state.settings.lastDailySurveyDay!==today()}
 function openDailySurvey(force){
   if(!force&&!needsDailySurvey())return;
@@ -2896,7 +2876,7 @@ function init(){
 /* ============ RIPPLE ============ */
 function attachRipple(){
   document.addEventListener('pointerdown',function(e){
-    var target=e.target.closest('.btn,.list-row,.quick-tab,.tab-item,.task-item,.card,.icon-btn,.avatar-btn,.segmented-item,.level-card,.module-card,.lesson-row,.domain-card,.method-card,.course-card,.path-step,.survey-option,.ent-card,.habit-row,.group-item,.back-btn,.live-panel-item,.detox-day-card,.compact-item,.resource-card,.matrix-quadrant,.header-back-btn');
+    var target=e.target.closest('.btn,.list-row,.quick-tab,.tab-item,.task-item,.card,.icon-btn,.avatar-btn,.segmented-item,.level-card,.module-card,.lesson-row,.domain-card,.method-card,.course-card,.path-step,.survey-option,.ent-card,.habit-row,.group-item,.live-panel-item,.detox-day-card,.compact-item,.resource-card,.matrix-quadrant,.pill-btn,.pill-icon-btn');
     if(!target)return;
     target.classList.add('tap-ripple');
     var rect=target.getBoundingClientRect();
@@ -3020,6 +3000,8 @@ window.startEffects=startEffects;
 window.applyTheme=applyTheme;
 window.headerGoBack=headerGoBack;
 window.updateHeader=updateHeader;
+window.PAGE_PARENTS=PAGE_PARENTS;
+window.PAGE_TITLES=PAGE_TITLES;
 
 if(document.readyState==='loading'){
   document.addEventListener('DOMContentLoaded',function(){init();setTimeout(attachRipple,300)});
