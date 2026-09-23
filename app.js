@@ -265,12 +265,12 @@ function navigate(page){
   var main=document.getElementById('app');
   if(!main)return;
   main.innerHTML='';
-  var renderers={
+   var renderers={
     dashboard:renderDashboard,tasks:renderTasks,matrix:renderMatrix,dailyplan:renderDailyPlan,
     learning:renderLearning,learnplan:renderLearnPlan,learnplanweek:renderLearnPlanWeek,learnplanmonth:renderLearnPlanMonth,
     levels:renderLevels,levelDetail:renderLevelDetail,moduleDetail:renderModuleDetail,
-    skills:renderSkills,paths:renderPaths,pathDetail:renderPathDetail,
-    courses:renderCourses,methods:renderMethods,english:renderEnglish,
+    skills:renderSkills,
+    methods:renderMethods,english:renderEnglish,
     memory:renderMemory,iq:renderIQ,eq:renderEQ,finance:renderFinance,
     neuromodule:renderNeuro,psychology:renderPsychology,thinking:renderThinking,
     etiquette:renderEtiquette,hormones:renderHormones,wealth:renderWealth,
@@ -281,15 +281,16 @@ function navigate(page){
     visiontips:renderVisionTips,vision60:renderVision60,
     ai:renderAI,health:renderHealth,water:renderWater,mood:renderMood,
     workouts:renderWorkouts,meditation:renderMeditation,meds:renderMeds,
-    recovery:renderRecovery,recoveryItem:renderRecoveryItem,medical:renderMedical,
-    entertainment:renderEntertainment,resources:renderResources,movies:renderMovies,
-    series:renderSeries,books:renderBooks,musiclib:renderMusic,gameslib:renderGames,
-    podcastslib:renderPodcasts,
+    recovery:renderRecovery,medical:renderMedical,
+    entertainment:renderEntertainment,resources:renderResources,
+    movies:renderMovies,series:renderSeries,books:renderBooks,
+    musiclib:renderMusic,gameslib:renderGames,podcastslib:renderPodcasts,
     habits:renderHabits,goals:renderGoals,notes:renderNotes,journal:renderJournal,
     more:renderMore,stats:renderStats,detailedStats:renderDetailedStats,
     timer:renderTimer,focus:renderFocus,domains:renderDomains,
-    profile:renderProfile,settings:renderSettings,integrations:renderIntegrations,storage:renderStorage,
-    screentracker:renderScreenTracker,detoxcourse:renderDetoxCourse,detoxday:renderDetoxDay,
+    profile:renderProfile,settings:renderSettings,integrations:renderIntegrations,
+    storage:renderStorage,
+    screentracker:renderScreenTracker,detoxcourse:renderDetoxCourse,
     dailySurvey:renderDailySurvey,survey:renderSurvey,plan:renderPersonalPlan
   };
   var fn=renderers[page];
