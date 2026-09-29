@@ -436,7 +436,7 @@ function navigate(page,silent){
     achievements:renderAchievements,achievementsCategory:renderAchievementsCategory,
     /* Старые роуты (совместимость) */
     tasks:renderTasks,matrix:renderMatrix,learning:renderLearning,
-    levels:renderLevels,levelDetail:renderLevelDetail,moduleDetail:renderModuleDetail,
+    levels:renderLevels,levelDetail:renderLevelDetail,moduleDetail:renderLevelDetail,
     skills:renderSkills,methods:renderMethods,english:renderEnglish,
     memory:renderMemory,iq:renderIQ,eq:renderEQ,finance:renderFinance,
     neuromodule:renderNeuro,psychology:renderPsychology,thinking:renderThinking,
