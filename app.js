@@ -3053,4 +3053,19 @@ if(document.readyState==='loading'){
   init();
 }
 
+function renderModuleDetail(){
+  var level=(window.LEARNING_LEVELS||[]).find(function(l){return l.id===currentLevelId});
+  if(!level){navigate('learning');return}
+  var module=(level.modules||[]).find(function(m){return m.id===currentModuleId});
+  if(!module){navigate('levelDetail');return}
+  var html='<div class="page"><div class="title-xl">'+module.emoji+' '+module.title+'</div><div class="card">';
+  (module.lessons||[]).forEach(function(lesson,i){
+    var key=level.id+'_'+module.id+'_'+i;
+    var isDone=!!state.levelProgress[key];
+    html+='<div class="lesson-row '+(isDone?'done':'')+'" onclick="openLesson(\''+level.id+'\',\''+module.id+'\','+i+')"><div class="lesson-num">'+(isDone?'✓':(i+1))+'</div><div class="lesson-title">'+esc(lesson.title)+'</div></div>';
+  });
+  html+='</div></div>';
+  document.getElementById('app').innerHTML=html;
+}
+
 console.log('[APP v44 ✅] ФИНАЛ загружен');
