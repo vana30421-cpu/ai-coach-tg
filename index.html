@@ -3,14 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#000">
+<meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Life OS">
 <meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<meta name="description" content="Life OS — личный трекер жизни: 7 сфер, привычки, проекты, AI-коуч, расписание, обучение, зрение, детокс, игры.">
 <title>Life OS</title>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
 <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 <style>
 :root{
@@ -289,7 +293,6 @@ input[type="checkbox"]:checked::after{content:'✓';position:absolute;inset:0;di
 .ring-value{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--text);line-height:1}
 .ring-label{font-size:9px;font-weight:700;color:var(--text-2);text-transform:uppercase;text-align:center}
 
-/* КРУГ 7 СФЕР */
 .spheres-circle-wrap{display:flex;justify-content:center;padding:20px 0;margin-bottom:14px;position:relative}
 .spheres-circle{width:280px;height:280px;position:relative}
 .spheres-circle svg{width:100%;height:100%;transform:rotate(-90deg)}
@@ -299,7 +302,6 @@ input[type="checkbox"]:checked::after{content:'✓';position:absolute;inset:0;di
 .sphere-center-value{font-size:36px;font-weight:800;line-height:1;color:var(--text)}
 .sphere-center-text{font-size:11px;color:var(--text-2);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-top:4px}
 
-/* КАЛЕНДАРЬ И РАСПИСАНИЕ */
 .cal-toolbar{display:flex;align-items:center;gap:6px;margin-bottom:12px;flex-wrap:wrap}
 .cal-nav-btn{width:38px;height:38px;border-radius:13px;background:linear-gradient(135deg,var(--glass-3),var(--glass-2));border:1px solid var(--glass-border);color:var(--text);font-size:20px;cursor:pointer;display:grid;place-items:center;font-family:inherit}
 .cal-today-btn{height:38px;padding:0 15px;border-radius:13px;background:linear-gradient(135deg,var(--glass-3),var(--glass-2));border:1px solid var(--glass-border);color:var(--text);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
@@ -319,7 +321,6 @@ input[type="checkbox"]:checked::after{content:'✓';position:absolute;inset:0;di
 .cal-color-btn{aspect-ratio:1;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform .15s}
 .cal-color-btn.active{border-color:var(--text);box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--text)}
 
-/* РАСПИСАНИЕ ДНЯ */
 .schedule-grid{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
 .schedule-slot{display:flex;align-items:center;gap:10px;padding:10px 12px;background:linear-gradient(135deg,var(--glass-2),var(--glass-1));border:1px solid var(--glass-border);border-radius:var(--r-md);box-shadow:inset 0 1px 0 var(--glass-highlight)}
 .schedule-slot.active{border-color:var(--brand);background:linear-gradient(135deg,color-mix(in srgb,var(--brand) 18%,transparent),color-mix(in srgb,var(--brand) 8%,transparent))}
@@ -329,7 +330,6 @@ input[type="checkbox"]:checked::after{content:'✓';position:absolute;inset:0;di
 .schedule-time{font-size:11px;color:var(--text-2);margin-top:2px}
 .schedule-time-input{width:auto;padding:6px 10px;font-size:13px;min-height:auto;font-weight:700;text-align:center}
 
-/* ОВЕРЛЕЙ */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);z-index:1000;display:flex;align-items:flex-end;justify-content:center;animation:overlayIn .15s ease}
 @keyframes overlayIn{from{opacity:0}to{opacity:1}}
 .modal{background:linear-gradient(135deg,var(--glass-3),var(--glass-2));backdrop-filter:blur(var(--glass-blur-strong)) saturate(220%);-webkit-backdrop-filter:blur(var(--glass-blur-strong)) saturate(220%);border:1px solid var(--glass-border-strong);border-bottom:none;width:100%;max-width:600px;max-height:92dvh;border-radius:32px 32px 0 0;padding:18px;padding-bottom:calc(22px + var(--safe-bottom));overflow-y:auto;box-shadow:inset 0 1px 0 var(--glass-highlight),0 -20px 80px rgba(0,0,0,.6);animation:modalIn .3s var(--spring-snap);position:relative}
@@ -518,47 +518,11 @@ input[type="checkbox"]:checked::after{content:'✓';position:absolute;inset:0;di
 <script src="content.js"></script>
 <script src="content2.js"></script>
 <script src="content3.js"></script>
+<script src="content4.js"></script>
+<script src="content5.js"></script>
+<script src="content6.js"></script>
+<script src="integration.js"></script>
 <script src="app.js"></script>
 
-<script>
-'use strict';
-(function(){
-  try{
-    var tg=window.Telegram&&window.Telegram.WebApp;
-    if(!tg) return;
-    try{tg.expand()}catch(e){}
-    try{tg.ready()}catch(e){}
-    try{tg.setHeaderColor&&tg.setHeaderColor('#000000')}catch(e){}
-    try{tg.setBackgroundColor&&tg.setBackgroundColor('#000000')}catch(e){}
-    try{tg.disableVerticalSwipes&&tg.disableVerticalSwipes()}catch(e){}
-  }catch(e){}
-})();
-(function(){
-  function refreshAvatar(){
-    try{
-      var el=document.getElementById('headerAvatar');
-      if(el&&typeof state!=='undefined'&&state.profile)el.textContent=state.profile.emoji||'👤';
-    }catch(e){}
-  }
-  setTimeout(refreshAvatar,300);setTimeout(refreshAvatar,1000);setTimeout(refreshAvatar,2500);
-})();
-(function(){
-  function openFromUrl(){
-    try{
-      var params=new URLSearchParams(location.search);
-      var page=params.get('page');
-      if(page&&window.navigate)setTimeout(function(){navigate(page)},300);
-    }catch(e){}
-  }
-  openFromUrl();
-})();
-(function(){
-  if('serviceWorker' in navigator){
-    window.addEventListener('load',function(){
-      navigator.serviceWorker.register('sw.js').catch(function(){});
-    });
-  }
-})();
-</script>
 </body>
 </html>
