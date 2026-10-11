@@ -1377,3 +1377,152 @@ window.COURSE_ASTRO=COURSE_ASTRO;
 window.ALL_NEW_COURSES=ALL_NEW_COURSES;
 
 
+/* ============================================================
+   LIFE OS — CONTENT.js v46 — ЧАСТЬ 5/6
+   ACHIEVEMENTS (20 базовых для старой совместимости) + хелперы
+   ============================================================ */
+
+/* ============ ACHIEVEMENTS (20 базовых — для старой совместимости) ============ */
+var ACHIEVEMENTS=[
+{id:'first_task',icon:'✅',name:'Первая задача',check:function(s){return s.tasks.some(function(t){return t.status==='completed'})},progress:function(s){return s.tasks.filter(function(t){return t.status==='completed'}).length>0?1:0}},
+{id:'first_lesson',icon:'🎓',name:'Первый урок',check:function(s){return Object.keys(s.levelProgress||{}).length>=1},progress:function(s){return Math.min(1,Object.keys(s.levelProgress||{}).length)}},
+{id:'first_skill',icon:'💎',name:'Первый навык',check:function(s){return Object.keys(s.skillsProgress||{}).length>=1},progress:function(s){return Math.min(1,Object.keys(s.skillsProgress||{}).length)}},
+{id:'first_water',icon:'💧',name:'Первая вода',check:function(s){return (s.customWater||[]).some(function(w){return w.count>=1})},progress:function(s){return s.customWater&&s.customWater.length>0?1:0}},
+{id:'first_eye',icon:'👁',name:'Первое упражнение глаз',check:function(s){return (s.eyeExercises||[]).length>=1},progress:function(s){return Math.min(1,(s.eyeExercises||[]).length)}},
+{id:'first_screen',icon:'📱',name:'Первый трекинг экрана',check:function(s){return Object.keys(s.screenStats||{}).length>=1},progress:function(s){return Object.keys(s.screenStats||{}).length>=1?1:0}},
+{id:'tasks_10',icon:'🔥',name:'10 задач',check:function(s){return s.tasks.filter(function(t){return t.status==='completed'}).length>=10},progress:function(s){return Math.min(1,s.tasks.filter(function(t){return t.status==='completed'}).length/10)}},
+{id:'tasks_50',icon:'⚡',name:'50 задач',check:function(s){return s.tasks.filter(function(t){return t.status==='completed'}).length>=50},progress:function(s){return Math.min(1,s.tasks.filter(function(t){return t.status==='completed'}).length/50)}},
+{id:'lessons_10',icon:'📚',name:'10 уроков',check:function(s){return Object.keys(s.levelProgress||{}).length>=10},progress:function(s){return Math.min(1,Object.keys(s.levelProgress||{}).length/10)}},
+{id:'lessons_50',icon:'📖',name:'50 уроков',check:function(s){return Object.keys(s.levelProgress||{}).length>=50},progress:function(s){return Math.min(1,Object.keys(s.levelProgress||{}).length/50)}},
+{id:'skills_10',icon:'💎',name:'10 навыков',check:function(s){return Object.keys(s.skillsProgress||{}).length>=10},progress:function(s){return Math.min(1,Object.keys(s.skillsProgress||{}).length/10)}},
+{id:'english_10',icon:'🇬🇧',name:'10 English',check:function(s){return Object.keys(s.englishProgress||{}).length>=10},progress:function(s){return Math.min(1,Object.keys(s.englishProgress||{}).length/10)}},
+{id:'streak_3',icon:'🔥',name:'3 дня',check:function(s){return (s.stats.streak||0)>=3},progress:function(s){return Math.min(1,(s.stats.streak||0)/3)}},
+{id:'streak_7',icon:'🔥',name:'7 дней',check:function(s){return (s.stats.streak||0)>=7},progress:function(s){return Math.min(1,(s.stats.streak||0)/7)}},
+{id:'streak_30',icon:'🔥',name:'30 дней',check:function(s){return (s.stats.streak||0)>=30},progress:function(s){return Math.min(1,(s.stats.streak||0)/30)}},
+{id:'water_100',icon:'💧',name:'100 стаканов',check:function(s){return (s.stats.totalWater||0)>=100},progress:function(s){return Math.min(1,(s.stats.totalWater||0)/100)}},
+{id:'eye_10',icon:'👁',name:'10 упражнений глаз',check:function(s){return (s.eyeExercises||[]).length>=10},progress:function(s){return Math.min(1,(s.eyeExercises||[]).length/10)}},
+{id:'detox_7',icon:'📱',name:'7 дней детокса',check:function(s){return Object.keys(s.detoxCourseProgress||{}).length>=7},progress:function(s){return Math.min(1,Object.keys(s.detoxCourseProgress||{}).length/7)}},
+{id:'detox_30',icon:'🏆',name:'30 дней детокса',check:function(s){return Object.keys(s.detoxCourseProgress||{}).length>=30},progress:function(s){return Math.min(1,Object.keys(s.detoxCourseProgress||{}).length/30)}},
+{id:'xp_100',icon:'⭐',name:'100 XP',check:function(s){return (s.xp||0)>=100},progress:function(s){return Math.min(1,(s.xp||0)/100)}}
+];
+
+/* ============ ХЕЛПЕРЫ ============ */
+
+/* Безопасное получение мудрости дня (если DAILY_WISDOMS не определено) */
+function getTodayWisdomSafe(){
+  if(typeof DAILY_WISDOMS==='undefined'||!DAILY_WISDOMS.length){
+    return {text:'Начни сейчас.',author:'Неизвестный',action:'Сделай 1 шаг'};
+  }
+  var idx=Math.floor(Date.now()/86400000)%DAILY_WISDOMS.length;
+  return DAILY_WISDOMS[idx];
+}
+window.getTodayWisdom=getTodayWisdomSafe;
+
+/* Безопасное получение челленджей дня */
+function getTodayChallengesSafe(){
+  if(typeof DAILY_CHALLENGES==='undefined'||!DAILY_CHALLENGES.length)return[];
+  var dayIdx=Math.floor(Date.now()/86400000);
+  var result=[];
+  for(var i=0;i<4;i++)result.push(DAILY_CHALLENGES[(dayIdx+i)%DAILY_CHALLENGES.length]);
+  return result;
+}
+window.getTodayChallenges=getTodayChallengesSafe;
+
+/* Уровень обучения по id */
+function getLevelById(id){
+  if(typeof LEARNING_LEVELS==='undefined')return null;
+  for(var i=0;i<LEARNING_LEVELS.length;i++){
+    if(LEARNING_LEVELS[i].id===id)return LEARNING_LEVELS[i];
+  }
+  return null;
+}
+window.getLevelById=getLevelById;
+
+/* English уроки по уровню */
+function getEnglishByLevel(level){
+  if(typeof ENGLISH_125==='undefined')return[];
+  return ENGLISH_125.filter(function(l){return l.level===level});
+}
+window.getEnglishByLevel=getEnglishByLevel;
+
+/* Навыки по категории */
+function getSkillsByCategory(cat){
+  if(typeof SKILLS_LIBRARY==='undefined')return[];
+  if(!cat||cat==='all')return SKILLS_LIBRARY.slice();
+  return SKILLS_LIBRARY.filter(function(s){return s.cat===cat});
+}
+window.getSkillsByCategory=getSkillsByCategory;
+
+/* День детокс-курса */
+function getDetoxDay(day){
+  if(typeof DETOX_COURSE==='undefined')return null;
+  for(var i=0;i<DETOX_COURSE.length;i++){
+    if(DETOX_COURSE[i].day===day)return DETOX_COURSE[i];
+  }
+  return null;
+}
+window.getDetoxDay=getDetoxDay;
+
+/* Упражнение для глаз по id */
+function getVisionExercise(id){
+  if(typeof VISION_EXERCISES==='undefined')return null;
+  for(var i=0;i<VISION_EXERCISES.length;i++){
+    if(VISION_EXERCISES[i].id===id)return VISION_EXERCISES[i];
+  }
+  return null;
+}
+window.getVisionExercise=getVisionExercise;
+
+/* Гормон по id */
+function getHormoneById(id){
+  if(typeof HORMONES==='undefined')return null;
+  for(var i=0;i<HORMONES.length;i++){
+    if(HORMONES[i].id===id)return HORMONES[i];
+  }
+  return null;
+}
+window.getHormoneById=getHormoneById;
+
+/* Этикет по категории */
+function getEtiquetteByCat(cat){
+  if(typeof ETIQUETTE_TOPICS==='undefined')return[];
+  if(!cat||cat==='all')return ETIQUETTE_TOPICS.slice();
+  return ETIQUETTE_TOPICS.filter(function(t){return t.cat===cat});
+}
+window.getEtiquetteByCat=getEtiquetteByCat;
+
+/* Курс по id */
+function getCourseById(id){
+  if(typeof ALL_NEW_COURSES==='undefined')return null;
+  for(var i=0;i<ALL_NEW_COURSES.length;i++){
+    if(ALL_NEW_COURSES[i].id===id)return ALL_NEW_COURSES[i];
+  }
+  return null;
+}
+window.getCourseById=getCourseById;
+
+/* Метод по id */
+function getMethodById(id){
+  if(typeof METHODS_LIBRARY==='undefined')return null;
+  for(var i=0;i<METHODS_LIBRARY.length;i++){
+    if(METHODS_LIBRARY[i].id===id)return METHODS_LIBRARY[i];
+  }
+  return null;
+}
+window.getMethodById=getMethodById;
+
+/* Восстановление по категории */
+function getRecoveryByCat(cat){
+  if(typeof RECOVERY_LIBRARY==='undefined')return[];
+  if(!cat||cat==='all')return RECOVERY_LIBRARY.slice();
+  return RECOVERY_LIBRARY.filter(function(r){return r.cat===cat});
+}
+window.getRecoveryByCat=getRecoveryByCat;
+
+/* ============ ЭКСПОРТ ============ */
+window.ACHIEVEMENTS=ACHIEVEMENTS;
+window.getTodayWisdomSafe=getTodayWisdomSafe;
+window.getTodayChallengesSafe=getTodayChallengesSafe;
+
+
+
