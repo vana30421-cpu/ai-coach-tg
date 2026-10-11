@@ -1929,3 +1929,942 @@ window.fallbackReply = fallbackReply;
 
 /* Продолжение в части 3/4: задачи, обучение (все рендеры), курсы, зрение, детокс 62 */
 
+/* ============================================================
+   LIFE OS — APP.js v46 — ЧАСТЬ 3/4
+   Задачи, Матрица, Редактор задач, Обучение (все рендеры),
+   English, Skills, Курсы + renderCourseGeneric, Зрение (полное),
+   Детокс-курс 62, FSRS-5
+   ============================================================ */
+
+/* ============ ЗАДАЧИ ============ */
+function getEisenhowerQuadrant(t){
+  var important = t.priority === 'high' || t.priority === 'medium' || (t.difficulty||0) >= 4;
+  var urgent = t.due_date ? daysBetween(today(), t.due_date.slice(0,10)) <= 2 : false;
+  if(important && urgent) return 'q1';
+  if(important && !urgent) return 'q2';
+  if(!important && urgent) return 'q3';
+  return 'q4';
+}
+function getEisenhowerPriority(t){
+  var q = getEisenhowerQuadrant(t);
+  return q === 'q1' ? 1 : q === 'q2' ? 2 : q === 'q3' ? 3 : 4;
+}
+function taskRow(t){
+  var pColors = {high:'high', medium:'medium', low:'low'};
+  var checked = t.status === 'completed';
+  var overdue = t.due_date && !checked && t.due_date.slice(0,10) < today();
+  var quad = getEisenhowerQuadrant(t);
+  var qEmoji = {q1:'🔥', q2:'📌', q3:'⚡', q4:'🗑'}[quad];
+  var color = t.color ? ((window.TASK_COLORS||[]).find(function(c){ return c.id === t.color; })||{}).hex : null;
+  var cl = t.checklist || [];
+  var clDone = cl.filter(function(c){ return c.done; }).length;
+  return '<div class="task-item ' + (checked?'completed':'') + '" style="' + (color?'border-left:3px solid ' + color + ';':'') + '" onclick="openEntityEditor(\'task\',\'' + t.id + '\')">' +
+    '<div class="priority-bar ' + (pColors[t.priority]||'medium') + '"></div>' +
+    '<button class="task-checkbox ' + (checked?'checked':'') + '" onclick="event.stopPropagation();toggleTask(\'' + t.id + '\')">' + (checked?'✓':'') + '</button>' +
+    '<div class="task-content"><div class="task-title">' + qEmoji + ' ' + esc(t.title) + '</div>' +
+    '<div class="task-meta"><span>' + (t.planned_time||0) + ' мин</span>' +
+    (t.category ? '<span>· ' + esc(t.category) + '</span>' : '') +
+    (t.due_date ? '<span>· 📅 ' + t.due_date.slice(0,10) + '</span>' : '') +
+    (cl.length ? '<span>· ☑ ' + clDone + '/' + cl.length + '</span>' : '') +
+    (overdue ? '<span style="color:var(--danger);">· ⚠️</span>' : '') +
+    '</div></div></div>';
+}
+function renderTasks(){
+  var counts = {
+    all: state.tasks.length,
+    pending: state.tasks.filter(function(t){ return t.status === 'pending'; }).length,
+    completed: state.tasks.filter(function(t){ return t.status === 'completed'; }).length
+  };
+  var filtered = state.tasks.slice();
+  if(taskFilter !== 'all') filtered = filtered.filter(function(t){ return t.status === taskFilter; });
+  if(taskSearch){ var q = taskSearch.toLowerCase(); filtered = filtered.filter(function(t){ return (t.title||'').toLowerCase().indexOf(q) >= 0; }); }
+  var html = '<div class="page">';
+  html += '<div class="row-between" style="margin-bottom:14px;"><div class="title-xl" style="margin:0;">✅ Задачи</div>';
+  html += '<div class="row" style="gap:6px;">';
+  html += '<button class="btn btn-ghost btn-sm" onclick="navigate(\'matrix\')">🔢</button>';
+  html += '<button class="btn btn-primary btn-sm" onclick="openEntityEditor(\'task\',null)">+</button>';
+  html += '</div></div>';
+  html += '<div class="search-bar"><span style="color:var(--text-3);font-size:18px;">🔍</span><input type="search" placeholder="Поиск..." value="' + esc(taskSearch) + '" oninput="taskSearch=this.value;renderTasks()"/></div>';
+  html += '<div class="segmented" style="margin-bottom:14px;">';
+  html += '<button class="segmented-item ' + (taskFilter==='all'?'active':'') + '" onclick="taskFilter=\'all\';renderTasks()">Все (' + counts.all + ')</button>';
+  html += '<button class="segmented-item ' + (taskFilter==='pending'?'active':'') + '" onclick="taskFilter=\'pending\';renderTasks()">Активные (' + counts.pending + ')</button>';
+  html += '<button class="segmented-item ' + (taskFilter==='completed'?'active':'') + '" onclick="taskFilter=\'completed\';renderTasks()">Готовые (' + counts.completed + ')</button>';
+  html += '</div>';
+  if(filtered.length){ filtered.forEach(function(t){ html += taskRow(t); }); }
+  else { html += '<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">' + (taskSearch?'Ничего не найдено':'Нет задач') + '</div></div>'; }
+  html += '</div>';
+  document.getElementById('app').innerHTML = html;
+}
+function toggleTask(id){
+  var t = state.tasks.find(function(x){ return x.id === id; });
+  if(!t) return;
+  t.status = t.status === 'completed' ? 'pending' : 'completed';
+  if(t.status === 'completed'){
+    t.completedAt = nowISO();
+    state.stats.totalTasksDone = (state.stats.totalTasksDone||0) + 1;
+    addXP(10, 'task');
+    addPetXP(5);
+  }
+  save();
+  haptic('success');
+  checkAchievements();
+  if(currentPage === 'tasks') renderTasks();
+  else renderDashboard();
+}
+function renderMatrix(){
+  var pending = state.tasks.filter(function(t){ return t.status === 'pending'; });
+  var q1 = [], q2 = [], q3 = [], q4 = [];
+  pending.forEach(function(t){
+    var q = getEisenhowerQuadrant(t);
+    if(q === 'q1') q1.push(t);
+    else if(q === 'q2') q2.push(t);
+    else if(q === 'q3') q3.push(t);
+    else q4.push(t);
+  });
+  var html = '<div class="page"><div class="title-xl">🔢 Матрица Эйзенхауэра</div>';
+  html += '<div class="matrix-grid-2x2">';
+  html += '<div class="matrix-quadrant matrix-q1"><div class="matrix-q-title">🔥 Q1</div><div class="matrix-q-count">' + q1.length + '</div><div class="matrix-q-sub">Делай сейчас</div></div>';
+  html += '<div class="matrix-quadrant matrix-q2"><div class="matrix-q-title">📌 Q2</div><div class="matrix-q-count">' + q2.length + '</div><div class="matrix-q-sub">Планируй</div></div>';
+  html += '<div class="matrix-quadrant matrix-q3"><div class="matrix-q-title">⚡ Q3</div><div class="matrix-q-count">' + q3.length + '</div><div class="matrix-q-sub">Делегируй</div></div>';
+  html += '<div class="matrix-quadrant matrix-q4"><div class="matrix-q-title">🗑 Q4</div><div class="matrix-q-count">' + q4.length + '</div><div class="matrix-q-sub">Удали</div></div>';
+  html += '</div></div>';
+  document.getElementById('app').innerHTML = html;
+}
+
+/* ============ РЕДАКТОР ЗАДАЧ ============ */
+var _clBuffer = [];
+function openEntityEditor(type, id){
+  if(type === 'task') return openTaskEditorV2(id);
+}
+function openTaskEditorV2(id){
+  var t = id ? state.tasks.find(function(x){ return x.id === id; }) : null;
+  var isNew = !t;
+  if(isNew) t = {checklist:[], priority:'medium', planned_time:30, color:'peacock', difficulty:3};
+  _clBuffer = JSON.parse(JSON.stringify(t.checklist || []));
+  var html = '';
+  html += '<div class="field"><label class="field-label">Название *</label><input type="text" id="ent-title" value="' + esc(t.title||'') + '"/></div>';
+  html += '<div class="field"><label class="field-label">Описание</label><textarea id="ent-desc">' + esc(t.description||'') + '</textarea></div>';
+  html += '<div class="field"><label class="field-label">Сфера</label><select id="ent-sphere"><option value="">—</option>';
+  (window.LIFE_SPHERES||[]).forEach(function(s){
+    html += '<option value="' + s.id + '"' + (t.sphereId===s.id?' selected':'') + '>' + s.emoji + ' ' + s.name + '</option>';
+  });
+  html += '</select></div>';
+  html += '<div class="row" style="gap:8px;">';
+  html += '<div style="flex:1;"><label class="field-label">Приоритет</label><select id="ent-priority">';
+  ['low','medium','high'].forEach(function(p){
+    var lbl = {low:'🟢 Низкий', medium:'🟡 Средний', high:'🔴 Высокий'}[p];
+    html += '<option value="' + p + '"' + (t.priority===p?' selected':'') + '>' + lbl + '</option>';
+  });
+  html += '</select></div>';
+  html += '<div style="flex:1;"><label class="field-label">Сложность</label><select id="ent-difficulty">';
+  [1,2,3,4,5].forEach(function(d){
+    html += '<option value="' + d + '"' + (t.difficulty===d?' selected':'') + '>' + '●'.repeat(d) + ' ' + d + '/5</option>';
+  });
+  html += '</select></div></div>';
+  html += '<div class="row" style="gap:8px;">';
+  html += '<div style="flex:1;"><label class="field-label">Категория</label><input type="text" id="ent-category" value="' + esc(t.category||'Работа') + '"/></div>';
+  html += '<div style="flex:1;"><label class="field-label">Мин</label><input type="number" id="ent-time" value="' + (t.planned_time||30) + '" min="0"/></div></div>';
+  html += '<div class="row" style="gap:8px;">';
+  html += '<div style="flex:1;"><label class="field-label">Старт</label><input type="datetime-local" id="ent-start" value="' + (t.start_date?t.start_date.slice(0,16):'') + '"/></div>';
+  html += '<div style="flex:1;"><label class="field-label">Дедлайн</label><input type="datetime-local" id="ent-due" value="' + (t.due_date?t.due_date.slice(0,16):'') + '"/></div></div>';
+  html += '<div class="field"><label class="field-label">Чек-лист</label><div id="cl-list"></div>';
+  html += '<button type="button" class="btn btn-ghost btn-sm mt-2" onclick="addChecklistItem()">+ Подзадача</button></div>';
+  html += '<button class="btn btn-primary btn-block mt-3" onclick="saveTaskV2(' + (id?"'"+id+"'":'null') + ')">' + (isNew?'➕ Создать':'💾 Сохранить') + '</button>';
+  if(!isNew) html += '<button class="btn btn-danger btn-block mt-2" onclick="deleteTaskV2(\'' + id + '\')">🗑 Удалить</button>';
+  openSheet(isNew?'Новая задача':'Задача', html);
+  rerenderChecklist();
+}
+function rerenderChecklist(){
+  var box = document.getElementById('cl-list');
+  if(!box) return;
+  var html = '';
+  _clBuffer.forEach(function(item, i){
+    html += '<div style="display:flex;gap:6px;margin-bottom:6px;align-items:center;">';
+    html += '<button type="button" class="task-checkbox ' + (item.done?'checked':'') + '" onclick="toggleChecklistItem(' + i + ')" style="width:24px;height:24px;font-size:12px;flex-shrink:0;">' + (item.done?'✓':'') + '</button>';
+    html += '<input type="text" value="' + esc(item.title) + '" onchange="updateChecklistItem(' + i + ',this.value)" style="flex:1;"/>';
+    html += '<button type="button" class="btn btn-ghost btn-xs" onclick="removeChecklistItem(' + i + ')">🗑</button>';
+    html += '</div>';
+  });
+  box.innerHTML = html;
+}
+function addChecklistItem(){ _clBuffer.push({title:'', done:false}); rerenderChecklist(); }
+function removeChecklistItem(i){ _clBuffer.splice(i,1); rerenderChecklist(); }
+function toggleChecklistItem(i){ if(!_clBuffer[i]) return; _clBuffer[i].done = !_clBuffer[i].done; rerenderChecklist(); }
+function updateChecklistItem(i, v){ if(!_clBuffer[i]) return; _clBuffer[i].title = v; }
+function saveTaskV2(id){
+  var title = (document.getElementById('ent-title')||{}).value || '';
+  if(!title.trim()) return toast('Введите название','error');
+  var t = id ? state.tasks.find(function(x){ return x.id === id; }) : null;
+  var isNew = !t;
+  if(!t){ t = {id:uid(), created_at:nowISO()}; state.tasks.unshift(t); }
+  t.title = title.trim();
+  t.description = (document.getElementById('ent-desc')||{}).value || '';
+  t.sphereId = (document.getElementById('ent-sphere')||{}).value || null;
+  t.priority = (document.getElementById('ent-priority')||{}).value || 'medium';
+  t.difficulty = parseInt((document.getElementById('ent-difficulty')||{}).value) || 3;
+  t.category = (document.getElementById('ent-category')||{}).value || '';
+  t.planned_time = parseInt((document.getElementById('ent-time')||{}).value) || 30;
+  t.start_date = (document.getElementById('ent-start')||{}).value || null;
+  t.due_date = (document.getElementById('ent-due')||{}).value || null;
+  t.checklist = _clBuffer.slice();
+  t.updated_at = nowISO();
+  save();
+  haptic('success');
+  closeSheet();
+  toast(isNew?'✓ Создано':'💾 Сохранено','success');
+  checkAchievements();
+  navigate(currentPage);
+}
+function deleteTaskV2(id){
+  if(!confirm('Удалить?')) return;
+  state.tasks = state.tasks.filter(function(x){ return x.id !== id; });
+  save();
+  closeSheet();
+  navigate(currentPage);
+}
+
+/* ============ ОБУЧЕНИЕ ============ */
+function getLevelProgress(levelId){
+  var level = (window.LEARNING_LEVELS||[]).find(function(l){ return l.id === levelId; });
+  if(!level) return {done:0,total:0,pct:0};
+  var total = 0, done = 0;
+  level.modules.forEach(function(mod){
+    mod.lessons.forEach(function(l, idx){
+      total++;
+      if(state.levelProgress[levelId + '_' + mod.id + '_' + idx]) done++;
+    });
+  });
+  return {done:done, total:total, pct:total>0 ? Math.round(done/total*100) : 0};
+}
+function renderLearning(){
+  var totalDone = 0, totalLessons = 0;
+  (window.LEARNING_LEVELS||[]).forEach(function(level){
+    var p = getLevelProgress(level.id);
+    totalDone += p.done;
+    totalLessons += p.total;
+  });
+  var overallPct = totalLessons ? Math.round(totalDone/totalLessons*100) : 0;
+  var skillsDone = Object.keys(state.skillsProgress||{}).length;
+  var engDone = Object.keys(state.englishProgress||{}).length;
+  var html = '<div class="page"><div class="title-xl">🎓 Обучение</div>';
+  html += '<div class="card card-gradient"><div style="opacity:.9;font-size:12px;">Прогресс</div><div style="font-size:40px;font-weight:800;">' + overallPct + '%</div></div>';
+  html += '<div class="compact-grid">';
+  html += '<div class="compact-item" onclick="navigate(\'levels\')"><span class="compact-icon">🌱</span><span>Уровни</span></div>';
+  html += '<div class="compact-item" onclick="navigate(\'english\')"><span class="compact-icon">🇬🇧</span><span>English ' + engDone + '/' + ((window.ENGLISH_125||[]).length) + '</span></div>';
+  html += '<div class="compact-item" onclick="navigate(\'skills\')"><span class="compact-icon">💎</span><span>Навыки ' + skillsDone + '/' + ((window.SKILLS_LIBRARY||[]).length) + '</span></div>';
+  html += '<div class="compact-item" onclick="navigate(\'psychology\')"><span class="compact-icon">🧠</span><span>Психология</span></div>';
+  html += '<div class="compact-item" onclick="navigate(\'thinking\')"><span class="compact-icon">💡</span><span>Мышление</span></div>';
+  html += '<div class="compact-item" onclick="navigate(\'games\')"><span class="compact-icon">🎮</span><span>Игры</span></div>';
+  html += '<div class="compact-item" onclick="navigate(\'materials\')"><span class="compact-icon">📚</span><span>Материалы</span></div>';
+  html += '<div class="compact-item" onclick="navigate(\'fsrs\')"><span class="compact-icon">🃏</span><span>Карточки FSRS</span></div>';
+  html += '</div>';
+  html += '<h2 style="margin:20px 0 12px;font-size:18px;">🚀 Курсы (' + ((window.ALL_NEW_COURSES||[]).length) + ')</h2>';
+  html += '<div class="compact-grid">';
+  (window.ALL_NEW_COURSES||[]).forEach(function(c){
+    html += '<div class="compact-item" onclick="navigate(\'' + c.id + '\')"><span class="compact-icon">' + c.emoji + '</span><span>' + c.title + '</span></div>';
+  });
+  html += '</div></div>';
+  document.getElementById('app').innerHTML = html;
+}
+function renderLevels(){
+  var html = '<div class="page"><div class="title-xl">🌱 Уровни</div>';
+  (window.LEARNING_LEVELS||[]).forEach(function(level){
+    var p = getLevelProgress(level.id);
+    html += '<div class="method-card" onclick="openLevel(\'' + level.id + '\')"><div class="method-header"><div class="method-emoji">' + level.emoji + '</div><div style="flex:1;"><div class="method-title">' + level.title + '</div><div class="method-cat">' + p.done + '/' + p.total + ' · ' + p.pct + '%</div></div></div><div class="progress" style="margin-top:8px;"><div class="progress-fill" style="width:' + p.pct + '%;"></div></div></div>';
+  });
+  html += '</div>';
+  document.getElementById('app').innerHTML = html;
+}
+function openLevel(id){ currentLevelId = id; navigate('levelDetail'); }
+function renderLevelDetail(){
+  var level = (window.LEARNING_LEVELS||[]).find(function(l){ return l.id === currentLevelId; });
+  if(!level){ navigate('levels'); return; }
+  var html = '<div class="page"><div style="text-align:center;margin-bottom:20px;"><div style="font-size:56px;">' + level.emoji + '</div><div class="title-xl">' + level.title + '</div></div>';
+  level.modules.forEach(function(mod){
+    html += '<div class="card"><h2>' + mod.emoji + ' ' + mod.title + '</h2>';
+    mod.lessons.forEach(function(l, i){
+      var key = level.id + '_' + mod.id + '_' + i;
+      var isDone = !!state.levelProgress[key];
+      html += '<div class="lesson-row ' + (isDone?'done':'') + '" onclick="openLesson(\'' + level.id + '\',\'' + mod.id + '\',' + i + ')"><div class="lesson-num">' + (isDone?'✓':(i+1)) + '</div><div class="lesson-title">' + esc(l.title) + '</div></div>';
+    });
+    html += '</div>';
+  });
+  html += '</div>';
+  document.getElementById('app').innerHTML = html;
+}
+function openLesson(lid, mid, idx){
+  var level = (window.LEARNING_LEVELS||[]).find(function(l){ return l.id === lid; });
+  if(!level) return;
+  var mod = level.modules.find(function(m){ return m.id === mid; });
+  if(!mod) return;
+  var lesson = mod.lessons[idx];
+  if(!lesson) return;
+  var key = lid + '_' + mid + '_' + idx;
+  var isDone = !!state.levelProgress[key];
+  var html = '<div style="font-size:20px;font-weight:800;margin-bottom:12px;">' + esc(lesson.title) + '</div>';
+  if(lesson.theory) html += '<div class="card"><div class="lesson-section"><div class="lesson-section-title">📚 Теория</div><div class="lesson-content">' + formatLesson(lesson.theory) + '</div></div></div>';
+  if(lesson.practice) html += '<div class="card"><div class="lesson-section practice"><div class="lesson-section-title">🎯 Практика</div><div class="lesson-content">' + esc(lesson.practice) + '</div></div></div>';
+  if(!isDone) html += '<button class="btn btn-primary btn-block mt-3" onclick="completeLesson(\'' + lid + '\',\'' + mid + '\',' + idx + ')">✓ Изучено</button>';
+  openSheet(lesson.title, html);
+}
+function completeLesson(lid, mid, idx){
+  var key = lid + '_' + mid + '_' + idx;
+  state.levelProgress[key] = true;
+  addXP(10, 'lesson');
+  addPetXP(3);
+  save();
+  haptic('success');
+  toast('✓ +10 XP','success');
+  closeSheet();
+  navigate('levelDetail');
+}
+function formatLesson(text){
+  if(!text) return '';
+  var h = esc(text);
+  h = h.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  h = h.replace(/\n/g, '<br>');
+  return h;
+}
+function renderSkills(){
+  var lib = window.SKILLS_LIBRARY || [];
+  var html = '<div class="page"><div class="title-xl">💎 Навыки</div>';
+  html += '<div class="card card-gradient"><div style="font-size:40px;font-weight:800;">' + lib.length + '</div></div>';
+  lib.forEach(function(s){
+    var isDone = state.skillsProgress[s.id];
+    html += '<div class="method-card" onclick="openSkill(\'' + s.id + '\')"><div class="method-header"><div class="method-emoji">' + s.emoji + '</div><div style="flex:1;"><div class="method-title">' + esc(s.title) + '</div><div class="method-cat">' + esc(s.desc||'') + '</div></div>' + (isDone?'<span class="badge badge-success">✓</span>':'›') + '</div></div>';
+  });
+  html += '</div>';
+  document.getElementById('app').innerHTML = html;
+}
+function openSkill(id){
+  var s = (window.SKILLS_LIBRARY||[]).find(function(x){ return x.id === id; });
+  if(!s) return;
+  var isDone = state.skillsProgress[id];
+  var html = '<div style="font-size:20px;font-weight:800;margin-bottom:12px;">' + esc(s.title) + '</div>';
+  if(s.theory) html += '<div class="card"><div class="lesson-section"><div class="lesson-section-title">📚</div><div class="lesson-content">' + formatLesson(s.theory) + '</div></div></div>';
+  if(!isDone) html += '<button class="btn btn-primary btn-block mt-3" onclick="completeSkill(\'' + id + '\')">✓ Изучено</button>';
+  openSheet(s.title, html);
+}
+function completeSkill(id){
+  state.skillsProgress[id] = true;
+  addXP(20, 'lesson');
+  save();
+  toast('✓ +20 XP','success');
+  closeSheet();
+  renderSkills();
+}
+function renderEnglish(){
+  var all = window.ENGLISH_125 || [];
+  var done = Object.keys(state.englishProgress||{}).length;
+  var html = '<div class="page"><div class="title-xl">🇬🇧 English</div>';
+  html += '<div class="card card-gradient"><div style="font-size:40px;font-weight:800;">' + done + '/' + all.length + '</div></div>';
+  ['A1','A2','B1','B2','C1'].forEach(function(lvl){
+    var lessons = all.filter(function(l){ return l.level === lvl; });
+    var d = lessons.filter(function(l){ return state.englishProgress[l.id]; }).length;
+    var pct = lessons.length ? Math.round(d/lessons.length*100) : 0;
+    html += '<div class="card"><h2>' + lvl + ' (' + d + '/' + lessons.length + ')</h2><div class="progress mb-2"><div class="progress-fill" style="width:' + pct + '%;"></div></div>';
+    lessons.forEach(function(l){
+      var isDone = state.englishProgress[l.id];
+      html += '<div class="lesson-row ' + (isDone?'done':'') + '" onclick="openEnglishLesson(\'' + l.id + '\')"><div class="lesson-num">' + (isDone?'✓':'○') + '</div><div class="lesson-title">' + esc(l.title) + '</div></div>';
+    });
+    html += '</div>';
+  });
+  html += '</div>';
+  document.getElementById('app').innerHTML = html;
+}
+function openEnglishLesson(id){
+  var l = (window.ENGLISH_125||[]).find(function(x){ return x.id === id; });
+  if(!l) return;
+  var isDone = state.englishProgress[id];
+  var html = '<div style="font-size:20px;font-weight:800;margin-bottom:12px;">' + esc(l.title) + '</div>';
+  if(l.theory) html += '<div class="card"><div class="lesson-section"><div class="lesson-section-title">📚</div><div class="lesson-content">' + formatLesson(l.theory) + '</div></div></div>';
+  if(!isDone) html += '<button class="btn btn-primary btn-block mt-3" onclick="completeEnglish(\'' + id + '\')">✓ Изучено</button>';
+  openSheet(l.title, html);
+}
+function completeEnglish(id){
+  state.englishProgress[id] = true;
+  addXP(15, 'lesson');
+  save();
+  toast('✓ +15 XP','success');
+  closeSheet();
+  renderEnglish();
+}
+
+/* ============ RENDERCOURSE (общий для 12 курсов) ============ */
+function renderCourseGeneric(course, progressKey){
+  if(!course){
+    document.getElementById('app').innerHTML = '<div class="page"><div class="card"><div class="empty"><div class="empty-icon">⚠️</div><div class="empty-title">Курс не найден</div></div></div></div>';
+    return;
+  }
+  var progress = state[progressKey] || {};
+  var totalLessons = 0;
+  var doneLessons = 0;
+  (course.modules||[]).forEach(function(mod){
+    (mod.lessons||[]).forEach(function(l, idx){
+      totalLessons++;
+      if(progress[course.id + '_' + mod.id + '_' + idx]) doneLessons++;
+    });
+  });
+  var pct = totalLessons ? Math.round(doneLessons/totalLessons*100) : 0;
+  var html = '<div class="page">';
+  html += '<div style="text-align:center;margin-bottom:20px;">';
+  html += '<div style="font-size:56px;">' + course.emoji + '</div>';
+  html += '<div class="title-xl">' + esc(course.title) + '</div>';
+  html += '<div class="footnote text-secondary">' + esc(course.subtitle||'') + '</div>';
+  html += '</div>';
+  html += '<div class="card card-gradient">';
+  html += '<div style="font-size:12px;opacity:.9;">Прогресс</div>';
+  html += '<div style="font-size:40px;font-weight:800;">' + pct + '%</div>';
+  html += '<div style="font-size:12px;opacity:.9;margin-top:6px;">' + doneLessons + ' / ' + totalLessons + ' уроков</div>';
+  html += '</div>';
+  (course.modules||[]).forEach(function(mod){
+    html += '<div class="card"><h2>' + mod.emoji + ' ' + esc(mod.title) + '</h2>';
+    (mod.lessons||[]).forEach(function(l, idx){
+      var key = course.id + '_' + mod.id + '_' + idx;
+      var isDone = !!progress[key];
+      html += '<div class="lesson-row ' + (isDone?'done':'') + '" onclick="openCourseLesson(\'' + course.id + '\',\'' + mod.id + '\',' + idx + ')">';
+      html += '<div class="lesson-num">' + (isDone?'✓':(idx+1)) + '</div>';
+      html += '<div class="lesson-title">' + esc(l.title) + '</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+  });
+  html += '</div>';
+  document.getElementById('app').innerHTML = html;
+}
+function openCourseLesson(courseId, moduleId, idx){
+  var course = getCourseById(courseId);
+  if(!course) return;
+  var mod = null;
+  (course.modules||[]).forEach(function(m){ if(m.id === moduleId) mod = m; });
+  if(!mod) return;
+  var lesson = mod.lessons[idx];
+  if(!lesson) return;
+  currentCourseId = courseId;
+  currentCourseModuleId = moduleId;
+  currentCourseLessonIdx = idx;
+  var html = '<div style="font-size:20px;font-weight:800;margin-bottom:12px;">' + esc(lesson.title) + '</div>';
+  if(lesson.theory) html += '<div class="card"><div class="lesson-section"><div class="lesson-section-title">📚 Теория</div><div class="lesson-content">' + formatLesson(lesson.theory) + '</div></div></div>';
+  if(lesson.practice) html += '<div class="card"><div class="lesson-section practice"><div class="lesson-section-title">🎯 Практика</div><div class="lesson-content">' + esc(lesson.practice) + '</div></div></div>';
+  var key = courseId + '_' + moduleId + '_' + idx;
+  var isDone = state[courseId + 'Progress'] && state[courseId + 'Progress'][key];
+  if(!isDone){
+    html += '<button class="btn btn-primary btn-block mt-3" onclick="completeCourseLesson(\'' + courseId + '\',\'' + moduleId + '\',' + idx + ')">✓ Изучено</button>';
+  } else {
+    html += '<div class="insight-card"><div class="insight-title">✓ Урок пройден</div></div>';
+  }
+  openSheet(lesson.title, html);
+}
+function completeCourseLesson(courseId, moduleId, idx){
+  var key = courseId + '_' + moduleId + '_' + idx;
+  var pKey = courseId + 'Progress';
+  if(!state[pKey]) state[pKey] = {};
+  state[pKey][key] = true;
+  addXP(10, 'lesson');
+  addPetXP(3);
+  save();
+  haptic('success');
+  toast('✓ +10 XP','success');
+  closeSheet();
+  renderCourseGeneric(getCourseById(courseId), pKey);
+}
+
+/* ============ ЗРЕНИЕ ============ */
+function renderVision(){
+  var ex = window.VISION_EXERCISES || [];
+  var todayISO = today();
+  var metrics = (state.vision && state.vision.metrics) || {};
+  var m = metrics[todayISO] || {};
+  var breaks = (state.vision && state.vision.breakTracker && state.vision.breakTracker.today) || {done:0, target:12};
+  var html = '<div class="page"><div class="title-xl">👁 Зрение</div>';
+
+  /* Красные флаги */
+  if(state.vision && state.vision.redFlags && state.vision.redFlags.active){
+    html += '<div class="card" style="border-left:3px solid var(--danger);">';
+    html += '<h2 style="color:var(--danger);">🚨 Красные флаги активны</h2>';
+    html += '<div class="footnote text-secondary">Тренировки приостановлены. Отдохни 2-3 дня.</div>';
+    html += '<button class="btn btn-danger btn-block mt-2" onclick="resetVisionRedFlags()">✓ Сбросить</button>';
+    html += '</div>';
+  }
+
+  /* Перерывы 20-20-20 */
+  html += '<div class="card"><h2>⏱ 20-20-20</h2>';
+  html += '<div style="display:flex;gap:12px;align-items:center;">';
+  html += '<div style="flex:1;"><div style="font-size:12px;color:var(--text-2);">Сегодня</div>';
+  html += '<div style="font-size:32px;font-weight:800;">' + breaks.done + '/' + breaks.target + '</div></div>';
+  html += '<button class="btn btn-primary" onclick="startVisionBreak()">Начать</button>';
+  html += '</div>';
+  html += '<div class="progress mt-2"><div class="progress-fill" style="width:' + Math.min(100, Math.round(breaks.done/(breaks.target||12)*100)) + '%"></div></div>';
+  html += '</div>';
+
+  /* Быстрые упражнения */
+  html += '<div class="card"><h2>⚡ Быстрые упражнения</h2>';
+  ex.slice(0,4).forEach(function(e){
+    html += '<div class="list-row" onclick="startEyeExercise(\'' + e.id + '\')"><div class="list-icon">' + e.emoji + '</div><div class="list-body"><div class="list-title">' + esc(e.title) + '</div><div class="list-subtitle">' + e.duration + '</div></div></div>';
+  });
+  html += '<button class="btn btn-ghost btn-block mt-2" onclick="navigate(\'vision60\')">Все 75 упражнений →</button>';
+  html += '</div>';
+
+  /* 62-дневный путь */
+  html += '<div class="card"><h2>🌟 62-дневный путь</h2>';
+  var d62 = (state.vision && state.vision.detox62) || {status:'not_started'};
+  if(d62.status === 'not_started'){
+    html += '<div class="footnote text-secondary mb-2">Полная программа восстановления зрения</div>';
+    html += '<button class="btn btn-primary btn-block" onclick="startDetox62()">🚀 Начать программу</button>';
+  } else {
+    html += '<div style="font-size:32px;font-weight:800;">День ' + d62.currentDay + ' / 62</div>';
+    html += '<div class="progress mt-2"><div class="progress-fill" style="width:' + Math.round(d62.currentDay/62*100) + '%"></div></div>';
+    html += '<button class="btn btn-primary btn-block mt-3" onclick="navigate(\'vision62\')">Открыть программу</button>';
+  }
+  html += '</div>';
+
+  /* Метрики дня */
+  html += '<div class="card"><h2>📊 Метрики дня</h2>';
+  html += '<div class="row-between mb-2"><div class="list-title">Усталость глаз</div>';
+  html += '<input type="range" min="1" max="10" value="' + (m.eyeFatigue||5) + '" style="width:140px;" onchange="saveVisionMetric(\'eyeFatigue\',this.value)"/>';
+  html += '</div>';
+  html += '<div class="row-between mb-2"><div class="list-title">Часы у экрана</div>';
+  html += '<input type="number" min="0" max="24" step="0.5" value="' + (m.screenHours||0) + '" style="width:80px;" onchange="saveVisionMetric(\'screenHours\',this.value)"/>';
+  html += '</div>';
+  html += '<div class="row-between mb-2"><div class="list-title">Головные боли</div>';
+  html += '<button class="btn ' + (m.headaches?'btn-danger':'btn-ghost') + ' btn-sm" onclick="toggleVisionHeadache()">' + (m.headaches?'Есть':'Нет') + '</button>';
+  html += '</div></div>';
+
+  html += '</div>';
+  document.getElementById('app').innerHTML = html;
+}
+function startVisionBreak(){
+  if(!state.vision) state.vision = defaultState().vision;
+  if(!state.vision.breakTracker) state.vision.breakTracker = {today:{done:0,target:12}, history:{}};
+  var t = today();
+  if(!state.vision.breakTracker.history) state.vision.breakTracker.history = {};
+  state.vision.breakTracker.today.done++;
+  state.vision.breakTracker.today.lastBreakAt = nowISO();
+  state.vision.breakTracker.history[t] = state.vision.breakTracker.history[t] || {done:0, target:12};
+  state.vision.breakTracker.history[t].done++;
+  addXP(2, 'vision');
+  save();
+  haptic('success');
+  toast('👁 20 секунд смотри вдаль','info',2000);
+  renderVision();
+}
+function saveVisionMetric(key, value){
+  if(!state.vision) state.vision = defaultState().vision;
+  if(!state.vision.metrics) state.vision.metrics = {};
+  var t = today();
+  if(!state.vision.metrics[t]) state.vision.metrics[t] = {};
+  state.vision.metrics[t][key] = parseFloat(value);
+  save();
+  toast('✓ Сохранено','success');
+}
+function toggleVisionHeadache(){
+  if(!state.vision) state.vision = defaultState().vision;
+  if(!state.vision.metrics) state.vision.metrics = {};
+  var t = today();
+  if(!state.vision.metrics[t]) state.vision.metrics[t] = {};
+  state.vision.metrics[t].headaches = !state.vision.metrics[t].headaches;
+  save();
+  renderVision();
+}
+function resetVisionRedFlags(){
+  if(state.vision && state.vision.redFlags){
+    state.vision.redFlags.active = false;
+    state.vision.redFlags.reasons = [];
+  }
+  save();
+  toast('✓ Сброшено','success');
+  renderVision();
+}
+function renderVisionExercises(){ renderVision60(); }
+function renderVision60(){
+  var ex = window.VISION_EXERCISES || [];
+  var html = '<div class="page"><div class="title-xl">👁 Все упражнения (' + ex.length + ')</div>';
+  ex.forEach(function(e){
+    html += '<div class="method-card" onclick="startEyeExercise(\'' + e.id + '\')"><div class="method-header"><div class="method-emoji">' + e.emoji + '</div><div style="flex:1;"><div class="method-title">' + esc(e.title) + '</div><div class="method-cat">' + esc(e.desc||'') + ' · ' + (e.duration||'') + '</div></div><div class="list-chevron">▶</div></div></div>';
+  });
+  html += '</div>';
+  document.getElementById('app').innerHTML = html;
+}
+function renderVisionTracker(){
+  var html = '<div class="page"><div class="title-xl">📊 Трекер зрения</div>';
+  var metrics = (state.vision && state.vision.metrics) || {};
+  var keys = Object.keys(metrics).sort().slice(-30);
+  if(keys.length){
+    html += '<div class="card"><h2>Последние 30 дней</h2>';
+    keys.slice().reverse().forEach(function(d){
+      var m = metrics[d];
+      html += '<div class="stat-row"><span class="stat-row-label">' + d + '</span><span class="stat-row-value">Усталость: ' + (m.eyeFatigue||'—') + ' · Экран: ' + (m.screenHours||'—') + 'ч</span></div>';
+    });
+    html += '</div>';
+  } else {
+    html += '<div class="card"><div class="empty"><div class="empty-icon">📊</div><div class="empty-title">Нет данных</div></div></div>';
+  }
+  html += '</div>';
+  document.getElementById('app').innerHTML = html;
+}
+function renderVisionTips(){
+  var html = '<div class="page"><div class="title-xl">💡 Советы для зрения</div>';
+  var tips = [
+    {emoji:'20', text:'Правило 20-20-20: каждые 20 мин — 20 сек на 6 м'},
+    {emoji:'💧', text:'Моргай чаще — глаза сохнут от экрана'},
+    {emoji:'🌅', text:'10 минут утреннего света без очков'},
+    {emoji:'☀️', text:'Солнцезащитные очки на улице'},
+    {emoji:'📱', text:'Экран на 50-70 см от глаз'},
+    {emoji:'🌙', text:'Тёмная тема после заката'},
+    {emoji:'🥕', text:'Морковь, черника, рыба — для глаз'},
+    {emoji:'💤', text:'7-9 часов сна — восстановление глаз'}
+  ];
+  tips.forEach(function(t){
+    html += '<div class="list-row"><div class="list-icon">' + t.emoji + '</div><div class="list-body"><div class="list-title">' + esc(t.text) + '</div></div></div>';
+  });
+  html += '</div>';
+  document.getElementById('app').innerHTML = html;
+}
+function startEyeExercise(id){
+  var ex = (window.VISION_EXERCISES||[]).find(function(x){ return x.id === id; });
+  if(!ex) return;
+  currentVisionExercise = ex;
+  var html = '<div style="text-align:center;margin-bottom:16px;"><div style="font-size:56px;">' + ex.emoji + '</div><div style="font-size:22px;font-weight:800;">' + esc(ex.title) + '</div></div>';
+  html += '<div class="card"><div class="lesson-section"><div class="lesson-section-title">📋 Описание</div><div class="lesson-content">' + esc(ex.desc) + '</div></div></div>';
+  if(ex.how) html += '<div class="insight-card"><div class="insight-title">🔬 Наука</div><div class="insight-text">' + esc(ex.how) + '</div></div>';
+  html += '<button class="btn btn-primary btn-block mt-3" onclick="completeEyeExercise()">✓ Выполнено</button>';
+  openSheet(ex.title, html);
+}
+function completeEyeExercise(){
+  if(!currentVisionExercise) return;
+  if(!state.eyeExercises) state.eyeExercises = [];
+  state.eyeExercises.push({id:uid(), exerciseId:currentVisionExercise.id, date:today(), time:nowISO()});
+  addXP(10, 'vision');
+  save();
+  haptic('success');
+  toast('✓ +10 XP','success');
+  checkAchievements();
+  closeSheet();
+  currentVisionExercise = null;
+  navigate(currentPage);
+}
+function renderVision62(){
+  var d62 = (state.vision && state.vision.detox62) || defaultState().vision.detox62;
+  var html = '<div class="page"><div class="title-xl">🌟 62-дневный путь</div>';
+  html += '<div class="card card-gradient">';
+  html += '<div style="font-size:12px;opacity:.9;">Прогресс</div>';
+  html += '<div style="font-size:40px;font-weight:800;">' + d62.currentDay + ' / 62</div>';
+  html += '<div style="font-size:12px;opacity:.9;margin-top:6px;">Этап ' + d62.currentStage + ' · ' + (d62.status === 'active' ? 'Активен' : d62.status) + '</div>';
+  html += '<div class="progress mt-3"><div class="progress-fill" style="width:' + Math.round(d62.currentDay/62*100) + '%"></div></div>';
+  html += '</div>';
+  var stages = d62.stages || [];
+  stages.forEach(function(st){
+    var active = d62.currentStage === st.id;
+    var done = st.completedAt ? true : false;
+    html += '<div class="method-card" style="' + (active?'border-left:3px solid var(--brand);':'') + '">';
+    html += '<div class="method-header"><div class="method-emoji">' + (done?'✓':st.id) + '</div>';
+    html += '<div style="flex:1;"><div class="method-title">' + st.name + '</div>';
+    html += '<div class="method-cat">Дни ' + st.days[0] + '-' + st.days[1] + (done?' · Готово':'') + '</div></div></div></div>';
+  });
+  if(d62.status === 'active'){
+    html += '<button class="btn btn-primary btn-block mb-2" onclick="completeDetox62Day()">✓ День ' + d62.currentDay + ' пройден</button>';
+    html += '<button class="btn btn-ghost btn-block mb-2" onclick="skipDetox62Day()">⏭ Пропустить день</button>';
+  }
+  html += '</div>';
+  document.getElementById('app').innerHTML = html;
+}
+function startDetox62(){
+  if(!state.vision) state.vision = defaultState().vision;
+  state.vision.detox62 = state.vision.detox62 || defaultState().vision.detox62;
+  state.vision.detox62.active = true;
+  state.vision.detox62.status = 'active';
+  state.vision.detox62.startDate = today();
+  state.vision.detox62.currentDay = 1;
+  state.vision.detox62.currentStage = 1;
+  save();
+  toast('🚀 Программа начата','success');
+  navigate('vision62');
+}
+function completeDetox62Day(){
+  var d62 = state.vision.detox62;
+  if(!d62) return;
+  var t = today();
+  if(!d62.dailyLog) d62.dailyLog = {};
+  d62.dailyLog[d62.currentDay] = {completedAt:nowISO()};
+  addXP(15, 'vision_62day');
+  addPetXP(5);
+  if(d62.currentDay < 62) d62.currentDay++;
+  /* Определяем этап */
+  var stages = d62.stages || [];
+  stages.forEach(function(st){
+    if(d62.currentDay >= st.days[0] && d62.currentDay <= st.days[1]) d62.currentStage = st.id;
+  });
+  save();
+  haptic('success');
+  toast('✓ День пройден! День ' + d62.currentDay,'success');
+  renderVision62();
+}
+function skipDetox62Day(){
+  var reason = prompt('Причина пропуска:');
+  if(!reason) return;
+  var d62 = state.vision.detox62;
+  if(!d62) return;
+  if(!d62.skips) d62.skips = [];
+  d62.skips.push({day:d62.currentDay, reason:reason, at:nowISO()});
+  if(d62.currentDay < 62) d62.currentDay++;
+  save();
+  toast('Пропуск зафиксирован','warning');
+  renderVision62();
+}
+
+/* ============ ДЕТОКС 62 (общий) ============ */
+function renderDetoxCourse(){
+  var done = Object.keys(state.detoxCourseProgress || {}).length;
+  var html = '<div class="page"><div class="title-xl">📱 62-дневный детокс</div>';
+  html += '<div class="card card-gradient"><div style="font-size:12px;opacity:.9;">Пройдено дней</div><div style="font-size:40px;font-weight:800;">' + done + '/62</div></div>';
+  var course = window.DETOX_COURSE || [];
+  course.forEach(function(d){
+    var isDone = state.detoxCourseProgress[d.day];
+    html += '<div class="method-card" style="' + (isDone?'border-left:3px solid var(--success);':'') + '" onclick="openDetoxDay(' + d.day + ')">';
+    html += '<div class="method-header"><div class="method-emoji">' + (isDone?'✓':d.emoji) + '</div>';
+    html += '<div style="flex:1;"><div class="method-title">День ' + d.day + ': ' + esc(d.title) + '</div>';
+    html += '<div class="method-cat">' + d.phase + '</div></div></div></div>';
+  });
+  html += '</div>';
+  document.getElementById('app').innerHTML = html;
+}
+function openDetoxDay(day){
+  var d = getDetoxDay(day);
+  if(!d) return;
+  var isDone = state.detoxCourseProgress[day];
+  var html = '<div style="font-size:20px;font-weight:800;margin-bottom:12px;">' + d.emoji + ' День ' + day + ': ' + esc(d.title) + '</div>';
+  if(d.theory) html += '<div class="card"><div class="lesson-section"><div class="lesson-section-title">📚 Теория</div><div class="lesson-content">' + formatLesson(d.theory) + '</div></div></div>';
+  if(d.science) html += '<div class="card"><div class="lesson-section science"><div class="lesson-section-title">🔬 Наука</div><div class="lesson-content">' + esc(d.science) + '</div></div></div>';
+  if(d.do && d.do.length){
+    html += '<div class="card"><h2>✅ Задания</h2><ul style="padding-left:20px;">';
+    d.do.forEach(function(x){ html += '<li style="margin-bottom:6px;">' + esc(x) + '</li>'; });
+    html += '</ul></div>';
+  }
+  if(!isDone){
+    html += '<button class="btn btn-primary btn-block mt-3" onclick="completeDetoxDay(' + day + ')">✓ Пройдено</button>';
+  }
+  openSheet('День ' + day, html);
+}
+function completeDetoxDay(day){
+  state.detoxCourseProgress[day] = true;
+  addXP(10, 'detox');
+  save();
+  toast('✓ +10 XP','success');
+  closeSheet();
+  renderDetoxCourse();
+}
+
+/* ============ FSRS-5 (интервальное повторение) ============ */
+function renderFSRS(){
+  var fsrs = state.fsrs || defaultState().fsrs;
+  var cards = fsrs.cards || {};
+  var due = Object.keys(cards).filter(function(id){
+    var c = cards[id];
+    return !c.nextReview || new Date(c.nextReview) <= new Date();
+  });
+  var html = '<div class="page"><div class="title-xl">🃏 Карточки FSRS-5</div>';
+  html += '<div class="stat-grid mb-3">';
+  html += '<div class="stat-item"><div class="stat-value">' + Object.keys(cards).length + '</div><div class="stat-label">Всего</div></div>';
+  html += '<div class="stat-item"><div class="stat-value">' + due.length + '</div><div class="stat-label">К повтору</div></div>';
+  html += '<div class="stat-item"><div class="stat-value">' + (fsrs.stats && fsrs.stats.mature || 0) + '</div><div class="stat-label">Зрелых</div></div>';
+  html += '</div>';
+  if(due.length){
+    html += '<button class="btn btn-primary btn-block mb-3" onclick="navigate(\'fsrsReview\')">🎯 Повторить ' + due.length + ' карточек</button>';
+  }
+  html += '<div class="card"><h2>Создать карточку</h2>';
+  html += '<div class="field"><label class="field-label">Вопрос</label><input type="text" id="fsrs-q"/></div>';
+  html += '<div class="field"><label class="field-label">Ответ</label><textarea id="fsrs-a"></textarea></div>';
+  html += '<button class="btn btn-ghost btn-block" onclick="createFSRSCard()">+ Добавить</button>';
+  html += '</div></div>';
+  document.getElementById('app').innerHTML = html;
+}
+function renderFSRSReview(){
+  var fsrs = state.fsrs || defaultState().fsrs;
+  var cards = fsrs.cards || {};
+  var due = Object.keys(cards).filter(function(id){
+    var c = cards[id];
+    return !c.nextReview || new Date(c.nextReview) <= new Date();
+  });
+  if(!due.length){
+    document.getElementById('app').innerHTML = '<div class="page"><div class="title-xl">🃏 Повторение</div><div class="card"><div class="empty"><div class="empty-icon">✓</div><div class="empty-title">Все повторено</div></div></div></div>';
+    return;
+  }
+  var cardId = due[0];
+  var card = cards[cardId];
+  var html = '<div class="page"><div class="title-xl">🃏 Повторение</div>';
+  html += '<div class="card card-gradient" style="text-align:center;padding:40px 16px;min-height:200px;display:flex;flex-direction:column;justify-content:center;">';
+  html += '<div style="font-size:12px;opacity:.9;">Вопрос</div>';
+  html += '<div style="font-size:20px;font-weight:800;margin-top:10px;">' + esc(card.question) + '</div>';
+  html += '</div>';
+  html += '<div class="card"><div class="footnote text-secondary">Ответ:</div><div style="font-size:16px;font-weight:600;margin-top:8px;">' + esc(card.answer) + '</div></div>';
+  html += '<div class="card"><h2>Оцени ответ</h2>';
+  html += '<div class="row" style="gap:6px;">';
+  html += '<button class="btn btn-danger" style="flex:1;" onclick="reviewFSRS(\'' + cardId + '\',1)">😰 Забыл</button>';
+  html += '<button class="btn btn-ghost" style="flex:1;" onclick="reviewFSRS(\'' + cardId + '\',2)">🤔 Трудно</button>';
+  html += '<button class="btn btn-ghost" style="flex:1;" onclick="reviewFSRS(\'' + cardId + '\',3)">🙂 Ок</button>';
+  html += '<button class="btn btn-success" style="flex:1;" onclick="reviewFSRS(\'' + cardId + '\',4)">😎 Легко</button>';
+  html += '</div></div></div>';
+  document.getElementById('app').innerHTML = html;
+}
+function createFSRSCard(){
+  var q = (document.getElementById('fsrs-q')||{}).value || '';
+  var a = (document.getElementById('fsrs-a')||{}).value || '';
+  if(!q.trim() || !a.trim()) return toast('Заполни вопрос и ответ','error');
+  if(!state.fsrs) state.fsrs = defaultState().fsrs;
+  var id = 'card_' + uid();
+  state.fsrs.cards[id] = {
+    id:id, question:q.trim(), answer:a.trim(),
+    createdAt:nowISO(),
+    stability:0, difficulty:5, retrievability:0.5,
+    lastReview:null, nextReview:nowISO(),
+    reviews:0, lapses:0, state:'new'
+  };
+  state.fsrs.stats.totalCards = (state.fsrs.stats.totalCards||0) + 1;
+  save();
+  toast('✓ Карточка создана','success');
+  renderFSRS();
+}
+function reviewFSRS(cardId, rating){
+  if(!state.fsrs) state.fsrs = defaultState().fsrs;
+  var card = state.fsrs.cards[cardId];
+  if(!card) return;
+  /* FSRS-5 упрощённо */
+  var intervals = {1:1, 2:3, 3:7, 4:21};
+  var days = intervals[rating] || 1;
+  if(rating === 1){
+    card.stability = Math.max(0.1, (card.stability||1) * 0.5);
+    card.lapses = (card.lapses||0) + 1;
+    card.state = 'relearning';
+  } else {
+    card.stability = Math.max(1, (card.stability||1) * (1 + rating * 0.5));
+    card.state = 'review';
+  }
+  card.difficulty = Math.max(1, Math.min(10, (card.difficulty||5) + (rating < 3 ? 0.5 : -0.3)));
+  card.reviews = (card.reviews||0) + 1;
+  card.lastReview = nowISO();
+  var next = new Date();
+  next.setDate(next.getDate() + days);
+  card.nextReview = next.toISOString();
+  addXP(3, 'fsrs_review');
+  save();
+  toast(rating >= 3 ? '✓ Повторишь через ' + days + ' дн.' : '↺ Повторишь через ' + days + ' дн.','info');
+  renderFSRSReview();
+}
+
+/* ============ ACHIEVEMENTS ============ */
+function checkAchievements(){
+  var achs = window.ACHIEVEMENTS_333 || window.ACHIEVEMENTS || [];
+  if(!achs.length) return;
+  if(!state.profile) state.profile = {achievements:[]};
+  if(!state.profile.achievements) state.profile.achievements = [];
+  var unlocked = state.profile.achievements;
+  var newOnes = [];
+  for(var i = 0; i < achs.length; i++){
+    var a = achs[i];
+    if(!a.check) continue;
+    try{
+      if(unlocked.indexOf(a.id) < 0 && a.check(state)){
+        unlocked.push(a.id);
+        newOnes.push(a);
+        addXP(15, 'achievement');
+        addPetXP(5);
+      }
+    }catch(e){}
+  }
+  state.profile.achievements = unlocked;
+  if(newOnes.length){
+    save();
+    newOnes.forEach(function(a, idx){
+      setTimeout(function(){
+        toast('🏆 ' + a.name,'success',3500);
+        haptic('success');
+      }, idx * 800);
+    });
+  }
+}
+function renderAchievements(){
+  var achs = window.ACHIEVEMENTS_333 || window.ACHIEVEMENTS || [];
+  var unlocked = (state.profile && state.profile.achievements) || [];
+  var html = '<div class="page"><div class="title-xl">🏆 Достижения</div>';
+  html += '<div class="card card-gradient"><div style="font-size:14px;opacity:.9;">Открыто</div>';
+  html += '<div style="font-size:40px;font-weight:800;">' + unlocked.length + ' / ' + achs.length + '</div>';
+  html += '<div style="font-size:12px;opacity:.9;margin-top:6px;">' + (achs.length ? Math.round(unlocked.length/achs.length*100) : 0) + '%</div>';
+  html += '</div>';
+  html += '<div class="achieve-grid">';
+  achs.slice(0, 60).forEach(function(a){
+    var isUnlocked = unlocked.indexOf(a.id) >= 0;
+    html += '<div class="achieve-item ' + (isUnlocked?'unlocked':'locked') + '">';
+    html += '<div class="achieve-icon">' + (a.emoji || a.icon || '🏆') + '</div>';
+    html += '<div class="achieve-name">' + esc(a.name) + '</div>';
+    html += '</div>';
+  });
+  html += '</div></div>';
+  document.getElementById('app').innerHTML = html;
+}
+function renderAchievementsCategory(){ renderAchievements(); }
+
+/* ============ EXPORTS ============ */
+window.getEisenhowerQuadrant = getEisenhowerQuadrant;
+window.getEisenhowerPriority = getEisenhowerPriority;
+window.renderTasks = renderTasks;
+window.toggleTask = toggleTask;
+window.renderMatrix = renderMatrix;
+window.openEntityEditor = openEntityEditor;
+window.openTaskEditorV2 = openTaskEditorV2;
+window.rerenderChecklist = rerenderChecklist;
+window.addChecklistItem = addChecklistItem;
+window.removeChecklistItem = removeChecklistItem;
+window.toggleChecklistItem = toggleChecklistItem;
+window.updateChecklistItem = updateChecklistItem;
+window.saveTaskV2 = saveTaskV2;
+window.deleteTaskV2 = deleteTaskV2;
+window.renderLearning = renderLearning;
+window.renderLevels = renderLevels;
+window.openLevel = openLevel;
+window.renderLevelDetail = renderLevelDetail;
+window.openLesson = openLesson;
+window.completeLesson = completeLesson;
+window.formatLesson = formatLesson;
+window.renderSkills = renderSkills;
+window.openSkill = openSkill;
+window.completeSkill = completeSkill;
+window.renderEnglish = renderEnglish;
+window.openEnglishLesson = openEnglishLesson;
+window.completeEnglish = completeEnglish;
+window.renderCourseGeneric = renderCourseGeneric;
+window.openCourseLesson = openCourseLesson;
+window.completeCourseLesson = completeCourseLesson;
+window.renderVision = renderVision;
+window.startVisionBreak = startVisionBreak;
+window.saveVisionMetric = saveVisionMetric;
+window.toggleVisionHeadache = toggleVisionHeadache;
+window.resetVisionRedFlags = resetVisionRedFlags;
+window.renderVisionExercises = renderVisionExercises;
+window.renderVision60 = renderVision60;
+window.renderVisionTracker = renderVisionTracker;
+window.renderVisionTips = renderVisionTips;
+window.startEyeExercise = startEyeExercise;
+window.completeEyeExercise = completeEyeExercise;
+window.renderVision62 = renderVision62;
+window.startDetox62 = startDetox62;
+window.completeDetox62Day = completeDetox62Day;
+window.skipDetox62Day = skipDetox62Day;
+window.renderDetoxCourse = renderDetoxCourse;
+window.openDetoxDay = openDetoxDay;
+window.completeDetoxDay = completeDetoxDay;
+window.renderFSRS = renderFSRS;
+window.renderFSRSReview = renderFSRSReview;
+window.createFSRSCard = createFSRSCard;
+window.reviewFSRS = reviewFSRS;
+window.checkAchievements = checkAchievements;
+window.renderAchievements = renderAchievements;
+window.renderAchievementsCategory = renderAchievementsCategory;
+
+/* ============ КОНЕЦ ЧАСТИ 3/4 ============ */
+
+/* Продолжение в части 4/4: здоровье, сон, вода, коуч-чаты, 
+   игры, лиги, питомец, детокс, настройки, профиль, PWA,
+   Obsidian, Telegram, 60-дневное очищение, init() */
+
+/* Закрытие IIFE в части 4/4 */
+
