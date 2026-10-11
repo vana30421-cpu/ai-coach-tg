@@ -2868,3 +2868,1476 @@ window.renderAchievementsCategory = renderAchievementsCategory;
 
 /* Закрытие IIFE в части 4/4 */
 
+
+/* ============================================================
+   LIFE OS — APP.js v46 — ЧАСТЬ 4/4
+   Здоровье, Вода, Сон, Настроение, Антистресс, Brain,
+   Игры, Лиги, Питомец, Детокс-хаб, 60-дневное очищение,
+   Obsidian, Telegram, Настройки, Профиль, PWA, init()
+   ============================================================ */
+
+/* ============ ЗДОРОВЬЕ / ВОДА / НАСТРОЕНИЕ ============ */
+function getWaterGoal(){
+  var p = state.profileV2 || {};
+  if(p.weight) return Math.round(p.weight * 30 / 250);
+  return state.settings.waterGoal || 8;
+}
+function addWater(){
+  var t = today();
+  if(!state.customWater) state.customWater = [];
+  var e = state.customWater.find(function(w){ return w.date === t; });
+  if(e) e.count++;
+  else state.customWater.push({id:uid(), date:t, count:1, created_at:nowISO()});
+  state.stats.totalWater = (state.stats.totalWater||0) + 1;
+  addXP(2, 'water');
+  save();
+  toast('💧 +1','success');
+  haptic('success');
+  if(currentPage === 'dashboard') renderDashboard();
+  else if(currentPage === 'water') renderWater();
+}
+function quickMoodLog(){
+  var moods = ['😢','😔','😐','🙂','😊'];
+  var html = '<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;">';
+  moods.forEach(function(m, i){
+    html += '<button class="btn btn-ghost" style="font-size:32px;padding:20px 0;" onclick="saveMood(' + ((i+1)*2) + ')">' + m + '</button>';
+  });
+  html += '</div>';
+  openSheet('Настроение?', html);
+}
+function saveMood(score){
+  var t = today();
+  if(!state.customMood) state.customMood = [];
+  var e = state.customMood.find(function(m){ return m.date === t; });
+  if(e) e.score = score;
+  else state.customMood.push({id:uid(), date:t, score:score, created_at:nowISO()});
+  state.stats.totalMoodLogs = (state.stats.totalMoodLogs||0) + 1;
+  save();
+  closeSheet();
+  toast('✓','success');
+  if(currentPage === 'dashboard') renderDashboard();
+  else if(currentPage === 'mood') renderMood();
+}
+function renderWater(){
+  var e = (state.customWater||[]).find(function(w){ return w.date === today(); });
+  var count = e ? e.count : 0;
+  var goal = getWaterGoal();
+  var html = '<div class="page"><div class="title-xl">💧 Вода</div>';
+  html += '<div class="card card-gradient" style="text-align:center;"><div style="font-size:56px;">💧</div><div style="font-size:40px;font-weight:800;">' + count + '/' + goal + '</div></div>';
+  html += '<button class="btn btn-primary btn-block" onclick="addWater()">+1 стакан</button></div>';
+  document.getElementById('app').innerHTML = html;
+}
+function renderMood(){
+  var m = state.customMood || [];
+  var html = '<div class="page"><div class="title-xl">💭 Настроение</div>';
+  html += '<button class="btn btn-primary btn-block mb-4" onclick="quickMoodLog()">Записать</button>';
+  if(m.length){ m.slice(-10).reverse().forEach(function(e){ html += '<div class="list-row"><div class="list-icon">' + (e.score>=7?'😊':e.score>=5?'🙂':'😔') + '</div><div class="list-body"><div class="list-title">' + e.date + '</div><div class="list-subtitle">' + e.score + '/10</div></div></div>'; }); }
+  else html += '<div class="empty"><div class="empty-icon">💭</div><div class="empty-title">Пусто</div></div>';
+  html += '</div>';
+  document.getElementById('app').innerHTML = html;
+}
+function renderHealth(){
+  var waterEntry = (state.customWater||[]).find(function(w){ return w.date === today(); });
+  var water = waterEntry ? waterEntry.count : 0;
+  var waterGoal = getWaterGoal();
+  var html = '<div class="page"><div class="title-xl">❤️ Здоровье</div>';
+  html += '<div class="card"><div class="stat-grid">';
+  html += '<div class="stat-item" onclick="quickMoodLog()" style="cursor:pointer;"><div class="stat-value">💭</div><div class="stat-label">Настроение</div></div>';
+  html += '<div class="stat-item" onclick="addWater()" style="cursor:pointer;"><div class="stat-value">' + water + '/' + waterGoal + '</div><div class="stat-label">Вода</div></div>';
+  html += '<div class="stat-item" onclick="navigate(\'sleep\')" style="cursor:pointer;"><div class="stat-value">😴</div><div class="stat-label">Сон</div></div>';
+  html += '</div></div></div>';
+  document.getElementById('app').innerHTML = html;
+}
+
+/* ============ СОН ============ */
+function calcSleepHours(startHHMM, endHHMM){
+  if(!startHHMM || !endHHMM) return 0;
+  var sp = startHHMM.split(':'), ep = endHHMM.split(':');
+  var s = parseInt(sp[0]) * 60 + parseInt(sp[1]||0);
+  var e = parseInt(ep[0]) * 60 + parseInt(ep[1]||0);
+  if(e <= s) e += 24*60;
+  return Math.round((e - s)/60*10)/10;
+}
+function getSleepEntryForDate(date){
+  if(!date) date = today();
+  return (state.sleepEntries||[]).find(function(s){ return s.date === date; });
+}
+function renderSleep(){
+  var lastEntry = (state.sleepEntries||[]).slice(-1)[0];
+  var html = '<div class="page">';
+  html += '<div class="row-between" style="margin-bottom:14px;"><div class="title-xl" style="margin:0;">😴 Сон</div>';
+  html += '<button class="btn btn-ghost btn-sm" onclick="navigate(\'sleepCalendar\')">📅</button></div>';
+  html += '<div class="card card-gradient">';
+  if(lastEntry){
+    html += '<div style="font-size:12px;opacity:.9;">Последняя ночь</div>';
+    html += '<div style="font-size:40px;font-weight:800;">' + lastEntry.hours + ' ч</div>';
+    html += '<div style="font-size:12px;opacity:.9;margin-top:6px;">' + lastEntry.date + ' · качество ' + lastEntry.quality + '/10</div>';
+  } else {
+    html += '<div style="font-size:16px;font-weight:800;">Добавь первую запись</div>';
+  }
+  html += '</div>';
+  html += '<button class="btn btn-primary btn-block mb-3" onclick="currentSleepDate=today();navigate(\'sleepEditor\')">➕ Записать сон</button>';
+  html += '</div>';
+  document.getElementById('app').innerHTML = html;
+}
+function renderSleepCalendar(){
+  var y = SLEEP_CAL_CURSOR.getFullYear(), m = SLEEP_CAL_CURSOR.getMonth();
+  var first = new Date(y, m, 1);
+  var offset = first.getDay() === 0 ? 6 : first.getDay() - 1;
+  var daysInMonth = new Date(y, m+1, 0).getDate();
+  var todayISO = today();
+  var html = '<div class="page"><div class="title-xl">📅 Календарь сна</div>';
+  html += '<div class="cal-toolbar">';
+  html += '<button class="cal-nav-btn" onclick="SLEEP_CAL_CURSOR=new Date(' + y + ',' + (m-1) + ',1);renderSleepCalendar()">‹</button>';
+  html += '<button class="cal-today-btn" onclick="SLEEP_CAL_CURSOR=new Date();renderSleepCalendar()">Сегодня</button>';
+  html += '<button class="cal-nav-btn" onclick="SLEEP_CAL_CURSOR=new Date(' + y + ',' + (m+1) + ',1);renderSleepCalendar()">›</button>';
+  html += '<div class="cal-title">' + ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'][m] + ' ' + y + '</div>';
+  html += '</div>';
+  html += '<div class="cal-month"><div class="cal-month-head">';
+  ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].forEach(function(d){ html += '<div class="cal-month-head-cell">' + d + '</div>'; });
+  html += '</div><div class="cal-month-grid">';
+  for(var i = offset-1; i >= 0; i--) html += '<div class="cal-month-cell" style="opacity:.35;"></div>';
+  for(var d = 1; d <= daysInMonth; d++){
+    var iso = y + '-' + pad(m+1) + '-' + pad(d);
+    var e = getSleepEntryForDate(iso);
+    var color = 'rgba(255,255,255,.08)';
+    var num = '';
+    if(e){
+      if(e.hours >= 7 && e.hours <= 9) color = 'rgba(61,220,151,.35)';
+      else if(e.hours >= 6) color = 'rgba(255,169,64,.35)';
+      else color = 'rgba(255,107,107,.35)';
+      num = '<div style="font-size:11px;font-weight:700;text-align:center;">' + e.hours + '</div>';
+    }
+    html += '<div class="cal-month-cell' + (iso === todayISO ? ' cal-today' : '') + '" style="background:' + color + ';" onclick="openSleepForDate(\'' + iso + '\')"><div class="cal-day-num">' + d + '</div>' + num + '</div>';
+  }
+  html += '</div></div></div>';
+  document.getElementById('app').innerHTML = html;
+}
+function openSleepForDate(iso){ currentSleepDate = iso; navigate('sleepEditor'); }
+function renderSleepEditor(){
+  var date = currentSleepDate || today();
+  var e = getSleepEntryForDate(date);
+  var isNew = !e;
+  if(isNew) e = {date:date, type:'night', start:'23:00', end:'07:00', hours:8, quality:7, notes:''};
+  var html = '<div class="page"><div class="title-xl">' + (isNew?'Запись сна':'Сон: ' + date) + '</div>';
+  html += '<div class="card">';
+  html += '<div class="field"><label class="field-label">Дата</label><input type="date" id="sl-date" value="' + date + '"/></div>';
+  html += '<div class="row" style="gap:8px;">';
+  html += '<div style="flex:1;"><label class="field-label">Лёг</label><input type="time" id="sl-start" value="' + e.start + '"/></div>';
+  html += '<div style="flex:1;"><label class="field-label">Встал</label><input type="time" id="sl-end" value="' + e.end + '"/></div></div>';
+  html += '</div>';
+  html += '<div class="card"><h2>✨ Качество</h2>';
+  html += '<div style="text-align:center;padding:6px 0;"><div id="sl-q-display" style="font-size:44px;font-weight:800;color:var(--brand);">' + e.quality + '/10</div></div>';
+  html += '<input type="range" min="1" max="10" value="' + e.quality + '" style="width:100%;margin:10px 0;" oninput="document.getElementById(\'sl-q-display\').textContent=this.value+\'/10\';document.getElementById(\'sl-quality-value\').value=this.value;"/>';
+  html += '<input type="hidden" id="sl-quality-value" value="' + e.quality + '"/>';
+  html += '</div>';
+  html += '<div class="card"><h2>📝 Заметка</h2><textarea id="sl-notes" style="min-height:80px;">' + esc(e.notes||'') + '</textarea></div>';
+  html += '<button class="btn btn-primary btn-block mb-2" onclick="saveSleepEntry()">💾 ' + (isNew?'Сохранить':'Обновить') + '</button>';
+  if(!isNew) html += '<button class="btn btn-danger btn-block" onclick="deleteSleepEntry(\'' + date + '\')">🗑 Удалить</button>';
+  html += '</div>';
+  document.getElementById('app').innerHTML = html;
+}
+function saveSleepEntry(){
+  var date = (document.getElementById('sl-date')||{}).value || today();
+  var start = (document.getElementById('sl-start')||{}).value || '23:00';
+  var end = (document.getElementById('sl-end')||{}).value || '07:00';
+  var hours = calcSleepHours(start, end);
+  var quality = parseInt((document.getElementById('sl-quality-value')||{}).value) || 7;
+  var notes = (document.getElementById('sl-notes')||{}).value || '';
+  var entry = {id: uid(), date:date, type:'night', start:start, end:end, hours:hours, quality:quality, notes:notes, createdAt:nowISO()};
+  var idx = state.sleepEntries.findIndex(function(s){ return s.date === date; });
+  if(idx >= 0) state.sleepEntries[idx] = entry;
+  else state.sleepEntries.push(entry);
+  addXP(5, 'sleep');
+  save();
+  haptic('success');
+  toast('✓ ' + hours + ' ч','success');
+  currentSleepDate = null;
+  navigate('sleep');
+}
+function deleteSleepEntry(date){
+  if(!confirm('Удалить?')) return;
+  state.sleepEntries = state.sleepEntries.filter(function(s){ return s.date !== date; });
+  save();
+  toast('Удалено','info');
+  currentSleepDate = null;
+  navigate('sleep');
+}
+
+/* ============ АНТИСТРЕСС ============ */
+function renderAntistress(){
+  var cats = window.ANTISTRESS_CATEGORIES || [];
+  var practices = window.ANTISTRESS_PRACTICES || [];
+  var todayCount = (state.antistressEntries||[]).filter(function(e){ return e.date === today(); }).length;
+  var html = '<div class="page">';
+  html += '<div class="row-between" style="margin-bottom:14px;"><div class="title-xl" style="margin:0;">🌬 Антистресс</div>';
+  html += '<div class="badge badge-brand">' + todayCount + '</div></div>';
+  html += '<div class="card"><h2>⚡ Быстро</h2><div class="group-grid">';
+  html += '<div class="group-item" onclick="startAntistress(\'as_breath_sigh\')"><div class="group-item-icon">😮‍💨</div><div class="group-item-label">Вздох</div></div>';
+  html += '<div class="group-item" onclick="startAntistress(\'as_breath_478\')"><div class="group-item-icon">🌬</div><div class="group-item-label">4-7-8</div></div>';
+  html += '<div class="group-item" onclick="startAntistress(\'as_breath_box\')"><div class="group-item-icon">📦</div><div class="group-item-label">Box</div></div>';
+  html += '<div class="group-item" onclick="startAntistress(\'as_ground_54321\')"><div class="group-item-icon">🌳</div><div class="group-item-label">5-4-3-2-1</div></div>';
+  html += '</div></div>';
+  practices.slice(0, 30).forEach(function(p){
+    var cat = cats.find(function(c){ return c.id === p.cat; });
+    var catColor = cat ? cat.color : '#5b9eff';
+    html += '<div class="method-card" style="border-left:3px solid ' + catColor + ';" onclick="startAntistress(\'' + p.id + '\')">';
+    html += '<div class="method-header"><div class="method-emoji">' + p.emoji + '</div>';
+    html += '<div style="flex:1;"><div class="method-title">' + esc(p.title) + '</div>';
+    html += '<div class="method-cat">' + esc(p.desc||'') + ' · ' + Math.round((p.duration||60)/60) + ' мин</div></div>';
+    html += '<div class="list-chevron">▶</div></div></div>';
+  });
+  html += '</div>';
+  document.getElementById('app').innerHTML = html;
+}
+function startAntistress(id){
+  var p = (window.ANTISTRESS_PRACTICES||[]).find(function(x){ return x.id === id; });
+  if(!p){ toast('Практика не найдена','error'); return; }
+  currentAntistressId = id;
+  var html = '<div style="text-align:center;margin-bottom:16px;"><div style="font-size:56px;">' + p.emoji + '</div><div style="font-size:22px;font-weight:800;">' + esc(p.title) + '</div></div>';
+  if(p.steps && p.steps.length){
+    html += '<div class="card"><h2>📋 Шаги</h2><div class="lesson-content"><ul>';
+    p.steps.forEach(function(s){ html += '<li>' + esc(s) + '</li>'; });
+    html += '</ul></div></div>';
+  }
+  if(p.science) html += '<div class="insight-card"><div class="insight-title">🔬 Наука</div><div class="insight-text">' + esc(p.science) + '</div></div>';
+  html += '<button class="btn btn-primary btn-block mt-3" onclick="finishAntistress()">✓ Выполнено</button>';
+  openSheet(p.title, html);
+}
+function finishAntistress(){
+  if(!currentAntistressId) return;
+  if(!state.antistressEntries) state.antistressEntries = [];
+  state.antistressEntries.push({id:uid(), practiceId:currentAntistressId, date:today(), time:nowISO()});
+  addXP(5, 'antistress');
+  save();
+  haptic('success');
+  toast('✓ +5 XP','success');
+  closeSheet();
+  currentAntistressId = null;
+  renderAntistress();
+}
+function renderAntistressDetail(){ renderAntistress(); }
+
+/* ============ BRAIN TRAINING ============ */
+function renderBrain(){
+  var cats = window.BRAIN_CATEGORIES || [];
+  var games = window.BRAIN_TRAINING || [];
+  var totalPlays = (state.brainPlays||[]).length;
+  var todayPlays = (state.brainPlays||[]).filter(function(p){ return p.date === today(); }).length;
+  var html = '<div class="page">';
+  html += '<div class="row-between" style="margin-bottom:14px;"><div class="title-xl" style="margin:0;">🧠 Тренировка ума</div>';
+  html += '<button class="btn btn-ghost btn-sm" onclick="navigate(\'brainStats\')">📊</button></div>';
+  html += '<div class="card card-gradient"><div style="font-size:12px;opacity:.9;">Сегодня</div><div style="font-size:40px;font-weight:800;">' + todayPlays + '</div><div style="font-size:12px;opacity:.9;margin-top:6px;">Всего: ' + totalPlays + ' · Streak: ' + (state.brainStreak||0) + '</div></div>';
+  games.slice(0, 40).forEach(function(g){
+    var stat = state.brainStats && state.brainStats[g.id];
+    var cat = cats.find(function(c){ return c.id === g.cat; });
+    var catColor = cat ? cat.color : '#5b9eff';
+    html += '<div class="method-card" style="border-left:3px solid ' + catColor + ';" onclick="startBrainGame(\'' + g.id + '\')">';
+    html += '<div class="method-header"><div class="method-emoji">' + g.emoji + '</div>';
+    html += '<div style="flex:1;min-width:0;"><div class="method-title">' + esc(g.title) + '</div>';
+    html += '<div class="method-cat">' + esc(g.desc||'') + '</div></div>';
+    html += '<div class="list-chevron">▶</div></div>';
+    if(stat) html += '<div class="footnote text-tertiary" style="margin-top:6px;">Лучший: ' + stat.best + ' · Игр: ' + stat.plays + '</div>';
+    html += '</div>';
+  });
+  html += '</div>';
+  document.getElementById('app').innerHTML = html;
+}
+function renderBrainStats(){
+  var plays = state.brainPlays || [];
+  var html = '<div class="page"><div class="title-xl">📊 Статистика ума</div>';
+  html += '<div class="stat-grid mb-4">';
+  html += '<div class="stat-item"><div class="stat-value">' + plays.length + '</div><div class="stat-label">Всего</div></div>';
+  html += '<div class="stat-item"><div class="stat-value">' + (state.brainStreak||0) + '</div><div class="stat-label">Streak</div></div>';
+  html += '<div class="stat-item"><div class="stat-value">' + Object.keys(state.brainStats||{}).length + '</div><div class="stat-label">Игр</div></div>';
+  html += '</div>';
+  html += '</div>';
+  document.getElementById('app').innerHTML = html;
+}
+function renderBrainGame(){ renderBrain(); }
+function startBrainGame(id){
+  var g = (window.BRAIN_TRAINING||[]).find(function(x){ return x.id === id; });
+  if(!g) return;
+  currentBrainGameId = id;
+  var html = '<div style="text-align:center;margin-bottom:16px;"><div style="font-size:56px;">' + g.emoji + '</div><div style="font-size:22px;font-weight:800;">' + esc(g.title) + '</div></div>';
+  html += '<div class="card"><div class="field"><label class="field-label">Очки (0-100)</label><input type="number" id="bg-score" value="50" min="0" max="100"/></div>';
+  html += '<button class="btn btn-primary btn-block mt-3" onclick="finishBrainGame()">✓ Записать</button></div>';
+  openSheet(g.title, html);
+}
+function finishBrainGame(){
+  if(!currentBrainGameId) return;
+  var score = parseInt((document.getElementById('bg-score')||{}).value) || 0;
+  var g = (window.BRAIN_TRAINING||[]).find(function(x){ return x.id === currentBrainGameId; });
+  if(!state.brainPlays) state.brainPlays = [];
+  state.brainPlays.push({id:uid(), gameId:currentBrainGameId, date:today(), score:score, duration:g?g.duration:60, timestamp:nowISO()});
+  if(!state.brainStats) state.brainStats = {};
+  if(!state.brainStats[currentBrainGameId]) state.brainStats[currentBrainGameId] = {plays:0, best:0, total:0, avg:0};
+  var s = state.brainStats[currentBrainGameId];
+  s.plays++;
+  s.total += score;
+  s.avg = Math.round(s.total/s.plays);
+  if(score > s.best) s.best = score;
+  s.lastPlayed = nowISO();
+  var t = today();
+  if(state.brainLastDay !== t){
+    if(state.brainLastDay === yesterday()) state.brainStreak = (state.brainStreak||0) + 1;
+    else state.brainStreak = 1;
+    state.brainLastDay = t;
+  }
+  addXP(10, 'brain');
+  addPetXP(3);
+  save();
+  haptic('success');
+  toast('✓ +10 XP','success');
+  closeSheet();
+  currentBrainGameId = null;
+  renderBrain();
+}
+
+/* ============ ИГРЫ (8 игр из Mini Games Collection) ============ */
+var GAMES_LIBRARY = [
+  {id:'snake', emoji:'🐍', title:'Змейка', desc:'Собирай еду, расти', duration:60},
+  {id:'tetris', emoji:'🧱', title:'Тетрис', desc:'Складывай фигуры', duration:120},
+  {id:'memory', emoji:'🧠', title:'Память', desc:'Найди пары', duration:90},
+  {id:'puzzle15', emoji:'🧩', title:'Пятнашки', desc:'Собери числа по порядку', duration:120},
+  {id:'sudoku', emoji:'🔢', title:'Судоку', desc:'Заполни клетки', duration:300},
+  {id:'pairs', emoji:'🃏', title:'Пары', desc:'Найди одинаковые', duration:60},
+  {id:'grids', emoji:'▦', title:'Сетки', desc:'Запомни узор', duration:60},
+  {id:'sequences', emoji:'🔗', title:'Последовательности', desc:'Продолжи ряд', duration:60}
+];
+function renderGamesHub(){
+  var scores = (state.games && state.games.scores) || {};
+  var totalPlays = (state.games && state.games.stats && state.games.stats.totalPlays) || 0;
+  var html = '<div class="page"><div class="title-xl">🎮 Игры</div>';
+  html += '<div class="card card-gradient"><div style="font-size:12px;opacity:.9;">Сыграно</div><div style="font-size:40px;font-weight:800;">' + totalPlays + '</div></div>';
+  html += '<div class="compact-grid">';
+  GAMES_LIBRARY.forEach(function(g){
+    var s = scores[g.id] || {};
+    html += '<div class="compact-item" onclick="startGame(\'' + g.id + '\')"><span class="compact-icon">' + g.emoji + '</span><span>' + g.title + (s.best ? ' <span class="footnote text-tertiary">' + s.best + '</span>' : '') + '</span></div>';
+  });
+  html += '</div></div>';
+  document.getElementById('app').innerHTML = html;
+}
+function startGame(gameId){
+  var g = GAMES_LIBRARY.find(function(x){ return x.id === gameId; });
+  if(!g) return;
+  var html = '<div style="text-align:center;margin-bottom:16px;"><div style="font-size:56px;">' + g.emoji + '</div><div style="font-size:22px;font-weight:800;">' + esc(g.title) + '</div><div class="footnote text-secondary">' + esc(g.desc) + '</div></div>';
+  html += '<div class="card"><h2>Очки</h2><div class="field"><input type="number" id="game-score" placeholder="Сколько набрал?"/></div>';
+  html += '<button class="btn btn-primary btn-block" onclick="saveGameScore(\'' + gameId + '\')">💾 Сохранить</button></div>';
+  openSheet(g.title, html);
+}
+function saveGameScore(gameId, score){
+  if(score === undefined){
+    score = parseInt((document.getElementById('game-score')||{}).value) || 0;
+  }
+  if(!state.games) state.games = {scores:{}, records:{}, stats:{totalPlays:0,totalTime:0,avgScore:0,favoriteGame:null}, achievements:[]};
+  if(!state.games.scores[gameId]) state.games.scores[gameId] = {best:0, plays:0, totalTime:0};
+  var s = state.games.scores[gameId];
+  s.plays++;
+  if(score > s.best){
+    s.best = score;
+    if(!state.games.records) state.games.records = {};
+    state.games.records[gameId] = {date:today(), score:score};
+    addXP(25, 'game_record');
+    toast('🏅 Новый рекорд: ' + score,'success');
+  }
+  state.games.stats.totalPlays = (state.games.stats.totalPlays||0) + 1;
+  addXP(5, 'game');
+  addPetXP(2);
+  save();
+  haptic('success');
+  closeSheet();
+  renderGamesHub();
+}
+
+/* ============ ЛИГИ ============ */
+function renderLeagues(){
+  var l = state.leagues || defaultState().leagues;
+  var tier = (window.LEAGUE_TIERS||[]).find(function(t){ return t.id === l.current; }) || {emoji:'🥉',name:'Бронза',color:'#cd7f32',weeklyGoal:100,reward:50};
+  var weeklyXp = l.weeklyXp || 0;
+  var pct = Math.min(100, Math.round(weeklyXp/tier.weeklyGoal*100));
+  var html = '<div class="page"><div class="title-xl">🏅 Лиги</div>';
+  html += '<div class="card card-gradient">';
+  html += '<div style="font-size:56px;text-align:center;">' + tier.emoji + '</div>';
+  html += '<div style="font-size:22px;font-weight:800;text-align:center;margin-top:8px;">' + tier.name + '</div>';
+  html += '<div style="font-size:12px;opacity:.9;text-align:center;">Неделя: ' + weeklyXp + ' / ' + tier.weeklyGoal + ' XP</div>';
+  html += '<div class="progress mt-3"><div class="progress-fill" style="width:' + pct + '%"></div></div>';
+  html += '</div>';
+  html += '<div class="card"><h2>Все тиры</h2>';
+  (window.LEAGUE_TIERS||[]).forEach(function(t){
+    var active = t.id === l.current;
+    html += '<div class="list-row" style="' + (active?'border-left:3px solid ' + t.color + ';':'') + '">';
+    html += '<div class="list-icon">' + t.emoji + '</div>';
+    html += '<div class="list-body"><div class="list-title">' + t.name + '</div>';
+    html += '<div class="list-subtitle">Цель: ' + t.weeklyGoal + ' XP · Награда: ' + t.reward + ' XP</div></div>';
+    if(active) html += '<div class="badge badge-success">Текущая</div>';
+    html += '</div>';
+  });
+  html += '</div></div>';
+  document.getElementById('app').innerHTML = html;
+}
+
+/* ============ ПИТОМЕЦ ============ */
+function renderPet(){
+  var pet = state.pet || defaultState().pet;
+  var stage = (window.PET_STAGES||[]).find(function(s){ return s.id === pet.stage; }) || {emoji:'🥚',name:'Яйцо',desc:'Спит'};
+  var xpNext = pet.xpToNext || 100;
+  var pct = Math.min(100, Math.round((pet.xp||0)/xpNext*100));
+  var html = '<div class="page"><div class="title-xl">🥚 Питомец</div>';
+  html += '<div class="card card-gradient" style="text-align:center;">';
+  html += '<div style="font-size:100px;">' + stage.emoji + '</div>';
+  html += '<div style="font-size:22px;font-weight:800;margin-top:8px;">' + esc(pet.name||'Питомец') + '</div>';
+  html += '<div style="font-size:12px;opacity:.9;">Стадия ' + pet.stage + ': ' + stage.name + '</div>';
+  html += '<div class="progress mt-3" style="background:rgba(0,0,0,.3);"><div class="progress-fill" style="width:' + pct + '%"></div></div>';
+  html += '<div style="font-size:11px;opacity:.9;margin-top:6px;">' + (pet.xp||0) + ' / ' + xpNext + ' XP до след. стадии</div>';
+  html += '</div>';
+  html += '<div class="card"><h2>📊 Состояние</h2>';
+  html += '<div class="row-between mb-2"><div class="list-title">Голод</div><div class="list-value">' + (pet.hunger||100) + '%</div></div>';
+  html += '<div class="row-between mb-2"><div class="list-title">Настроение</div><div class="list-value">' + (pet.mood === 'happy' ? '😊 Хорошее' : pet.mood === 'hungry' ? '🍽 Голоден' : '😐 Нормально') + '</div></div>';
+  html += '<div class="row-between"><div class="list-title">Покормлен раз</div><div class="list-value">' + (pet.fedCount||0) + '</div></div>';
+  html += '</div>';
+  html += '<button class="btn btn-primary btn-block" onclick="feedPet()">🍽 Покормить</button>';
+  html += '</div>';
+  document.getElementById('app').innerHTML = html;
+}
+function feedPet(){
+  if(!state.pet) state.pet = defaultState().pet;
+  state.pet.hunger = Math.min(100, (state.pet.hunger||0) + 20);
+  state.pet.fedCount = (state.pet.fedCount||0) + 1;
+  state.pet.lastFed = nowISO();
+  state.pet.mood = state.pet.hunger >= 50 ? 'happy' : 'hungry';
+  addPetXP(5);
+  save();
+  haptic('success');
+  toast('🍽 Питомец покормлен','success');
+  renderPet();
+}
+function addPetXP(amount){
+  if(!state.pet) state.pet = defaultState().pet;
+  if(!state.pet.enabled) return;
+  state.pet.xp = (state.pet.xp||0) + (amount||0);
+  /* Проверка стадии */
+  var stages = window.PET_STAGES || [];
+  var newStage = 1;
+  for(var i = 0; i < stages.length; i++){
+    if(state.pet.xp >= stages[i].minXP) newStage = stages[i].id;
+  }
+  if(newStage > (state.pet.stage||1)){
+    state.pet.stage = newStage;
+    state.pet.evolvedAt = nowISO();
+    toast('🎉 Питомец эволюционировал!','success',3500);
+    haptic('success');
+  }
+  /* Следующий порог */
+  var currentStage = stages.find(function(s){ return s.id === state.pet.stage; });
+  if(currentStage) state.pet.xpToNext = currentStage.maxXP || 99999;
+}
+
+/* ============ ДЕТОКС ХАБ ============ */
+function renderDetoxHub(){
+  var d = state.detox || defaultState().detox;
+  var html = '<div class="page"><div class="title-xl">🧘 Детокс</div>';
+  html += '<div class="card"><h2>❄️ Период охлаждения</h2>';
+  html += '<div class="footnote text-secondary mb-3">После закрытия приложения нельзя открыть 5-10 минут.</div>';
+  html += '<button class="btn btn-primary btn-block" onclick="startCooldown()">Запустить кулдаун</button></div>';
+  html += '<div class="card"><h2>😴 Режим сна</h2>';
+  html += '<div class="footnote text-secondary mb-3">С 22:00 до 7:00 приложение в спящем режиме.</div>';
+  html += '<button class="btn ' + (d.sleepMode && d.sleepMode.enabled ? 'btn-success' : 'btn-ghost') + ' btn-block" onclick="toggleSleepMode()">' + (d.sleepMode && d.sleepMode.enabled ? '✓ Включён' : 'Включить') + '</button></div>';
+  html += '<div class="card"><h2>📊 Статистика</h2>';
+  html += '<div class="stat-grid">';
+  html += '<div class="stat-item"><div class="stat-value">' + (d.stats && d.stats.cooldownCount || 0) + '</div><div class="stat-label">Кулдаунов</div></div>';
+  html += '<div class="stat-item"><div class="stat-value">' + (d.stats && d.stats.pauseCount || 0) + '</div><div class="stat-label">Пауз</div></div>';
+  html += '<div class="stat-item"><div class="stat-value">' + (d.stats && d.stats.screenMinutes || 0) + 'м</div><div class="stat-label">Экран</div></div>';
+  html += '</div></div>';
+  html += '<button class="btn btn-ghost btn-block" onclick="navigate(\'detox60\')">🧹 60-дневное очищение</button>';
+  html += '</div>';
+  document.getElementById('app').innerHTML = html;
+}
+function startCooldown(){
+  if(!state.detox) state.detox = defaultState().detox;
+  if(!state.detox.stats) state.detox.stats = {cooldownCount:0, pauseCount:0, sleepHours:0, screenMinutes:0, byApp:{}};
+  state.detox.cooldown = {active:true, until:new Date(Date.now()+10*60*1000).toISOString(), minutes:10, trigger:'manual'};
+  state.detox.stats.cooldownCount++;
+  save();
+  toast('❄️ Кулдаун 10 минут запущен','warning');
+}
+function toggleSleepMode(){
+  if(!state.detox) state.detox = defaultState().detox;
+  if(!state.detox.sleepMode) state.detox.sleepMode = {enabled:false, start:'22:00', end:'07:00', active:false};
+  state.detox.sleepMode.enabled = !state.detox.sleepMode.enabled;
+  save();
+  toast(state.detox.sleepMode.enabled ? '✓ Режим сна включён' : 'Режим сна выключен','success');
+  renderDetoxHub();
+}
+
+/* ============ 60-ДНЕВНОЕ ОЧИЩЕНИЕ ============ */
+var DETOX60_ITEMS = {
+  1:[{type:'physical', emoji:'👕', text:'Выброси 1 ненужную вещь из шкафа'},{type:'routine', emoji:'📱', text:'Убери 1 приложение с главного экрана'}],
+  2:[{type:'physical', emoji:'📦', text:'Разбери 1 ящик/полку'},{type:'routine', emoji:'⏰', text:'Убери 1 подписку на email'}],
+  3:[{type:'physical', emoji:'📄', text:'Выброси 1 стопку бумаг'},{type:'routine', emoji:'🔔', text:'Отключи 1 ненужное уведомление'}],
+  4:[{type:'physical', emoji:'☕', text:'Выброси 1 сломанную чашку/вещь'},{type:'routine', emoji:'📅', text:'Убери 1 повторяющуюся встречу'}],
+  5:[{type:'physical', emoji:'👟', text:'Выброси 1 пару обуви, которую не носишь'},{type:'routine', emoji:'📧', text:'Отпишись от 1 рассылки'}],
+  6:[{type:'physical', emoji:'🧴', text:'Выброси 1 просроченную косметику'},{type:'routine', emoji:'📱', text:'Удали 1 приложение, которым не пользуешься'}],
+  7:[{type:'physical', emoji:'📚', text:'Отдай/продай 1 книгу'},{type:'routine', emoji:'🍽', text:'Убери 1 привычку-пожиратель времени'}],
+  8:[{type:'physical', emoji:'🔌', text:'Выброси 1 сломанный провод/зарядку'},{type:'routine', emoji:'💬', text:'Выйди из 1 ненужного чата'}],
+  9:[{type:'physical', emoji:'🧸', text:'Отдай 1 игрушку/сувенир'},{type:'routine', emoji:'📺', text:'Убери 1 канал из подписок'}],
+  10:[{type:'physical', emoji:'👔', text:'Выброси 1 вещь, которую не носил год'},{type:'routine', emoji:'🎮', text:'Удали 1 игру, в которую не играешь'}],
+  11:[{type:'physical', emoji:'🍽', text:'Выброси 1 лишнюю посуду'},{type:'routine', emoji:'🛒', text:'Отпишись от 1 магазина'}],
+  12:[{type:'physical', emoji:'💊', text:'Выброси 1 просроченное лекарство'},{type:'routine', emoji:'📰', text:'Убери 1 источник новостей'}],
+  13:[{type:'physical', emoji:'🖼', text:'Убери 1 вещь с видного места'},{type:'routine', emoji:'📞', text:'Убери 1 нежелательный контакт'}],
+  14:[{type:'physical', emoji:'📦', text:'Разбери 1 полку в холодильнике'},{type:'routine', emoji:'💳', text:'Отмени 1 ненужную подписку'}],
+  15:[{type:'physical', emoji:'🧦', text:'Выброси 1 пару носков без пары'},{type:'routine', emoji:'📊', text:'Убери 1 приложение-трекер'}],
+  16:[{type:'physical', emoji:'🪥', text:'Замени старую зубную щётку'},{type:'routine', emoji:'🎵', text:'Убери 1 плейлист/подкаст из очереди'}],
+  17:[{type:'physical', emoji:'🍶', text:'Выброси 1 пустую бутылку/банку'},{type:'routine', emoji:'📱', text:'Отключи 1 автозапуск'}],
+  18:[{type:'physical', emoji:'👝', text:'Разбери 1 сумку/рюкзак'},{type:'routine', emoji:'⏱', text:'Убери 1 ежедневное напоминание'}],
+  19:[{type:'physical', emoji:'🕯', text:'Выброси 1 вещь, которая «на память»'},{type:'routine', emoji:'📧', text:'Удали 100 старых писем'}],
+  20:[{type:'physical', emoji:'🧴', text:'Выброси 1 пустой флакон'},{type:'routine', emoji:'📁', text:'Удали 10 старых файлов'}],
+  21:[{type:'physical', emoji:'🖥', text:'Убери 1 вещь с рабочего стола'},{type:'routine', emoji:'📸', text:'Удали 100 старых фото'}],
+  22:[{type:'physical', emoji:'🎒', text:'Выброси 1 старый рюкзак/сумку'},{type:'routine', emoji:'📝', text:'Удали 5 старых заметок'}],
+  23:[{type:'physical', emoji:'👖', text:'Выброси 1 вещь из «похудею»'},{type:'routine', emoji:'📞', text:'Удали 10 старых контактов'}],
+  24:[{type:'physical', emoji:'🧹', text:'Выброси 1 сломанную вещь для уборки'},{type:'routine', emoji:'🎬', text:'Удали 10 сериалов из очереди'}],
+  25:[{type:'physical', emoji:'💡', text:'Замени 1 перегоревшую лампочку'},{type:'routine', emoji:'📚', text:'Удали 10 книг из «прочитать»'}],
+  26:[{type:'physical', emoji:'🚿', text:'Выброси 1 старую мочалку'},{type:'routine', emoji:'🎁', text:'Убери 1 «когда-нибудь» из планов'}],
+  27:[{type:'physical', emoji:'🪑', text:'Найди 1 вещь, которую не использовал год'},{type:'routine', emoji:'💼', text:'Убери 1 дело из бэклога'}],
+  28:[{type:'physical', emoji:'🧊', text:'Выброси 1 форму для льда, которой не пользуешься'},{type:'routine', emoji:'📋', text:'Убери 1 задачу-«зомби»'}],
+  29:[{type:'physical', emoji:'🍴', text:'Выброси 1 лишний столовый прибор'},{type:'routine', emoji:'⏰', text:'Убери 1 будильник'}],
+  30:[{type:'physical', emoji:'🎉', text:'Месяц! Выброси 3 вещи разом'},{type:'routine', emoji:'🎉', text:'Убери 3 рутины разом'}],
+  31:[{type:'physical', emoji:'🌱', text:'Выброси 1 засохшее растение'},{type:'routine', emoji:'🧘', text:'Убери 1 «обязательный» ритуал'}],
+  32:[{type:'physical', emoji:'📐', text:'Выброси 1 инструмент, которым не пользуешься'},{type:'routine', emoji:'🚶', text:'Убери 1 «надо» из расписания'}],
+  33:[{type:'physical', emoji:'🧴', text:'Выброси 1 шампунь, который не нравится'},{type:'routine', emoji:'💬', text:'Убери 1 групповой чат'}],
+  34:[{type:'physical', emoji:'🎨', text:'Выброси 1 недоделанный проект'},{type:'routine', emoji:'📱', text:'Отключи 1 соцсеть на день'}],
+  35:[{type:'physical', emoji:'🧸', text:'Выброси 1 детскую игрушку'},{type:'routine', emoji:'🍔', text:'Убери 1 вредную привычку еды'}],
+  36:[{type:'physical', emoji:'👞', text:'Выброси 1 обувь, которая жмёт'},{type:'routine', emoji:'🛌', text:'Убери 1 «полежать в телефоне»'}],
+  37:[{type:'physical', emoji:'📺', text:'Выброси 1 старый пульт'},{type:'routine', emoji:'🎮', text:'Убери 1 игру на телефоне'}],
+  38:[{type:'physical', emoji:'🪞', text:'Выброси 1 разбитое зеркало/рамку'},{type:'routine', emoji:'📧', text:'Убери 1 рабочий чат из личного'}],
+  39:[{type:'physical', emoji:'🧴', text:'Выброси 1 крем, который не подошёл'},{type:'routine', emoji:'🎵', text:'Убери 1 «фоновую» музыку'}],
+  40:[{type:'physical', emoji:'🍶', text:'Выброси 1 банку/склянку'},{type:'routine', emoji:'📰', text:'Убери 1 новостной канал'}],
+  41:[{type:'physical', emoji:'🧺', text:'Разбери 1 корзину для белья'},{type:'routine', emoji:'💳', text:'Убери 1 карту из кошелька'}],
+  42:[{type:'physical', emoji:'🔑', text:'Выброси 1 ключ без пары'},{type:'routine', emoji:'📱', text:'Убери 1 виджет с экрана'}],
+  43:[{type:'physical', emoji:'🎒', text:'Выброси 1 старый чехол'},{type:'routine', emoji:'⏱', text:'Убери 1 «проверить телефон»'}],
+  44:[{type:'physical', emoji:'🧴', text:'Выброси 1 лекарство без срока'},{type:'routine', emoji:'🍽', text:'Убери 1 перекус'}],
+  45:[{type:'physical', emoji:'📦', text:'Разбери 1 кладовку'},{type:'routine', emoji:'📺', text:'Убери 1 «фоном телевизор»'}],
+  46:[{type:'physical', emoji:'🧥', text:'Выброси 1 вещь не по сезону'},{type:'routine', emoji:'💤', text:'Убери 1 «досмотрю до конца»'}],
+  47:[{type:'physical', emoji:'🪥', text:'Выброси 1 старую расчёску'},{type:'routine', emoji:'📞', text:'Убери 1 «перезвоню»'}],
+  48:[{type:'physical', emoji:'🧸', text:'Выброси 1 «может пригодится»'},{type:'routine', emoji:'🎁', text:'Убери 1 «куплю потом»'}],
+  49:[{type:'physical', emoji:'📚', text:'Выброси 1 журнал/газету'},{type:'routine', emoji:'📝', text:'Убери 1 «надо записать»'}],
+  50:[{type:'physical', emoji:'🎨', text:'Выброси 1 недоделанную поделку'},{type:'routine', emoji:'🚶', text:'Убери 1 «схожу завтра»'}],
+  51:[{type:'physical', emoji:'🍴', text:'Выброси 1 треснувшую тарелку'},{type:'routine', emoji:'💬', text:'Убери 1 «надо ответить»'}],
+  52:[{type:'physical', emoji:'👕', text:'Выброси 1 футболку с дыркой'},{type:'routine', emoji:'⏰', text:'Убери 1 «встану пораньше»'}],
+  53:[{type:'physical', emoji:'🧴', text:'Выброси 1 пустой тюбик'},{type:'routine', emoji:'📱', text:'Убери 1 «гляну мельком»'}],
+  54:[{type:'physical', emoji:'🖥', text:'Выброси 1 старый диск/флешку'},{type:'routine', emoji:'🍽', text:'Убери 1 «доедаю»'}],
+  55:[{type:'physical', emoji:'🧺', text:'Выброси 1 полотенце с дыркой'},{type:'routine', emoji:'💤', text:'Убери 1 «ещё 5 минут»'}],
+  56:[{type:'physical', emoji:'🎮', text:'Выброси 1 диск/картридж'},{type:'routine', emoji:'📞', text:'Убери 1 «потом»'}],
+  57:[{type:'physical', emoji:'🧸', text:'Выброси 1 сломанную игрушку'},{type:'routine', emoji:'🎁', text:'Убери 1 «когда-нибудь»'}],
+  58:[{type:'physical', emoji:'👞', text:'Выброси 1 обувь, которую не носишь'},{type:'routine', emoji:'📝', text:'Убери 1 «начать с понедельника»'}],
+  59:[{type:'physical', emoji:'📦', text:'Разбери 1 последний ящик'},{type:'routine', emoji:'🚶', text:'Убери 1 «завтра точно»'}],
+  60:[{type:'physical', emoji:'🏆', text:'Финал! Освободи 1 м²'},{type:'routine', emoji:'🏆', text:'Финал! Убери 1 привычку навсегда'}]
+};
+function renderDetox60(){
+  if(!state.detox60Progress) state.detox60Progress = {};
+  var done = Object.keys(state.detox60Progress).length;
+  var pct = Math.round(done/120*100);
+  var html = '<div class="page"><div class="title-xl">🧹 60-дневное очищение</div>';
+  html += '<div class="card card-gradient"><div style="font-size:12px;opacity:.9;">Очищено</div>';
+  html += '<div style="font-size:40px;font-weight:800;">' + done + ' / 120</div>';
+  html += '<div style="font-size:12px;opacity:.9;margin-top:6px;">' + pct + '% · 2 вещи/рутины в день</div>';
+  html += '<div class="progress mt-3"><div class="progress-fill" style="width:' + pct + '%"></div></div></div>';
+  for(var d = 1; d <= 60; d++){
+    var items = DETOX60_ITEMS[d];
+    if(!items) continue;
+    var dayDone = state.detox60Progress[d + '_0'] && state.detox60Progress[d + '_1'];
+    html += '<div class="method-card" style="border-left:3px solid ' + (dayDone ? 'var(--success)' : 'var(--brand)') + ';">';
+    html += '<div class="method-header"><div class="method-emoji">' + (dayDone ? '✓' : d) + '</div>';
+    html += '<div style="flex:1;"><div class="method-title">День ' + d + (dayDone ? ' · Готово' : '') + '</div></div></div>';
+    items.forEach(function(item, i){
+      var checked = state.detox60Progress[d + '_' + i];
+      html += '<div style="display:flex;gap:10px;align-items:center;padding:8px 0;' + (checked ? 'opacity:.5;' : '') + '" onclick="toggleDetox60Item(' + d + ',' + i + ')">';
+      html += '<div style="font-size:20px;">' + item.emoji + '</div>';
+      html += '<div style="flex:1;font-size:13px;' + (checked ? 'text-decoration:line-through;' : '') + '">' + esc(item.text) + '</div>';
+      html += '<div class="task-checkbox ' + (checked ? 'checked' : '') + '" style="width:26px;height:26px;font-size:12px;">' + (checked ? '✓' : '') + '</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+  }
+  html += '</div>';
+  document.getElementById('app').innerHTML = html;
+}
+function toggleDetox60Item(day, index){
+  if(!state.detox60Progress) state.detox60Progress = {};
+  var key = day + '_' + index;
+  state.detox60Progress[key] = !state.detox60Progress[key];
+  if(state.detox60Progress[key]) addXP(5, 'detox60');
+  save();
+  renderDetox60();
+}
+
+/* ============ OBSIDIAN ============ */
+function exportToObsidian(){
+  var md = '';
+  md += '# Life OS Export — ' + new Date().toLocaleString('ru') + '\n\n';
+  md += '## 🎯 Задачи\n\n';
+  (state.tasks||[]).forEach(function(t){
+    md += '- [' + (t.status === 'completed' ? 'x' : ' ') + '] ' + t.title;
+    if(t.due_date) md += ' 📅 ' + t.due_date.slice(0,10);
+    if(t.priority) md += ' `' + t.priority + '`';
+    md += '\n';
+  });
+  md += '\n## 🔄 Привычки\n\n';
+  (state.habits||[]).forEach(function(h){
+    md += '- ' + h.emoji + ' **' + h.title + '** — серия ' + (h.streak||0) + ' (лучшая ' + (h.bestStreak||0) + ')\n';
+  });
+  md += '\n## 🎯 Сферы\n\n';
+  var scores = (state.spheres && state.spheres.lastScores) || {};
+  (window.LIFE_SPHERES||[]).forEach(function(s){
+    md += '- ' + s.emoji + ' **' + s.name + '**: ' + (scores[s.id] || '—') + '/10\n';
+  });
+  md += '\n## 📁 Проекты\n\n';
+  (state.projects||[]).forEach(function(p){
+    md += '- ' + (p.emoji||'📁') + ' **' + p.title + '** — ' + (p.progress||0) + '% (' + p.status + ')\n';
+  });
+  try{
+    var blob = new Blob([md], {type:'text/markdown'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'life-os-' + today() + '.md';
+    a.click();
+    URL.revokeObjectURL(url);
+    state.lastExport = nowISO();
+    save();
+    toast('📤 Экспорт готов','success');
+  }catch(e){ toast('Ошибка','error'); }
+}
+function importFromObsidian(){
+  var input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.md,.txt,.json';
+  input.onchange = function(e){
+    var file = e.target.files[0];
+    if(!file) return;
+    var reader = new FileReader();
+    reader.onload = function(){
+      try{
+        var text = reader.result;
+        var lines = text.split('\n');
+        var imported = 0;
+        lines.forEach(function(line){
+          var m = line.match(/^- \[([ x])\] (.+)$/);
+          if(m){
+            var done = m[1] === 'x';
+            var title = m[2].replace(/📅.*$/,'').replace(/`.*`/,'').trim();
+            if(title && !state.tasks.some(function(t){ return t.title === title; })){
+              state.tasks.push({id:uid(), title:title, status:done?'completed':'pending', priority:'medium', planned_time:30, created_at:nowISO(), imported_from:'obsidian'});
+              imported++;
+            }
+          }
+        });
+        save();
+        toast('📥 Импортировано: ' + imported + ' задач','success');
+        navigate('tasks');
+      }catch(e){ toast('Ошибка импорта','error'); }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+function renderObsidianIntegration(){
+  var html = '<div class="page"><div class="title-xl">📓 Obsidian</div>';
+  html += '<div class="card"><h2>Экспорт</h2>';
+  html += '<div class="footnote text-secondary mb-3">Все данные в Markdown — открывается в Obsidian, Notion, любом редакторе.</div>';
+  html += '<button class="btn btn-primary btn-block" onclick="exportToObsidian()">📤 Экспорт в Obsidian (.md)</button></div>';
+  html += '<div class="card"><h2>Импорт</h2>';
+  html += '<div class="footnote text-secondary mb-3">Импортирует задачи из Markdown-файла.</div>';
+  html += '<button class="btn btn-ghost btn-block" onclick="importFromObsidian()">📥 Импорт из Obsidian</button></div>';
+  html += '</div>';
+  document.getElementById('app').innerHTML = html;
+}
+
+/* ============ TELEGRAM ============ */
+function getTelegramConfig(){
+  if(!state.integrations) state.integrations = {};
+  if(!state.integrations.telegram) state.integrations.telegram = {botToken:'', chatId:'', connected:false, lastSent:null};
+  return state.integrations.telegram;
+}
+function saveTelegramConfig(){
+  var token = (document.getElementById('tg-token')||{}).value || '';
+  var chatId = (document.getElementById('tg-chat')||{}).value || '';
+  var cfg = getTelegramConfig();
+  cfg.botToken = token.trim();
+  cfg.chatId = chatId.trim();
+  cfg.connected = !!(cfg.botToken && cfg.chatId);
+  save();
+  toast(cfg.connected ? '✓ Telegram подключён' : 'Заполни все поля', cfg.connected ? 'success' : 'warning');
+  renderTelegramSetup();
+}
+function sendToTelegram(text){
+  var cfg = getTelegramConfig();
+  if(!cfg.connected){ toast('Telegram не подключён','warning'); return Promise.reject('not connected'); }
+  var url = 'https://api.telegram.org/bot' + cfg.botToken + '/sendMessage';
+  return fetch(url, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({chat_id:cfg.chatId, text:text, parse_mode:'HTML'})
+  }).then(function(r){ return r.json(); }).then(function(data){
+    if(data.ok){ cfg.lastSent = nowISO(); save(); return data; }
+    throw new Error(data.description || 'Telegram error');
+  });
+}
+function renderTelegramSetup(){
+  var cfg = getTelegramConfig();
+  var html = '<div class="page"><div class="title-xl">📨 Telegram-коуч</div>';
+  html += '<div class="card">';
+  html += '<div class="field"><label class="field-label">Bot Token</label><input type="text" id="tg-token" value="' + esc(cfg.botToken||'') + '" placeholder="123456:ABC..."/></div>';
+  html += '<div class="field"><label class="field-label">Chat ID</label><input type="text" id="tg-chat" value="' + esc(cfg.chatId||'') + '" placeholder="123456789"/></div>';
+  html += '<button class="btn btn-primary btn-block" onclick="saveTelegramConfig()">💾 Сохранить</button>';
+  html += '</div>';
+  if(cfg.connected){
+    html += '<div class="card"><h2>Отправить сообщение</h2>';
+    html += '<button class="btn btn-ghost btn-block mb-2" onclick="sendCoachDailyGreeting()">🌅 Утреннее</button>';
+    html += '<button class="btn btn-ghost btn-block" onclick="sendCoachEveningSummary()">🌙 Вечернее</button>';
+    html += '</div>';
+  }
+  html += '<div class="card"><h2>Как настроить</h2>';
+  html += '<div class="lesson-content"><ol style="padding-left:20px;">';
+  html += '<li>Создай бота у @BotFather</li>';
+  html += '<li>Скопируй botToken</li>';
+  html += '<li>Напиши @userinfobot — узнай chatId</li>';
+  html += '<li>Вставь сюда</li>';
+  html += '</ol></div></div>';
+  html += '</div>';
+  document.getElementById('app').innerHTML = html;
+}
+function sendCoachDailyGreeting(){
+  var text = '☀️ Привет, ' + (state.profile.name||'друг') + '! Как спалось?';
+  sendToTelegram(text).then(function(){ toast('✓ Отправлено','success'); }).catch(function(e){ toast('Ошибка: ' + e,'error'); });
+}
+function sendCoachEveningSummary(){
+  var t = today();
+  var tasksDone = (state.tasks||[]).filter(function(x){ return x.completedAt && x.completedAt.slice(0,10) === t; }).length;
+  var habitsDone = (state.habits||[]).filter(function(h){ return h.lastCompletedDate === t; }).length;
+  var text = '🌙 Итоги дня:\n✅ Задач: ' + tasksDone + '\n🔄 Привычек: ' + habitsDone + '/' + (state.habits||[]).length + '\n⭐ XP: ' + (state.gamification && state.gamification.xp || 0);
+  sendToTelegram(text).then(function(){ toast('✓ Отправлено','success'); }).catch(function(e){ toast('Ошибка: ' + e,'error'); });
+}
+
+/* ============ STATS / MORE / SETTINGS / PROFILE ============ */
+function renderStats(){
+  var g = state.gamification || defaultState().gamification;
+  var html = '<div class="page"><div class="title-xl">📊 Статистика</div>';
+  html += '<div class="card card-gradient"><div style="font-size:14px;opacity:.9;">Уровень ' + (g.level||1) + '</div>';
+  html += '<div style="font-size:40px;font-weight:800;">' + (g.xp||0) + ' XP</div></div>';
+  html += '<div class="stat-grid mb-3">';
+  html += '<div class="stat-item"><div class="stat-value">' + (state.stats.streak||0) + '</div><div class="stat-label">Streak</div></div>';
+  html += '<div class="stat-item"><div class="stat-value">' + (state.tasks||[]).filter(function(t){ return t.status === 'completed'; }).length + '</div><div class="stat-label">Задач</div></div>';
+  html += '<div class="stat-item"><div class="stat-value">' + (state.habits||[]).length + '</div><div class="stat-label">Привычек</div></div>';
+  html += '</div>';
+  html += '</div>';
+  document.getElementById('app').innerHTML = html;
+}
+function renderDetailedStats(){ renderStats(); }
+function renderMore(){
+  var groups = [
+    {title:'🎯 Основное',items:[
+      {key:'dashboard',emoji:'🏠',label:'Главная'},
+      {key:'spheres',emoji:'🎯',label:'Сферы'},
+      {key:'projects',emoji:'📁',label:'Проекты'},
+      {key:'coach',emoji:'💬',label:'AI-Коуч'},
+      {key:'coachChat',emoji:'💭',label:'Чат с коучем'},
+      {key:'schedule',emoji:'📅',label:'Расписание'},
+      {key:'focus',emoji:'⏱',label:'Фокус'},
+      {key:'eveningReview',emoji:'🌙',label:'Вечерний обзор'}
+    ]},
+    {title:'📊 Отчёты',items:[
+      {key:'dailyReport',emoji:'📊',label:'Отчёт дня'},
+      {key:'weeklyReview',emoji:'📈',label:'Итоги недели'},
+      {key:'monthlyReview',emoji:'📆',label:'Итоги месяца'},
+      {key:'achievements',emoji:'🏆',label:'Достижения'},
+      {key:'stats',emoji:'📊',label:'Статистика'}
+    ]},
+    {title:'🎮 Геймификация',items:[
+      {key:'gamesHub',emoji:'🎮',label:'Игры'},
+      {key:'leagues',emoji:'🏅',label:'Лиги'},
+      {key:'pet',emoji:'🥚',label:'Питомец'},
+      {key:'fsrs',emoji:'🃏',label:'Карточки FSRS'}
+    ]},
+    {title:'🔄 Привычки и ум',items:[
+      {key:'habitList',emoji:'🔄',label:'Привычки'},
+      {key:'habitCatalog',emoji:'📚',label:'Каталог привычек'},
+      {key:'brain',emoji:'🧠',label:'Тренировка ума'},
+      {key:'antistress',emoji:'🌬',label:'Антистресс'},
+      {key:'sleep',emoji:'😴',label:'Сон'},
+      {key:'sleepCalendar',emoji:'📅',label:'Календарь сна'}
+    ]},
+    {title:'👁 Зрение',items:[
+      {key:'vision',emoji:'👁',label:'Обзор'},
+      {key:'vision60',emoji:'🤸',label:'Упражнения'},
+      {key:'vision62',emoji:'🌟',label:'62-дневный путь'},
+      {key:'visiontrack',emoji:'📊',label:'Трекер'},
+      {key:'visiontips',emoji:'💡',label:'Советы'}
+    ]},
+    {title:'📱 Детокс',items:[
+      {key:'detox',emoji:'🧘',label:'Детокс-хаб'},
+      {key:'detox60',emoji:'🧹',label:'60-дневное очищение'},
+      {key:'detoxcourse',emoji:'📱',label:'62-дневный детокс'},
+      {key:'screentracker',emoji:'📊',label:'Трекер экрана'}
+    ]},
+    {title:'🎓 Обучение',items:[
+      {key:'learning',emoji:'🎓',label:'Обучение'},
+      {key:'levels',emoji:'🌱',label:'Уровни'},
+      {key:'english',emoji:'🇬🇧',label:'English'},
+      {key:'skills',emoji:'💎',label:'Навыки'},
+      {key:'games',emoji:'🎮',label:'Игры-обучение'},
+      {key:'materials',emoji:'📚',label:'Материалы'}
+    ]},
+    {title:'❤️ Здоровье',items:[
+      {key:'health',emoji:'❤️',label:'Здоровье'},
+      {key:'water',emoji:'💧',label:'Вода'},
+      {key:'mood',emoji:'💭',label:'Настроение'}
+    ]},
+    {title:'🔗 Интеграции',items:[
+      {key:'obsidianIntegration',emoji:'📓',label:'Obsidian'},
+      {key:'telegramSetup',emoji:'📨',label:'Telegram-коуч'}
+    ]},
+    {title:'⚙️ Система',items:[
+      {key:'settings',emoji:'⚙️',label:'Настройки'},
+      {key:'notifications',emoji:'🔔',label:'Уведомления'},
+      {key:'profile',emoji:'👤',label:'Профиль'},
+      {key:'storage',emoji:'🗄',label:'Хранилище'}
+    ]}
+  ];
+  var html = '<div class="page"><div class="title-xl">Все разделы</div>';
+  groups.forEach(function(g){
+    html += '<div class="card"><h2>' + g.title + '</h2>';
+    g.items.forEach(function(it){
+      html += '<div class="list-row" onclick="navigate(\'' + it.key + '\')"><div class="list-icon">' + it.emoji + '</div><div class="list-body"><div class="list-title">' + it.label + '</div></div><div class="list-chevron">›</div></div>';
+    });
+    html += '</div>';
+  });
+  html += '</div>';
+  document.getElementById('app').innerHTML = html;
+}
+function renderSettings(){
+  var themes = window.THEMES || [];
+  var currentTheme = themes.find(function(t){ return t.id === state.settings.theme; }) || {name:'dark'};
+  var html = '<div class="page"><div class="title-xl">⚙️ Настройки</div>';
+  html += '<div class="card"><h2>Профиль</h2><div class="field"><label class="field-label">Имя</label><input type="text" value="' + esc(state.profile.name||'') + '" onchange="saveProfileName(this.value)"/></div>';
+  html += '<div class="list-row" onclick="openThemePicker()"><div class="list-icon">🎨</div><div class="list-body"><div class="list-title">Тема</div></div><div class="list-value">' + currentTheme.name + '</div></div></div>';
+  html += renderPWAInstallBlock();
+  html += '<div class="card"><h2>Данные</h2>';
+  html += '<button class="btn btn-primary btn-block mb-2" onclick="exportDB()">📤 Экспорт JSON</button>';
+  html += '<button class="btn btn-ghost btn-block mb-2" onclick="importDB()">📥 Импорт JSON</button>';
+  html += '<button class="btn btn-danger btn-block" onclick="resetAllWithConfirm()">🗑 Полный сброс</button>';
+  html += '</div>';
+  html += '<div class="footnote text-tertiary" style="text-align:center;">Life OS v' + CURRENT_VERSION + '</div></div>';
+  document.getElementById('app').innerHTML = html;
+}
+function renderSettingsV2(){ renderSettings(); }
+function renderProfile(){ renderProfileV2(); }
+function renderProfileV2(){
+  var p = state.profileV2 || {};
+  var g = state.gamification || {};
+  var html = '<div class="page"><div class="title-xl">👤 Профиль</div>';
+  html += '<div class="profile-hero"><div class="avatar-btn" onclick="pickEmoji()" style="width:96px;height:96px;margin:0 auto 12px;font-size:48px;">' + state.profile.emoji + '</div>';
+  html += '<div style="font-size:22px;font-weight:800;">' + esc(state.profile.name||'Пользователь') + '</div>';
+  html += '<div class="footnote text-secondary">Уровень ' + (g.level||1) + ' · XP: ' + (g.xp||0) + '</div></div>';
+  html += renderPWAInstallBlock();
+  html += '<div class="card"><h2>📏 Данные</h2>';
+  html += '<div class="field"><label class="field-label">Возраст</label><input type="number" id="pv-age" value="' + (p.age||'') + '"/></div>';
+  html += '<div class="field"><label class="field-label">Рост (см)</label><input type="number" id="pv-height" value="' + (p.height||'') + '"/></div>';
+  html += '<div class="field"><label class="field-label">Вес (кг)</label><input type="number" id="pv-weight" value="' + (p.weight||'') + '" step="0.1"/></div>';
+  html += '<button class="btn btn-ghost btn-block" onclick="saveProfileV2()">💾 Сохранить</button>';
+  html += '</div>';
+  html += '<button class="btn btn-primary btn-block" onclick="navigate(\'achievements\')">🏆 Достижения</button>';
+  html += '</div>';
+  document.getElementById('app').innerHTML = html;
+}
+function saveProfileV2(){
+  var p = state.profileV2;
+  p.age = parseInt((document.getElementById('pv-age')||{}).value) || null;
+  p.height = parseFloat((document.getElementById('pv-height')||{}).value) || null;
+  p.weight = parseFloat((document.getElementById('pv-weight')||{}).value) || null;
+  p.updatedAt = nowISO();
+  save();
+  toast('✓','success');
+}
+function pickEmoji(){
+  var emojis = ['😊','😎','🤓','🧑‍💻','👨‍💼','👩‍💼','🦊','🐱','🐶','🦁','🐼','🦉','🌟','⚡','🔥','💎','🚀','🎯','🧠','💪','🌈','☕','🎨','🎮','🎧','📚','🏃','🧘','🍀','🌸'];
+  var html = '<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;">';
+  emojis.forEach(function(e){
+    html += '<button onclick="setEmoji(\'' + e + '\')" style="aspect-ratio:1;border-radius:14px;background:var(--glass-2);font-size:26px;cursor:pointer;border:2px solid ' + (e === state.profile.emoji ? 'var(--brand)' : 'transparent') + ';">' + e + '</button>';
+  });
+  html += '</div>';
+  openSheet('Аватар', html);
+}
+function setEmoji(e){
+  state.profile.emoji = e;
+  save();
+  closeSheet();
+  toast('✓','success');
+  updateHeader();
+  renderProfileV2();
+}
+function saveProfileName(name){
+  state.profile.name = (name||'').trim() || 'Пользователь';
+  save();
+  toast('Сохранено','success');
+  updateHeader();
+}
+
+/* ============ ЭКСПОРТ / ИМПОРТ ============ */
+function exportDB(){
+  try{
+    var blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'life-os-' + today() + '.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    toast('📤 Готово','success');
+  }catch(e){ toast('Ошибка','error'); }
+}
+function importDB(){
+  var input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = function(e){
+    var file = e.target.files[0];
+    if(!file) return;
+    var reader = new FileReader();
+    reader.onload = function(){
+      try{
+        var data = JSON.parse(reader.result);
+        if(!data || typeof data !== 'object') throw new Error('bad');
+        backupStorage();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        toast('✓ Перезагрузка...','success');
+        setTimeout(function(){ location.reload(); }, 1200);
+      }catch(err){ toast('Ошибка','error'); }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+function resetAllWithConfirm(){
+  if(!confirm('Удалить ВСЕ данные?')) return;
+  if(!confirm('Точно?')) return;
+  backupStorage();
+  localStorage.removeItem(STORAGE_KEY);
+  location.reload();
+}
+
+/* ============ ЗАГЛУШКИ ============ */
+function renderStub(title){
+  var app = document.getElementById('app');
+  if(app) app.innerHTML = '<div class="page"><div class="title-xl">' + title + '</div><div class="card"><div class="empty"><div class="empty-icon">🚧</div><div class="empty-title">Раздел в разработке</div></div></div></div>';
+}
+function renderMemory(){ renderStub('🧠 Память'); }
+function renderIQ(){ renderStub('🎯 IQ'); }
+function renderEQ(){ renderStub('❤️ EQ'); }
+function renderFinance(){ renderStub('💰 Финансы'); }
+function renderNeuro(){ renderStub('🔬 Нейро'); }
+function renderPsychology(){ renderStub('🧠 Психология'); }
+function renderThinking(){ renderStub('💡 Мышление'); }
+function renderEtiquette(){ renderStub('🎩 Этикет'); }
+function renderHormones(){ renderStub('🧬 Гормоны'); }
+function renderWealth(){ renderStub('💰 Богатство'); }
+function renderPlanning(){ navigate('schedule'); }
+function renderPlanToday(){ navigate('schedule'); }
+function renderPlanWeek(){ navigate('weeklyReview'); }
+function renderPlanMonth(){ navigate('monthlyReview'); }
+function renderObsidian(){ renderStub('📓 Obsidian'); }
+function renderMethods(){ renderStub('🎯 Методики'); }
+function renderRecovery(){ renderStub('🌿 Восстановление'); }
+function renderMedical(){ renderStub('🏥 Медицина'); }
+function renderEntertainment(){ renderStub('🎬 Досуг'); }
+function renderResources(){ renderStub('🔗 Ресурсы'); }
+function renderMovies(){ renderStub('🎥 Фильмы'); }
+function renderSeries(){ renderStub('📺 Сериалы'); }
+function renderBooks(){ renderStub('📚 Книги'); }
+function renderMusic(){ renderStub('🎵 Музыка'); }
+function renderGames(){ renderStub('🎮 Игры'); }
+function renderPodcasts(){ renderStub('🎧 Подкасты'); }
+function renderGoals(){ renderStub('🎯 Цели'); }
+function renderNotes(){ renderStub('📝 Заметки'); }
+function renderJournal(){ renderStub('📓 Дневник'); }
+function renderDailySurvey(){ renderStub('📋 Опрос'); }
+function renderSurvey(){ renderStub('📋 Опрос'); }
+function renderPersonalPlan(){ navigate('dashboard'); }
+function renderLearningGames(){ renderStub('🎮 Игры'); }
+function renderGamePlay(){ renderStub('Игра'); }
+function renderMaterials(){ renderStub('📚 Материалы'); }
+function renderMaterialDetail(){ renderStub('Материал'); }
+function renderDailyReport(){ renderStub('📊 Отчёт дня'); }
+function renderWeeklyReport(){ renderWeeklyReview(); }
+function renderSnapshot(){ renderStub('🌐 Единая картина'); }
+function renderRecommendations(){ renderStub('💡 Рекомендации'); }
+function renderSchedule(){ renderStub('📅 Расписание'); }
+function renderScheduleEditor(){ renderStub('Событие'); }
+function renderFocus(){ renderStub('⏱ Фокус'); }
+function renderEveningReview(){ renderStub('🌙 Вечерний обзор'); }
+function renderWeeklyReview(){ renderStub('📈 Итоги недели'); }
+function renderMonthlyReview(){ renderStub('📆 Итоги месяца'); }
+function renderTimer(){ renderStub('⏱ Таймер'); }
+function renderDomains(){ navigate('spheres'); }
+function renderWorkouts(){ renderStub('🏋️ Тренировки'); }
+function renderMeditation(){ renderStub('🧘 Медитации'); }
+function renderMeds(){ renderStub('💊 Лекарства'); }
+function renderGcal(){ renderStub('📅 Календарь'); }
+function renderCalendar(){ renderStub('📅 Календарь'); }
+function renderNotifications(){ renderStub('🔔 Уведомления'); }
+function renderIntegrations(){ renderStub('🔗 Интеграции'); }
+function renderStorage(){ renderStub('🗄 Хранилище'); }
+function renderScreenTracker(){ renderStub('📱 Экран'); }
+function renderDiagnostic(){ renderStub('🔍 Диагностика'); }
+function renderOnboarding(){ renderStub('👋 Добро пожаловать'); }
+
+/* ============ XP-СИСТЕМА ============ */
+function getXPForLevel(level){
+  if(level <= 1) return 0;
+  var total = 0;
+  for(var i = 1; i < level; i++){
+    total += Math.round(100 * Math.pow(1.2, i-1));
+  }
+  return total;
+}
+function getXPForNextLevel(level){
+  return getXPForLevel(level + 1);
+}
+function addXP(amount, source){
+  if(!amount) return;
+  if(!state.gamification) state.gamification = defaultState().gamification;
+  state.gamification.xp = (state.gamification.xp||0) + amount;
+  state.gamification.sources = state.gamification.sources || {};
+  state.gamification.sources[source||'other'] = (state.gamification.sources[source||'other']||0) + amount;
+  if(!state.gamification.xpHistory) state.gamification.xpHistory = [];
+  state.gamification.xpHistory.push({date:today(), amount:amount, source:source||'other', total:state.gamification.xp});
+  if(state.gamification.xpHistory.length > 500) state.gamification.xpHistory = state.gamification.xpHistory.slice(-500);
+  /* Проверка уровня */
+  var newLevel = 1;
+  for(var lvl = 1; lvl < 100; lvl++){
+    if(state.gamification.xp >= getXPForLevel(lvl)) newLevel = lvl;
+    else break;
+  }
+  if(newLevel > (state.gamification.level||1)){
+    state.gamification.level = newLevel;
+    state.gamification.lastLevelUp = nowISO();
+    if(!state.gamification.levelUpHistory) state.gamification.levelUpHistory = [];
+    state.gamification.levelUpHistory.push({level:newLevel, at:nowISO(), xp:state.gamification.xp});
+    toast('🎉 Уровень ' + newLevel + '!','success',3000);
+    haptic('success');
+  }
+  /* Обновляем лигу */
+  if(!state.leagues) state.leagues = defaultState().leagues;
+  state.leagues.weeklyXp = (state.leagues.weeklyXp||0) + amount;
+  save();
+}
+
+/* ============ АГРЕГАТОР ============ */
+function buildUserSnapshot(s){
+  if(!s) return null;
+  var t = today(), y = yesterday();
+  var snap = {
+    date:t,
+    habits:{total:(s.habits||[]).length, completedToday:0, activeStreak:0, bestStreak:0},
+    sleep:{lastNight:null, avg7:null, avg30:null},
+    screen:{today:(s.screenStats||{})[t]||0, yesterday:(s.screenStats||{})[y]||0, week:0},
+    tasks:{total:(s.tasks||[]).length, pending:0, completedToday:0, overdue:0},
+    mood:{today:null, avg7:null},
+    water:{today:0, goal:getWaterGoal()},
+    workouts:{last7:0, last30:0},
+    brain:{totalPlays:0, todayPlays:0, avgScore:null},
+    antistress:{todayCount:0, weekCount:0},
+    learning:{lessonsDone:Object.keys(s.levelProgress||{}).length, englishDone:Object.keys(s.englishProgress||{}).length, skillsDone:Object.keys(s.skillsProgress||{}).length},
+    xp:s.gamification && s.gamification.xp || 0,
+    streak:(s.stats && s.stats.streak)||0,
+    recommendations:[]
+  };
+  if(s.habits) s.habits.forEach(function(h){
+    if(h.lastCompletedDate === t) snap.habits.completedToday++;
+    if(h.streak > snap.habits.activeStreak) snap.habits.activeStreak = h.streak;
+  });
+  if(s.tasks) s.tasks.forEach(function(task){
+    if(task.status === 'pending'){
+      snap.tasks.pending++;
+      if(task.due_date && task.due_date.slice(0,10) < t) snap.tasks.overdue++;
+    }
+    if(task.status === 'completed' && task.completedAt && task.completedAt.slice(0,10) === t) snap.tasks.completedToday++;
+  });
+  var waterToday = (s.customWater||[]).find(function(w){ return w.date === t; });
+  if(waterToday) snap.water.today = waterToday.count||0;
+  var moodToday = (s.customMood||[]).find(function(m){ return m.date === t; });
+  if(moodToday) snap.mood.today = moodToday.score;
+  snap.brain.todayPlays = (s.brainPlays||[]).filter(function(p){ return p.date === t; }).length;
+  snap.antistress.todayCount = (s.antistressEntries||[]).filter(function(e){ return e.date === t; }).length;
+  return snap;
+}
+function refreshSnapshot(){
+  try{
+    var snap = buildUserSnapshot(state);
+    if(!snap) return null;
+    state.snapshot = snap;
+    state.lastSnapshotAt = nowISO();
+    save();
+    return snap;
+  }catch(e){ return null; }
+}
+function getSphere(id){
+  if(typeof LIFE_SPHERES === 'undefined') return null;
+  for(var i = 0; i < LIFE_SPHERES.length; i++){
+    if(LIFE_SPHERES[i].id === id) return LIFE_SPHERES[i];
+  }
+  return null;
+}
+function getSpheresBalance(scores){
+  if(!scores) return {avg:0,min:0,max:0,balance:0,weakest:null,strongest:null};
+  var vals = [];
+  (LIFE_SPHERES||[]).forEach(function(s){
+    var v = scores[s.id];
+    if(typeof v === 'number' && v > 0) vals.push({id:s.id, value:v});
+  });
+  if(!vals.length) return {avg:0,min:0,max:0,balance:0,weakest:null,strongest:null};
+  var sum = 0;
+  vals.forEach(function(x){ sum += x.value; });
+  var avg = Math.round(sum/vals.length*10)/10;
+  var sorted = vals.slice().sort(function(a,b){ return a.value - b.value; });
+  var weakest = sorted[0];
+  var strongest = sorted[sorted.length-1];
+  var spread = strongest.value - weakest.value;
+  var balance = Math.max(0, Math.round((1-spread/10)*100));
+  return {avg:avg, min:weakest.value, max:strongest.value, balance:balance, weakest:getSphere(weakest.id), strongest:getSphere(strongest.id)};
+}
+function getSphereRecommendations(sphereId, score){
+  if(typeof SPHERE_RECOMMENDATIONS === 'undefined') return [];
+  var recs = SPHERE_RECOMMENDATIONS[sphereId]||[];
+  return recs.filter(function(r){ return score >= r.min && score <= r.max; });
+}
+function getCoachStyle(id){
+  if(typeof COACH_STYLES === 'undefined') return {emoji:'⚖️', name:'Баланс', desc:''};
+  for(var i = 0; i < COACH_STYLES.length; i++){
+    if(COACH_STYLES[i].id === id) return COACH_STYLES[i];
+  }
+  return COACH_STYLES[1];
+}
+function getRandomCoachTip(sphereId){
+  if(typeof COACH_TIPS_2500 === 'undefined') return null;
+  var tips = COACH_TIPS_2500[sphereId] || [];
+  if(!tips.length) return null;
+  return tips[Math.floor(Math.random()*tips.length)];
+}
+function getHabitTemplate(id){
+  if(typeof HABIT_TEMPLATES === 'undefined') return null;
+  for(var i = 0; i < HABIT_TEMPLATES.length; i++){
+    if(HABIT_TEMPLATES[i].id === id) return HABIT_TEMPLATES[i];
+  }
+  return null;
+}
+function getHabitWithWhy(id){
+  if(typeof HABITS_WITH_WHY === 'undefined') return null;
+  for(var i = 0; i < HABITS_WITH_WHY.length; i++){
+    if(HABITS_WITH_WHY[i].id === id) return HABITS_WITH_WHY[i];
+  }
+  return null;
+}
+function getHabitsBySphere(sphereId){
+  if(typeof HABITS_WITH_WHY === 'undefined') return [];
+  if(!sphereId || sphereId === 'all') return HABITS_WITH_WHY.slice();
+  return HABITS_WITH_WHY.filter(function(h){ return h.sphereId === sphereId; });
+}
+function getProjectTemplate(id){
+  if(typeof PROJECT_TEMPLATES === 'undefined') return null;
+  for(var i = 0; i < PROJECT_TEMPLATES.length; i++){
+    if(PROJECT_TEMPLATES[i].id === id) return PROJECT_TEMPLATES[i];
+  }
+  return null;
+}
+function getProjectStatus(id){
+  if(typeof PROJECT_STATUSES === 'undefined') return {emoji:'📋', name:'—', color:'#5b9eff'};
+  for(var i = 0; i < PROJECT_STATUSES.length; i++){
+    if(PROJECT_STATUSES[i].id === id) return PROJECT_STATUSES[i];
+  }
+  return PROJECT_STATUSES[0];
+}
+function getCurrentPhase(){
+  if(typeof DAY_PHASES === 'undefined') return {emoji:'☀️', name:'День', color:'#5b9eff', desc:''};
+  var h = new Date().getHours();
+  for(var i = 0; i < DAY_PHASES.length; i++){
+    if(h >= DAY_PHASES[i].startHour && h < DAY_PHASES[i].endHour) return DAY_PHASES[i];
+  }
+  return DAY_PHASES[1];
+}
+function getDetoxDay(day){
+  if(typeof DETOX_COURSE === 'undefined') return null;
+  for(var i = 0; i < DETOX_COURSE.length; i++){
+    if(DETOX_COURSE[i].day === day) return DETOX_COURSE[i];
+  }
+  return null;
+}
+function getCourseById(id){
+  if(typeof ALL_NEW_COURSES === 'undefined') return null;
+  for(var i = 0; i < ALL_NEW_COURSES.length; i++){
+    if(ALL_NEW_COURSES[i].id === id) return ALL_NEW_COURSES[i];
+  }
+  return null;
+}
+function getTodayWisdom(){
+  if(typeof DAILY_WISDOMS === 'undefined' || !DAILY_WISDOMS.length) return {text:'Начни сейчас.', author:'', action:''};
+  var idx = Math.floor(Date.now()/86400000) % DAILY_WISDOMS.length;
+  return DAILY_WISDOMS[idx];
+}
+function getTodayChallenges(){
+  if(typeof DAILY_CHALLENGES === 'undefined') return [];
+  var dayIdx = Math.floor(Date.now()/86400000);
+  var result = [];
+  for(var i = 0; i < 4; i++) result.push(DAILY_CHALLENGES[(dayIdx+i)%DAILY_CHALLENGES.length]);
+  return result;
+}
+
+/* ============ WELCOME ============ */
+function showWelcome(){
+  var overlay = document.createElement('div');
+  overlay.className = 'welcome-screen';
+  overlay.innerHTML = '<div class="welcome-logo">🧠</div><div class="welcome-title">Life OS</div><div class="welcome-sub">Нейроэкосистема жизни. 7 сфер, AI-коуч, привычки, проекты, геймификация.</div><button class="btn btn-primary btn-block" style="max-width:340px;" onclick="startOnboarding()">Начать</button>';
+  document.body.appendChild(overlay);
+}
+function startOnboarding(){
+  var w = document.querySelector('.welcome-screen');
+  if(w) w.remove();
+  var name = window.__tgName || '';
+  if(!name){
+    var o = document.createElement('div');
+    o.className = 'welcome-screen';
+    o.innerHTML = '<div class="welcome-logo">👤</div><div class="welcome-title">Как тебя зовут?</div><input type="text" class="welcome-input" id="welcome-name" placeholder="Имя" maxlength="30"/><button class="btn btn-primary btn-block mt-4" style="max-width:340px;margin-top:16px;" onclick="finishOnboarding()">Далее</button>';
+    document.body.appendChild(o);
+    setTimeout(function(){ var i = document.getElementById('welcome-name'); if(i) i.focus(); }, 300);
+  } else {
+    state.profile.name = name;
+    state.settings.onboardingDone = true;
+    save();
+    updateHeader();
+    renderTabBar();
+    renderDashboard();
+  }
+}
+function finishOnboarding(){
+  var inp = document.getElementById('welcome-name');
+  var name = inp ? inp.value.trim() : '';
+  if(!name) return toast('Введи имя','error');
+  state.profile.name = name;
+  state.settings.onboardingDone = true;
+  save();
+  var w = document.querySelector('.welcome-screen');
+  if(w) w.remove();
+  updateHeader();
+  renderTabBar();
+  renderDashboard();
+  haptic('success');
+  toast('Добро пожаловать, ' + name + '!','success');
+}
+
+/* ============ INIT ============ */
+function init(){
+  try{
+    applyTheme(state.settings.theme);
+    applyUserSettings();
+    updateHeader();
+    initPWAHandlers();
+    if(!state.profile.name && !state.settings.onboardingDone){ showWelcome(); return; }
+    if(state.profile.name && !state.settings.onboardingDone){ state.settings.onboardingDone = true; save(); }
+    if(!state.profile.name && window.__tgName){ state.profile.name = window.__tgName; save(); }
+    if(!state.tasks.length){
+      state.tasks = [{id:uid(), title:'Изучить Life OS', category:'Личное', planned_time:10, status:'pending', priority:'medium', created_at:nowISO()}];
+      save();
+    }
+    renderTabBar();
+    renderDashboard();
+    var t = today();
+    if(state.stats.lastActiveDay !== t){
+      var y = new Date();
+      y.setDate(y.getDate() - 1);
+      var wasYesterday = state.stats.lastActiveDay === y.toISOString().slice(0,10);
+      state.stats.streak = wasYesterday ? (state.stats.streak||0) + 1 : 1;
+      if(state.stats.streak > (state.stats.bestStreak||0)) state.stats.bestStreak = state.stats.streak;
+      state.stats.lastActiveDay = t;
+      save();
+    }
+    /* Проверка сброса кулдауна и режима сна */
+    checkCooldownAndSleep();
+    setTimeout(function(){ try{ refreshSnapshot(); }catch(e){} }, 500);
+    setTimeout(function(){ try{ checkAchievements(); }catch(e){} }, 1000);
+    setInterval(function(){ try{ save(); }catch(e){} }, 30000);
+    setInterval(function(){ try{ checkAchievements(); }catch(e){} }, 5*60*1000);
+    setInterval(function(){ try{ checkCooldownAndSleep(); }catch(e){} }, 60000);
+    console.log('[INIT ✅] Life OS v' + CURRENT_VERSION);
+  }catch(e){
+    console.error('[INIT]', e);
+    var app = document.getElementById('app');
+    if(app) app.innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-title">Ошибка</div><div class="empty-text">' + esc(e.message) + '</div></div>';
+  }
+}
+function checkCooldownAndSleep(){
+  if(!state.detox) return;
+  /* Кулдаун */
+  if(state.detox.cooldown && state.detox.cooldown.active){
+    if(new Date(state.detox.cooldown.until) < new Date()){
+      state.detox.cooldown.active = false;
+      save();
+    }
+  }
+  /* Режим сна */
+  if(state.detox.sleepMode && state.detox.sleepMode.enabled){
+    var now = getNowHHMM();
+    var start = state.detox.sleepMode.start || '22:00';
+    var end = state.detox.sleepMode.end || '07:00';
+    var active = false;
+    if(start > end){ active = (now >= start || now <= end); }
+    else { active = (now >= start && now <= end); }
+    state.detox.sleepMode.active = active;
+  }
+}
+
+/* ============ ПОДКЛЮЧЕНИЕ К WINDOW ============ */
+window.state = state;
+window.save = save;
+window.today = today;
+window.yesterday = yesterday;
+window.nowISO = nowISO;
+window.uid = uid;
+window.esc = esc;
+window.toast = toast;
+window.haptic = haptic;
+window.updateHeader = updateHeader;
+window.renderTabBar = renderTabBar;
+window.applyTheme = applyTheme;
+window.applyUserSettings = applyUserSettings;
+window.startEffects = startEffects;
+window.addXP = addXP;
+window.addPetXP = addPetXP;
+window.getXPForLevel = getXPForLevel;
+window.getXPForNextLevel = getXPForNextLevel;
+window.buildUserSnapshot = buildUserSnapshot;
+window.refreshSnapshot = refreshSnapshot;
+window.getSphere = getSphere;
+window.getSpheresBalance = getSpheresBalance;
+window.getSphereRecommendations = getSphereRecommendations;
+window.getCoachStyle = getCoachStyle;
+window.getRandomCoachTip = getRandomCoachTip;
+window.getHabitTemplate = getHabitTemplate;
+window.getHabitWithWhy = getHabitWithWhy;
+window.getHabitsBySphere = getHabitsBySphere;
+window.getProjectTemplate = getProjectTemplate;
+window.getProjectStatus = getProjectStatus;
+window.getCurrentPhase = getCurrentPhase;
+window.getDetoxDay = getDetoxDay;
+window.getCourseById = getCourseById;
+window.getTodayWisdom = getTodayWisdom;
+window.getTodayChallenges = getTodayChallenges;
+window.getWaterGoal = getWaterGoal;
+window.showWelcome = showWelcome;
+window.startOnboarding = startOnboarding;
+window.finishOnboarding = finishOnboarding;
+window.renderStub = renderStub;
+window.renderStats = renderStats;
+window.renderDetailedStats = renderDetailedStats;
+window.renderMore = renderMore;
+window.renderSettings = renderSettings;
+window.renderSettingsV2 = renderSettingsV2;
+window.renderProfile = renderProfile;
+window.renderProfileV2 = renderProfileV2;
+window.saveProfileV2 = saveProfileV2;
+window.pickEmoji = pickEmoji;
+window.setEmoji = setEmoji;
+window.saveProfileName = saveProfileName;
+window.exportDB = exportDB;
+window.importDB = importDB;
+window.resetAllWithConfirm = resetAllWithConfirm;
+window.exportToObsidian = exportToObsidian;
+window.importFromObsidian = importFromObsidian;
+window.renderObsidianIntegration = renderObsidianIntegration;
+window.saveTelegramConfig = saveTelegramConfig;
+window.sendToTelegram = sendToTelegram;
+window.renderTelegramSetup = renderTelegramSetup;
+window.sendCoachDailyGreeting = sendCoachDailyGreeting;
+window.sendCoachEveningSummary = sendCoachEveningSummary;
+window.renderDetox60 = renderDetox60;
+window.toggleDetox60Item = toggleDetox60Item;
+window.renderGamesHub = renderGamesHub;
+window.startGame = startGame;
+window.saveGameScore = saveGameScore;
+window.renderLeagues = renderLeagues;
+window.renderPet = renderPet;
+window.feedPet = feedPet;
+window.renderDetoxHub = renderDetoxHub;
+window.startCooldown = startCooldown;
+window.toggleSleepMode = toggleSleepMode;
+
+/* Заглушки на window */
+window.renderMemory = renderMemory;
+window.renderIQ = renderIQ;
+window.renderEQ = renderEQ;
+window.renderFinance = renderFinance;
+window.renderNeuro = renderNeuro;
+window.renderPsychology = renderPsychology;
+window.renderThinking = renderThinking;
+window.renderEtiquette = renderEtiquette;
+window.renderHormones = renderHormones;
+window.renderWealth = renderWealth;
+window.renderPlanning = renderPlanning;
+window.renderPlanToday = renderPlanToday;
+window.renderPlanWeek = renderPlanWeek;
+window.renderPlanMonth = renderPlanMonth;
+window.renderObsidian = renderObsidian;
+window.renderMethods = renderMethods;
+window.renderRecovery = renderRecovery;
+window.renderMedical = renderMedical;
+window.renderEntertainment = renderEntertainment;
+window.renderResources = renderResources;
+window.renderMovies = renderMovies;
+window.renderSeries = renderSeries;
+window.renderBooks = renderBooks;
+window.renderMusic = renderMusic;
+window.renderGames = renderGames;
+window.renderPodcasts = renderPodcasts;
+window.renderGoals = renderGoals;
+window.renderNotes = renderNotes;
+window.renderJournal = renderJournal;
+window.renderDailySurvey = renderDailySurvey;
+window.renderSurvey = renderSurvey;
+window.renderPersonalPlan = renderPersonalPlan;
+window.renderLearningGames = renderLearningGames;
+window.renderGamePlay = renderGamePlay;
+window.renderMaterials = renderMaterials;
+window.renderMaterialDetail = renderMaterialDetail;
+window.renderDailyReport = renderDailyReport;
+window.renderWeeklyReport = renderWeeklyReport;
+window.renderSnapshot = renderSnapshot;
+window.renderRecommendations = renderRecommendations;
+window.renderSchedule = renderSchedule;
+window.renderScheduleEditor = renderScheduleEditor;
+window.renderFocus = renderFocus;
+window.renderEveningReview = renderEveningReview;
+window.renderWeeklyReview = renderWeeklyReview;
+window.renderMonthlyReview = renderMonthlyReview;
+window.renderTimer = renderTimer;
+window.renderDomains = renderDomains;
+window.renderWorkouts = renderWorkouts;
+window.renderMeditation = renderMeditation;
+window.renderMeds = renderMeds;
+window.renderGcal = renderGcal;
+window.renderCalendar = renderCalendar;
+window.renderNotifications = renderNotifications;
+window.renderIntegrations = renderIntegrations;
+window.renderStorage = renderStorage;
+window.renderScreenTracker = renderScreenTracker;
+window.renderDiagnostic = renderDiagnostic;
+window.renderOnboarding = renderOnboarding;
+
+/* ============ СТАРТ ============ */
+if(document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+
+console.log('[APP v46 ✅] ФИНАЛ загружен. Все части: 1/4 + 2/4 + 3/4 + 4/4');
+
+})();
