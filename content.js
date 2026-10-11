@@ -1525,4 +1525,147 @@ window.getTodayWisdomSafe=getTodayWisdomSafe;
 window.getTodayChallengesSafe=getTodayChallengesSafe;
 
 
+/* ============================================================
+   LIFE OS — CONTENT.js v46 — ЧАСТЬ 6/6
+   Финальный экспорт всего + проверка целостности + лог
+   ============================================================ */
 
+/* ============ ЭКСПОРТ ВСЕХ ДАННЫХ В WINDOW ============ */
+window.THEMES = THEMES;
+window.DOMAINS = DOMAINS;
+window.DAILY_WISDOMS = DAILY_WISDOMS;
+window.DAILY_CHALLENGES = DAILY_CHALLENGES;
+window.WORK_MODES = WORK_MODES;
+window.SURVEY_QUESTIONS = SURVEY_QUESTIONS;
+window.PERSONAS = PERSONAS;
+window.TABS = TABS;
+window.QUICK_TABS = QUICK_TABS;
+window.LEARNING_LEVELS = LEARNING_LEVELS;
+window.ENGLISH_125 = ENGLISH_125;
+window.ENGLISH_TESTS = ENGLISH_TESTS;
+window.SKILLS_CATEGORIES = SKILLS_CATEGORIES;
+window.SKILLS_LIBRARY = SKILLS_LIBRARY;
+window.METHODS_LIBRARY = METHODS_LIBRARY;
+window.RECOVERY_LIBRARY = RECOVERY_LIBRARY;
+window.PSYCHOLOGY_TOPICS = PSYCHOLOGY_TOPICS;
+window.THINKING_TOPICS = THINKING_TOPICS;
+window.ETIQUETTE_TOPICS = ETIQUETTE_TOPICS;
+window.HORMONES = HORMONES;
+window.WEALTH_MODULES = WEALTH_MODULES;
+window.VISION_EXERCISES = VISION_EXERCISES;
+window.DETOX_COURSE = DETOX_COURSE;
+window.ACHIEVEMENTS = ACHIEVEMENTS;
+window.COURSE_IT = COURSE_IT;
+window.COURSE_LAW = COURSE_LAW;
+window.COURSE_MED = COURSE_MED;
+window.COURSE_FINANCE = COURSE_FINANCE;
+window.COURSE_PSYCH_DEEP = COURSE_PSYCH_DEEP;
+window.COURSE_LANGUAGES = COURSE_LANGUAGES;
+window.COURSE_DESIGN = COURSE_DESIGN;
+window.COURSE_COOKING = COURSE_COOKING;
+window.COURSE_SPORT = COURSE_SPORT;
+window.COURSE_MUSIC = COURSE_MUSIC;
+window.COURSE_HISTORY = COURSE_HISTORY;
+window.COURSE_ASTRO = COURSE_ASTRO;
+window.ALL_NEW_COURSES = ALL_NEW_COURSES;
+window.LEAGUE_TIERS = LEAGUE_TIERS;
+window.PET_STAGES = PET_STAGES;
+window.XP_SOURCES = XP_SOURCES;
+
+/* ============ ПРОВЕРКА ЦЕЛОСТНОСТИ ============ */
+function checkContentIntegrity(){
+  var issues=[];
+  if(!THEMES||THEMES.length<50)issues.push('THEMES<50');
+  if(!DOMAINS||DOMAINS.length<10)issues.push('DOMAINS<10');
+  if(!DAILY_WISDOMS||DAILY_WISDOMS.length<30)issues.push('WISDOMS<30');
+  if(!DAILY_CHALLENGES||DAILY_CHALLENGES.length<15)issues.push('CHALLENGES<15');
+  if(!LEARNING_LEVELS||LEARNING_LEVELS.length<5)issues.push('LEVELS<5');
+  if(!ENGLISH_125||ENGLISH_125.length<100)issues.push('ENGLISH<100');
+  if(!SKILLS_LIBRARY||SKILLS_LIBRARY.length<30)issues.push('SKILLS<30');
+  if(!DETOX_COURSE||DETOX_COURSE.length<60)issues.push('DETOX<60');
+  if(!VISION_EXERCISES||VISION_EXERCISES.length<50)issues.push('VISION<50');
+  if(!ALL_NEW_COURSES||ALL_NEW_COURSES.length<12)issues.push('COURSES<12');
+  if(!PSYCHOLOGY_TOPICS||PSYCHOLOGY_TOPICS.length<50)issues.push('PSYCH<50');
+  if(!THINKING_TOPICS||THINKING_TOPICS.length<50)issues.push('THINKING<50');
+  if(!ETIQUETTE_TOPICS||ETIQUETTE_TOPICS.length<50)issues.push('ETIQ<50');
+  if(!HORMONES||HORMONES.length<15)issues.push('HORMONES<15');
+  if(!RECOVERY_LIBRARY||RECOVERY_LIBRARY.length<100)issues.push('RECOVERY<100');
+  if(!METHODS_LIBRARY||METHODS_LIBRARY.length<30)issues.push('METHODS<30');
+  if(!LEAGUE_TIERS||LEAGUE_TIERS.length<5)issues.push('LEAGUE_TIERS<5');
+  if(!PET_STAGES||PET_STAGES.length<5)issues.push('PET_STAGES<5');
+  if(!XP_SOURCES||XP_SOURCES.length<10)issues.push('XP_SOURCES<10');
+  return issues;
+}
+window.checkContentIntegrity = checkContentIntegrity;
+
+/* ============ СВОДКА ============ */
+function getContentSummary(){
+  return {
+    themes: THEMES.length,
+    domains: DOMAINS.length,
+    wisdoms: DAILY_WISDOMS.length,
+    challenges: DAILY_CHALLENGES.length,
+    personas: Object.keys(PERSONAS).length,
+    tabs: TABS.length,
+    levels: LEARNING_LEVELS.length,
+    english: ENGLISH_125.length,
+    skills: SKILLS_LIBRARY.length,
+    methods: METHODS_LIBRARY.length,
+    recovery: RECOVERY_LIBRARY.length,
+    psychology: PSYCHOLOGY_TOPICS.length,
+    thinking: THINKING_TOPICS.length,
+    etiquette: ETIQUETTE_TOPICS.length,
+    hormones: HORMONES.length,
+    wealth: WEALTH_MODULES.length,
+    vision: VISION_EXERCISES.length,
+    detox: DETOX_COURSE.length,
+    courses: ALL_NEW_COURSES.length,
+    achievements: ACHIEVEMENTS.length,
+    leagueTiers: LEAGUE_TIERS.length,
+    petStages: PET_STAGES.length,
+    xpSources: XP_SOURCES.length
+  };
+}
+window.getContentSummary = getContentSummary;
+
+/* ============ ФИНАЛЬНЫЙ ЛОГ ============ */
+(function(){
+  try{
+    var s = getContentSummary();
+    var issues = checkContentIntegrity();
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('[CONTENT ✅] LIFE OS CONTENT v46 ЗАГРУЖЕН');
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('[CONTENT ✅] Темы: '+s.themes);
+    console.log('[CONTENT ✅] Домены: '+s.domains);
+    console.log('[CONTENT ✅] Мудрости: '+s.wisdoms);
+    console.log('[CONTENT ✅] Челленджи: '+s.challenges);
+    console.log('[CONTENT ✅] Персоны: '+s.personas);
+    console.log('[CONTENT ✅] Табы: '+s.tabs);
+    console.log('[CONTENT ✅] Уровни обучения: '+s.levels);
+    console.log('[CONTENT ✅] English: '+s.english);
+    console.log('[CONTENT ✅] Навыки: '+s.skills);
+    console.log('[CONTENT ✅] Методики: '+s.methods);
+    console.log('[CONTENT ✅] Восстановление: '+s.recovery);
+    console.log('[CONTENT ✅] Психология: '+s.psychology);
+    console.log('[CONTENT ✅] Мышление: '+s.thinking);
+    console.log('[CONTENT ✅] Этикет: '+s.etiquette);
+    console.log('[CONTENT ✅] Гормоны: '+s.hormones);
+    console.log('[CONTENT ✅] Богатство: '+s.wealth);
+    console.log('[CONTENT ✅] Зрение: '+s.vision);
+    console.log('[CONTENT ✅] Детокс: '+s.detox);
+    console.log('[CONTENT ✅] Курсы: '+s.courses);
+    console.log('[CONTENT ✅] Достижения (база): '+s.achievements);
+    console.log('[CONTENT ✅] Лиги: '+s.leagueTiers);
+    console.log('[CONTENT ✅] Стадии питомца: '+s.petStages);
+    console.log('[CONTENT ✅] Источники XP: '+s.xpSources);
+    if(issues.length){
+      console.warn('[CONTENT ⚠️] ПРОБЛЕМЫ:', issues);
+    } else {
+      console.log('[CONTENT ✅] Все проверки пройдены ✓');
+    }
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  }catch(e){
+    console.error('[CONTENT] Ошибка финального лога:', e);
+  }
+})();
