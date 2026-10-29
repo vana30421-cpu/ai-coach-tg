@@ -1,50 +1,84 @@
 'use strict';
 /* ============================================================
-   LIFE OS — APP-RENDER.js v49
-   Экраны: Главная, Тренировки, Графики Beam, Дневник
+   LIFE OS — APP-RENDER.js v49 (FIXED)
    ============================================================ */
 
-/* ============ 1. ОТРИСОВКА ГЛАВНОЙ (ПЕРЕХВАТ) ============ */
-// Переопределяем главную, чтобы добавить красивые блоки
-var originalRenderDashboard = window.renderDashboard;
-window.renderDashboard = function() {
-  if (!originalRenderDashboard) return;
-  originalRenderDashboard(); // Рисуем базу
-
+/* ============ 1. БЕЗОПАСНАЯ ОТРИСОВКА ГЛАВНОЙ ============ */
+function forceRenderDashboard() {
   var app = document.getElementById('app');
   if (!app) return;
 
-  var extraHtml = '';
+  // Базовый HTML главной
+  var html = '<div class="title-xl">Главная</div>';
+  
+  // XP и Уровень (с защитой)
+  try {
+    var lvl = state && state.gamification ? state.gamification.level : 1;
+    var xp = state && state.gamification ? state.gamification.xp : 0;
+    var gold = state && state.gamification ? state.gamification.gold : 0;
+    
+    html += '<div class="card">';
+    html += '<h2>Уровень ' + lvl + '</h2>';
+    html += '<div class="progress"><div class="progress-fill" style="width:' + (xp % 100) + '%"></div></div>';
+    html += '<p class="text-secondary" style="margin-top:8px;">XP: ' + xp + ' | Золото: ' + gold + ' 🪙</p>';
+    html += '</div>';
+  } catch(e) { console.error('XP Error:', e); }
 
   // Блок Джарвиса
-  extraHtml += '<div class="card" style="background:linear-gradient(135deg, #a78bfa, #5b9eff); color:white; margin-top:15px;">';
-  extraHtml += '<h2>🤖 Джарвис на связи</h2>';
-  extraHtml += '<p style="margin-bottom:10px; opacity:0.9;">Умный анализ ваших данных</p>';
-  extraHtml += '<button class="btn" style="background:white; color:#5b9eff;" onclick="navigate(\'coachChatList\')">Открыть чаты</button>';
-  extraHtml += '</div>';
+  try {
+    html += '<div class="card" style="background:linear-gradient(135deg, #a78bfa, #5b9eff); color:white;">';
+    html += '<h2>🤖 Джарвис на связи</h2>';
+    html += '<p style="margin-bottom:10px; opacity:0.9;">Умный анализ ваших данных</p>';
+    html += '<button class="btn" style="background:white; color:#5b9eff;" onclick="navigate(\'coachChatList\')">Открыть чаты</button>';
+    html += '</div>';
+  } catch(e) { console.error('Jarvis Block Error:', e); }
 
   // Блок Тренировок
-  extraHtml += '<div class="card">';
-  extraHtml += '<h2>💪 Тренировки</h2>';
-  extraHtml += '<p class="text-secondary" style="margin-bottom:10px;">Профессиональные программы по БИ и фитнесу.</p>';
-  extraHtml += '<button class="btn btn-primary" onclick="navigate(\'trainingTest\')">Пройти тест (30 вопросов)</button>';
-  extraHtml += '</div>';
+  try {
+    html += '<div class="card">';
+    html += '<h2>💪 Тренировки</h2>';
+    html += '<button class="btn btn-primary" onclick="navigate(\'trainingTest\')">Пройти тест (30 вопросов)</button>';
+    html += '</div>';
+  } catch(e) { console.error('Training Block Error:', e); }
 
-  // Блок Графиков
-  extraHtml += '<div class="card">';
-  extraHtml += '<h2>📊 Активность</h2>';
-  extraHtml += '<p class="text-secondary">Ваш прогресс за последние дни</p>';
-  extraHtml += '<div style="margin-top:10px;">';
-  extraHtml += renderHeatmap(); // Рисуем сетку активности
-  extraHtml += '</div>';
-  extraHtml += '</div>';
+  // Блок Музыки и Книг
+  try {
+    html += '<div class="card">';
+    html += '<h2>🎵 Музыка и Книги</h2>';
+    html += '<div style="display:flex; gap:10px; margin-top:10px;">';
+    html += '<button class="btn btn-primary" style="flex:1;" onclick="navigate(\'music\')">Музыка</button>';
+    html += '<button class="btn btn-primary" style="flex:1;" onclick="navigate(\'books\')">Книги</button>';
+    html += '</div>';
+    html += '</div>';
+  } catch(e) { console.error('Music Block Error:', e); }
 
-  app.innerHTML += extraHtml;
-};
+  // Блок Питомца и Детокса
+  try {
+    html += '<div class="card">';
+    html += '<h2>🎮 Геймификация и Детокс</h2>';
+    html += '<div style="display:flex; gap:10px; margin-top:10px;">';
+    html += '<button class="btn btn-primary" style="flex:1;" onclick="navigate(\'pet\')">🐣 Питомец</button>';
+    html += '<button class="btn btn-primary" style="flex:1; background:var(--danger);" onclick="navigate(\'detox\')">🧘 Детокс</button>';
+    html += '</div>';
+    html += '</div>';
+  } catch(e) { console.error('Pet Block Error:', e); }
+
+  // Блок Сна
+  try {
+    html += '<div class="card">';
+    html += '<h2>😴 Сон</h2>';
+    html += '<button class="btn btn-primary" onclick="navigate(\'sleep\')">Записать сон</button>';
+    html += '</div>';
+  } catch(e) { console.error('Sleep Block Error:', e); }
+
+  app.innerHTML = html;
+}
+
+// Переопределяем стандартный рендер главной
+window.renderDashboard = forceRenderDashboard;
+
 
 /* ============ 2. ЭКРАН ТРЕНИРОВОК (ОПРОС) ============ */
-var currentTestAnswers = {};
-
 function renderTrainingTest() {
   var questions = window.FITNESS_DIAGNOSTIC || [];
   var html = '<div class="title-xl">💪 Тест на уровень</div>';
@@ -72,8 +106,8 @@ function finishTrainingTest() {
   var questions = window.FITNESS_DIAGNOSTIC || [];
   var answers = {};
   questions.forEach(function(q) {
-    var val = document.getElementById('test-' + q.id).value;
-    if (val) answers[q.id] = val;
+    var el = document.getElementById('test-' + q.id);
+    if (el && el.value) answers[q.id] = el.value;
   });
 
   if (Object.keys(answers).length < 5) {
@@ -81,7 +115,6 @@ function finishTrainingTest() {
     return;
   }
 
-  // Сохраняем ответы и переходим к списку
   if (!state.fitness) state.fitness = {};
   state.fitness.answers = answers;
   save();
@@ -118,112 +151,34 @@ function renderTrainingHub() {
   document.getElementById('app').innerHTML = html;
 }
 
-/* ============ 4. ГРАФИКИ BEAM (HEATMAP) ============ */
-function renderHeatmap() {
-  // Простая генерация сетки активности
-  var html = '<div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:4px;">';
-  for (var i = 0; i < 28; i++) {
-    var intensity = Math.floor(Math.random() * 4); // 0-3
-    var colors = ['var(--glass-1)', 'rgba(91,158,255,0.3)', 'rgba(91,158,255,0.6)', 'rgba(91,158,255,1)'];
-    html += '<div style="aspect-ratio:1; background:' + colors[intensity] + '; border-radius:4px;"></div>';
-  }
-  html += '</div>';
-  return html;
-}
-
-/* ============ 5. ДНЕВНИК (STOIC STYLE) ============ */
-function renderDiary() {
-  var html = '<div class="title-xl">📓 Дневник</div>';
-  
-  html += '<div class="card">';
-  html += '<h2>☀️ Утро</h2>';
-  html += '<p class="text-secondary">Запишите цели на день.</p>';
-  html += '<textarea placeholder="Что важно сделать сегодня?" style="margin-top:10px;"></textarea>';
-  html += '</div>';
-
-  html += '<div class="card">';
-  html += '<h2>🌙 Вечер</h2>';
-  html += '<p class="text-secondary">Что получилось? За что благодарны?</p>';
-  html += '<textarea placeholder="Итоги дня..." style="margin-top:10px;"></textarea>';
-  html += '</div>';
-
-  document.getElementById('app').innerHTML = html;
-}
-
-/* ============ 6. НАВИГАЦИЯ (ДОБАВЛЯЕМ ЭКРАНЫ) ============ */
-var originalNavigate = window.navigate;
-window.navigate = function(page, silent) {
-  if (page === 'trainingTest') { renderTrainingTest(); return; }
-  if (page === 'trainingHub') { renderTrainingHub(); return; }
-  if (page === 'diary') { renderDiary(); return; }
-  originalNavigate(page, silent);
-};
-
-console.log('[RENDER ✅] Экраны тренировок, графиков и дневника добавлены');
-
-/* ============ 7. ЭКРАН МУЗЫКИ ============ */
+/* ============ 4. ЭКРАН МУЗЫКИ ============ */
 function renderMusicHub() {
   var playlists = window.MUSIC_PLAYLISTS || [];
   var html = '<div class="title-xl">🎵 Музыка</div>';
-  html += '<p class="text-secondary" style="margin-bottom:15px;">Плейлисты, подобранные под ваши задачи.</p>';
+  html += '<button class="btn" style="margin-bottom:15px; background:var(--glass-1); color:var(--text);" onclick="navigate(\'dashboard\')">← На главную</button>';
 
   playlists.forEach(function(p) {
     html += '<div class="card">';
     html += '<h2>' + p.emoji + ' ' + p.title + '</h2>';
     html += '<p class="text-secondary" style="margin-bottom:10px;">' + p.desc + '</p>';
-    
-    // Теги треков
-    html += '<div style="display:flex; gap:5px; flex-wrap:wrap; margin-bottom:10px;">';
-    p.tracks.forEach(function(t) {
-      html += '<span style="background:var(--glass-1); padding:4px 8px; border-radius:8px; font-size:11px;">' + t + '</span>';
-    });
-    html += '</div>';
-
-    html += '<a href="' + p.link + '" target="_blank" class="btn btn-primary" style="text-decoration:none; display:flex;">Открыть в Spotify</a>';
+    html += '<a href="' + p.link + '" target="_blank" class="btn btn-primary" style="text-decoration:none; display:flex;">Открыть плейлист</a>';
     html += '</div>';
   });
 
   document.getElementById('app').innerHTML = html;
 }
 
-/* ============ 8. ЭКРАН КНИГ ============ */
-var currentBookFilter = 'all';
-
+/* ============ 5. ЭКРАН КНИГ ============ */
 function renderBooksHub() {
   var books = window.BOOKS_LIBRARY || [];
-  
   var html = '<div class="title-xl">📚 Книги</div>';
-  
-  // Фильтры
-  html += '<div style="display:flex; gap:10px; margin-bottom:15px; overflow-x:auto; padding-bottom:5px;">';
-  var filters = [
-    { id: 'all', name: 'Все' },
-    { id: 'reading', name: 'Читаю' },
-    { id: 'to_read', name: 'Хочу' },
-    { id: 'read', name: 'Прочитано' }
-  ];
-  filters.forEach(function(f) {
-    var active = currentBookFilter === f.id;
-    html += '<button class="btn" style="min-height:30px; padding:5px 15px; font-size:12px; width:auto; ' + (active ? 'background:var(--brand); color:#fff;' : 'background:var(--glass-1); color:var(--text);') + '" onclick="setBookFilter(\'' + f.id + '\')">' + f.name + '</button>';
-  });
-  html += '</div>';
+  html += '<button class="btn" style="margin-bottom:15px; background:var(--glass-1); color:var(--text);" onclick="navigate(\'dashboard\')">← На главную</button>';
 
-  var filtered = currentBookFilter === 'all' ? books : books.filter(function(b) { return b.status === currentBookFilter; });
-
-  filtered.forEach(function(b) {
-    var statusText = b.status === 'reading' ? '📖 Читаю' : b.status === 'to_read' ? '🎯 Хочу прочитать' : '✅ Прочитано';
+  books.forEach(function(b) {
     html += '<div class="card">';
-    html += '<div style="display:flex; gap:10px;">';
-    html += '<div style="font-size:30px;">' + b.emoji + '</div>';
-    html += '<div>';
-    html += '<h2 style="margin-bottom:5px;">' + b.title + '</h2>';
-    html += '<p class="text-secondary" style="font-size:12px; margin-bottom:5px;">' + b.author + ' · ' + b.category + '</p>';
-    html += '<span style="font-size:11px; font-weight:bold; color:var(--brand);">' + statusText + '</span>';
-    html += '</div>';
-    html += '</div>';
-    html += '<p class="text-secondary" style="margin-top:10px; margin-bottom:10px; font-size:13px;">' + b.desc + '</p>';
-    
-    // Главная мысль
+    html += '<h2>' + b.emoji + ' ' + b.title + '</h2>';
+    html += '<p class="text-secondary" style="font-size:12px; margin-bottom:5px;">' + b.author + '</p>';
+    html += '<p class="text-secondary" style="margin-bottom:10px; font-size:13px;">' + b.desc + '</p>';
     html += '<div style="background:var(--glass-1); border-left:3px solid var(--brand); padding:10px; border-radius:5px; font-size:13px;">';
     html += '<b>💡 Главная мысль:</b> ' + b.keyTakeaway;
     html += '</div>';
@@ -233,100 +188,34 @@ function renderBooksHub() {
   document.getElementById('app').innerHTML = html;
 }
 
-function setBookFilter(id) {
-  currentBookFilter = id;
-  renderBooksHub();
-}
-
-/* ============ 9. ОБНОВЛЕНИЕ НАВИГАЦИИ ============ */
-// Перехватываем navigate, чтобы добавить новые экраны (Музыка и Книги)
-var previousNavigate = window.navigate;
-window.navigate = function(page, silent) {
-  if (page === 'music') { renderMusicHub(); return; }
-  if (page === 'books') { renderBooksHub(); return; }
-  previousNavigate(page, silent);
-};
-
-/* ============ 10. КНОПКИ НА ГЛАВНОМ ЭКРАНЕ ============ */
-// Добавляем кнопки Музыки и Книг на главную
-var previousDashboard = window.renderDashboard;
-window.renderDashboard = function() {
-  previousDashboard();
-  
-  var app = document.getElementById('app');
-  if (!app) return;
-
-  var extra = '';
-  
-  // Кнопки Музыки и Книг
-  extra += '<div class="card">';
-  extra += '<h2>🎵 Музыка и Книги</h2>';
-  extra += '<div style="display:flex; gap:10px; margin-top:10px;">';
-  extra += '<button class="btn btn-primary" style="flex:1;" onclick="navigate(\'music\')">Музыка</button>';
-  extra += '<button class="btn btn-primary" style="flex:1;" onclick="navigate(\'books\')">Книги</button>';
-  extra += '</div>';
-  extra += '</div>';
-
-  app.innerHTML += extra;
-};
-
-console.log('[RENDER ✅] Экраны Музыки и Книг добавлены');
-
-/* ============ 11. ПИТОМЕЦ (МЕХАНИКА FINCH) ============ */
-// Инициализация питомца, если его нет
+/* ============ 6. ПИТОМЕЦ ============ */
 if (!state.pet) {
-  state.pet = {
-    name: 'Барсик',
-    xp: 0,
-    level: 1,
-    hunger: 100,
-    mood: 'happy',
-    emoji: '🐣'
-  };
+  state.pet = { name: 'Барсик', xp: 0, level: 1, emoji: '🐣' };
   save();
 }
 
 function renderPet() {
   var pet = state.pet;
   var xpNeeded = pet.level * 100;
-  var progress = (pet.xp / xpNeeded) * 100;
+  var progress = Math.min(100, (pet.xp / xpNeeded) * 100);
 
   var html = '<div class="title-xl">🐣 Питомец</div>';
+  html += '<button class="btn" style="margin-bottom:15px; background:var(--glass-1); color:var(--text);" onclick="navigate(\'dashboard\')">← На главную</button>';
   
   html += '<div class="card" style="text-align:center; padding:30px 15px;">';
-  html += '<div style="font-size:80px; margin-bottom:15px; animation: slideUp 0.5s ease-out;">' + pet.emoji + '</div>';
+  html += '<div style="font-size:80px; margin-bottom:15px;">' + pet.emoji + '</div>';
   html += '<h2>' + pet.name + '</h2>';
   html += '<p class="text-secondary">Уровень ' + pet.level + '</p>';
-  
-  // Прогресс-бар XP
-  html += '<div class="progress" style="margin-top:15px; height:12px;">';
-  html += '<div class="progress-fill" style="width:' + progress + '%;"></div>';
-  html += '</div>';
+  html += '<div class="progress" style="margin-top:15px; height:12px;"><div class="progress-fill" style="width:' + progress + '%;"></div></div>';
   html += '<p class="text-secondary" style="font-size:12px; margin-top:5px;">' + pet.xp + ' / ' + xpNeeded + ' XP</p>';
   html += '</div>';
 
-  // Кнопки взаимодействия
   html += '<div class="card">';
-  html += '<h2>Взаимодействие</h2>';
-  html += '<button class="btn btn-primary" style="margin-bottom:10px;" onclick="feedPet()">🍎 Покормить (Тратит 50 XP)</button>';
-  html += '<button class="btn" style="background:var(--glass-1); color:var(--text);" onclick="playWithPet()">🎾 Поиграть (Дает энергию)</button>';
+  html += '<button class="btn btn-primary" style="margin-bottom:10px;" onclick="playWithPet()">🎾 Поиграть (+10 XP)</button>';
+  html += '<button class="btn" style="background:var(--glass-1); color:var(--text);" onclick="feedPet()">🍎 Покормить (-50 XP)</button>';
   html += '</div>';
 
   document.getElementById('app').innerHTML = html;
-}
-
-function feedPet() {
-  if (state.pet.xp >= 50) {
-    state.pet.xp -= 50;
-    state.pet.hunger = 100;
-    state.pet.mood = 'happy';
-    state.pet.emoji = state.pet.level > 2 ? '🐥' : '🐣';
-    save();
-    toast('Питомец сыт!', 'success');
-    renderPet();
-  } else {
-    toast('Недостаточно XP. Выполняйте привычки!', 'error');
-  }
 }
 
 function playWithPet() {
@@ -334,122 +223,65 @@ function playWithPet() {
   if (state.pet.xp >= state.pet.level * 100) {
     state.pet.level++;
     state.pet.xp = 0;
-    state.pet.emoji = state.pet.level > 3 ? '🦅' : '🐥';
-    toast('Питомец эволюционировал!', 'success');
+    state.pet.emoji = state.pet.level > 2 ? '🐥' : '🐣';
+    toast('Эволюция!', 'success');
   } else {
-    toast('Питомец доволен (+10 XP)!', 'success');
+    toast('+10 XP', 'success');
   }
   save();
   renderPet();
 }
 
-// Начисление XP питомцу за выполненные задачи (хук)
-var originalToggleTask = window.toggleTask;
-window.toggleTask = function(id) {
-  if (originalToggleTask) originalToggleTask(id);
-  if (state.pet) {
-    state.pet.xp += 5; // Даем 5 XP питомцу
+function feedPet() {
+  if (state.pet.xp >= 50) {
+    state.pet.xp -= 50;
+    toast('Питомец сыт!', 'success');
     save();
+    renderPet();
+  } else {
+    toast('Недостаточно XP', 'error');
   }
-};
+}
 
-
-/* ============ 12. ЭКРАННЫЙ ДЕТОКС (SCREENZEN) ============ */
+/* ============ 7. ДЕТОКС ============ */
 if (!state.detox) {
-  state.detox = {
-    cooldownActive: false,
-    sleepModeActive: false,
-    stats: { cooldownCount: 0, screenMinutes: 0 }
-  };
+  state.detox = { cooldownActive: false, sleepModeActive: false, stats: { cooldownCount: 0 } };
   save();
 }
 
 function renderDetox() {
   var html = '<div class="title-xl">🧘 Детокс</div>';
-  html += '<p class="text-secondary" style="margin-bottom:15px;">Инструменты для контроля экранного времени и снятия зависимости.</p>';
+  html += '<button class="btn" style="margin-bottom:15px; background:var(--glass-1); color:var(--text);" onclick="navigate(\'dashboard\')">← На главную</button>';
 
-  // Период охлаждения
   html += '<div class="card">';
-  html += '<h2>❄️ Период охлаждения</h2>';
-  html += '<p class="text-secondary" style="margin-bottom:10px;">Блокировка приложения на 10 минут для снятия импульса.</p>';
+  html += '<h2>❄️ Кулдаун (10 мин)</h2>';
   if (state.detox.cooldownActive) {
-    html += '<button class="btn btn-danger">Заблокировано (идет время)</button>';
+    html += '<button class="btn btn-danger">Заблокировано</button>';
   } else {
-    html += '<button class="btn btn-primary" onclick="startCooldown()">Запустить кулдаун (10 мин)</button>';
+    html += '<button class="btn btn-primary" onclick="state.detox.cooldownActive=true; save(); renderDetox();">Запустить</button>';
   }
   html += '</div>';
 
-  // Режим сна
   html += '<div class="card">';
   html += '<h2>🌙 Режим сна</h2>';
-  html += '<p class="text-secondary" style="margin-bottom:10px;">Блокировка экрана с 22:00 до 07:00.</p>';
-  html += '<button class="btn ' + (state.detox.sleepModeActive ? 'btn-success' : 'btn-primary') + '" onclick="toggleSleepMode()">' + (state.detox.sleepModeActive ? '✅ Включен' : 'Включить') + '</button>';
-  html += '</div>';
-
-  // Статистика
-  html += '<div class="card">';
-  html += '<h2>📊 Статистика</h2>';
-  html += '<div style="display:flex; justify-content:space-between; margin-bottom:10px;">';
-  html += '<div>Кулдаунов:</div><div><b>' + state.detox.stats.cooldownCount + '</b></div>';
-  html += '</div>';
-  html += '<div style="display:flex; justify-content:space-between;">';
-  html += '<div>Экранное время:</div><div><b>' + state.detox.stats.screenMinutes + ' мин</b></div>';
-  html += '</div>';
+  html += '<button class="btn ' + (state.detox.sleepModeActive ? 'btn-success' : 'btn-primary') + '" onclick="state.detox.sleepModeActive=!state.detox.sleepModeActive; save(); renderDetox();">' + (state.detox.sleepModeActive ? 'Включен' : 'Включить') + '</button>';
   html += '</div>';
 
   document.getElementById('app').innerHTML = html;
 }
 
-function startCooldown() {
-  state.detox.cooldownActive = true;
-  state.detox.stats.cooldownCount++;
-  save();
-  toast('Детокс активирован на 10 минут!', 'warning');
-  renderDetox();
-  
-  // Простая симуляция окончания
-  setTimeout(function() {
-    state.detox.cooldownActive = false;
-    save();
-    if (window.currentPage === 'detox') renderDetox();
-  }, 10 * 60 * 1000);
-}
-
-function toggleSleepMode() {
-  state.detox.sleepModeActive = !state.detox.sleepModeActive;
-  save();
-  renderDetox();
-}
-
-
-/* ============ 13. ОБНОВЛЕНИЕ НАВИГАЦИИ И ГЛАВНОЙ ============ */
-// Перехватываем navigate
-var prevNav = window.navigate;
+/* ============ 8. ОБНОВЛЕНИЕ НАВИГАЦИИ ============ */
+var baseNavigate = window.navigate;
 window.navigate = function(page, silent) {
+  if (page === 'trainingTest') { renderTrainingTest(); return; }
+  if (page === 'trainingHub') { renderTrainingHub(); return; }
+  if (page === 'music') { renderMusicHub(); return; }
+  if (page === 'books') { renderBooksHub(); return; }
   if (page === 'pet') { renderPet(); return; }
   if (page === 'detox') { renderDetox(); return; }
-  prevNav(page, silent);
+  
+  // Для остальных страниц (dashboard, tasks, sleep, settings) вызываем базу
+  baseNavigate(page, silent);
 };
 
-// Добавляем кнопки на главную
-var prevDash = window.renderDashboard;
-window.renderDashboard = function() {
-  prevDash();
-  
-  var app = document.getElementById('app');
-  if (!app) return;
-
-  var extra = '';
-  
-  extra += '<div class="card">';
-  extra += '<h2>🎮 Геймификация и Детокс</h2>';
-  extra += '<div style="display:flex; gap:10px; margin-top:10px;">';
-  extra += '<button class="btn btn-primary" style="flex:1;" onclick="navigate(\'pet\')">🐣 Питомец</button>';
-  extra += '<button class="btn btn-primary" style="flex:1; background:var(--danger);" onclick="navigate(\'detox\')">🧘 Детокс</button>';
-  extra += '</div>';
-  extra += '</div>';
-
-  app.innerHTML += extra;
-};
-
-console.log('[RENDER ✅] Питомец и Детокс добавлены');
+console.log('[RENDER ✅] Все экраны загружены и защищены от ошибок');
