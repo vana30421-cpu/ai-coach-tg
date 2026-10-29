@@ -271,3 +271,185 @@ window.renderDashboard = function() {
 };
 
 console.log('[RENDER ✅] Экраны Музыки и Книг добавлены');
+
+/* ============ 11. ПИТОМЕЦ (МЕХАНИКА FINCH) ============ */
+// Инициализация питомца, если его нет
+if (!state.pet) {
+  state.pet = {
+    name: 'Барсик',
+    xp: 0,
+    level: 1,
+    hunger: 100,
+    mood: 'happy',
+    emoji: '🐣'
+  };
+  save();
+}
+
+function renderPet() {
+  var pet = state.pet;
+  var xpNeeded = pet.level * 100;
+  var progress = (pet.xp / xpNeeded) * 100;
+
+  var html = '<div class="title-xl">🐣 Питомец</div>';
+  
+  html += '<div class="card" style="text-align:center; padding:30px 15px;">';
+  html += '<div style="font-size:80px; margin-bottom:15px; animation: slideUp 0.5s ease-out;">' + pet.emoji + '</div>';
+  html += '<h2>' + pet.name + '</h2>';
+  html += '<p class="text-secondary">Уровень ' + pet.level + '</p>';
+  
+  // Прогресс-бар XP
+  html += '<div class="progress" style="margin-top:15px; height:12px;">';
+  html += '<div class="progress-fill" style="width:' + progress + '%;"></div>';
+  html += '</div>';
+  html += '<p class="text-secondary" style="font-size:12px; margin-top:5px;">' + pet.xp + ' / ' + xpNeeded + ' XP</p>';
+  html += '</div>';
+
+  // Кнопки взаимодействия
+  html += '<div class="card">';
+  html += '<h2>Взаимодействие</h2>';
+  html += '<button class="btn btn-primary" style="margin-bottom:10px;" onclick="feedPet()">🍎 Покормить (Тратит 50 XP)</button>';
+  html += '<button class="btn" style="background:var(--glass-1); color:var(--text);" onclick="playWithPet()">🎾 Поиграть (Дает энергию)</button>';
+  html += '</div>';
+
+  document.getElementById('app').innerHTML = html;
+}
+
+function feedPet() {
+  if (state.pet.xp >= 50) {
+    state.pet.xp -= 50;
+    state.pet.hunger = 100;
+    state.pet.mood = 'happy';
+    state.pet.emoji = state.pet.level > 2 ? '🐥' : '🐣';
+    save();
+    toast('Питомец сыт!', 'success');
+    renderPet();
+  } else {
+    toast('Недостаточно XP. Выполняйте привычки!', 'error');
+  }
+}
+
+function playWithPet() {
+  state.pet.xp += 10;
+  if (state.pet.xp >= state.pet.level * 100) {
+    state.pet.level++;
+    state.pet.xp = 0;
+    state.pet.emoji = state.pet.level > 3 ? '🦅' : '🐥';
+    toast('Питомец эволюционировал!', 'success');
+  } else {
+    toast('Питомец доволен (+10 XP)!', 'success');
+  }
+  save();
+  renderPet();
+}
+
+// Начисление XP питомцу за выполненные задачи (хук)
+var originalToggleTask = window.toggleTask;
+window.toggleTask = function(id) {
+  if (originalToggleTask) originalToggleTask(id);
+  if (state.pet) {
+    state.pet.xp += 5; // Даем 5 XP питомцу
+    save();
+  }
+};
+
+
+/* ============ 12. ЭКРАННЫЙ ДЕТОКС (SCREENZEN) ============ */
+if (!state.detox) {
+  state.detox = {
+    cooldownActive: false,
+    sleepModeActive: false,
+    stats: { cooldownCount: 0, screenMinutes: 0 }
+  };
+  save();
+}
+
+function renderDetox() {
+  var html = '<div class="title-xl">🧘 Детокс</div>';
+  html += '<p class="text-secondary" style="margin-bottom:15px;">Инструменты для контроля экранного времени и снятия зависимости.</p>';
+
+  // Период охлаждения
+  html += '<div class="card">';
+  html += '<h2>❄️ Период охлаждения</h2>';
+  html += '<p class="text-secondary" style="margin-bottom:10px;">Блокировка приложения на 10 минут для снятия импульса.</p>';
+  if (state.detox.cooldownActive) {
+    html += '<button class="btn btn-danger">Заблокировано (идет время)</button>';
+  } else {
+    html += '<button class="btn btn-primary" onclick="startCooldown()">Запустить кулдаун (10 мин)</button>';
+  }
+  html += '</div>';
+
+  // Режим сна
+  html += '<div class="card">';
+  html += '<h2>🌙 Режим сна</h2>';
+  html += '<p class="text-secondary" style="margin-bottom:10px;">Блокировка экрана с 22:00 до 07:00.</p>';
+  html += '<button class="btn ' + (state.detox.sleepModeActive ? 'btn-success' : 'btn-primary') + '" onclick="toggleSleepMode()">' + (state.detox.sleepModeActive ? '✅ Включен' : 'Включить') + '</button>';
+  html += '</div>';
+
+  // Статистика
+  html += '<div class="card">';
+  html += '<h2>📊 Статистика</h2>';
+  html += '<div style="display:flex; justify-content:space-between; margin-bottom:10px;">';
+  html += '<div>Кулдаунов:</div><div><b>' + state.detox.stats.cooldownCount + '</b></div>';
+  html += '</div>';
+  html += '<div style="display:flex; justify-content:space-between;">';
+  html += '<div>Экранное время:</div><div><b>' + state.detox.stats.screenMinutes + ' мин</b></div>';
+  html += '</div>';
+  html += '</div>';
+
+  document.getElementById('app').innerHTML = html;
+}
+
+function startCooldown() {
+  state.detox.cooldownActive = true;
+  state.detox.stats.cooldownCount++;
+  save();
+  toast('Детокс активирован на 10 минут!', 'warning');
+  renderDetox();
+  
+  // Простая симуляция окончания
+  setTimeout(function() {
+    state.detox.cooldownActive = false;
+    save();
+    if (window.currentPage === 'detox') renderDetox();
+  }, 10 * 60 * 1000);
+}
+
+function toggleSleepMode() {
+  state.detox.sleepModeActive = !state.detox.sleepModeActive;
+  save();
+  renderDetox();
+}
+
+
+/* ============ 13. ОБНОВЛЕНИЕ НАВИГАЦИИ И ГЛАВНОЙ ============ */
+// Перехватываем navigate
+var prevNav = window.navigate;
+window.navigate = function(page, silent) {
+  if (page === 'pet') { renderPet(); return; }
+  if (page === 'detox') { renderDetox(); return; }
+  prevNav(page, silent);
+};
+
+// Добавляем кнопки на главную
+var prevDash = window.renderDashboard;
+window.renderDashboard = function() {
+  prevDash();
+  
+  var app = document.getElementById('app');
+  if (!app) return;
+
+  var extra = '';
+  
+  extra += '<div class="card">';
+  extra += '<h2>🎮 Геймификация и Детокс</h2>';
+  extra += '<div style="display:flex; gap:10px; margin-top:10px;">';
+  extra += '<button class="btn btn-primary" style="flex:1;" onclick="navigate(\'pet\')">🐣 Питомец</button>';
+  extra += '<button class="btn btn-primary" style="flex:1; background:var(--danger);" onclick="navigate(\'detox\')">🧘 Детокс</button>';
+  extra += '</div>';
+  extra += '</div>';
+
+  app.innerHTML += extra;
+};
+
+console.log('[RENDER ✅] Питомец и Детокс добавлены');
