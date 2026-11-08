@@ -897,50 +897,53 @@ function setTheme(id){
 function openStatsQuick(){ navigate('stats'); }
 
 /* ============ PWA INSTALL ============ */
+var deferredPWAInstall = null;
+function markPWAInstalled(){
+  try{
+    if(!state.settings.pwa) state.settings.pwa={};
+    state.settings.pwa.installed=true; state.settings.pwa.installedAt=nowISO(); save();
+    toast('✓ Life OS установлен','success'); haptic('success');
+  }catch(e){console.warn('[PWA] Не удалось сохранить статус:',e);}
+}
 function installPWA(){
   try{
-    if(!tg){ toast('Открой в Telegram','warning'); return; }
-    if(tg.addToHomeScreen){
-      tg.addToHomeScreen();
-      toast('📲 Устанавливаем...','info');
-    } else {
-      toast('Установка недоступна','warning');
+    if(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches){toast('Life OS уже установлен','success');return;}
+    if(tg&&typeof tg.addToHomeScreen==='function'){tg.addToHomeScreen();toast('📲 Подтверди добавление Life OS на главный экран','info',4000);return;}
+    if(deferredPWAInstall){
+      var promptEvent=deferredPWAInstall; deferredPWAInstall=null; promptEvent.prompt();
+      promptEvent.userChoice.then(function(choice){if(choice&&choice.outcome==='accepted')markPWAInstalled();}).catch(function(error){console.warn('[PWA] prompt:',error);});
+      return;
     }
-  }catch(e){
-    console.error('[PWA]', e);
-    toast('Ошибка установки','error');
-  }
+    if(tg&&typeof tg.openLink==='function'){
+      tg.openLink(location.href,{try_instant_view:false});
+      toast('В браузере открой меню ⋮ и выбери «Установить приложение» или «На главный экран»','info',6000); return;
+    }
+    toast('Открой Life OS в браузере и выбери «Установить приложение» в меню','info',6500);
+  }catch(e){console.error('[PWA]',e);toast('Не удалось начать установку. Открой Life OS во внешнем браузере.','warning',5000);}
 }
 function initPWAHandlers(){
   try{
-    if(!tg) return;
-    if(tg.onEvent){
-      tg.onEvent('homeScreenAdded', function(){
-        state.settings.pwa.installed = true;
-        state.settings.pwa.installedAt = nowISO();
-        save();
-        toast('✓ Приложение установлено','success');
-        haptic('success');
-      });
-      tg.onEvent('homeScreenFailed', function(reason){
-        console.warn('[PWA] Failed:', reason);
-        toast('Установка не удалась','warning');
-      });
+    if(!state.settings.pwa) state.settings.pwa={};
+    window.addEventListener('beforeinstallprompt',function(event){event.preventDefault();deferredPWAInstall=event;});
+    window.addEventListener('appinstalled',markPWAInstalled);
+    if(tg&&tg.onEvent){
+      tg.onEvent('homeScreenAdded',markPWAInstalled);
+      tg.onEvent('homeScreenFailed',function(reason){console.warn('[PWA] Failed:',reason);toast('Установка через Telegram не удалась. Попробуй браузер.','warning',5000);});
     }
-  }catch(e){}
+  }catch(e){console.warn('[PWA] handlers:',e);}
 }
 function renderPWAInstallBlock(){
-  var installed = state.settings && state.settings.pwa && state.settings.pwa.installed;
-  var html = '<div class="card"><h2>📲 Установка</h2>';
-  if(installed){
-    html += '<div class="insight-card"><div class="insight-title">✓ Установлено</div>';
-    html += '<div class="insight-text">Приложение добавлено на главный экран. Работает офлайн.</div></div>';
-  } else {
-    html += '<div class="footnote text-secondary mb-3">Добавь Life OS на главный экран — работает как обычное приложение, офлайн.</div>';
-    html += '<button class="btn btn-primary btn-block" onclick="installPWA()">📲 Установить</button>';
+  var installed=state.settings&&state.settings.pwa&&state.settings.pwa.installed;
+  var standalone=window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches;
+  var html='<div class="card"><h2>📲 Установка Life OS</h2>';
+  if(installed||standalone){
+    html+='<div class="insight-card"><div class="insight-title">✓ Приложение установлено</div><div class="insight-text">Life OS запускается с главного экрана. Офлайн-доступ доступен для ранее загруженных ресурсов.</div></div>';
+  }else{
+    html+='<div class="footnote text-secondary mb-3">Добавь Life OS на главный экран. Если Telegram не поддерживает установку, откроется браузер.</div>';
+    html+='<button class="btn btn-primary btn-block" onclick="installPWA()">📲 Установить / добавить на экран</button>';
+    html+='<div class="footnote text-secondary mt-2">В браузере: меню ⋮ → «Установить приложение» или «Добавить на главный экран».</div>';
   }
-  html += '</div>';
-  return html;
+  return html+'</div>';
 }
 
 /* ============ EXPORTS для onclick в HTML ============ */
@@ -3831,7 +3834,57 @@ function renderStub(title){
   var app = document.getElementById('app');
   if(app) app.innerHTML = '<div class="page"><div class="title-xl">' + title + '</div><div class="card"><div class="empty"><div class="empty-icon">🚧</div><div class="empty-title">Раздел в разработке</div></div></div></div>';
 }
-function renderMemory(){ renderStub('🧠 Память'); }
+function getMemoryTrainingData(){
+  if(!state.memoryTraining) state.memoryTraining={sessions:[],bestSpan:0};
+  if(!Array.isArray(state.memoryTraining.sessions)) state.memoryTraining.sessions=[];
+  return state.memoryTraining;
+}
+function renderMemory(){
+  var data=getMemoryTrainingData(), sessions=data.sessions;
+  var total=sessions.length, correct=sessions.filter(function(x){return x.correct;}).length;
+  var accuracy=total?Math.round(correct/total*100):0;
+  var html='<div class="page"><div class="title-xl">🧠 Развитие памяти</div><div class="subtitle">Тренируй запоминание, удержание и точное воспроизведение.</div>';
+  html+='<div class="grid-2 mb-3"><div class="card"><div class="stat-value">'+total+'</div><div class="stat-label">Тренировок</div></div><div class="card"><div class="stat-value">'+accuracy+'%</div><div class="stat-label">Точность</div></div></div>';
+  html+='<div class="card mb-3"><div class="row-between"><div><div class="card-title">📈 Лучший объём</div><div class="footnote">Правильно воспроизведённых элементов</div></div><div class="stat-value">'+(data.bestSpan||0)+'</div></div></div>';
+  html+='<div class="section-title">Ежедневная тренировка</div>';
+  html+='<div class="card mb-2"><div class="card-title">⚡ Рабочая память</div><div class="footnote mb-2">Удержание последовательности и воспроизведение в правильном порядке.</div><button class="btn btn-primary btn-block" onclick="startMemoryExercise(\'digits\')">Начать тренировку</button></div>';
+  html+='<div class="card mb-2"><div class="card-title">📝 Кратковременная память</div><div class="footnote mb-2">Запоминание слов и точное воспроизведение.</div><button class="btn btn-primary btn-block" onclick="startMemoryExercise(\'words\')">Начать тренировку</button></div>';
+  html+='<div class="card mb-3"><div class="card-title">🧩 Долговременная память</div><div class="footnote mb-2">Интервальное повторение изученного материала.</div><button class="btn btn-primary btn-block" onclick="navigate(\'fsrs\')">Открыть повторение FSRS</button></div>';
+  html+='<div class="section-title">Последние результаты</div><div class="card">';
+  if(!total) html+='<div class="empty"><div class="empty-icon">🧠</div><div class="empty-title">Начни с первой тренировки</div><div class="empty-text">Результаты и динамика появятся здесь.</div></div>';
+  else sessions.slice(-8).reverse().forEach(function(x){html+='<div class="row-between" style="padding:8px 0;border-bottom:1px solid var(--divider)"><div><b>'+(x.type==='digits'?'Рабочая память':'Кратковременная память')+'</b><div class="footnote">'+new Date(x.at).toLocaleString()+'</div></div><div><b>'+(x.correct?'✓':'•')+'</b> '+x.score+'/'+x.length+'</div></div>';});
+  document.getElementById('app').innerHTML=html+'</div></div>';
+}
+function startMemoryExercise(type){
+  var data=getMemoryTrainingData(), level=Math.min(9,4+Math.floor(data.sessions.length/4));
+  var digitPool='4839172605', wordPool=['облако','река','компас','лампа','сосна','мост','книга','песок','звезда','ключ','яблоко','поезд'];
+  var items=[];
+  for(var i=0;i<level;i++) items.push(type==='digits'?digitPool[Math.floor(Math.random()*digitPool.length)]:wordPool[Math.floor(Math.random()*wordPool.length)]);
+  var challenge={id:uid(),type:type,items:items,startedAt:Date.now()};
+  window.__memoryChallenge=challenge;
+  openSheet('🧠 Запомни последовательность','<div class="text-center" style="padding:24px 8px"><div class="title-xl" style="letter-spacing:4px">'+items.join(type==='digits'?'':' · ')+'</div><div class="footnote mt-3">Через 5 секунд последовательность исчезнет.</div></div>');
+  setTimeout(function(){
+    if(!window.__memoryChallenge||window.__memoryChallenge.id!==challenge.id)return;
+    var hint=type==='digits'?'Введи цифры подряд':'Введи слова через пробел';
+    openSheet('Воспроизведи без подсказки','<div class="form-group"><input id="memoryAnswer" class="input" autocomplete="off" placeholder="'+hint+'"></div><button class="btn btn-primary btn-block" onclick="submitMemoryAnswer()">Проверить</button>');
+    var input=document.getElementById('memoryAnswer');if(input)input.focus();
+  },5000);
+}
+function submitMemoryAnswer(){
+  var challenge=window.__memoryChallenge,input=document.getElementById('memoryAnswer');
+  if(!challenge||!input)return;
+  var answer=input.value.trim().toLowerCase();
+  var expected=challenge.items.join(challenge.type==='digits'?'':' ').toLowerCase();
+  var normalized=challenge.type==='digits'?answer.replace(/\s+/g,''):answer.replace(/[.,;]+/g,' ').replace(/\s+/g,' ').trim();
+  var supplied=challenge.type==='digits'?normalized.split(''):normalized.split(' '),score=0;
+  challenge.items.forEach(function(item,index){if(supplied[index]===item)score++;});
+  var correct=normalized===expected,duration=Math.max(1,Math.round((Date.now()-challenge.startedAt-5000)/1000));
+  var data=getMemoryTrainingData();
+  data.sessions.push({id:challenge.id,type:challenge.type,at:nowISO(),correct:correct,score:score,length:challenge.items.length,seconds:duration});
+  if(data.sessions.length>200)data.sessions=data.sessions.slice(-200);
+  data.bestSpan=Math.max(data.bestSpan||0,score);save();window.__memoryChallenge=null;closeSheet();
+  openSheet(correct?'✅ Отлично!':'📊 Результат','<div class="text-center"><div class="title-xl">'+score+' / '+challenge.items.length+'</div><div class="footnote">'+(correct?'Вся последовательность воспроизведена верно.':'Совпадения по позициям. Продолжай тренироваться.')+'</div><div class="footnote mt-2">Время ответа: '+duration+' сек.</div><button class="btn btn-primary btn-block mt-3" onclick="closeSheet();renderMemory()">Продолжить</button></div>');
+}
 function renderIQ(){ renderStub('🎯 IQ'); }
 function renderEQ(){ renderStub('❤️ EQ'); }
 function renderFinance(){ renderStub('💰 Финансы'); }
@@ -4272,6 +4325,8 @@ window.toggleSleepMode = toggleSleepMode;
 
 /* Заглушки на window */
 window.renderMemory = renderMemory;
+window.startMemoryExercise = startMemoryExercise;
+window.submitMemoryAnswer = submitMemoryAnswer;
 window.renderIQ = renderIQ;
 window.renderEQ = renderEQ;
 window.renderFinance = renderFinance;
