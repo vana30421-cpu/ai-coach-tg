@@ -4079,6 +4079,9 @@ function renderMethods(){ renderJarvisMethods(); }
 function renderRecovery(){ renderStub('🌿 Восстановление'); }
 function renderMedical(){ renderStub('🏥 Медицина'); }
 function renderMeds(){ renderStub('💊 Лекарства'); }
+function renderGcal(){ renderStub('📅 Google Calendar'); }
+function renderNotifications(){ renderStub('🔔 Уведомления'); }
+function renderIntegrations(){ renderStub('🔗 Интеграции'); }
 function renderEntertainment(){ renderStub('🎬 Досуг'); }
 function renderResources(){ renderStub('🔗 Ресурсы'); }
 function renderMovies(){ renderStub('🎥 Фильмы'); }
