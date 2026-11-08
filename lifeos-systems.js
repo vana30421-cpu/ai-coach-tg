@@ -145,4 +145,20 @@ window.renderFinance=function(){
 };
 window.addFinanceEntry=function(){var v=function(id){return String((document.getElementById(id)||{}).value||'').trim();},amount=Number(v('finAmount')),date=v('finDate');if(!Number.isFinite(amount)||amount<=0||!date)return toast('Укажи корректную сумму и дату','warning');state.financeEntries.push({id:uid(),type:v('finType')==='income'?'income':'expense',amount:amount,date:date,category:v('finCategory')||'Другое',note:v('finNote'),createdAt:nowISO()});save();toast('Операция сохранена','success');window.renderFinance();};
 window.deleteFinanceEntry=function(id){if(!confirm('Удалить операцию?'))return;state.financeEntries=(state.financeEntries||[]).filter(function(x){return x.id!==id;});save();window.renderFinance();};
+
+/* COMPLETE THE SECOND LEARNING LIBRARY AND CONNECT LEGACY GAME ROUTES */
+window.renderLearningGames=function(){renderGamesHub();};
+window.renderGamePlay=function(){renderGamesHub();};
+window.renderMaterials=function(){renderLifeLibrary('📚 Материалы','Книги и учебные материалы. Ключевые идеи — краткие заметки, не замена полному источнику.',window.LEARNING_MATERIALS,{key:'materials'});};
+window.renderMaterialDetail=function(){renderMaterials();};
+window.renderDailySurvey=function(){if(typeof window.renderPersonalizationSurvey==='function')window.renderPersonalizationSurvey();else window.renderDashboard();};
+window.renderSurvey=function(){window.renderDailySurvey();};
+window.renderPersonalPlan=function(){if(typeof window.renderPlanToday==='function')window.renderPlanToday();else window.renderJarvis();};
+window.renderTimer=function(){window.renderFocus();};
+window.renderSnapshot=function(){window.renderStats();};
+window.renderRecommendations=function(){window.renderStats();};
+window.renderGcal=function(){window.renderCalendar();toast('Показан локальный календарь. Синхронизация Google Calendar не подключена.','info');};
+window.renderProjectEditor=function(){window.renderProjects();};
+window.renderModuleDetail=function(){window.renderLearning();};
+window.renderOnboarding=function(){window.renderDashboard();};
 })();
