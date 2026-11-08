@@ -520,6 +520,29 @@ input[type="checkbox"]:checked::after{content:'✓';position:absolute;inset:0;di
 <script defer src="content2.js"></script>
 <script defer src="content3.js"></script>
 <script defer src="app.js"></script>
+<script>
+(function(){
+  var failed=[];
+  ['content.js','content2.js','content3.js','app.js'].forEach(function(name){
+    var script=document.querySelector('script[src="'+name+'"]');
+    if(script) script.addEventListener('error',function(){failed.push(name);show('Не загрузился файл: '+name+'. Проверьте публикацию и доступность файлов.');});
+  });
+  function show(message){
+    var app=document.getElementById('app');
+    if(app) app.innerHTML='<div style="margin:24px;padding:20px;border:1px solid #ff6b6b;border-radius:16px;color:#fff;background:#241014;font:14px/1.5 system-ui"><b>Life OS не запустился</b><br>'+message+'</div>';
+  }
+  window.addEventListener('error',function(e){
+    if(e && e.message) show('JavaScript: '+e.message+(e.filename?' ('+e.filename.split('/').pop()+':'+e.lineno+')':''));
+  });
+  window.addEventListener('unhandledrejection',function(e){
+    var reason=e && e.reason;
+    show('Ошибка Promise: '+(reason && reason.message ? reason.message : String(reason||'неизвестно')));
+  });
+  setTimeout(function(){
+    if(!window.__LIFE_OS_BOOTED && !failed.length) show('Скрипты не завершили запуск. Вероятно, app.js не выполнился или остановился до init().');
+  },8000);
+})();
+</script>
 
 <script>
 'use strict';
