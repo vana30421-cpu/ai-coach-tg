@@ -1145,6 +1145,8 @@ function renderDashboard(){
   html += '<div class="group-item" onclick="navigate(\'eveningReview\')"><div class="group-item-icon">🌙</div><div class="group-item-label">Вечерний обзор</div></div>';
   html += '<div class="group-item" onclick="navigate(\'projects\')"><div class="group-item-icon">📁</div><div class="group-item-label">Проекты</div></div>';
   html += '<div class="group-item" onclick="navigate(\'achievements\')"><div class="group-item-icon">🏆</div><div class="group-item-label">Достижения</div></div>';
+  html += '<div class="group-item" onclick="navigate(\'journal\')"><div class="group-item-icon">📔</div><div class="group-item-label">Дневник</div></div>';
+  html += '<div class="group-item" onclick="navigate(\'obsidian\')"><div class="group-item-icon">🧠</div><div class="group-item-label">Второй мозг</div></div>';
   html += '<div class="group-item" onclick="navigate(\'gamesHub\')"><div class="group-item-icon">🎮</div><div class="group-item-label">Игры</div></div>';
   html += '<div class="group-item" onclick="navigate(\'pet\')"><div class="group-item-icon">' + petStage.emoji + '</div><div class="group-item-label">Питомец</div></div>';
   html += '<div class="group-item" onclick="navigate(\'leagues\')"><div class="group-item-icon">🏅</div><div class="group-item-label">Лиги</div></div>';
@@ -3957,8 +3959,11 @@ function renderMore(){
       {key:'water',emoji:'💧',label:'Вода'},
       {key:'mood',emoji:'💭',label:'Настроение'}
     ]},
-    {title:'🔗 Интеграции',items:[
-      {key:'obsidianIntegration',emoji:'📓',label:'Obsidian'},
+    {title:'🧠 Личные знания и интеграции',items:[
+      {key:'obsidian',emoji:'🧠',label:'Второй мозг'},
+      {key:'journal',emoji:'📔',label:'Личный дневник'},
+      {key:'obsidianIntegration',emoji:'📓',label:'Obsidian Vault'},
+      {key:'ai',emoji:'✦',label:'Gemini / OpenAI · Джарвис'},
       {key:'telegramSetup',emoji:'📨',label:'Telegram-коуч'}
     ]},
     {title:'⚙️ Система',items:[
