@@ -5338,6 +5338,28 @@ function applyJarvisRecommendation(id){
  if(item.target){navigate(item.target);return;}
  navigate('stats');
 }
+/* Expose new inline-action handlers from the IIFE */
+window.saveLifeStatsFilter=saveLifeStatsFilter;
+window.setStatsDateFilter=setStatsDateFilter;
+window.setStatsPeriod=setStatsPeriod;
+window.applyJarvisRecommendation=applyJarvisRecommendation;
+window.renderPersonalizationSurvey=renderPersonalizationSurvey;
+window.lifeSurveyMove=lifeSurveyMove;
+window.lifeSurveySkip=lifeSurveySkip;
+window.finishLifePersonalization=finishLifePersonalization;
+window.updateLifePreference=updateLifePreference;
+window.renderDetoxReview=renderDetoxReview;
+window.saveDetoxReview=saveDetoxReview;
+window.buildDetoxOutcomeStats=buildDetoxOutcomeStats;
+window.renderLearningPractice=renderLearningPractice;
+window.saveLearningPractice=saveLearningPractice;
+window.startLearningReview=startLearningReview;
+window.saveLearningReview=saveLearningReview;
+window.startVisionBreak=startVisionBreak;
+window.finishVisionBreak=finishVisionBreak;
+window.cancelVisionBreak=cancelVisionBreak;
+window.saveVisionCheckin=saveVisionCheckin;
+
 /* Заглушки на window */
 window.renderMemory = renderMemory;
 window.startMemoryExercise = startMemoryExercise;
