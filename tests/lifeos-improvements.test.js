@@ -261,3 +261,13 @@ test('entertainment category cards navigate to the correct media-library routes'
  assert.match(systems,/\['games','🎮','Игры','gameslib'\]/);
  assert.match(systems,/window\.renderEntertainment=function/);
 });
+
+test('Jarvis normalizes legacy second-brain notes before building Gemini/OpenAI context',()=>{
+ assert.match(app,/if\(window\.ensureLifeOSBrain\)\{try\{window\.ensureLifeOSBrain\(\);\}catch\(e\)\{\}\}/);
+ assert.match(ws,/window\.ensureLifeOSBrain=ensureBrain/);
+ assert.match(app,/secondBrain:\{notes:brain\.length,recent:brain\.slice\(-8\)/);
+});
+test('statistics show a dash instead of the word null when screen-time data is missing',()=>{
+ assert.match(app,/f\.screenDailyAvg===null\?'—':f\.screenDailyAvg\+' мин'/);
+ assert.match(app,/stats\.focus\.screenDailyAvg===null\?'—':stats\.focus\.screenDailyAvg\+' мин'/);
+});

@@ -120,4 +120,6 @@ window.saveJournalEntry=function(){
 };
 window.editJournalEntry=function(id){if(!(state.journalEntries||[]).some(function(x){return x.id===id;}))return;state.journalEditingId=id;window.renderJournal();window.scrollTo(0,0);};
 window.cancelJournalEdit=function(){state.journalEditingId=null;window.renderJournal();};
+
+window.ensureLifeOSBrain=ensureBrain;
 })();
