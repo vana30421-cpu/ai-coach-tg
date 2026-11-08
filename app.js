@@ -3134,57 +3134,20 @@ function deleteSleepEntry(date){
 
 /* ============ АНТИСТРЕСС ============ */
 function renderAntistress(){
-  var cats = window.ANTISTRESS_CATEGORIES || [];
-  var practices = window.ANTISTRESS_PRACTICES || [];
-  var todayCount = (state.antistressEntries||[]).filter(function(e){ return e.date === today(); }).length;
-  var html = '<div class="page">';
-  html += '<div class="row-between" style="margin-bottom:14px;"><div class="title-xl" style="margin:0;">🌬 Антистресс</div>';
-  html += '<div class="badge badge-brand">' + todayCount + '</div></div>';
-  html += '<div class="card"><h2>⚡ Быстро</h2><div class="group-grid">';
-  html += '<div class="group-item" onclick="startAntistress(\'as_breath_sigh\')"><div class="group-item-icon">😮‍💨</div><div class="group-item-label">Вздох</div></div>';
-  html += '<div class="group-item" onclick="startAntistress(\'as_breath_478\')"><div class="group-item-icon">🌬</div><div class="group-item-label">4-7-8</div></div>';
-  html += '<div class="group-item" onclick="startAntistress(\'as_breath_box\')"><div class="group-item-icon">📦</div><div class="group-item-label">Box</div></div>';
-  html += '<div class="group-item" onclick="startAntistress(\'as_ground_54321\')"><div class="group-item-icon">🌳</div><div class="group-item-label">5-4-3-2-1</div></div>';
-  html += '</div></div>';
-  practices.slice(0, 30).forEach(function(p){
-    var cat = cats.find(function(c){ return c.id === p.cat; });
-    var catColor = cat ? cat.color : '#5b9eff';
-    html += '<div class="method-card" style="border-left:3px solid ' + catColor + ';" onclick="startAntistress(\'' + p.id + '\')">';
-    html += '<div class="method-header"><div class="method-emoji">' + p.emoji + '</div>';
-    html += '<div style="flex:1;"><div class="method-title">' + esc(p.title) + '</div>';
-    html += '<div class="method-cat">' + esc(p.desc||'') + ' · ' + Math.round((p.duration||60)/60) + ' мин</div></div>';
-    html += '<div class="list-chevron">▶</div></div></div>';
-  });
-  html += '</div>';
-  document.getElementById('app').innerHTML = html;
+ var cats=window.ANTISTRESS_CATEGORIES||[],practices=window.ANTISTRESS_PRACTICES||[],entries=state.antistressEntries||[],todayCount=entries.filter(function(e){return e.date===today();}).length,html='<div class="page"><div class="title-xl">🌬 Антистресс</div><div class="subtitle">Короткие практики саморегуляции. Выбирай комфортный темп; остановись при головокружении или дискомфорте.</div>';
+ html+='<div class="card"><div class="row-between"><b>⚡ Быстрый старт</b><span class="badge">'+todayCount+' сегодня</span></div><div class="grid-2 mt-2"><button class="btn btn-ghost" onclick="startAntistress(\'as_breath_sigh\')">😮‍💨 Физиологический вздох</button><button class="btn btn-ghost" onclick="startAntistress(\'as_ground_54321\')">🌳 5–4–3–2–1</button><button class="btn btn-ghost" onclick="startAntistress(\'as_breath_box\')">📦 Ровное дыхание</button><button class="btn btn-ghost" onclick="startAntistress(\'as_med_body\')">🧘 Сканирование тела</button></div></div>';
+ cats.forEach(function(cat){var list=practices.filter(function(p){return p.cat===cat.id;});if(!list.length)return;html+='<div class="section-title mt-3">'+cat.emoji+' '+esc(cat.name)+'</div>';list.forEach(function(p){var done=entries.filter(function(e){return e.practiceId===p.id;}).length;html+='<button class="method-card" style="width:100%;text-align:left;border-left:3px solid '+esc(cat.color||'var(--brand)')+'" onclick="startAntistress(\''+p.id+'\')"><div class="method-header"><div class="method-emoji">'+p.emoji+'</div><div style="flex:1"><div class="method-title">'+esc(p.title)+'</div><div class="method-cat">'+esc(p.desc||'')+' · '+Math.max(1,Math.round((p.duration||60)/60))+' мин · выполнено '+done+'</div></div><span class="list-chevron">›</span></div></button>';});});
+ html+='<div class="card mt-3"><b>История практик</b><div class="footnote mt-2">'+entries.slice(-8).reverse().map(function(e){var p=practices.find(function(x){return x.id===e.practiceId;});return esc(e.date)+' · '+esc(p?p.title:'Практика')}).join('<br>')+'</div></div></div>';document.getElementById('app').innerHTML=html;
 }
 function startAntistress(id){
-  var p = (window.ANTISTRESS_PRACTICES||[]).find(function(x){ return x.id === id; });
-  if(!p){ toast('Практика не найдена','error'); return; }
-  currentAntistressId = id;
-  var html = '<div style="text-align:center;margin-bottom:16px;"><div style="font-size:56px;">' + p.emoji + '</div><div style="font-size:22px;font-weight:800;">' + esc(p.title) + '</div></div>';
-  if(p.steps && p.steps.length){
-    html += '<div class="card"><h2>📋 Шаги</h2><div class="lesson-content"><ul>';
-    p.steps.forEach(function(s){ html += '<li>' + esc(s) + '</li>'; });
-    html += '</ul></div></div>';
-  }
-  if(p.science) html += '<div class="insight-card"><div class="insight-title">🔬 Наука</div><div class="insight-text">' + esc(p.science) + '</div></div>';
-  html += '<button class="btn btn-primary btn-block mt-3" onclick="finishAntistress()">✓ Выполнено</button>';
-  openSheet(p.title, html);
+ var p=(window.ANTISTRESS_PRACTICES||[]).find(function(x){return x.id===id;});if(!p){toast('Практика не найдена','error');return;}currentAntistressId=id;
+ var html='<div style="text-align:center"><div style="font-size:52px">'+p.emoji+'</div><h2>'+esc(p.title)+'</h2><p class="footnote">'+esc(p.desc||'')+'</p><div class="stat-value" id="antiTimer">'+Math.floor((p.duration||60)/60)+':'+String((p.duration||60)%60).padStart(2,'0')+'</div></div><div class="card mt-2"><b>Пошагово</b><ol class="lesson-content">'+(p.steps||[]).map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ol></div><div class="footnote">Научная оговорка: это упражнение для саморегуляции, а не лечение. Не задерживай дыхание и не форсируй вдохи; при дискомфорте вернись к обычному дыханию.</div><div class="btn-row mt-3"><button class="btn btn-primary" onclick="finishAntistress()">Отметить выполненным</button><button class="btn btn-ghost" onclick="closeSheet()">Закрыть</button></div>';
+ openSheet(p.title,html);startAntistressTimer(p.duration||60);
 }
-function finishAntistress(){
-  if(!currentAntistressId) return;
-  if(!state.antistressEntries) state.antistressEntries = [];
-  state.antistressEntries.push({id:uid(), practiceId:currentAntistressId, date:today(), time:nowISO()});
-  addXP(5, 'antistress');
-  save();
-  haptic('success');
-  toast('✓ +5 XP','success');
-  closeSheet();
-  currentAntistressId = null;
-  renderAntistress();
-}
-function renderAntistressDetail(){ renderAntistress(); }
+var antiTimerHandle=null;
+function startAntistressTimer(seconds){if(antiTimerHandle)clearInterval(antiTimerHandle);var left=Math.max(1,Number(seconds)||60),node=document.getElementById('antiTimer');if(node)node.textContent=Math.floor(left/60)+':'+String(left%60).padStart(2,'0');antiTimerHandle=setInterval(function(){left--;var n=document.getElementById('antiTimer');if(n)n.textContent=Math.floor(Math.max(0,left)/60)+':'+String(Math.max(0,left)%60).padStart(2,'0');if(left<=0){clearInterval(antiTimerHandle);antiTimerHandle=null;haptic('success');toast('Время практики завершено. Можно спокойно завершить или продолжить.','success');}},1000);}
+function finishAntistress(){if(!currentAntistressId)return;if(antiTimerHandle){clearInterval(antiTimerHandle);antiTimerHandle=null;}if(!Array.isArray(state.antistressEntries))state.antistressEntries=[];state.antistressEntries.push({id:uid(),practiceId:currentAntistressId,date:today(),time:nowISO(),durationCompleted:true});addXP(5,'antistress');save();haptic('success');toast('Практика сохранена · +5 XP','success');closeSheet();currentAntistressId=null;renderAntistress();}
+function renderAntistressDetail(){renderAntistress();}
 
 /* ============ BRAIN TRAINING ============ */
 function renderBrain(){
@@ -3404,33 +3367,18 @@ function renderLeagues(){
 }
 
 /* ============ ПИТОМЕЦ ============ */
+function getPetLiveState(){var p=state.pet||defaultState().pet,elapsed=p.lastFed?Math.max(0,(Date.now()-new Date(p.lastFed).getTime())/3600000):0;return {hunger:Math.max(0,Math.min(100,Math.round((Number(p.hunger)||100)-elapsed*3))),hours:Math.floor(elapsed)};}
 function renderPet(){
-  var pet = state.pet || defaultState().pet;
-  var stage = (window.PET_STAGES||[]).find(function(s){ return s.id === pet.stage; }) || {emoji:'🥚',name:'Яйцо',desc:'Спит'};
-  var xpNext = pet.xpToNext || 100;
-  var pct = Math.min(100, Math.round((pet.xp||0)/xpNext*100));
-  var html = '<div class="page"><div class="title-xl">🥚 Питомец</div>';
-  html += '<div class="card card-gradient" style="text-align:center;">';
-  html += '<div style="font-size:100px;">' + stage.emoji + '</div>';
-  html += '<div style="font-size:22px;font-weight:800;margin-top:8px;">' + esc(pet.name||'Питомец') + '</div>';
-  html += '<div style="font-size:12px;opacity:.9;">Стадия ' + pet.stage + ': ' + stage.name + '</div>';
-  html += '<div class="progress mt-3" style="background:rgba(0,0,0,.3);"><div class="progress-fill" style="width:' + pct + '%"></div></div>';
-  html += '<div style="font-size:11px;opacity:.9;margin-top:6px;">' + (pet.xp||0) + ' / ' + xpNext + ' XP до след. стадии</div>';
-  html += '</div>';
-  html += '<div class="card"><h2>📊 Состояние</h2>';
-  html += '<div class="row-between mb-2"><div class="list-title">Голод</div><div class="list-value">' + (pet.hunger||100) + '%</div></div>';
-  html += '<div class="row-between mb-2"><div class="list-title">Настроение</div><div class="list-value">' + (pet.mood === 'happy' ? '😊 Хорошее' : pet.mood === 'hungry' ? '🍽 Голоден' : '😐 Нормально') + '</div></div>';
-  html += '<div class="row-between"><div class="list-title">Покормлен раз</div><div class="list-value">' + (pet.fedCount||0) + '</div></div>';
-  html += '</div>';
-  html += '<button class="btn btn-primary btn-block" onclick="feedPet()">🍽 Покормить</button>';
-  html += '</div>';
-  document.getElementById('app').innerHTML = html;
+ var pet=state.pet||defaultState().pet,live=getPetLiveState(),stage=(window.PET_STAGES||[]).find(function(x){return x.id===pet.stage;})||{emoji:'🥚',name:'Яйцо',desc:'Развитие'},xpNext=Number(pet.xpToNext)||100,pct=Math.min(100,Math.round((Number(pet.xp)||0)/xpNext*100)),fedToday=(pet.feedHistory||[]).filter(function(x){return x.date===today();}).length;
+ var mood=live.hunger<20?'hungry':live.hunger>70?'happy':'normal',html='<div class="page"><div class="title-xl">🐾 Питомец</div><div class="subtitle">Развитие связано с твоей активностью в LIFE OS. Забота о питомце — игровая мотивация, не обязанность.</div><div class="card card-gradient" style="text-align:center"><div style="font-size:96px">'+stage.emoji+'</div><div class="field"><input id="petNameInput" maxlength="24" value="'+esc(pet.name||'Питомец')+'" aria-label="Имя питомца" onchange="renamePet(this.value)" style="text-align:center;font-weight:800"></div><div class="title-lg">'+esc(stage.name)+'</div><div class="footnote">Стадия '+pet.stage+' · '+esc(stage.desc||'')+'</div><div class="progress mt-3"><div class="progress-fill" style="width:'+pct+'%"></div></div><div class="footnote mt-2">'+(pet.xp||0)+' / '+xpNext+' XP до следующей стадии</div></div><div class="card"><h2>Состояние</h2><div class="row-between"><span>🍽 Сытость</span><b>'+live.hunger+'%</b></div><div class="progress mt-2"><div class="progress-fill" style="width:'+live.hunger+'%"></div></div><div class="row-between mt-3"><span>Настроение</span><b>'+(mood==='happy'?'😊 Доволен':mood==='hungry'?'🍽 Голоден':'😐 Спокоен')+'</b></div><div class="row-between mt-2"><span>Покормлен сегодня</span><b>'+fedToday+' раз</b></div><div class="row-between mt-2"><span>Всего кормлений</span><b>'+(pet.fedCount||0)+'</b></div></div><button class="btn btn-primary btn-block" onclick="feedPet()">🍽 Покормить питомца</button><div class="card mt-3"><b>Как питомец развивается</b><p class="footnote mt-2">XP начисляется за реальные действия в приложении. Сытость постепенно снижается со временем и восстанавливается кормлением. Не нужно заходить каждый час — это только игровой элемент.</p></div></div>';document.getElementById('app').innerHTML=html;
 }
+function renamePet(name){if(!state.pet)state.pet=defaultState().pet;state.pet.name=String(name||'Питомец').trim().slice(0,24)||'Питомец';save();toast('Имя питомца сохранено','success');}
 function feedPet(){
   if(!state.pet) state.pet = defaultState().pet;
-  state.pet.hunger = Math.min(100, (state.pet.hunger||0) + 20);
+  state.pet.hunger = Math.min(100, getPetLiveState().hunger + 20);
   state.pet.fedCount = (state.pet.fedCount||0) + 1;
   state.pet.lastFed = nowISO();
+  if(!Array.isArray(state.pet.feedHistory))state.pet.feedHistory=[];state.pet.feedHistory.push({date:today(),at:nowISO()});state.pet.feedHistory=state.pet.feedHistory.slice(-100);
   state.pet.mood = state.pet.hunger >= 50 ? 'happy' : 'hungry';
   addPetXP(5);
   save();
@@ -3599,41 +3547,12 @@ function toggleDetox60Item(day, index){
 
 /* ============ OBSIDIAN ============ */
 function exportToObsidian(){
-  var md = '';
-  md += '# Life OS Export — ' + new Date().toLocaleString('ru') + '\n\n';
-  md += '## 🎯 Задачи\n\n';
-  (state.tasks||[]).forEach(function(t){
-    md += '- [' + (t.status === 'completed' ? 'x' : ' ') + '] ' + t.title;
-    if(t.due_date) md += ' 📅 ' + t.due_date.slice(0,10);
-    if(t.priority) md += ' `' + t.priority + '`';
-    md += '\n';
-  });
-  md += '\n## 🔄 Привычки\n\n';
-  (state.habits||[]).forEach(function(h){
-    md += '- ' + h.emoji + ' **' + h.title + '** — серия ' + (h.streak||0) + ' (лучшая ' + (h.bestStreak||0) + ')\n';
-  });
-  md += '\n## 🎯 Сферы\n\n';
-  var scores = (state.spheres && state.spheres.lastScores) || {};
-  (window.LIFE_SPHERES||[]).forEach(function(s){
-    md += '- ' + s.emoji + ' **' + s.name + '**: ' + (scores[s.id] || '—') + '/10\n';
-  });
-  md += '\n## 📁 Проекты\n\n';
-  (state.projects||[]).forEach(function(p){
-    md += '- ' + (p.emoji||'📁') + ' **' + p.title + '** — ' + (p.progress||0) + '% (' + p.status + ')\n';
-  });
-  try{
-    var blob = new Blob([md], {type:'text/markdown'});
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url;
-    a.download = 'life-os-' + today() + '.md';
-    a.click();
-    URL.revokeObjectURL(url);
-    state.lastExport = nowISO();
-    save();
-    toast('📤 Экспорт готов','success');
-  }catch(e){ toast('Ошибка','error'); }
+ var md='# LIFE OS — Второй мозг\n\nЭкспортировано: '+new Date().toLocaleString('ru-RU')+'\n\n## Задачи\n'+(state.tasks||[]).map(function(t){return '- ['+(t.status==='completed'?'x':' ')+'] '+String(t.title||'').replace(/\n/g,' ') +(t.due_date?' — '+t.due_date:'');}).join('\n')+'\n\n## Привычки\n'+(state.habits||[]).map(function(h){return '- '+(h.emoji||'')+' '+(h.title||'Привычка')+' — streak '+(h.streak||0);}).join('\n')+'\n\n## Дневник\n'+(state.journalEntries||[]).slice(-60).map(function(e){return '### '+e.date+'\n'+(e.text||'')+'\n\nПолучилось: '+(e.wins||'—')+'\n\nМешало: '+(e.blockers||'—')+'\n\nБлагодарность: '+(e.gratitude||'—');}).join('\n\n')+'\n\n## Знания\n'+(state.secondBrainItems||[]).map(function(x){return '### '+x.title+'\nТеги: '+(x.tags||[]).join(', ')+'\n\n'+x.body;}).join('\n\n')+'\n\n## Сферы\n'+JSON.stringify(state.spheres&&state.spheres.lastScores||{},null,2)+'\n';
+ var blob=new Blob([md],{type:'text/markdown;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='lifeos-second-brain-'+today()+'.md';a.click();setTimeout(function(){URL.revokeObjectURL(url);},1000);state.lastExport=nowISO();save();toast('Markdown экспортирован','success');
 }
+
+function openObsidianDailyNote(){var vault=String(state.obsidianVaultName||'').trim();if(!vault)return toast('Укажи название Vault в разделе Obsidian','warning');window.location.href='obsidian://daily?vault='+encodeURIComponent(vault);}
+
 function importFromObsidian(){
   var input = document.createElement('input');
   input.type = 'file';
@@ -3668,16 +3587,13 @@ function importFromObsidian(){
   input.click();
 }
 function renderObsidianIntegration(){
-  var html = '<div class="page"><div class="title-xl">📓 Obsidian</div>';
-  html += '<div class="card"><h2>Экспорт</h2>';
-  html += '<div class="footnote text-secondary mb-3">Все данные в Markdown — открывается в Obsidian, Notion, любом редакторе.</div>';
-  html += '<button class="btn btn-primary btn-block" onclick="exportToObsidian()">📤 Экспорт в Obsidian (.md)</button></div>';
-  html += '<div class="card"><h2>Импорт</h2>';
-  html += '<div class="footnote text-secondary mb-3">Импортирует задачи из Markdown-файла.</div>';
-  html += '<button class="btn btn-ghost btn-block" onclick="importFromObsidian()">📥 Импорт из Obsidian</button></div>';
-  html += '</div>';
-  document.getElementById('app').innerHTML = html;
+ if(!Array.isArray(state.secondBrainItems))state.secondBrainItems=[];var items=state.secondBrainItems,html='<div class="page"><div class="title-xl">🧠 Второй мозг</div><div class="subtitle">Личная база знаний LIFE OS ↔ Obsidian ↔ Markdown. Работает офлайн; файлы остаются под твоим контролем.</div><div class="card"><h2>＋ Быстро сохранить знание</h2><div class="field"><label class="field-label">Заголовок</label><input id="brainTitle" maxlength="140" placeholder="Идея, вывод, заметка..."></div><div class="field"><label class="field-label">Содержание</label><textarea id="brainBody" rows="5" maxlength="8000" placeholder="Суть, источник, личный вывод, что применить..."></textarea></div><div class="field"><label class="field-label">Теги через запятую</label><input id="brainTags" maxlength="300" placeholder="работа, обучение, идея"></div><button class="btn btn-primary btn-block" onclick="saveSecondBrainItem()">Сохранить в базу знаний</button></div><div class="card mb-3"><h2>Связь с Obsidian</h2><div class="field"><label class="field-label">Название хранилища Obsidian</label><input id="obsidianVaultName" maxlength="80" value="'+esc(state.obsidianVaultName||'')+'" placeholder="Мой Vault" onchange="state.obsidianVaultName=this.value.trim();save()"></div><div class="btn-row"><button class="btn btn-primary" onclick="exportToObsidian()">Экспорт Markdown</button><button class="btn btn-ghost" onclick="openObsidianDailyNote()">Открыть дневную заметку ↗</button></div><div class="footnote mt-2">Браузер не может напрямую читать и изменять папку Vault без отдельного разрешения файловой системы. Экспорт создаёт совместимый Markdown-файл; Obsidian URI открывает заметку, если приложение установлено.</div><button class="btn btn-ghost btn-block mt-2" onclick="importFromObsidian()">Импорт Markdown / JSON</button></div><div class="row-between mb-2"><b>Моя база знаний</b><span class="footnote">'+items.length+' материалов</span></div><div class="field"><input id="brainSearch" placeholder="Поиск по знаниям и тегам..." oninput="filterSecondBrain(this.value)"></div><div id="secondBrainList">'+renderSecondBrainItems(items)+'</div></div>';document.getElementById('app').innerHTML=html;
 }
+function renderSecondBrainItems(items){if(!items.length)return '<div class="card empty"><div class="empty-icon">🧠</div><div class="empty-title">Пока нет знаний</div><div class="footnote">Сохраняй идеи, выводы и материалы — они будут доступны офлайн.</div></div>';return items.slice().sort(function(a,b){return String(b.updatedAt||b.createdAt||'').localeCompare(String(a.updatedAt||a.createdAt||''));}).map(function(x){return '<article class="card mb-2"><div class="row-between"><b>'+esc(x.title)+'</b><button class="btn btn-ghost btn-xs" onclick="deleteSecondBrainItem(\''+x.id+'\')">Удалить</button></div><p class="body-text mt-2">'+esc(x.body).replace(/\n/g,'<br>')+'</p><div class="footnote mt-2">'+esc((x.tags||[]).join(' · '))+' · '+esc(x.createdAt||'')+'</div></article>';}).join('');}
+function filterSecondBrain(q){var host=document.getElementById('secondBrainList');if(!host)return;var term=String(q||'').toLowerCase();host.innerHTML=renderSecondBrainItems((state.secondBrainItems||[]).filter(function(x){return (x.title+' '+x.body+' '+(x.tags||[]).join(' ')).toLowerCase().includes(term);}));}
+function saveSecondBrainItem(){var title=(document.getElementById('brainTitle')||{}).value||'',body=(document.getElementById('brainBody')||{}).value||'',tags=(document.getElementById('brainTags')||{}).value||'';if(!title.trim()||!body.trim())return toast('Укажи заголовок и содержание','warning');if(!Array.isArray(state.secondBrainItems))state.secondBrainItems=[];state.secondBrainItems.push({id:uid(),title:title.trim(),body:body.trim(),tags:tags.split(',').map(function(x){return x.trim();}).filter(Boolean).slice(0,12),createdAt:today(),updatedAt:nowISO()});save();toast('Сохранено во втором мозге','success');renderObsidianIntegration();}
+function deleteSecondBrainItem(id){if(!confirm('Удалить материал из второго мозга?'))return;state.secondBrainItems=(state.secondBrainItems||[]).filter(function(x){return x.id!==id;});save();renderObsidianIntegration();}
+function openObsidianDailyNote(){var vault=String(state.obsidianVaultName||'').trim();if(!vault)return toast('Сначала укажи название Vault','warning');var url='obsidian://daily?vault='+encodeURIComponent(vault);window.open(url,'_blank');}
 
 /* ============ TELEGRAM ============ */
 function getTelegramConfig(){
@@ -4486,7 +4402,17 @@ function togglePersonalGoal(id){
 }
 function renderGoals(){ renderPersonalCollection('goals'); }
 function renderNotes(){ renderPersonalCollection('notes'); }
-function renderJournal(){ renderPersonalCollection('journal'); }
+function renderJournal(){
+ var rows=Array.isArray(state.journalEntries)?state.journalEntries:[],todayEntry=rows.find(function(x){return x.date===today();})||{},html='<div class="page workspace-page"><div class="title-xl">📓 Личный дневник</div><div class="subtitle">Рефлексия, эмоции, энергия, события и планы — всё хранится локально.</div>';
+ html+='<div class="card mb-3"><div class="row-between"><b>Запись за день</b><span class="footnote">'+new Date().toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'})+'</span></div><div class="field"><label class="field-label">Что произошло сегодня?</label><textarea id="journalText" rows="4" maxlength="5000" placeholder="Свободно опиши события, мысли и наблюдения...">'+esc(todayEntry.text||'')+'</textarea></div><div class="grid-2"><div class="field"><label class="field-label">Настроение</label><select id="journalMood"><option value="">Не указано</option>'+['Тяжёлое','Ниже обычного','Нейтральное','Хорошее','Отличное'].map(function(x){return '<option '+(todayEntry.mood===x?'selected':'')+'>'+x+'</option>';}).join('')+'</select></div><div class="field"><label class="field-label">Энергия (1–5)</label><select id="journalEnergy"><option value="">Не указано</option>'+[1,2,3,4,5].map(function(n){return '<option value="'+n+'" '+(Number(todayEntry.energy)===n?'selected':'')+'>'+n+'/5</option>';}).join('')+'</select></div></div><div class="field"><label class="field-label">Что сегодня получилось?</label><textarea id="journalWins" rows="2" maxlength="1200">'+esc(todayEntry.wins||'')+'</textarea></div><div class="field"><label class="field-label">Что было трудным / что мешало?</label><textarea id="journalBlockers" rows="2" maxlength="1200">'+esc(todayEntry.blockers||'')+'</textarea></div><div class="field"><label class="field-label">За что благодарен?</label><textarea id="journalGratitude" rows="2" maxlength="800">'+esc(todayEntry.gratitude||'')+'</textarea></div><div class="field"><label class="field-label">Главное на завтра</label><input id="journalTomorrow" maxlength="180" value="'+esc(todayEntry.tomorrow||'')+'" placeholder="Один важный результат"></div><button class="btn btn-primary btn-block" onclick="saveJournalEntry()">Сохранить дневник</button></div>';
+ html+='<div class="row-between mb-2"><b>История записей</b><span class="footnote">'+rows.length+' дней</span></div>';
+ rows.slice().sort(function(a,b){return String(b.date||'').localeCompare(String(a.date||''));}).slice(0,60).forEach(function(e){html+='<article class="card mb-2"><div class="row-between"><b>'+esc(e.date||'')+'</b><span class="badge">'+esc(e.mood||'Без оценки')+'</span></div>'+(e.text?'<p class="body-text mt-2">'+esc(e.text).replace(/\n/g,'<br>')+'</p>':'')+(e.wins?'<div class="footnote mt-2"><b>Получилось:</b> '+esc(e.wins)+'</div>':'')+(e.blockers?'<div class="footnote mt-1"><b>Мешало:</b> '+esc(e.blockers)+'</div>':'')+(e.gratitude?'<div class="footnote mt-1"><b>Благодарность:</b> '+esc(e.gratitude)+'</div>':'')+'<div class="btn-row mt-2"><button class="btn btn-ghost btn-xs" onclick="editJournalDate(\''+e.date+'\')">Открыть день</button><button class="btn btn-ghost btn-xs" onclick="deleteJournalEntry(\''+e.date+'\')">Удалить</button></div></article>';});
+ html+='</div>';document.getElementById('app').innerHTML=html;
+}
+function saveJournalEntry(){var get=function(id){var e=document.getElementById(id);return e?e.value.trim():'';};var entry={date:today(),text:get('journalText'),mood:get('journalMood'),energy:Number(get('journalEnergy'))||null,wins:get('journalWins'),blockers:get('journalBlockers'),gratitude:get('journalGratitude'),tomorrow:get('journalTomorrow'),updatedAt:nowISO()};if(!entry.text&&!entry.wins&&!entry.blockers&&!entry.gratitude&&!entry.tomorrow&&!entry.mood&&!entry.energy)return toast('Добавь хотя бы одну мысль или оценку','warning');if(!Array.isArray(state.journalEntries))state.journalEntries=[];var old=state.journalEntries.findIndex(function(x){return x.date===today();});if(old>=0)state.journalEntries[old]=Object.assign({},state.journalEntries[old],entry);else state.journalEntries.push(Object.assign({id:uid(),createdAt:nowISO()},entry));save();toast('Запись дневника сохранена','success');renderJournal();}
+function editJournalDate(date){var e=(state.journalEntries||[]).find(function(x){return x.date===date;});if(!e)return;var field=document.getElementById('journalText');if(field)field.value=e.text||'';toast('История: открой запись из списка; редактирование доступно для текущего дня.','info');}
+function deleteJournalEntry(date){if(!confirm('Удалить запись за '+date+'?'))return;state.journalEntries=(state.journalEntries||[]).filter(function(x){return x.date!==date;});save();renderJournal();}
+
 function renderDailySurvey(){ renderStub('📋 Опрос'); }
 function renderSurvey(){ renderStub('📋 Опрос'); }
 function renderPersonalPlan(){ renderStub('🧭 Персональный план'); }
@@ -4531,10 +4457,25 @@ function saveMonthlyReview(){
 function renderWeeklyReport(){ renderWeeklyReview(); }
 function renderSnapshot(){ renderStub('🌐 Единая картина'); }
 function renderRecommendations(){ renderStub('💡 Рекомендации'); }
-function renderSchedule(){ renderStub('📅 Расписание'); }
-function renderScheduleEditor(){ renderStub('Событие'); }
-function renderFocus(){ renderStub('⏱ Фокус'); }
-function renderEveningReview(){ renderStub('🌙 Вечерний обзор'); }
+var LIFE_SCHEDULE_DATE = typeof LIFE_SCHEDULE_DATE==='string' ? LIFE_SCHEDULE_DATE : '';
+function lifeScheduleShiftDate(date,delta){var d=new Date(date+'T12:00:00');d.setDate(d.getDate()+delta);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function setLifeScheduleDate(date){LIFE_SCHEDULE_DATE=date;renderSchedule();}
+function renderSchedule(){
+ ensureLifeOSLists();var selected=LIFE_SCHEDULE_DATE||today(),base=new Date(selected+'T12:00:00'),monday=new Date(base);monday.setDate(base.getDate()-(base.getDay()+6)%7);
+ var days=[];for(var i=0;i<7;i++){var d=new Date(monday);d.setDate(monday.getDate()+i);days.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'));}
+ var events=state.calendarEvents.filter(function(x){return x.source!=='google';}),dayEvents=events.filter(function(x){return x.date===selected;}).sort(function(a,b){return String(a.time||'').localeCompare(String(b.time||''));});
+ var html='<div class="page"><div class="row-between"><div><div class="title-xl">🗓 Расписание</div><div class="subtitle">Неделя · планы · события · локальное сохранение</div></div><button class="btn btn-ghost btn-sm" onclick="navigate(\'calendar\')">Календарь</button></div>';
+ html+='<div class="card"><div class="row-between"><button class="btn btn-ghost btn-sm" onclick="setLifeScheduleDate(\''+lifeScheduleShiftDate(days[0],-7)+'\')">‹</button><b>'+new Date(days[0]+'T12:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'long'})+' — '+new Date(days[6]+'T12:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'})+'</b><button class="btn btn-ghost btn-sm" onclick="setLifeScheduleDate(\''+lifeScheduleShiftDate(days[0],7)+'\')">›</button></div><div class="grid-2 mt-3">'+days.map(function(day){var n=events.filter(function(e){return e.date===day;}).length;return '<button class="card '+(day===selected?'card-gradient':'')+'" style="padding:10px;text-align:center;border:1px solid '+(day===selected?'var(--brand)':'var(--glass-border)')+'" onclick="setLifeScheduleDate(\''+day+'\')"><div class="footnote">'+new Date(day+'T12:00:00').toLocaleDateString('ru-RU',{weekday:'short'})+'</div><b style="font-size:20px">'+Number(day.slice(-2))+'</b><div class="footnote">'+n+' событий</div></button>';}).join('')+'</div><button class="btn btn-ghost btn-sm mt-2" onclick="setLifeScheduleDate(\''+today()+'\')">Сегодня</button></div>';
+ html+='<div class="row-between mt-3 mb-2"><div class="section-title">'+new Date(selected+'T12:00:00').toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'})+'</div><span class="badge">'+dayEvents.length+' событий</span></div>';
+ html+='<div class="card mb-3"><div class="field"><label class="field-label">Новое событие</label><input id="scheduleTitle" maxlength="120" placeholder="Что нужно сделать?"></div><div class="grid-2"><div class="field"><label class="field-label">Время</label><input id="scheduleTime" type="time" value="09:00"></div><div class="field"><label class="field-label">Длительность, мин</label><input id="scheduleDuration" type="number" min="5" max="720" value="30"></div></div><div class="field"><label class="field-label">Категория</label><select id="scheduleCategory"><option>Личное</option><option>Работа</option><option>Учёба</option><option>Здоровье</option><option>Отдых</option></select></div><div class="field"><label class="field-label">Заметка</label><textarea id="scheduleNote" maxlength="800" rows="2"></textarea></div><button class="btn btn-primary btn-block" onclick="addScheduleEvent(\''+selected+'\')">＋ Добавить в расписание</button></div>';
+ if(!dayEvents.length)html+='<div class="card empty"><div class="empty-icon">☀️</div><div class="empty-title">На этот день пока нет событий</div><div class="footnote">Добавь встречу, задачу или время для отдыха.</div></div>';
+ dayEvents.forEach(function(e){html+='<article class="card mb-2"><div class="row-between"><div><b>'+esc(e.title||'Событие')+'</b><div class="footnote">'+esc(e.category||'')+' · '+Number(e.duration||30)+' мин</div></div><b>'+esc(e.time||'—')+'</b></div>'+(e.note?'<p class="footnote mt-2">'+esc(e.note)+'</p>':'')+'<div class="btn-row mt-2"><button class="btn btn-ghost btn-xs" onclick="toggleCalendarEvent(\''+e.id+'\')">'+(e.done?'↩ Вернуть':'✓ Завершить')+'</button><button class="btn btn-ghost btn-xs" onclick="deleteCalendarEvent(\''+e.id+'\')">Удалить</button></div></article>';});
+ html+='<div class="footnote mt-3">Планы хранятся на этом устройстве и доступны офлайн. События Google Calendar здесь пока не синхронизируются.</div></div>';document.getElementById('app').innerHTML=html;
+}
+function addScheduleEvent(date){var title=document.getElementById('scheduleTitle'),time=document.getElementById('scheduleTime'),duration=document.getElementById('scheduleDuration');if(!title||!title.value.trim())return toast('Введи название события','warning');ensureLifeOSLists();state.calendarEvents.push({id:uid(),source:'lifeos',title:title.value.trim(),date:date,time:time&&time.value||'09:00',duration:Math.max(5,Math.min(720,Number(duration&&duration.value)||30)),category:(document.getElementById('scheduleCategory')||{}).value||'Личное',note:(document.getElementById('scheduleNote')||{}).value||'',done:false,createdAt:nowISO()});save();toast('Событие добавлено в расписание','success');renderSchedule();}
+function renderScheduleEditor(){renderSchedule();}
+function renderEveningReview(){renderDailyReport();}
+
 function renderWeeklyReview(){
  var rows=state.weeklyReview&&Array.isArray(state.weeklyReview.history)?state.weeklyReview.history:[];
  var a=buildComprehensiveStats(7)||{},o=a.overview||{},f=a.focus||{},h=a.health||{};
