@@ -4244,7 +4244,7 @@ function buildJarvisAppContext(){
  var events=(state.calendarEvents||[]).filter(function(x){return x.date===date&&!x.done;}).slice(0,8).map(function(x){return {title:x.title,time:x.time||null,category:x.category||null};});
  var screen=(state.screenEntries||[]).filter(function(x){return String(x.date||'').slice(0,10)===date;}).reduce(function(n,x){return n+(Number(x.minutes)||0);},0);
  var stress=(state.antistressEntries||[]).slice(-3).map(function(x){return {title:x.title||x.practiceId,date:x.date,before:x.beforeStress,after:x.afterStress,durationSeconds:x.durationSeconds||0};});
- var pet=state.pet||{},brain=state.secondBrain&&Array.isArray(state.secondBrain.notes)?state.secondBrain.notes:[];
+ var pet=state.pet||{},brain=Array.isArray(state.secondBrainItems)?state.secondBrainItems:[],journalRecent=(state.journalEntries||[]).slice().sort(function(x,y){return String(y.date||'').localeCompare(String(x.date||''));}).slice(0,5).map(function(x){return {date:x.date,mood:x.mood,energy:x.energy,wins:String(x.wins||'').slice(0,180),blockers:String(x.blockers||'').slice(0,180)};});
  var month=date.slice(0,7),finance=(state.financeEntries||[]).filter(function(x){return String(x.date||'').slice(0,7)===month;});
  var income=finance.filter(function(x){return x.type==='income';}).reduce(function(n,x){return n+(Number(x.amount)||0);},0),expense=finance.filter(function(x){return x.type==='expense';}).reduce(function(n,x){return n+(Number(x.amount)||0);},0);
  return {
@@ -4260,7 +4260,8 @@ function buildJarvisAppContext(){
   screenTime:{minutes:screen},
   antistress:{recent:stress},
   pet:{name:pet.name||null,stage:pet.stage||1,xp:pet.xp||0,careToday:(pet.careLog||[]).filter(function(x){return x.date===date;}).length},
-  secondBrain:{notes:brain.length,recent:brain.slice(-5).map(function(x){return {title:x.title,tags:(x.tags||[]).slice(0,6)};})},
+  secondBrain:{notes:brain.length,recent:brain.slice(-8).map(function(x){return {title:x.title,tags:(x.tags||[]).slice(0,6),excerpt:String(x.body||'').slice(0,240)};})},
+  journalHistory:journalRecent,
   finance:{month:month,income:income,expense:expense,balance:income-expense,entries:finance.length},
   learningProgress:{trackedTopics:Object.keys(state.libraryProgress||{}).length},
   analytics:{health:a.health||null,focus:a.focus||null,learning:a.learning||null,overview:a.overview||null,life:a.life||null}
