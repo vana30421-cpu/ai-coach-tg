@@ -1,22 +1,25 @@
 # Подключение разговорного Джарвиса
 
-API-функция находится в `functions/api/jarvis.js` и работает как Cloudflare Pages Function по адресу `/api/jarvis`.
+Сайт LIFEOS сейчас публикуется через GitHub Pages. GitHub Pages не исполняет Cloudflare Pages Functions, поэтому для реального AI-диалога используется отдельный Cloudflare Worker: `workers/jarvis-worker.js`. Конфигурация — `wrangler.jarvis.toml`.
 
 ## Обязательные секреты Cloudflare Pages
 
-В Cloudflare Dashboard открой Pages → проект LIFEOS → Settings → Variables and Secrets. Добавь для Production (и Preview, если тестируешь Preview):
+В Cloudflare Dashboard создай Worker `lifeos-jarvis-api` из `workers/jarvis-worker.js` (или выполни `npx wrangler deploy --config wrangler.jarvis.toml`). Добавь Worker Secrets:
 
 - `OPENAI_API_KEY` — Secret, API-ключ OpenAI. Не вставлять его в HTML, JavaScript или GitHub.
 - `JARVIS_ACCESS_CODE` — Secret, придумай отдельный длинный код доступа. Его нужно будет ввести в настройках Джарвиса внутри LIFEOS.
 
-Необязательная переменная:
-- `OPENAI_MODEL` — например, `gpt-5-mini`. Если не задана, используется это значение по умолчанию.
+Переменные Worker:
+- `OPENAI_MODEL` — уже задана в `wrangler.jarvis.toml` (`gpt-5-mini`).
+- `ALLOWED_ORIGIN` — уже задана как `https://vana30421-cpu.github.io`; если у сайта другой домен, измени её.
 
-После сохранения переменных запусти новый deployment Pages. В LIFEOS открой Джарвиса, введи тот же `JARVIS_ACCESS_CODE`, включи «Разговорный ИИ» и подтверди передачу контекста.
+После деплоя скопируй URL Worker вида `https://lifeos-jarvis-api.<твой-subdomain>.workers.dev`.
+
+В LIFEOS открой Джарвиса, вставь URL Worker в поле «URL AI-сервера», введи тот же `JARVIS_ACCESS_CODE`, включи «Разговорный ИИ» и подтверди передачу контекста.
 
 ## Ограничение расходов
 
-Если хочешь включить лимит 20 запросов в минуту на IP, создай KV namespace и привяжи его к Pages Functions под именем `JARVIS_RATE_LIMITS`. Без этой привязки API всё равно проверяет секретный код, но лимит запросов не применяется.
+Если хочешь включить лимит 20 запросов в минуту на IP, создай KV namespace `JARVIS_RATE_LIMITS` и добавь его binding в `wrangler.jarvis.toml`. Без KV Worker проверяет секретный код, но не применяет минутный лимит.
 
 ## Приватность
 
