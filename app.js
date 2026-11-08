@@ -3620,37 +3620,51 @@ function exportToObsidian(){
 function openObsidianDailyNote(){var vault=String(state.obsidianVaultName||'').trim();if(!vault)return toast('Укажи название Vault в разделе Obsidian','warning');window.location.href='obsidian://daily?vault='+encodeURIComponent(vault);}
 
 function importFromObsidian(){
-  var input = document.createElement('input');
-  input.type = 'file';
-  input.accept = '.md,.txt,.json';
-  input.onchange = function(e){
-    var file = e.target.files[0];
-    if(!file) return;
-    var reader = new FileReader();
-    reader.onload = function(){
-      try{
-        var text = reader.result;
-        var lines = text.split('\n');
-        var imported = 0;
-        lines.forEach(function(line){
-          var m = line.match(/^- \[([ x])\] (.+)$/);
-          if(m){
-            var done = m[1] === 'x';
-            var title = m[2].replace(/📅.*$/,'').replace(/`.*`/,'').trim();
-            if(title && !state.tasks.some(function(t){ return t.title === title; })){
-              state.tasks.push({id:uid(), title:title, status:done?'completed':'pending', priority:'medium', planned_time:30, created_at:nowISO(), imported_from:'obsidian'});
-              imported++;
-            }
-          }
-        });
-        save();
-        toast('📥 Импортировано: ' + imported + ' задач','success');
-        navigate('tasks');
-      }catch(e){ toast('Ошибка импорта','error'); }
-    };
-    reader.readAsText(file);
+ var input=document.createElement('input');input.type='file';input.accept='.md,.txt,.json';
+ input.onchange=function(event){
+  var file=event.target.files&&event.target.files[0];if(!file)return;
+  if(file.size>15*1024*1024)return toast('Файл больше 15 МБ','error');
+  var reader=new FileReader();
+  reader.onload=function(){
+   try{
+    var raw=String(reader.result||''),importedTasks=0,importedNotes=0,importedJournal=0;
+    if(file.name.toLowerCase().endsWith('.json')){
+     var parsed=JSON.parse(raw),incoming=parsed&&parsed.format==='life-os-backup'?parsed.data:parsed;
+     if(!incoming||typeof incoming!=='object'||Array.isArray(incoming))throw new Error('Неверный JSON');
+     backupStorage();
+     ['tasks','journalEntries','secondBrainItems','calendarEvents','customNotes','customGoals'].forEach(function(key){
+      if(!Array.isArray(incoming[key]))return;
+      if(!Array.isArray(state[key]))state[key]=[];
+      incoming[key].forEach(function(item){
+       var identity=item.id||item.date||item.title;
+       var exists=state[key].some(function(old){return (old.id||old.date||old.title)===identity;});
+       if(!exists){state[key].push(item);if(key==='tasks')importedTasks++;else if(key==='journalEntries')importedJournal++;else if(key==='secondBrainItems')importedNotes++;}
+      });
+     });
+    }else{
+     var lines=raw.replace(/\r/g,'').split('\n'),section='',note=null,diary=null;
+     function flushNote(){if(note&&note.title&&note.body.trim()){if(!Array.isArray(state.secondBrainItems))state.secondBrainItems=[];var duplicate=state.secondBrainItems.some(function(x){return x.title===note.title&&String(x.body||'').trim()===note.body.trim();});if(!duplicate){state.secondBrainItems.push({id:uid(),title:note.title,body:note.body.trim(),tags:note.tags||[],createdAt:today(),updatedAt:nowISO(),source:'obsidian'});importedNotes++;}}note=null;}
+     function flushDiary(){if(diary&&diary.date){if(!Array.isArray(state.journalEntries))state.journalEntries=[];var exists=state.journalEntries.some(function(x){return x.date===diary.date;});if(!exists){state.journalEntries.push(Object.assign({id:uid(),createdAt:nowISO(),updatedAt:nowISO()},diary));importedJournal++;}}diary=null;}
+     lines.forEach(function(line){
+      var h2=line.match(/^##\s+(.+)$/),h3=line.match(/^###\s+(.+)$/);
+      if(h2){flushNote();flushDiary();section=h2[1].trim();return;}
+      if(section==='Знания'&&h3){flushNote();note={title:h3[1].trim(),body:'',tags:[]};return;}
+      if(section==='Дневник'&&h3&&/^\d{4}-\d{2}-\d{2}$/.test(h3[1].trim())){flushDiary();diary={date:h3[1].trim(),text:''};return;}
+      if(section==='Знания'&&note){var tagLine=line.match(/^Теги:\s*(.*)$/);if(tagLine){note.tags=tagLine[1].split(',').map(function(x){return x.trim();}).filter(Boolean);return;}note.body+=(note.body?'\n':'')+line;return;}
+      if(section==='Дневник'&&diary){if(line.indexOf('Получилось:')===0)diary.wins=line.slice(12).trim();else if(line.indexOf('Мешало:')===0)diary.blockers=line.slice(8).trim();else if(line.indexOf('Благодарность:')===0)diary.gratitude=line.slice(14).trim();else diary.text+=(diary.text?'\n':'')+line;return;}
+      var task=line.match(/^- \[([ x])\] (.+)$/);
+      if(task){var title=task[2].replace(/📅.*$/,'').replace(/\x60.*\x60/,'').trim();if(title&&!state.tasks.some(function(t){return t.title===title;})){state.tasks.push({id:uid(),title:title,status:task[1]==='x'?'completed':'pending',priority:'medium',planned_time:30,created_at:nowISO(),imported_from:'obsidian'});importedTasks++;}}
+     });
+     flushNote();flushDiary();
+    }
+    if(!save())throw new Error('Не удалось записать импорт в хранилище');
+    toast('Импортировано: '+importedTasks+' задач, '+importedNotes+' знаний, '+importedJournal+' записей дневника','success',4500);
+    renderObsidianIntegration();
+   }catch(error){console.error('[OBSIDIAN IMPORT]',error);toast('Не удалось импортировать файл: '+String(error.message||error).slice(0,120),'error',4500);}
   };
-  input.click();
+  reader.onerror=function(){toast('Не удалось прочитать файл','error');};reader.readAsText(file);
+ };
+ input.click();
 }
 function renderObsidianIntegration(){
  if(!Array.isArray(state.secondBrainItems))state.secondBrainItems=[];var items=state.secondBrainItems,html='<div class="page"><div class="title-xl">🧠 Второй мозг</div><div class="subtitle">Личная база знаний LIFE OS ↔ Obsidian ↔ Markdown. Работает офлайн; файлы остаются под твоим контролем.</div><div class="card"><h2>＋ Быстро сохранить знание</h2><div class="field"><label class="field-label">Заголовок</label><input id="brainTitle" maxlength="140" placeholder="Идея, вывод, заметка..."></div><div class="field"><label class="field-label">Содержание</label><textarea id="brainBody" rows="5" maxlength="8000" placeholder="Суть, источник, личный вывод, что применить..."></textarea></div><div class="field"><label class="field-label">Теги через запятую</label><input id="brainTags" maxlength="300" placeholder="работа, обучение, идея"></div><button class="btn btn-primary btn-block" onclick="saveSecondBrainItem()">Сохранить в базу знаний</button></div><div class="card mb-3"><h2>Связь с Obsidian</h2><div class="field"><label class="field-label">Название хранилища Obsidian</label><input id="obsidianVaultName" maxlength="80" value="'+esc(state.obsidianVaultName||'')+'" placeholder="Мой Vault" onchange="state.obsidianVaultName=this.value.trim();save()"></div><div class="btn-row"><button class="btn btn-primary" onclick="exportToObsidian()">Экспорт Markdown</button><button class="btn btn-ghost" onclick="openObsidianDailyNote()">Открыть дневную заметку ↗</button></div><div class="footnote mt-2">Браузер не может напрямую читать и изменять папку Vault без отдельного разрешения файловой системы. Экспорт создаёт совместимый Markdown-файл; Obsidian URI открывает заметку, если приложение установлено.</div><button class="btn btn-ghost btn-block mt-2" onclick="importFromObsidian()">Импорт Markdown / JSON</button></div><div class="row-between mb-2"><b>Моя база знаний</b><span class="footnote">'+items.length+' материалов</span></div><div class="field"><input id="brainSearch" placeholder="Поиск по знаниям и тегам..." oninput="filterSecondBrain(this.value)"></div><div id="secondBrainList">'+renderSecondBrainItems(items)+'</div></div>';document.getElementById('app').innerHTML=html;
