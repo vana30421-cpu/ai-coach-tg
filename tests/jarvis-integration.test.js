@@ -13,8 +13,10 @@ test('Jarvis is wired to the existing AI tab and direct route',()=>{
   assert.match(app,/function renderAI\(\)\{\s*renderJarvis\(\);\s*\}/);
 });
 test('main navigation labels the assistant Jarvis',()=>assert.match(content,/id:'ai',emoji:'✧',label:'Джарвис'/));
-test('command core loads before app runtime',()=>assert.ok(index.indexOf('src="jarvis-core.js"')<index.indexOf('src="app.js"')));
+test('command core loads before app runtime',()=>assert.ok(index.search(/src="jarvis-core\.js(?:\\?[^\"]*)?"/)<index.search(/src="app\.js(?:\\?[^\"]*)?"/)));
 test('Jarvis command core is included in offline shell cache',()=>assert.match(sw,/\.\/jarvis-core\.js/));
+test('PWA cache is versioned and activates the fresh worker without a stale waiting worker',()=>{assert.match(sw,/life-os-v66/);assert.match(sw,/await self\.skipWaiting\(\)/);assert.match(sw,/ignoreSearch:true/);});
+test('app scripts use a cache-busting version',()=>{for(const name of ['content.js','content2.js','content3.js','jarvis-core.js','app.js'])assert.match(index,new RegExp('src="'+name.replace('.','\\.')+'\\?v=20261108-2"'));});
 test('assistant messages and check-ins are stored in application state',()=>{
   assert.match(app,/if\(!state\.jarvis\)state\.jarvis=\{messages:\[\],checkins:\[\],focus:null,mode:'balanced',focusDefault:25\}/);
   assert.match(app,/d\.messages\.push/);
