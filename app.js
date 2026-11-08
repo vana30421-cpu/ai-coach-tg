@@ -653,6 +653,10 @@ function applyTheme(id){
       root.style.setProperty('--brand',selected.brand||'#5b9eff');
       root.style.setProperty('--brand-2',selected.brand2||selected.brand||'#a78bfa');
       root.style.setProperty('--brand-glow',(selected.brand||'#5b9eff')+'66');
+      root.style.setProperty('--surface-1',selected.bg2||selected.bg||'#111827');
+      root.style.setProperty('--surface-2',selected.bg||'#090d16');
+      root.style.setProperty('--line',(selected.text||'#ffffff')+'20');
+      root.style.setProperty('--muted',(selected.text||'#ffffff')+'99');
     }
     if(state&&state.settings){state.settings.theme=id;save();}
     var meta=document.querySelector('meta[name="theme-color"]');
@@ -802,24 +806,18 @@ function closeSheet(){
 
 /* ============ THEME PICKER ============ */
 function openThemePicker(){
-  var themes = window.THEMES || [];
-  if(!themes.length){ toast('Темы не загружены','error'); return; }
-  var html = '<div class="footnote text-tertiary" style="margin-bottom:8px;">🎨 Выбери тему (' + themes.length + ')</div>';
-  html += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;max-height:50vh;overflow-y:auto;">';
+  var themes=window.THEMES||[];
+  if(!themes.length){toast('Темы не загружены','error');return;}
+  var html='<div class="theme-picker-intro">Выбери оформление. Эффекты работают отдельно и не должны замедлять интерфейс.</div>';
+  html+='<div class="theme-gallery">';
   themes.forEach(function(t){
-    var active = state.settings.theme === t.id;
-    html += '<button onclick="setTheme(\'' + t.id + '\')" style="padding:10px 6px;border-radius:12px;border:2px solid ' + (active ? 'var(--brand)' : 'transparent') + ';background:' + t.bg + ';color:' + t.text + ';cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;"><span style="font-size:22px;">' + t.emoji + '</span><span style="font-size:9px;font-weight:700;">' + t.name + '</span></button>';
+    var active=state.settings.theme===t.id;
+    html+='<button class="theme-tile '+(active?'active':'')+'" onclick="setTheme(\\''+t.id+'\\')" style="--theme-a:'+t.bg+';--theme-b:'+(t.bg2||t.bg)+';--theme-accent:'+t.brand+';color:'+t.text+'"><span class="theme-tile-glow"></span><span class="theme-tile-emoji">'+t.emoji+'</span><span class="theme-tile-name">'+t.name+'</span><span class="theme-tile-check">'+(active?'✓':'')+'</span></button>';
   });
-  html += '</div>';
-  html += '<div class="card" style="margin:0;padding:14px;">';
-  html += '<div class="row-between mb-2"><div class="list-title">🌈 Эффекты</div><button class="btn btn-ghost btn-xs" onclick="state.settings.effectsEnabled=!state.settings.effectsEnabled;save();startEffects();openThemePicker()">' + (state.settings.effectsEnabled ? 'Вкл' : 'Выкл') + '</button></div>';
-  html += '<div class="row-between"><div class="list-title">💫 Интенсивность</div><div class="row" style="gap:4px;">';
-  [0.5,1,1.5,2].forEach(function(v){
-    var active = (state.settings.effectsIntensity || 1) === v;
-    html += '<button class="btn ' + (active ? 'btn-primary' : 'btn-ghost') + ' btn-xs" onclick="state.settings.effectsIntensity=' + v + ';save();startEffects();openThemePicker()">' + v + '×</button>';
-  });
-  html += '</div></div></div>';
-  openSheet('Тема', html);
+  html+='</div><div class="card theme-effects-card"><div class="row-between"><div><div class="list-title">Анимация фона</div><div class="footnote">Лёгкие эффекты без перегрузки устройства</div></div><button class="btn btn-ghost btn-xs" onclick="state.settings.effectsEnabled=!state.settings.effectsEnabled;save();startEffects();openThemePicker()">'+(state.settings.effectsEnabled?'Включены':'Выключены')+'</button></div><div class="row-between mt-3"><div class="list-title">Интенсивность</div><div class="row" style="gap:5px">';
+  [0.5,1,1.5].forEach(function(v){var active=(state.settings.effectsIntensity||1)===v;html+='<button class="btn '+(active?'btn-primary':'btn-ghost')+' btn-xs" onclick="state.settings.effectsIntensity='+v+';save();startEffects();openThemePicker()">'+v+'×</button>';});
+  html+='</div></div></div>';
+  openSheet('Темы и оформление',html);
 }
 function setTheme(id){
   try{
