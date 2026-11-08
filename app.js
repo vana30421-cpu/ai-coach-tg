@@ -941,6 +941,7 @@ function renderPWAInstallBlock(){
     html+='<button class="btn btn-primary btn-block" onclick="installPWA()">📲 Установить / добавить на экран</button>';
     html+='<div class="footnote text-secondary mt-2">В браузере: меню ⋮ → «Установить приложение» или «Добавить на главный экран».</div>';
   }
+  html+='<a href="https://github.com/vana30421-cpu/ai-coach-tg/archive/refs/heads/main.zip" target="_blank" rel="noopener" class="btn btn-ghost btn-block mt-2" style="text-decoration:none;">⬇️ Скачать ZIP-пакет проекта</a>';
   return html+'</div>';
 }
 
