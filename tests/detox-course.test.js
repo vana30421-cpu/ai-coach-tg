@@ -31,7 +31,7 @@ test('every detox task has an actionable guide and verification criterion', () =
   const course = sandbox.window.DETOX_COURSE;
   for (const day of course) {
     for (const [index, task] of day.do.entries()) {
-      const guide = sandbox.getDetoxTaskGuide(day.day, task, index);
+      const guide = sandbox.window.getDetoxTaskGuide(day.day, task, index);
       assert.equal(guide.task, task, 'day ' + day.day + ', task ' + index);
       assert.ok(guide.why && guide.prepare && guide.example && guide.check);
       assert.ok(Array.isArray(guide.steps) && guide.steps.length >= 3);
