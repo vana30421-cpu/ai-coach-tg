@@ -150,3 +150,19 @@ test('Jarvis exposes the Gemini provider and the Worker uses a server-side Gemin
  assert.match(worker,/generativelanguage\.googleapis\.com/);
  assert.match(worker,/gemini-2\.5-flash/);
 });
+
+test('manual full save and journal autosave are exposed and preserve backup snapshots',()=>{
+ assert.match(app,/function manualSaveAll\(\)/);
+ assert.match(app,/function queueJournalAutosave\(\)/);
+ assert.match(app,/function saveJournalEntry\(silent\)/);
+ assert.match(app,/onclick="manualSaveAll\(\)"/);
+ assert.match(app,/journalAutosaveStatus/);
+});
+test('anti-stress timer cannot award completion XP before the actual duration',()=>{
+ assert.match(app,/function finishAntistressRecord\(completed\)/);
+ assert.match(app,/function finishAntistressEarly\(\)/);
+ assert.match(app,/if\(!antiTimerFinished\)/);
+ assert.match(app,/if\(completed\)addXP\(5,'antistress'\)/);
+ assert.match(app,/plannedDuration:antiTimerDuration/);
+ assert.match(app,/disabled onclick="finishAntistress\(\)"/);
+});
