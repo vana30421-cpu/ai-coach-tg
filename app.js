@@ -3798,34 +3798,35 @@ function saveProfileName(name){
 /* ============ ЭКСПОРТ / ИМПОРТ ============ */
 function exportDB(){
   try{
-    var blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url;
-    a.download = 'life-os-' + today() + '.json';
-    a.click();
-    URL.revokeObjectURL(url);
-    toast('📤 Готово','success');
-  }catch(e){ toast('Ошибка','error'); }
+    var payload={format:'life-os-backup',version:CURRENT_VERSION,exportedAt:nowISO(),data:state};
+    var blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+    var url=URL.createObjectURL(blob),a=document.createElement('a');
+    a.href=url;a.download='life-os-backup-'+today()+'.json';
+    document.body.appendChild(a);a.click();a.remove();
+    setTimeout(function(){URL.revokeObjectURL(url);},1500);
+    toast('Резервная копия скачана','success');
+  }catch(e){console.error('[EXPORT]',e);toast('Не удалось создать резервную копию','error');}
 }
 function importDB(){
-  var input = document.createElement('input');
-  input.type = 'file';
-  input.accept = '.json';
-  input.onchange = function(e){
-    var file = e.target.files[0];
-    if(!file) return;
-    var reader = new FileReader();
-    reader.onload = function(){
+  var input=document.createElement('input');input.type='file';input.accept='.json,application/json';
+  input.onchange=function(e){
+    var file=e.target.files&&e.target.files[0];if(!file)return;
+    if(file.size>15*1024*1024){toast('Файл слишком большой (лимит 15 МБ)','error');return;}
+    var reader=new FileReader();
+    reader.onload=function(){
       try{
-        var data = JSON.parse(reader.result);
-        if(!data || typeof data !== 'object') throw new Error('bad');
+        var parsed=JSON.parse(reader.result);
+        var imported=parsed&&parsed.format==='life-os-backup'?parsed.data:parsed;
+        if(!imported||typeof imported!=='object'||Array.isArray(imported)||(!imported.settings&&!imported.profile&&!imported.tasks))throw new Error('Неверный формат резервной копии');
+        var merged=migrateState(deepMerge(defaultState(),imported));
+        var serialized=JSON.stringify(merged);
         backupStorage();
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-        toast('✓ Перезагрузка...','success');
-        setTimeout(function(){ location.reload(); }, 1200);
-      }catch(err){ toast('Ошибка','error'); }
+        localStorage.setItem(STORAGE_KEY,serialized);
+        toast('Данные восстановлены. Перезапускаю…','success');
+        setTimeout(function(){location.reload();},800);
+      }catch(err){console.error('[IMPORT]',err);toast('Файл повреждён или не является копией Life OS','error',4000);}
     };
+    reader.onerror=function(){toast('Не удалось прочитать файл','error');};
     reader.readAsText(file);
   };
   input.click();
@@ -3973,7 +3974,7 @@ function renderPersonalCollection(kind){
   rows.slice().reverse().forEach(function(item){
     html+='<div class="card mb-2"><div class="row-between"><div class="list-title">'+esc(item.title||item.text||'Без названия')+'</div><button class="btn btn-ghost btn-sm" onclick="deletePersonalCollection(\''+kind+'\',\''+esc(item.id)+'\')">Удалить</button></div>';
     if(item.category)html+='<div class="footnote">'+esc(item.category)+'</div>';
-    if(item.note)html+='<div class="body-text mt-2">'+esc(item.note)+'</div>';
+    if(item.note)html+='<div class="body-text mt-2">'+esc(item.note)+'</div>';else if(kind==='journal'&&item.text)html+='<div class="body-text mt-2">'+esc(item.text)+'</div>';
     if(item.createdAt)html+='<div class="footnote mt-2">'+new Date(item.createdAt).toLocaleString('ru-RU')+'</div>';
     if(kind==='goals')html+='<button class="btn '+(item.done?'btn-ghost':'btn-primary')+' btn-sm mt-2" onclick="togglePersonalGoal(\''+esc(item.id)+'\')">'+(item.done?'✓ Выполнено':'Отметить выполненной')+'</button>';
     html+='</div>';
