@@ -222,3 +222,8 @@ test('settings preferences actually apply font scale, motion and haptic controls
 test('Jarvis recommendation actions navigate to the recommendation target',()=>{
  assert.match(app,/function applyJarvisRecommendation\(id\)[\s\S]*?if\(item\.target\)\{?navigate\(item\.target\)/);
 });
+
+
+test('statistics navigation is treated as a primary tab',()=>{
+ assert.match(app,/MAIN_PAGES = \['dashboard','tasks','learning','calendar','stats','vision','ai','more'\]/);
+});
