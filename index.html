@@ -804,6 +804,11 @@ body{background:radial-gradient(ellipse at 15% 0%,color-mix(in srgb,var(--brand)
 @media(max-width:480px){.jarvis-page{padding-bottom:calc(150px + var(--safe-bottom))}.jarvis-hero{padding:15px 12px;gap:12px}.jarvis-orb{width:58px;height:58px;flex-basis:58px;border-radius:20px}.jarvis-compose .btn{min-width:42px;padding:0 10px}.jarvis-messages{max-height:48vh;min-height:180px}.jarvis-mode{flex-basis:calc(50% - 7px)}}\n#app{overflow:visible!important}.app-main{overflow:visible!important;scroll-padding-bottom:calc(150px + var(--safe-bottom))}
 @media(prefers-reduced-motion:reduce){.jarvis-orb i{animation:none}}
 
+
+/* LIFE OS: explicit motion override and completion particles */
+.life-burst-particle{position:absolute;z-index:3;display:block;pointer-events:none;font-size:17px;color:var(--brand);text-shadow:0 0 12px var(--brand),0 0 24px var(--brand-2);animation:lifeBurst .9s cubic-bezier(.16,.75,.3,1) forwards;will-change:transform,opacity}
+@keyframes lifeBurst{0%{transform:translate3d(0,0,0) scale(.35) rotate(0);opacity:0}15%{opacity:1}100%{transform:translate3d(var(--dx),var(--dy),0) scale(1.15) rotate(150deg);opacity:0}}
+@media(prefers-reduced-motion:reduce){body.life-motion-override .life-effect{display:block!important;animation-duration:var(--duration,15s)!important;animation-iteration-count:infinite!important}body.life-motion-override .life-burst-particle{animation-duration:.9s!important;animation-iteration-count:1!important}}
 </style>
 </head>
 <body class="theme-dark">
