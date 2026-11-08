@@ -4192,7 +4192,7 @@ function init(){
     applyUserSettings();
     updateHeader();
     initPWAHandlers();
-    if(!state.profile.name && !state.settings.onboardingDone){ showWelcome(); return; }
+    if(!state.profile.name && !state.settings.onboardingDone){ showWelcome(); window.__LIFE_OS_BOOTED = true; return; }
     if(state.profile.name && !state.settings.onboardingDone){ state.settings.onboardingDone = true; save(); }
     if(!state.profile.name && window.__tgName){ state.profile.name = window.__tgName; save(); }
     if(!state.tasks.length){
@@ -4218,6 +4218,7 @@ function init(){
     setInterval(function(){ try{ save(); }catch(e){} }, 30000);
     setInterval(function(){ try{ checkAchievements(); }catch(e){} }, 5*60*1000);
     setInterval(function(){ try{ checkCooldownAndSleep(); }catch(e){} }, 60000);
+    window.__LIFE_OS_BOOTED = true;
     console.log('[INIT ✅] Life OS v' + CURRENT_VERSION);
   }catch(e){
     console.error('[INIT]', e);
