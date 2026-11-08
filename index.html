@@ -886,15 +886,7 @@ body{background:radial-gradient(ellipse at 15% 0%,color-mix(in srgb,var(--brand)
 })();
 (function(){
  if(!('serviceWorker' in navigator))return;
- var banner=null,reloading=false,offlineBanner=null;
- function setOfflineStatus(){
-  if(!document.body)return;
-  if(!navigator.onLine){
-   if(!offlineBanner){offlineBanner=document.createElement('div');offlineBanner.className='update-banner';offlineBanner.style.bottom='calc(18px + var(--safe-bottom))';offlineBanner.textContent='Вы офлайн · доступны сохранённые разделы';document.body.appendChild(offlineBanner);}
-  }else if(offlineBanner){offlineBanner.remove();offlineBanner=null;}
- }
- window.addEventListener('online',setOfflineStatus);
- window.addEventListener('offline',setOfflineStatus);
+ var banner=null,reloading=false;
  function offerUpdate(worker){
   if(!worker||banner||!document.body)return;
   banner=document.createElement('div');banner.className='update-banner';
@@ -905,7 +897,6 @@ body{background:radial-gradient(ellipse at 15% 0%,color-mix(in srgb,var(--brand)
  }
  navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloading)return;reloading=true;if(banner)banner.remove();window.location.reload();});
  window.addEventListener('load',function(){
-  setOfflineStatus();
   navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'}).then(function(reg){
    function inspect(){if(reg.waiting&&navigator.serviceWorker.controller)offerUpdate(reg.waiting);}
    inspect();reg.addEventListener('updatefound',function(){var installing=reg.installing;if(!installing)return;installing.addEventListener('statechange',function(){if(installing.state==='installed')inspect();});});
