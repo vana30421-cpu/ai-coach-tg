@@ -666,18 +666,34 @@ function applyTheme(id){
 }
 
 /* ============ TAB BAR ============ */
+function toggleTabBar(){
+  try{
+    if(!state.settings)state.settings={};
+    state.settings.navCollapsed=!state.settings.navCollapsed;
+    save();
+    renderTabBar();
+    haptic('light');
+  }catch(e){console.warn('[Navigation panel]',e);}
+}
 function renderTabBar(){
   try{
-    var bar = document.getElementById('tabBar');
-    if(!bar) return;
-    var tabs = window.TABS || [];
-    var html = '';
+    var bar=document.getElementById('tabBar');
+    var wrap=document.getElementById('tabBarWrap');
+    var toggle=document.getElementById('tabBarToggle');
+    var icon=document.getElementById('tabBarToggleIcon');
+    if(!bar)return;
+    var collapsed=!!(state.settings&&state.settings.navCollapsed);
+    if(wrap)wrap.classList.toggle('is-collapsed',collapsed);
+    if(toggle)toggle.setAttribute('aria-label',collapsed?'Развернуть панель':'Свернуть панель');
+    if(icon)icon.textContent=collapsed?'⌃':'⌄';
+    var tabs=window.TABS||[];
+    var html='';
     tabs.forEach(function(t){
-      html += '<button class="tab-item ' + (t.id === currentPage ? 'active' : '') + '" onclick="navigate(\'' + t.id + '\')">';
-      html += '<span class="tab-icon">' + t.emoji + '</span><span class="tab-label">' + t.label + '</span></button>';
+      html+='<button class="tab-item '+(t.id===currentPage?'active':'')+'" onclick="navigate(\''+t.id+'\')" aria-label="'+t.label+'">';
+      html+='<span class="tab-icon">'+t.emoji+'</span><span class="tab-label">'+t.label+'</span></button>';
     });
-    bar.innerHTML = html;
-  }catch(e){ console.error('[TabBar]', e); }
+    bar.innerHTML=html;
+  }catch(e){console.error('[TabBar]',e);}
 }
 
 function updateHeader(){
@@ -4326,6 +4342,7 @@ window.toast = toast;
 window.haptic = haptic;
 window.updateHeader = updateHeader;
 window.renderTabBar = renderTabBar;
+window.toggleTabBar = toggleTabBar;
 window.applyTheme = applyTheme;
 window.applyUserSettings = applyUserSettings;
 window.startEffects = startEffects;
