@@ -2415,6 +2415,8 @@ function ensureVisionState(){
  if(!state.vision.breakTracker)state.vision.breakTracker={today:{done:0,target:12},history:{}};
  if(!state.vision.symptomLog)state.vision.symptomLog=[];
  if(!state.vision.routineLog)state.vision.routineLog=[];
+ if(!state.vision.breakTracker.history)state.vision.breakTracker.history={};
+ if(state.vision.breakTracker.date&&state.vision.breakTracker.date!==today()){state.vision.breakTracker.today={done:0,target:12};state.vision.breakTracker.date=today();}
  return state.vision;
 }
 function renderVision(){
@@ -2493,7 +2495,7 @@ function resetVisionRedFlags(){
 function renderVisionExercises(){ renderVision60(); }
 function renderVision60(){
   var ex = window.VISION_EXERCISES || [];
-  var html = '<div class="page"><div class="title-xl">👁 Все упражнения (' + ex.length + ')</div>';
+  var html = '<div class="page"><div class="title-xl">👁 Протоколы комфорта (' + ex.length + ')</div><div class="subtitle">Короткие действия для перерыва и уменьшения цифрового дискомфорта. Они не тренируют диоптрии и не заменяют лечение.</div>';
   ex.forEach(function(e){
     html += '<div class="method-card" onclick="startEyeExercise(\'' + e.id + '\')"><div class="method-header"><div class="method-emoji">' + e.emoji + '</div><div style="flex:1;"><div class="method-title">' + esc(e.title) + '</div><div class="method-cat">' + esc(e.desc||'') + ' · ' + (e.duration||'') + '</div></div><div class="list-chevron">▶</div></div></div>';
   });
@@ -2898,6 +2900,13 @@ window.renderVisionTracker = renderVisionTracker;
 window.renderVisionTips = renderVisionTips;
 window.startEyeExercise = startEyeExercise;
 window.completeEyeExercise = completeEyeExercise;
+window.ensureVisionState = ensureVisionState;
+window.openVisionSymptomLog = openVisionSymptomLog;
+window.saveVisionSymptoms = saveVisionSymptoms;
+window.saveVisionExam = saveVisionExam;
+window.startVisionBreak = startVisionBreak;
+window.finishVisionBreak = finishVisionBreak;
+window.startEyeExercise = startEyeExercise;
 window.renderVision62 = renderVision62;
 window.startDetox62 = startDetox62;
 window.completeDetox62Day = completeDetox62Day;
@@ -5141,6 +5150,17 @@ window.toggleDetox60Item = toggleDetox60Item;
 window.renderGamesHub = renderGamesHub;
 window.startGame = startGame;
 window.saveGameScore = saveGameScore;
+window.miniGameFlip = miniGameFlip;
+window.miniGamePuzzleMove = miniGamePuzzleMove;
+window.miniGameSequenceAdd = miniGameSequenceAdd;
+window.miniGameSequenceCheck = miniGameSequenceCheck;
+window.miniGameSequenceReset = miniGameSequenceReset;
+window.miniGameGridToggle = miniGameGridToggle;
+window.miniGameGridCheck = miniGameGridCheck;
+window.miniGameReactionClick = miniGameReactionClick;
+window.miniGameMathAnswer = miniGameMathAnswer;
+window.miniGameTypingCheck = miniGameTypingCheck;
+window.miniGameTargetHit = miniGameTargetHit;
 window.renderLeagues = renderLeagues;
 window.renderPet = renderPet;
 window.feedPet = feedPet;
