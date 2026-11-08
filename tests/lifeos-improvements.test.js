@@ -6,6 +6,7 @@ const vm=require('node:vm');
 const app=fs.readFileSync('app.js','utf8');
 const content=fs.readFileSync('content.js','utf8');
 const api=fs.readFileSync('functions/api/jarvis.js','utf8');
+const worker=fs.readFileSync('workers/jarvis-worker.js','utf8');
 
 test('all changed browser scripts parse',()=>{
  for(const [name,source] of [['app.js',app],['content.js',content],['jarvis-core.js',fs.readFileSync('jarvis-core.js','utf8')],['sw.js',fs.readFileSync('sw.js','utf8')]])assert.doesNotThrow(()=>new vm.Script(source,{filename:name}));
@@ -34,12 +35,23 @@ test('vision section has timed breaks, symptom logging, exam history and urgent-
 test('Jarvis can send opt-in conversations with app analytics to a server-side API',()=>{
  assert.match(app,/function buildJarvisAppContext\(\)/);
  assert.match(app,/function sendJarvisCloudMessage\(text\)/);
- assert.match(app,/fetch\('\/api\/jarvis'/);
+ assert.match(app,/fetch\(apiUrl/);
+ assert.match(app,/function setJarvisApiUrl\(value\)/);
+ assert.match(app,/id="jarvisApiUrl"/);
  assert.match(app,/X-Jarvis-Access-Code/);
  assert.match(app,/cloudAIConsent/);
  assert.match(app,/setJarvisCloudAI/);
  assert.match(app,/buildJarvisAppContext\(\)/);
  assert.match(app,/Персональная подсказка Джарвиса на главном экране/);
+});
+
+test('standalone Worker restricts CORS to the configured app origin and checks its server-side access code',()=>{
+ assert.match(worker,/env\.ALLOWED_ORIGIN/);
+ assert.match(worker,/Access-Control-Allow-Origin/);
+ assert.match(worker,/ORIGIN_NOT_ALLOWED/);
+ assert.match(worker,/env\.JARVIS_ACCESS_CODE/);
+ assert.match(worker,/X-Jarvis-Access-Code/);
+ assert.match(worker,/JARVIS_RATE_LIMITS/);
 });
 
 test('server endpoint never embeds the OpenAI secret in the browser and requires server secrets plus access code',()=>{
