@@ -2405,69 +2405,44 @@ function completeCourseLesson(courseId,moduleId,idx){
  if(!wasDone){addXP(10,'lesson');addPetXP(3);}save();haptic('success');toast(wasDone?'Результат проверки обновлён':'Усвоение подтверждено · +10 XP','success');closeSheet();renderCourseGeneric(getCourseById(courseId),pKey);
 }
 /* ============ ЗРЕНИЕ ============ */
-function renderVision(){
-  var ex = window.VISION_EXERCISES || [];
-  var todayISO = today();
-  var metrics = (state.vision && state.vision.metrics) || {};
-  var m = metrics[todayISO] || {};
-  var breaks = (state.vision && state.vision.breakTracker && state.vision.breakTracker.today) || {done:0, target:12};
-  var html = '<div class="page"><div class="title-xl">👁 Зрение</div>';
-
-  /* Красные флаги */
-  if(state.vision && state.vision.redFlags && state.vision.redFlags.active){
-    html += '<div class="card" style="border-left:3px solid var(--danger);">';
-    html += '<h2 style="color:var(--danger);">🚨 Красные флаги активны</h2>';
-    html += '<div class="footnote text-secondary">Тренировки приостановлены. Отдохни 2-3 дня.</div>';
-    html += '<button class="btn btn-danger btn-block mt-2" onclick="resetVisionRedFlags()">✓ Сбросить</button>';
-    html += '</div>';
-  }
-
-  /* Перерывы 20-20-20 */
-  html += '<div class="card"><h2>⏱ 20-20-20</h2>';
-  html += '<div style="display:flex;gap:12px;align-items:center;">';
-  html += '<div style="flex:1;"><div style="font-size:12px;color:var(--text-2);">Сегодня</div>';
-  html += '<div style="font-size:32px;font-weight:800;">' + breaks.done + '/' + breaks.target + '</div></div>';
-  html += '<button class="btn btn-primary" onclick="startVisionBreak()">Начать</button>';
-  html += '</div>';
-  html += '<div class="progress mt-2"><div class="progress-fill" style="width:' + Math.min(100, Math.round(breaks.done/(breaks.target||12)*100)) + '%"></div></div>';
-  html += '</div>';
-
-  /* Быстрые упражнения */
-  html += '<div class="card"><h2>⚡ Быстрые упражнения</h2>';
-  ex.slice(0,4).forEach(function(e){
-    html += '<div class="list-row" onclick="startEyeExercise(\'' + e.id + '\')"><div class="list-icon">' + e.emoji + '</div><div class="list-body"><div class="list-title">' + esc(e.title) + '</div><div class="list-subtitle">' + e.duration + '</div></div></div>';
-  });
-  html += '<button class="btn btn-ghost btn-block mt-2" onclick="navigate(\'vision60\')">Все 75 упражнений →</button>';
-  html += '</div>';
-
-  /* 62-дневный путь */
-  html += '<div class="card"><h2>🌟 62-дневный путь</h2>';
-  var d62 = (state.vision && state.vision.detox62) || {status:'not_started'};
-  if(d62.status === 'not_started'){
-    html += '<div class="footnote text-secondary mb-2">Полная программа восстановления зрения</div>';
-    html += '<button class="btn btn-primary btn-block" onclick="startDetox62()">🚀 Начать программу</button>';
-  } else {
-    html += '<div style="font-size:32px;font-weight:800;">День ' + d62.currentDay + ' / 62</div>';
-    html += '<div class="progress mt-2"><div class="progress-fill" style="width:' + Math.round(d62.currentDay/62*100) + '%"></div></div>';
-    html += '<button class="btn btn-primary btn-block mt-3" onclick="navigate(\'vision62\')">Открыть программу</button>';
-  }
-  html += '</div>';
-
-  /* Метрики дня */
-  html += '<div class="card"><h2>📊 Метрики дня</h2>';
-  html += '<div class="row-between mb-2"><div class="list-title">Усталость глаз</div>';
-  html += '<input type="range" min="1" max="10" value="' + (m.eyeFatigue||5) + '" style="width:140px;" onchange="saveVisionMetric(\'eyeFatigue\',this.value)"/>';
-  html += '</div>';
-  html += '<div class="row-between mb-2"><div class="list-title">Часы у экрана</div>';
-  html += '<input type="number" min="0" max="24" step="0.5" value="' + (m.screenHours||0) + '" style="width:80px;" onchange="saveVisionMetric(\'screenHours\',this.value)"/>';
-  html += '</div>';
-  html += '<div class="row-between mb-2"><div class="list-title">Головные боли</div>';
-  html += '<button class="btn ' + (m.headaches?'btn-danger':'btn-ghost') + ' btn-sm" onclick="toggleVisionHeadache()">' + (m.headaches?'Есть':'Нет') + '</button>';
-  html += '</div></div>';
-
-  html += '</div>';
-  document.getElementById('app').innerHTML = html;
+function ensureVisionState(){
+ if(!state.vision)state.vision=defaultState().vision;
+ if(!state.vision.metrics)state.vision.metrics={};
+ if(!state.vision.breakTracker)state.vision.breakTracker={today:{done:0,target:12},history:{}};
+ if(!state.vision.symptomLog)state.vision.symptomLog=[];
+ if(!state.vision.routineLog)state.vision.routineLog=[];
+ return state.vision;
 }
+function renderVision(){
+ var v=ensureVisionState(),m=v.metrics[today()]||{},breaks=v.breakTracker.today||{done:0,target:12};
+ var html='<div class="page"><div class="title-xl">👁 Здоровье глаз</div><div class="subtitle">Комфорт при работе с экраном, наблюдение симптомов и контроль осмотров. Упражнения не исправляют близорукость, дальнозоркость или астигматизм.</div>';
+ html+='<div class="card card-gradient"><div class="row-between"><div><div class="stat-label">Перерывы сегодня</div><div class="stat-value">'+(breaks.done||0)+' / '+(breaks.target||12)+'</div></div><button class="btn btn-primary" onclick="startVisionBreak()">Пауза 20 сек</button></div><div class="progress mt-2"><div class="progress-fill" style="width:'+Math.min(100,Math.round((breaks.done||0)/(breaks.target||12)*100))+'%"></div></div><div class="footnote mt-2">20-20-20 — удобное напоминание сменить фокус, но не доказанное лечение.</div></div>';
+ html+='<div class="grid-2"><button class="card jarvis-tool" onclick="navigate(&quot;vision60&quot;)">⚡ Протоколы комфорта<br><small>5 безопасных действий</small></button><button class="card jarvis-tool" onclick="openVisionSymptomLog()">📝 Симптомы<br><small>Сухость, боль, размытость</small></button><button class="card jarvis-tool" onclick="navigate(&quot;visionTracker&quot;)">📊 Дневник и динамика<br><small>Последние 30 дней</small></button><button class="card jarvis-tool" onclick="navigate(&quot;visionTips&quot;)">🧭 Рабочее место<br><small>Экран, свет, расстояние</small></button></div>';
+ html+='<div class="card mt-3"><h2>Сегодняшнее самонаблюдение</h2><div class="field"><label class="field-label">Усталость глаз: '+(m.eyeFatigue==null?'—':m.eyeFatigue+'/10')+'</label><input type="range" min="0" max="10" value="'+(m.eyeFatigue||0)+'" onchange="saveVisionMetric(&quot;eyeFatigue&quot;,this.value)"></div><div class="field"><label class="field-label">Сухость: '+(m.dryness==null?'—':m.dryness+'/10')+'</label><input type="range" min="0" max="10" value="'+(m.dryness||0)+'" onchange="saveVisionMetric(&quot;dryness&quot;,this.value)"></div><div class="field"><label class="field-label">Время за экраном, часов</label><input type="number" min="0" max="24" step="0.5" value="'+(m.screenHours||'')+'" placeholder="Например, 6.5" onchange="saveVisionMetric(&quot;screenHours&quot;,this.value)"></div><div class="row-between"><span>Головная боль</span><button class="btn btn-sm '+(m.headaches?'btn-danger':'btn-ghost')+'" onclick="toggleVisionHeadache()">'+(m.headaches?'Есть':'Нет')+'</button></div></div>';
+ html+='<div class="card"><h2>Последние действия</h2>';
+ if(v.routineLog.length)v.routineLog.slice(-5).reverse().forEach(function(x){html+='<div class="list-row"><div class="list-icon">✓</div><div class="list-body"><div class="list-title">'+esc(x.title)+'</div><div class="list-subtitle">'+esc(x.date)+' · '+(x.seconds||0)+' сек</div></div></div>';});
+ else html+='<div class="footnote">Пока нет завершённых протоколов.</div>';
+ html+='</div><div class="card"><h2>Важно знать</h2><p class="footnote">При внезапном ухудшении или потере зрения, сильной боли, новых вспышках света или множественных новых мушках нужна срочная очная оценка. Не пытайся «перетренировать» такие симптомы.</p><p class="footnote">Плановые проверки у офтальмолога и актуальная коррекция зрения важнее любых приложений.</p></div><div class="card"><h2>Цифровые привычки · 62 дня</h2><div class="footnote">Это программа изменения экранных привычек, а не курс восстановления зрения или лечение.</div><button class="btn btn-primary btn-block mt-2" onclick="navigate(&quot;detoxcourse&quot;)">Открыть программу цифрового баланса</button></div></div>';
+ document.getElementById('app').innerHTML=html;
+}
+function openVisionSymptomLog(){
+ var v=ensureVisionState(),m=v.metrics[today()]||{};
+ var html='<div class="footnote mb-2">Отметь симптомы и их выраженность. Это дневник наблюдений, не диагностика.</div><div class="field"><label class="field-label">Сухость / жжение (0–10)</label><input id="visionDryness" type="number" min="0" max="10" value="'+(m.dryness||0)+'"></div><div class="field"><label class="field-label">Размытость зрения (0–10)</label><input id="visionBlur" type="number" min="0" max="10" value="'+(m.blur||0)+'"></div><div class="field"><label class="field-label">Боль (0–10)</label><input id="visionPain" type="number" min="0" max="10" value="'+(m.pain||0)+'"></div><div class="field"><label class="field-label">Головная боль (0–10)</label><input id="visionHeadache" type="number" min="0" max="10" value="'+(m.headacheLevel||0)+'"></div><div class="field"><label><input type="checkbox" id="visionSuddenLoss"> Внезапное ухудшение или потеря зрения</label></div><div class="field"><label><input type="checkbox" id="visionFlashes"> Новые вспышки света</label></div><div class="field"><label><input type="checkbox" id="visionFloaters"> Внезапно появилось много новых мушек</label></div><div class="field"><label><input type="checkbox" id="visionSeverePain"> Сильная боль в глазу</label></div><div class="field"><label><input type="checkbox" id="visionDouble"> Внезапное двоение</label></div><button class="btn btn-primary btn-block" onclick="saveVisionSymptoms()">Сохранить наблюдение</button>';
+ openSheet('Дневник симптомов',html);
+}
+function saveVisionSymptoms(){
+ var v=ensureVisionState(),t=today();if(!v.metrics[t])v.metrics[t]={};
+ function n(id){var x=Number((document.getElementById(id)||{}).value);return Number.isFinite(x)?Math.max(0,Math.min(10,x)):0;}
+ var urgent=['visionSuddenLoss','visionFlashes','visionFloaters','visionSeverePain','visionDouble'].filter(function(id){return !!((document.getElementById(id)||{}).checked);});
+ Object.assign(v.metrics[t],{dryness:n('visionDryness'),blur:n('visionBlur'),pain:n('visionPain'),headacheLevel:n('visionHeadache'),headaches:n('visionHeadache')>0});
+ v.symptomLog.push({date:t,at:nowISO(),dryness:v.metrics[t].dryness,blur:v.metrics[t].blur,pain:v.metrics[t].pain,headache:v.metrics[t].headacheLevel,urgent:urgent});
+ if(v.symptomLog.length>500)v.symptomLog=v.symptomLog.slice(-500);
+ save();closeSheet();
+ if(urgent.length)toast('Есть тревожные симптомы: обратись за срочной медицинской оценкой. При внезапной потере зрения или сильной боли — немедленно.','error',7000);
+ else toast('Запись симптомов сохранена','success');
+ renderVision();
+}
+
 function startVisionBreak(){
   if(!state.vision) state.vision = defaultState().vision;
   if(!state.vision.breakTracker) state.vision.breakTracker = {today:{done:0,target:12}, history:{}};
