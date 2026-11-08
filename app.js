@@ -3829,6 +3829,7 @@ function resetAllWithConfirm(){
 
 /* ============ ЗАГЛУШКИ ============ */
 function renderStub(title){
+  if(title==='Раздел'&&window.__wsCurrentTitle)title=window.__wsCurrentTitle;else window.__wsCurrentTitle=title;
   var id=currentPage||'workspace';
   if(!state.workspaces)state.workspaces={};
   if(!Array.isArray(state.workspaces[id]))state.workspaces[id]=[];
