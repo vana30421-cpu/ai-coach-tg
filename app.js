@@ -2645,46 +2645,81 @@ function skipDetox62Day(){
   renderVision62();
 }
 
-/* ============ ДЕТОКС 62 (общий) ============ */
+
+/* ============ 62-DAY DETOX: EXECUTION + OUTCOME TRACKING ============ */
+function getDetoxCourseRecord(day){
+  if(!state.detoxCourseProgress||typeof state.detoxCourseProgress!=='object')state.detoxCourseProgress={};
+  var old=state.detoxCourseProgress[day];
+  if(old===true)old={completed:true,completedAt:null,checks:[],reflection:{},legacy:true};
+  if(!old||typeof old!=='object')old={completed:false,checks:[],reflection:{}};
+  if(!Array.isArray(old.checks))old.checks=[];
+  if(!old.reflection||typeof old.reflection!=='object')old.reflection={};
+  state.detoxCourseProgress[day]=old;
+  return old;
+}
+function getDetoxCourseStats(){
+  var rows=state.detoxCourseProgress||{},completed=0,reflections=0,screen=[];
+  Object.keys(rows).forEach(function(k){var r=rows[k];if(r===true||r&&r.completed)completed++;if(r&&r.reflection&&Object.keys(r.reflection).length){reflections++;if(Number.isFinite(Number(r.reflection.screenMinutes)))screen.push({day:Number(k),minutes:Number(r.reflection.screenMinutes)});}});
+  var first=screen.find(function(x){return x.day===1;})||screen.slice().sort(function(a,b){return a.day-b.day;})[0];
+  var recent=screen.slice().sort(function(a,b){return b.day-a.day;}).slice(0,7);
+  var recentAvg=recent.length?Math.round(recent.reduce(function(n,x){return n+x.minutes;},0)/recent.length):null;
+  return {completed:completed,percent:Math.round(completed/62*100),reflections:reflections,screenBaseline:first?first.minutes:null,screenRecent:recentAvg,screenDelta:first&&recentAvg!==null?recentAvg-first.minutes:null,screenSamples:screen.length};
+}
 function renderDetoxCourse(){
-  var done = Object.keys(state.detoxCourseProgress || {}).length;
-  var html = '<div class="page"><div class="title-xl">📱 62-дневный детокс</div>';
-  html += '<div class="card card-gradient"><div style="font-size:12px;opacity:.9;">Пройдено дней</div><div style="font-size:40px;font-weight:800;">' + done + '/62</div></div>';
-  var course = window.DETOX_COURSE || [];
+  var course=window.DETOX_COURSE||[],stats=getDetoxCourseStats(),next=course.find(function(d){var r=state.detoxCourseProgress[d.day];return !(r===true||r&&r.completed);})||course[course.length-1];
+  var html='<div class="page"><div class="title-xl">📱 62-дневный детокс</div><div class="subtitle">Практический курс: измеряй, меняй среду, проверяй эффект и адаптируй план под себя.</div>';
+  html+='<div class="card card-gradient"><div class="grid-2"><div><div class="stat-value">'+stats.completed+'/62</div><div class="stat-label">Дней завершено</div></div><div><div class="stat-value">'+stats.percent+'%</div><div class="stat-label">Прогресс курса</div></div><div><div class="stat-value">'+stats.reflections+'</div><div class="stat-label">Дневников результата</div></div><div><div class="stat-value">'+(stats.screenRecent===null?'—':stats.screenRecent+' мин')+'</div><div class="stat-label">Среднее экранное время по записям</div></div></div><div class="progress mt-3"><div class="progress-fill" style="width:'+stats.percent+'%"></div></div></div>';
+  if(stats.screenBaseline!==null&&stats.screenRecent!==null)html+='<div class="card"><h2>📉 Изменение экранного времени</h2><div class="stat-value">'+(stats.screenDelta>0?'+':'')+stats.screenDelta+' мин/день</div><div class="footnote">Исходная точка: '+stats.screenBaseline+' мин · последние записи: '+stats.screenRecent+' мин. Сравниваем только введённые тобой данные; это не автоматическое считывание телефона.</div></div>';
+  if(next)html+='<div class="card"><h2>▶ Продолжить</h2><div class="method-title">День '+next.day+': '+esc(next.title)+'</div><div class="footnote">'+esc(next.subtitle||next.phase)+'</div><button class="btn btn-primary btn-block mt-2" onclick="openDetoxDay('+next.day+')">Открыть подробное задание</button></div>';
+  html+='<div class="card"><h2>📊 Анализ и выводы</h2><button class="btn btn-ghost btn-block" onclick="renderDetoxReview()">Открыть полный отчёт курса</button><div class="footnote mt-2">Отчёт учитывает выполнение, экранное время и самооценки. Если данных мало, он прямо покажет, чего не хватает.</div></div>';
+  var phases={};course.forEach(function(d){phases[d.phase]=(phases[d.phase]||0)+1;});
+  var currentPhase='';
   course.forEach(function(d){
-    var isDone = state.detoxCourseProgress[d.day];
-    html += '<div class="method-card" style="' + (isDone?'border-left:3px solid var(--success);':'') + '" onclick="openDetoxDay(' + d.day + ')">';
-    html += '<div class="method-header"><div class="method-emoji">' + (isDone?'✓':d.emoji) + '</div>';
-    html += '<div style="flex:1;"><div class="method-title">День ' + d.day + ': ' + esc(d.title) + '</div>';
-    html += '<div class="method-cat">' + d.phase + '</div></div></div></div>';
+    if(d.phase!==currentPhase){currentPhase=d.phase;html+='<div class="section-title mt-3">'+esc(currentPhase)+'</div>';}
+    var r=state.detoxCourseProgress[d.day],isDone=r===true||!!(r&&r.completed),checks=r&&r.checks?r.checks.filter(Boolean).length:0;
+    html+='<div class="method-card" style="'+(isDone?'border-left:3px solid var(--success);':'')+'" onclick="openDetoxDay('+d.day+')"><div class="method-header"><div class="method-emoji">'+(isDone?'✓':d.emoji)+'</div><div style="flex:1"><div class="method-title">День '+d.day+': '+esc(d.title)+'</div><div class="method-cat">'+esc(d.subtitle||d.phase)+' · '+(isDone?'Выполнено':checks+'/'+(d.do||[]).length+' шагов отмечено')+'</div></div><div class="list-chevron">›</div></div></div>';
   });
-  html += '</div>';
-  document.getElementById('app').innerHTML = html;
+  html+='<button class="btn btn-ghost btn-block mt-3" onclick="navigate(\'vision\')">← К разделу зрения</button></div>';
+  document.getElementById('app').innerHTML=html;
 }
 function openDetoxDay(day){
-  var d = getDetoxDay(day);
-  if(!d) return;
-  var isDone = state.detoxCourseProgress[day];
-  var html = '<div style="font-size:20px;font-weight:800;margin-bottom:12px;">' + d.emoji + ' День ' + day + ': ' + esc(d.title) + '</div>';
-  if(d.theory) html += '<div class="card"><div class="lesson-section"><div class="lesson-section-title">📚 Теория</div><div class="lesson-content">' + formatLesson(d.theory) + '</div></div></div>';
-  if(d.science) html += '<div class="card"><div class="lesson-section science"><div class="lesson-section-title">🔬 Наука</div><div class="lesson-content">' + esc(d.science) + '</div></div></div>';
-  if(d.do && d.do.length){
-    html += '<div class="card"><h2>✅ Задания</h2><ul style="padding-left:20px;">';
-    d.do.forEach(function(x){ html += '<li style="margin-bottom:6px;">' + esc(x) + '</li>'; });
-    html += '</ul></div>';
-  }
-  if(!isDone){
-    html += '<button class="btn btn-primary btn-block mt-3" onclick="completeDetoxDay(' + day + ')">✓ Пройдено</button>';
-  }
-  openSheet('День ' + day, html);
+  var d=getDetoxDay(day);if(!d)return;
+  var rec=getDetoxCourseRecord(day),isDone=!!rec.completed;
+  var html='<div class="detox-day-detail"><div style="font-size:20px;font-weight:800;margin-bottom:6px">'+d.emoji+' День '+day+': '+esc(d.title)+'</div><div class="footnote mb-3">'+esc(d.phase)+' · '+esc(d.subtitle||'Практика дня')+'</div>';
+  html+='<div class="card"><h2>🎯 Зачем этот день</h2><div class="lesson-content">'+formatLesson(d.theory||'Сегодняшняя задача помогает изменить одну конкретную часть цифрового поведения.')+'</div><div class="footnote mt-2">Цель: '+esc(d.effect||'заметить и проверить изменение')+'. Не нужно стремиться к идеальному выполнению — важны наблюдения и устойчивый план.</div></div>';
+  html+='<div class="card"><h2>🔬 Что важно знать</h2><div class="lesson-content">Изменения экранных привычек индивидуальны. Мы не обещаем фиксированный процент улучшения и не используем неподтверждённые цифры как гарантированный результат. Проверяй эффект по своим записям: время, частота открытий, сон, концентрация и самочувствие.</div><div class="footnote mt-2">Совет дня: '+esc(d.tips||'Выбирай реалистичный шаг.')+'</div></div>';
+  html+='<div class="card"><h2>🧭 План выполнения</h2><div class="footnote mb-2">Прочитай объяснение каждого пункта, затем отметь выполнение. Можно адаптировать задание под работу, учёбу, безопасность и состояние.</div>';
+  (d.do||[]).forEach(function(task,i){var g=getDetoxTaskGuide(day,task,i),checked=!!rec.checks[i];
+    html+='<div class="detox-task-guide"><label class="list-row" style="align-items:flex-start"><input type="checkbox" '+(checked?'checked':'')+' onchange="toggleDetoxCourseTask('+day+','+i+',this.checked)"><span style="font-weight:700">'+esc(task)+'</span></label><div class="footnote mt-2"><b>Зачем:</b> '+esc(g.why)+'</div><div class="footnote mt-1"><b>Подготовка:</b> '+esc(g.prepare)+'</div><ol style="padding-left:20px;margin:8px 0">'+g.steps.map(function(x){return '<li style="margin:5px 0">'+esc(x)+'</li>';}).join('')+'</ol><div class="footnote"><b>Пример:</b> '+esc(g.example)+'</div><div class="footnote mt-1"><b>Проверка:</b> '+esc(g.check)+'</div></div>';
+  });
+  html+='</div><div class="card"><h2>📏 Измерь результат</h2><div class="footnote mb-2">Заполни в конце дня. Если показатель неизвестен — оставь поле пустым, не угадывай.</div><div class="field"><label class="field-label">Экранное время за день, минут</label><input id="detox-screen" type="number" min="0" max="1440" step="1" value="'+(rec.reflection.screenMinutes??'')+'" placeholder="Например, 245"></div><div class="field"><label class="field-label">Сколько раз открыл телефон без конкретной цели?</label><input id="detox-urges" type="number" min="0" max="500" value="'+(rec.reflection.unplannedOpens??'')+'" placeholder="Необязательно"></div><div class="field"><label class="field-label">Сон прошлой ночью, часов</label><input id="detox-sleep" type="number" min="0" max="24" step="0.25" value="'+(rec.reflection.sleepHours??'')+'" placeholder="Например, 7.5"></div><div class="field"><label class="field-label">Концентрация сегодня, 1–5</label><select id="detox-focus"><option value="">Не оценивал</option>'+[1,2,3,4,5].map(function(n){return '<option value="'+n+'" '+(Number(rec.reflection.focus)===n?'selected':'')+'>'+n+(n===1?' — очень трудно':n===3?' — средне':n===5?' — отлично':'')+'</option>';}).join('')+'</select></div><div class="field"><label class="field-label">Насколько задание помогло? 1–5</label><select id="detox-help"><option value="">Пока не знаю</option>'+[1,2,3,4,5].map(function(n){return '<option value="'+n+'" '+(Number(rec.reflection.helped)===n?'selected':'')+'>'+n+'</option>';}).join('')+'</select></div><div class="field"><label class="field-label">Что заметил? Что было сложно? Что изменить завтра?</label><textarea id="detox-note" rows="4" maxlength="1200" placeholder="Коротко: факт → вывод → следующий шаг">'+esc(rec.reflection.note||'')+'</textarea></div><button class="btn btn-ghost btn-block" onclick="saveDetoxDayReflection('+day+')">💾 Сохранить наблюдения</button></div>';
+  if(isDone)html+='<div class="card"><div class="footnote">День уже отмечен как выполненный. Наблюдения можно дополнять и исправлять — XP повторно не начисляется.</div></div>';
+  else html+='<button class="btn btn-primary btn-block mt-2" onclick="completeDetoxDay('+day+')">✓ Завершить день и сохранить результат</button>';
+  html+='</div>';
+  openSheet('День '+day+' · подробный план',html);
+}
+function toggleDetoxCourseTask(day,index,checked){
+  var r=getDetoxCourseRecord(day);r.checks[index]=!!checked;r.updatedAt=nowISO();save();
+  var count=r.checks.filter(Boolean).length,d=getDetoxDay(day);
+  toast(count+'/'+((d&&d.do)||[]).length+' шагов отмечено','success',1200);
+}
+function saveDetoxDayReflection(day){
+  var r=getDetoxCourseRecord(day),read=function(id){var el=document.getElementById(id);return el?el.value:'';};
+  var screen=read('detox-screen'),urges=read('detox-urges'),sleep=read('detox-sleep'),focus=read('detox-focus'),help=read('detox-help');
+  function numberOrNull(v,min,max){if(v==='')return null;var n=Number(v);return Number.isFinite(n)&&n>=min&&n<=max?n:null;}
+  var sm=numberOrNull(screen,0,1440),uo=numberOrNull(urges,0,500),sh=numberOrNull(sleep,0,24);
+  if(screen!==''&&sm===null||urges!==''&&uo===null||sleep!==''&&sh===null)return toast('Проверь числовые значения','warning');
+  r.reflection={screenMinutes:sm,unplannedOpens:uo,sleepHours:sh,focus:numberOrNull(focus,1,5),helped:numberOrNull(help,1,5),note:read('detox-note').trim().slice(0,1200),updatedAt:nowISO()};
+  save();toast('Наблюдения сохранены','success');
 }
 function completeDetoxDay(day){
-  state.detoxCourseProgress[day] = true;
-  addXP(10, 'detox');
-  save();
-  toast('✓ +10 XP','success');
-  closeSheet();
-  renderDetoxCourse();
+  var d=getDetoxDay(day);if(!d)return;
+  var r=getDetoxCourseRecord(day);if(r.completed){toast('Этот день уже завершён','info');return;}
+  var count=(d.do||[]).filter(function(_,i){return !!r.checks[i];}).length;
+  if(count<(d.do||[]).length&&!confirm('Отмечено '+count+' из '+(d.do||[]).length+' шагов. Завершить день с частичным выполнением? Можно вернуться и дополнить позже.'))return;
+  saveDetoxDayReflection(day);
+  r.completed=true;r.completedAt=nowISO();r.updatedAt=nowISO();r.completedTasks=count;r.totalTasks=(d.do||[]).length;
+  addXP(10,'detox');save();haptic('success');toast('День '+day+' сохранён. '+count+'/'+r.totalTasks+' шагов','success');closeSheet();renderDetoxCourse();
 }
 
 /* ============ FSRS-5 (интервальное повторение) ============ */
