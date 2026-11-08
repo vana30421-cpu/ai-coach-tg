@@ -166,3 +166,25 @@ test('anti-stress timer cannot award completion XP before the actual duration',(
  assert.match(app,/plannedDuration:antiTimerDuration/);
  assert.match(app,/disabled onclick="finishAntistress\(\)"/);
 });
+
+test('previously blank reference sections now render searchable libraries and save progress',()=>{
+ for(const name of ['renderLifeLibrary','renderLifeLibraryRows','renderPsychology','renderThinking','renderEtiquette','renderHormones','renderRecovery','renderIQ','renderEQ','renderNeuro','renderWealth'])assert.match(systems,new RegExp('window\\.'+name+'=function|function '+name+'\\('));
+ assert.match(systems,/window\.filterLifeLibrary=function/);
+ assert.match(systems,/window\.markLifeLibraryDone=function/);
+});
+test('finance section supports local income and expense records with validation',()=>{
+ assert.match(systems,/window\.renderFinance=function/);
+ assert.match(systems,/window\.addFinanceEntry=function/);
+ assert.match(systems,/window\.deleteFinanceEntry=function/);
+ assert.match(systems,/state\.financeEntries\.push/);
+ assert.match(systems,/amount<=0/);
+});
+test('stats page can hand a real period-specific analysis to Jarvis',()=>{
+ assert.match(app,/onclick="askJarvisAboutStats\(\)"/);
+ assert.match(systems,/window\.askJarvisAboutStats=function/);
+ assert.match(systems,/Разбери мою статистику LIFE OS/);
+});
+test('weekly schedule add action defaults to the currently selected date',()=>{
+ assert.match(app,/function addScheduleEvent\(date\)\{date=date\|\|window\.LIFEOS_SELECTED_CAL_DATE\|\|today\(\)/);
+ assert.match(systems,/onclick="addScheduleEvent\(\)"/);
+});
