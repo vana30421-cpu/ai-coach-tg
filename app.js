@@ -853,6 +853,7 @@ function openThemePicker(){
 function setTheme(id){
   try{
     state.settings.theme = id;
+    state.settings.effectsEnabled = true;
     applyTheme(id);
     save();
     haptic('success');
