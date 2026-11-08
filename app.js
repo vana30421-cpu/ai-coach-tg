@@ -3206,7 +3206,14 @@ function finishAntistress(){if(!antiTimerFinished){toast('Сначала зак�
 function finishAntistressEarly(){if(!currentAntistressId)return;finishAntistressRecord(false);}
 function cancelAntistress(){if(antiTimerHandle){clearInterval(antiTimerHandle);antiTimerHandle=null;}currentAntistressId=null;closeSheet();}
 
-function renderAntistressDetail(){renderAntistress();}
+function openAntistressDetail(id){currentAntistressId=id;navigate('antistressDetail');}
+function renderAntistressDetail(){
+ var p=(window.ANTISTRESS_PRACTICES||[]).find(function(x){return x.id===currentAntistressId;});
+ if(!p){renderAntistress();return;}
+ var entries=(state.antistressEntries||[]).filter(function(x){return x.practiceId===p.id;}),last=entries[entries.length-1];
+ var html='<div class="page"><button class="btn btn-ghost btn-sm" onclick="navigate(\'antistress\')">← Все практики</button><div class="card card-gradient" style="text-align:center"><div style="font-size:60px">'+p.emoji+'</div><div class="title-xl">'+esc(p.title)+'</div><p class="body-text">'+esc(p.desc||'')+'</p><div class="footnote">'+entries.length+' выполнений'+(last?' · '+esc(last.date):'')+'</div><button class="btn btn-primary btn-block" onclick="startAntistress(\''+p.id+'\')">▶ Начать практику</button></div><div class="card"><h2>Пошаговая инструкция</h2><ol class="lesson-content">'+(p.steps||[]).map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ol></div><div class="card"><h2>Безопасность</h2><p class="footnote">Практика саморегуляции, не лечение. Не форсируй дыхание; остановись при головокружении, боли или дискомфорте.</p></div></div>';
+ document.getElementById('app').innerHTML=html;
+}
 
 /* ============ BRAIN TRAINING ============ */
 function renderBrain(){
