@@ -2659,8 +2659,8 @@ function getDetoxCourseRecord(day){
 }
 function getDetoxCourseStats(){
   var rows=state.detoxCourseProgress||{},completed=0,reflections=0,screen=[];
-  Object.keys(rows).forEach(function(k){var r=rows[k];if(r===true||r&&r.completed)completed++;if(r&&r.reflection&&Object.keys(r.reflection).length){reflections++;if(Number.isFinite(Number(r.reflection.screenMinutes)))screen.push({day:Number(k),minutes:Number(r.reflection.screenMinutes)});}});
-  var first=screen.find(function(x){return x.day===1;})||screen.slice().sort(function(a,b){return a.day-b.day;})[0];
+  Object.keys(rows).forEach(function(k){var r=rows[k];if(r===true||r&&r.completed)completed++;if(r&&r.reflection&&Object.keys(r.reflection).length){reflections++;var raw=r.reflection.screenMinutes;if(raw!==null&&raw!==undefined&&raw!==''&&Number.isFinite(Number(raw)))screen.push({day:Number(k),minutes:Number(raw)});}});
+  var first=screen.slice().sort(function(a,b){return a.day-b.day;})[0];
   var recent=screen.slice().sort(function(a,b){return b.day-a.day;}).slice(0,7);
   var recentAvg=recent.length?Math.round(recent.reduce(function(n,x){return n+x.minutes;},0)/recent.length):null;
   return {completed:completed,percent:Math.round(completed/62*100),reflections:reflections,screenBaseline:first?first.minutes:null,screenRecent:recentAvg,screenDelta:first&&recentAvg!==null?recentAvg-first.minutes:null,screenSamples:screen.length};
@@ -2671,7 +2671,7 @@ function renderDetoxCourse(){
   html+='<div class="card card-gradient"><div class="grid-2"><div><div class="stat-value">'+stats.completed+'/62</div><div class="stat-label">Дней завершено</div></div><div><div class="stat-value">'+stats.percent+'%</div><div class="stat-label">Прогресс курса</div></div><div><div class="stat-value">'+stats.reflections+'</div><div class="stat-label">Дневников результата</div></div><div><div class="stat-value">'+(stats.screenRecent===null?'—':stats.screenRecent+' мин')+'</div><div class="stat-label">Среднее экранное время по записям</div></div></div><div class="progress mt-3"><div class="progress-fill" style="width:'+stats.percent+'%"></div></div></div>';
   if(stats.screenBaseline!==null&&stats.screenRecent!==null)html+='<div class="card"><h2>📉 Изменение экранного времени</h2><div class="stat-value">'+(stats.screenDelta>0?'+':'')+stats.screenDelta+' мин/день</div><div class="footnote">Исходная точка: '+stats.screenBaseline+' мин · последние записи: '+stats.screenRecent+' мин. Сравниваем только введённые тобой данные; это не автоматическое считывание телефона.</div></div>';
   if(next)html+='<div class="card"><h2>▶ Продолжить</h2><div class="method-title">День '+next.day+': '+esc(next.title)+'</div><div class="footnote">'+esc(next.subtitle||next.phase)+'</div><button class="btn btn-primary btn-block mt-2" onclick="openDetoxDay('+next.day+')">Открыть подробное задание</button></div>';
-  html+='<div class="card"><h2>📊 Анализ и выводы</h2><button class="btn btn-ghost btn-block" onclick="renderDetoxReview()">Открыть полный отчёт курса</button><div class="footnote mt-2">Отчёт учитывает выполнение, экранное время и самооценки. Если данных мало, он прямо покажет, чего не хватает.</div></div>';
+  html+='<div class="card"><h2>📊 Анализ и выводы</h2><button class="btn btn-ghost btn-block" onclick="renderDetoxCourseReport()">Открыть полный отчёт курса</button><div class="footnote mt-2">Отчёт учитывает выполнение, экранное время и самооценки. Если данных мало, он прямо покажет, чего не хватает.</div></div>';
   var phases={};course.forEach(function(d){phases[d.phase]=(phases[d.phase]||0)+1;});
   var currentPhase='';
   course.forEach(function(d){
@@ -2698,6 +2698,35 @@ function openDetoxDay(day){
   html+='</div>';
   openSheet('День '+day+' · подробный план',html);
 }
+
+function renderDetoxCourseReport(){
+  var stats=getDetoxCourseStats(),rows=Object.keys(state.detoxCourseProgress||{}).map(function(k){var r=state.detoxCourseProgress[k];return {day:Number(k),record:r===true?{completed:true}:r};}).sort(function(x,y){return x.day-y.day;});
+  var reflections=rows.filter(function(x){return x.record&&x.record.reflection&&Object.keys(x.record.reflection).length;});
+  var avg=function(key){var vals=reflections.map(function(x){return x.record.reflection[key];}).filter(function(v){return v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v))).map(Number);return vals.length?Math.round(vals.reduce(function(a,b){return a+b;},0)/vals.length*10)/10:null;};
+  var sleep=avg('sleepHours'),focus=avg('focus'),help=avg('helped'),opens=avg('unplannedOpens');
+  var screenDirection=stats.screenDelta===null?'нет достаточных данных':stats.screenDelta<0?'снижение':stats.screenDelta>0?'рост':'без изменения';
+  var insight='Пока недостаточно записей для выводов. Заполни исходный замер и дневные наблюдения минимум за 7 дней.';
+  if(stats.screenSamples>=3&&stats.screenBaseline!==null&&stats.screenRecent!==null){
+    var pct=stats.screenBaseline>0?Math.round((stats.screenRecent-stats.screenBaseline)/stats.screenBaseline*100):null;
+    insight=stats.screenDelta<0?'По твоим записям экранное время снизилось на '+Math.abs(stats.screenDelta)+' мин/день ('+(pct===null?'—':Math.abs(pct)+'%')+'). Сохрани подходящие изменения и проверь, не выросло ли время в других приложениях.':stats.screenDelta>0?'Экранное время выросло на '+stats.screenDelta+' мин/день ('+(pct===null?'—':pct+'%')+'). Это не провал: проверь, какие приложения и ситуации дали рост, и выбери одно небольшое изменение на следующую неделю.':'Среднее экранное время пока близко к исходной точке. Проверь не только минуты, но и частоту бесцельных открытий, сон и концентрацию.';
+  }
+  var html='<div class="page"><div class="title-xl">📊 Аналитика 62-дневного детокса</div><div class="subtitle">Отчёт строится только по сохранённым тобой данным. LIFE OS не считывает экранное время автоматически.</div>';
+  html+='<div class="grid-2 mb-3"><div class="card"><div class="stat-value">'+stats.completed+'/62</div><div class="stat-label">Завершено дней</div></div><div class="card"><div class="stat-value">'+stats.reflections+'</div><div class="stat-label">Дневниковых записей</div></div><div class="card"><div class="stat-value">'+(stats.screenBaseline===null?'—':stats.screenBaseline+' мин')+'</div><div class="stat-label">Первая измеренная точка</div></div><div class="card"><div class="stat-value">'+(stats.screenRecent===null?'—':stats.screenRecent+' мин')+'</div><div class="stat-label">Среднее последних записей</div></div></div>';
+  html+='<div class="card"><h2>🧠 Вывод по текущим данным</h2><div class="lesson-content">'+esc(insight)+'</div><div class="footnote mt-2">Направление: '+screenDirection+'. Изменение не доказывает, что именно курс вызвал результат: учитывай работу, выходные, поездки и другие обстоятельства.</div></div>';
+  html+='<div class="card"><h2>📈 Другие показатели</h2><div class="grid-2"><div><b>'+(sleep===null?'—':sleep+' ч')+'</b><div class="footnote">Средний сон по записям</div></div><div><b>'+(focus===null?'—':focus+'/5')+'</b><div class="footnote">Средняя концентрация</div></div><div><b>'+(help===null?'—':help+'/5')+'</b><div class="footnote">Насколько помогали задания</div></div><div><b>'+(opens===null?'—':opens)+'</b><div class="footnote">Бесцельные открытия/день</div></div></div></div>';
+  html+='<div class="card"><h2>🛠 Что делать дальше</h2>';
+  if(stats.reflections<7)html+='<div class="list-row"><div class="list-body"><div class="list-title">1. Собери базовые данные</div><div class="footnote">Заполни экранное время, сон и концентрацию ещё несколько дней. Не подменяй пропуски нулями.</div></div></div>';
+  if(stats.screenDelta!==null&&stats.screenDelta>0)html+='<div class="list-row"><div class="list-body"><div class="list-title">2. Найди источник роста</div><div class="footnote">Посмотри топ-3 приложения и выбери одно изменение: лимит, уведомления или отдельное время проверки.</div></div></div>';
+  if(help!==null&&help<3)html+='<div class="list-row"><div class="list-body"><div class="list-title">3. Упрости задания</div><div class="footnote">Средняя оценка пользы низкая. Уменьши объём, измени замену или выбери более подходящее время.</div></div></div>';
+  if(focus!==null&&focus<3)html+='<div class="list-row"><div class="list-body"><div class="list-title">4. Уменьши блоки фокуса</div><div class="footnote">Попробуй 10–15 минут одной задачи, затем короткий перерыв. Не форсируй длительные сессии.</div></div></div>';
+  html+='<div class="footnote mt-2">Рекомендации — безопасные эксперименты, а не автоматическое управление телефоном. Решение остаётся за тобой.</div></div>';
+  html+='<div class="card"><h2>📅 Дневник по дням</h2>';
+  if(!reflections.length)html+='<div class="footnote">Записей пока нет.</div>';
+  reflections.slice().reverse().forEach(function(x){var r=x.record.reflection;html+='<div class="list-row"><div class="list-body"><div class="list-title">День '+x.day+'</div><div class="footnote">'+(r.screenMinutes===null?'Экран —':r.screenMinutes+' мин экран')+' · '+(r.sleepHours===null?'сон —':r.sleepHours+' ч сон')+' · '+(r.focus===null?'фокус —':'фокус '+r.focus+'/5')+'</div>'+(r.note?'<div class="footnote">'+esc(r.note)+'</div>':'')+'</div></div>';});
+  html+='</div><button class="btn btn-primary btn-block" onclick="renderDetoxCourse()">← К 62-дневному курсу</button></div>';
+  document.getElementById('app').innerHTML=html;
+}
+
 function toggleDetoxCourseTask(day,index,checked){
   var r=getDetoxCourseRecord(day);r.checks[index]=!!checked;r.updatedAt=nowISO();save();
   var count=r.checks.filter(Boolean).length,d=getDetoxDay(day);
@@ -2710,14 +2739,14 @@ function saveDetoxDayReflection(day){
   var sm=numberOrNull(screen,0,1440),uo=numberOrNull(urges,0,500),sh=numberOrNull(sleep,0,24);
   if(screen!==''&&sm===null||urges!==''&&uo===null||sleep!==''&&sh===null)return toast('Проверь числовые значения','warning');
   r.reflection={screenMinutes:sm,unplannedOpens:uo,sleepHours:sh,focus:numberOrNull(focus,1,5),helped:numberOrNull(help,1,5),note:read('detox-note').trim().slice(0,1200),updatedAt:nowISO()};
-  save();toast('Наблюдения сохранены','success');
+  save();toast('Наблюдения сохранены','success');return true;
 }
 function completeDetoxDay(day){
   var d=getDetoxDay(day);if(!d)return;
   var r=getDetoxCourseRecord(day);if(r.completed){toast('Этот день уже завершён','info');return;}
   var count=(d.do||[]).filter(function(_,i){return !!r.checks[i];}).length;
   if(count<(d.do||[]).length&&!confirm('Отмечено '+count+' из '+(d.do||[]).length+' шагов. Завершить день с частичным выполнением? Можно вернуться и дополнить позже.'))return;
-  saveDetoxDayReflection(day);
+  if(!saveDetoxDayReflection(day))return;
   r.completed=true;r.completedAt=nowISO();r.updatedAt=nowISO();r.completedTasks=count;r.totalTasks=(d.do||[]).length;
   addXP(10,'detox');save();haptic('success');toast('День '+day+' сохранён. '+count+'/'+r.totalTasks+' шагов','success');closeSheet();renderDetoxCourse();
 }
@@ -2918,6 +2947,7 @@ window.startDetox62 = startDetox62;
 window.completeDetox62Day = completeDetox62Day;
 window.skipDetox62Day = skipDetox62Day;
 window.renderDetoxCourse = renderDetoxCourse;
+window.renderDetoxCourseReport = renderDetoxCourseReport;
 window.openDetoxDay = openDetoxDay;
 window.completeDetoxDay = completeDetoxDay;
 window.renderFSRS = renderFSRS;
