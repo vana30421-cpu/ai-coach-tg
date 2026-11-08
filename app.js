@@ -715,10 +715,20 @@ function applyTheme(id){
     var selected=available.find(function(t){return t.id===id;});
     if(!selected){id='dark';selected=available.find(function(t){return t.id==='dark';});}
     document.body.className=document.body.className.split(/\s+/).filter(function(c){return c&&c.indexOf('theme-')!==0;}).concat(['theme-'+id]).join(' ');
-    if(state&&state.settings)state.settings.theme=id;
+    var root=document.documentElement;
+    if(selected){
+      root.style.setProperty('--bg',selected.bg||'#000000');
+      root.style.setProperty('--bg-1',selected.bg2||selected.bg||'#0b0b10');
+      root.style.setProperty('--bg-2',selected.bg2||selected.bg||'#14141b');
+      root.style.setProperty('--text',selected.text||'#ffffff');
+      root.style.setProperty('--brand',selected.brand||'#5b9eff');
+      root.style.setProperty('--brand-2',selected.brand2||selected.brand||'#a78bfa');
+      root.style.setProperty('--brand-glow',(selected.brand||'#5b9eff')+'66');
+    }
+    if(state&&state.settings){state.settings.theme=id;save();}
     var meta=document.querySelector('meta[name="theme-color"]');
     if(meta)meta.setAttribute('content',selected&&selected.bg?selected.bg:'#000000');
-  }catch(e){console.error('[Theme]',e);document.body.className='theme-dark';}
+  }catch(e){console.error('[Theme]',e);document.body.classList.add('theme-dark');}
   startEffects();
 }
 
@@ -3950,7 +3960,7 @@ function renderNotes(){ renderStub('📝 Заметки'); }
 function renderJournal(){ renderStub('📓 Дневник'); }
 function renderDailySurvey(){ renderStub('📋 Опрос'); }
 function renderSurvey(){ renderStub('📋 Опрос'); }
-function renderPersonalPlan(){ navigate('dashboard'); }
+function renderPersonalPlan(){ renderStub('🧭 Персональный план'); }
 function renderLearningGames(){ renderStub('🎮 Игры'); }
 function renderGamePlay(){ renderStub('Игра'); }
 function renderMaterials(){ renderStub('📚 Материалы'); }
