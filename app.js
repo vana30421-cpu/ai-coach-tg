@@ -4164,7 +4164,7 @@ function renderPlanning(){ navigate('schedule'); }
 function renderPlanToday(){ navigate('schedule'); }
 function renderPlanWeek(){ navigate('weeklyReview'); }
 function renderPlanMonth(){ navigate('monthlyReview'); }
-function renderObsidian(){ renderStub('📓 Obsidian'); }
+function renderObsidian(){ renderObsidianIntegration(); }
 function renderProjectEditor(){ renderStub('✏️ Редактор проекта'); }
 function renderModuleDetail(){ renderStub('📖 Модуль курса'); }
 function renderAI(){ renderJarvis(); }
@@ -4412,7 +4412,16 @@ function renderMedical(){ renderStub('🏥 Медицина'); }
 function renderMeds(){ renderStub('💊 Лекарства'); }
 function renderGcal(){ renderStub('📅 Google Calendar'); }
 function renderNotifications(){ renderStub('🔔 Уведомления'); }
-function renderIntegrations(){ renderStub('🔗 Интеграции'); }
+function renderIntegrations(){
+ var jarvis=getJarvisState(),gcal=state.integrations&&state.integrations.gcal||{};
+ var html="<div class='page'><div class='title-xl'>🔗 Интеграции</div><div class='subtitle'>Связи LIFE OS, второго мозга и AI-помощников.</div>";
+ html+="<div class='card mb-3'><h2>🧠 Второй мозг · Obsidian</h2><p class='footnote'>Общая база знаний, поиск и Markdown-обмен. Работает офлайн.</p><button class='btn btn-primary btn-block' onclick='navigate(&quot;obsidianIntegration&quot;)'>Открыть второй мозг</button></div>";
+ html+="<div class='card mb-3'><h2>✦ Google Gemini</h2><p class='footnote'>Реальный провайдер Джарвиса через Cloudflare Worker. Нужен серверный секрет GEMINI_API_KEY; ключ не хранится в приложении.</p><button class='btn btn-primary btn-block' onclick='setJarvisProvider(&quot;gemini&quot;);navigate(&quot;ai&quot;)'>"+(jarvis.provider==='gemini'?'Gemini выбран':'Выбрать Gemini')+"</button></div>";
+ html+="<div class='card mb-3'><h2>✳️ OpenAI</h2><p class='footnote'>Альтернативный провайдер Джарвиса. API-ключ хранится только на сервере.</p><button class='btn btn-ghost btn-block' onclick='setJarvisProvider(&quot;openai&quot;);navigate(&quot;ai&quot;)'>"+(jarvis.provider==='openai'?'OpenAI выбран':'Выбрать OpenAI')+"</button></div>";
+ html+="<div class='card mb-3'><h2>📅 Google Calendar</h2><p class='footnote'>Статус: "+(gcal.connected?'подключён':'не подключён')+". Для синхронизации нужны OAuth-разрешения Google.</p><button class='btn btn-ghost btn-block' onclick='navigate(&quot;gcal&quot;)'>Настроить календарь</button></div>";
+ html+="<div class='card'><h2>💾 Резервное копирование</h2><p class='footnote'>Автосохранение на устройстве и резервные снимки IndexedDB.</p><div class='btn-row'><button class='btn btn-primary' onclick='manualSaveAll()'>Сохранить всё</button><button class='btn btn-ghost' onclick='exportDB()'>Экспорт JSON</button></div></div></div>";
+ document.getElementById('app').innerHTML=html;
+}
 function renderEntertainment(){ renderStub('🎬 Досуг'); }
 function renderResources(){ renderStub('🔗 Ресурсы'); }
 function renderMovies(){ renderStub('🎥 Фильмы'); }
