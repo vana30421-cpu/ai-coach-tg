@@ -1077,6 +1077,7 @@ window.PSYCHOLOGY_TOPICS=PSYCHOLOGY_TOPICS;
 window.THINKING_TOPICS=THINKING_TOPICS;
 window.VISION_EXERCISES=VISION_EXERCISES;
 window.DETOX_COURSE=DETOX_COURSE;
+window.getDetoxTaskGuide=getDetoxTaskGuide;
 
 /* ============================================================
    LIFE OS — CONTENT.js v46 — ЧАСТЬ 4/6
