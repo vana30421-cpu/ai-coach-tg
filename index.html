@@ -763,6 +763,20 @@ body{background:radial-gradient(ellipse at 15% 0%,color-mix(in srgb,var(--brand)
 @media(max-width:390px){.theme-gallery{gap:8px!important}.theme-tile{min-height:100px!important;padding:10px!important}.life-page-art{width:66px;height:66px;right:12px;top:4px}.life-page-art svg{width:43px;height:43px}}
 @media(prefers-reduced-motion:reduce){.life-page-art{transition:none!important}}
 
+
+/* Per-section ambient motion: subtle, theme-tinted and GPU-light */
+#app::after{content:"";position:absolute;z-index:0;pointer-events:none;right:-12%;top:90px;width:54vw;height:260px;max-width:520px;border-radius:50%;opacity:.13;filter:blur(46px);background:radial-gradient(circle,var(--page-glow,var(--brand-glow)),transparent 68%);animation:sectionAura 17s ease-in-out infinite alternate}
+#app[data-page="tasks"]::after{background:radial-gradient(circle,rgba(61,220,151,.5),transparent 68%)}
+#app[data-page="learning"]::after{background:radial-gradient(circle,rgba(167,139,250,.52),transparent 68%)}
+#app[data-page="calendar"]::after{background:radial-gradient(circle,rgba(255,180,90,.48),transparent 68%)}
+#app[data-page="vision"]::after{background:radial-gradient(circle,rgba(77,212,255,.5),transparent 68%)}
+#app[data-page="ai"]::after{background:radial-gradient(circle,rgba(210,110,255,.52),transparent 68%)}
+#app[data-page="walks"]::after{background:radial-gradient(circle,rgba(65,210,150,.5),transparent 68%)}
+#app[data-page="health"]::after{background:radial-gradient(circle,rgba(255,105,135,.45),transparent 68%)}
+#app[data-page="finance"]::after{background:radial-gradient(circle,rgba(245,190,75,.5),transparent 68%)}
+@keyframes sectionAura{from{transform:translate3d(-3vw,-8px,0) scale(.86)}to{transform:translate3d(2vw,18px,0) scale(1.13)}}
+@media(prefers-reduced-motion:reduce){#app::after{animation:none!important}}
+
 </style>
 </head>
 <body class="theme-dark">
