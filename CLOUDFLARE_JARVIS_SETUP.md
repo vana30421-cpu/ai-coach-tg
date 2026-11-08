@@ -2,14 +2,16 @@
 
 Сайт LIFEOS сейчас публикуется через GitHub Pages. GitHub Pages не исполняет Cloudflare Pages Functions, поэтому для реального AI-диалога используется отдельный Cloudflare Worker: `workers/jarvis-worker.js`. Конфигурация — `wrangler.jarvis.toml`.
 
-## Обязательные секреты Cloudflare Pages
+## Секреты Cloudflare Worker
 
 В терминале в корне репозитория выполни:
 
 ```bash
 npx wrangler deploy --config wrangler.jarvis.toml
-npx wrangler secret put OPENAI_API_KEY --config wrangler.jarvis.toml
 npx wrangler secret put JARVIS_ACCESS_CODE --config wrangler.jarvis.toml
+# Добавь один или оба ключа — в зависимости от выбранного провайдера:
+npx wrangler secret put OPENAI_API_KEY --config wrangler.jarvis.toml
+npx wrangler secret put GEMINI_API_KEY --config wrangler.jarvis.toml
 ```
 
 Либо создай Worker вручную в Cloudflare Dashboard из `workers/jarvis-worker.js`. Добавь Worker Secrets:
@@ -33,6 +35,6 @@ npx wrangler secret put JARVIS_ACCESS_CODE --config wrangler.jarvis.toml
 
 ## Приватность
 
-При включённом разговорном ИИ на сервер OpenAI отправляются текст текущего сообщения, до 12 последних реплик и ограниченная сводка LIFEOS: названия активных задач, статусы привычек, записи сна, воды, настроения, экранного времени и зрительных симптомов. API-ключ остаётся только в Cloudflare. Не включай функцию, если не согласен передавать эти данные внешнему AI-провайдеру.
+При включённом разговорном ИИ на выбранный серверный провайдер (OpenAI или Google Gemini) отправляются текст текущего сообщения, до 12 последних реплик и ограниченная сводка LIFEOS: названия активных задач, статусы привычек, записи сна, воды, настроения, экранного времени и зрительных симптомов. API-ключ остаётся только в Cloudflare. Не включай функцию, если не согласен передавать эти данные внешнему AI-провайдеру.
 
-Подписка ChatGPT сама по себе не включает API-баланс: использование OpenAI API тарифицируется отдельно.
+Подписка ChatGPT или Gemini сама по себе не включает API-баланс: API выбранного провайдера тарифицируется отдельно.
