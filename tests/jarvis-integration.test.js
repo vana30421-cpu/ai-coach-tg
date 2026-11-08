@@ -16,7 +16,7 @@ test('main navigation labels the assistant Jarvis',()=>assert.match(content,/id:
 test('command core loads before app runtime',()=>assert.ok(index.search(/src="jarvis-core\.js(?:\\?[^\"]*)?"/)<index.search(/src="app\.js(?:\\?[^\"]*)?"/)));
 test('Jarvis command core is included in offline shell cache',()=>assert.match(sw,/\.\/jarvis-core\.js/));
 test('PWA cache is versioned and activates the fresh worker without a stale waiting worker',()=>{assert.match(sw,/const CACHE='life-os-v\d+'/);assert.match(sw,/await self\.skipWaiting\(\)/);assert.match(sw,/ignoreSearch:true/);});
-test('app scripts use a cache-busting version',()=>{for(const name of ['content.js','content2.js','content3.js','jarvis-core.js','app.js'])assert.match(index,new RegExp('src="'+name.replace('.','[.]')+'[?]v=[0-9]+"'));});
+test('app scripts use a cache-busting version',()=>{for(const name of ['content.js','content2.js','content3.js','jarvis-core.js','app.js','lifeos-workspaces.js','lifeos-systems.js'])assert.match(index,new RegExp('src="'+name.replace('.','[.]')+'[?]v=[0-9]+(?:-[0-9]+)?"'));});
 test('assistant messages and check-ins are stored in application state',()=>{
   assert.match(app,/if\(!state\.jarvis\)state\.jarvis=\{messages:\[\],checkins:\[\],focus:null,mode:'balanced',focusDefault:25\}/);
   assert.match(app,/d\.messages\.push/);
