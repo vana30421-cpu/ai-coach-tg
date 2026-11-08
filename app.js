@@ -812,7 +812,7 @@ function openThemePicker(){
   html+='<div class="theme-gallery">';
   themes.forEach(function(t){
     var active=state.settings.theme===t.id;
-    html+='<button class="theme-tile '+(active?'active':'')+'" onclick="setTheme(\\''+t.id+'\\')" style="--theme-a:'+t.bg+';--theme-b:'+(t.bg2||t.bg)+';--theme-accent:'+t.brand+';color:'+t.text+'"><span class="theme-tile-glow"></span><span class="theme-tile-emoji">'+t.emoji+'</span><span class="theme-tile-name">'+t.name+'</span><span class="theme-tile-check">'+(active?'✓':'')+'</span></button>';
+    html+='<button class="theme-tile '+(active?'active':'')+'" onclick="setTheme(\''+t.id+'\')" style="--theme-a:'+t.bg+';--theme-b:'+(t.bg2||t.bg)+';--theme-accent:'+t.brand+';color:'+t.text+'"><span class="theme-tile-glow"></span><span class="theme-tile-emoji">'+t.emoji+'</span><span class="theme-tile-name">'+t.name+'</span><span class="theme-tile-check">'+(active?'✓':'')+'</span></button>';
   });
   html+='</div><div class="card theme-effects-card"><div class="row-between"><div><div class="list-title">Анимация фона</div><div class="footnote">Лёгкие эффекты без перегрузки устройства</div></div><button class="btn btn-ghost btn-xs" onclick="state.settings.effectsEnabled=!state.settings.effectsEnabled;save();startEffects();openThemePicker()">'+(state.settings.effectsEnabled?'Включены':'Выключены')+'</button></div><div class="row-between mt-3"><div class="list-title">Интенсивность</div><div class="row" style="gap:5px">';
   [0.5,1,1.5].forEach(function(v){var active=(state.settings.effectsIntensity||1)===v;html+='<button class="btn '+(active?'btn-primary':'btn-ghost')+' btn-xs" onclick="state.settings.effectsIntensity='+v+';save();startEffects();openThemePicker()">'+v+'×</button>';});
