@@ -29,7 +29,7 @@
     if(/^(?:покажи|список|мои)\s*(?:задачи|дела)?$/.test(text)||/покажи мои задачи|список задач/.test(text))return {type:'list_tasks'};
     if(/^(?:сводка|мой день|как дела|статус|итоги дня)$/.test(text))return {type:'summary'};
     m=text.match(/^(?:фокус|помодоро|таймер)(?:\s+(\d{1,3}))?$/);
-    if(m)return {type:'focus',minutes:Math.max(5,Math.min(180,Number(m[1])||25))};
+    if(m)return {type:'focus',minutes:m[1]?Math.max(5,Math.min(180,Number(m[1])||25)):null};
     m=text.match(/^(?:выполни|заверши|отметь)\s+(?:задачу\s*)?(\d+)$/);
     if(m)return {type:'complete_task',index:Number(m[1])};
     if(/^(?:очисти|удали)\s+(?:историю|диалог|чат)$/.test(text))return {type:'clear_chat'};
