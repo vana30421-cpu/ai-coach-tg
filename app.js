@@ -1500,6 +1500,7 @@ function renderHabitDetail(){
   }
   html += '<div class="footnote mb-2">Регулярность важнее идеальной серии. Пропуск не стирает накопленный прогресс — просто возвращайся к следующему удобному сигналу.</div>';
   if(h.science) html += '<div class="insight-card"><div class="insight-title">🔬 Наука</div><div class="insight-text">' + esc(h.science) + '</div></div>';
+  html += renderHabitProgram(h);
   var hist=state.habitHistory&&state.habitHistory[h.id]||{},days=Object.keys(hist).filter(function(k){return hist[k]&&hist[k].completed;}),elapsed=Math.max(1,Math.floor((new Date(today())-new Date(h.startDate||today()))/86400000)+1),rate=Math.round(Math.min(1,days.length/elapsed)*100),last7=[];
   for(var z=6;z>=0;z--){var dt=new Date();dt.setDate(dt.getDate()-z);var ds=dt.toISOString().slice(0,10);last7.push({date:ds,done:!!(hist[ds]&&hist[ds].completed)});}
   html+='<div class="card"><h2>📊 Анализ привычки</h2><div class="grid-2"><div><b>'+rate+'%</b><div class="footnote">Выполнение с начала</div></div><div><b>'+days.length+'</b><div class="footnote">Успешных дней</div></div></div><div class="row mt-2" style="gap:5px">'+last7.map(function(x){return '<div title="'+x.date+'" style="flex:1;height:9px;border-radius:6px;background:'+(x.done?'var(--success)':'var(--surface-3)')+'"></div>';}).join('')+'</div><div class="footnote mt-2">Регулярность важнее серии. Пропуск не обнуляет накопленный результат.</div></div>';
@@ -1509,6 +1510,26 @@ function renderHabitDetail(){
   html += '<button class="btn btn-danger btn-block" onclick="deleteHabit(\'' + h.id + '\')">🗑 Удалить</button>';
   html += '</div>';
   document.getElementById('app').innerHTML = html;
+}
+function renderHabitProgram(h){
+ var plan=window.HABIT_22_DAY_SYSTEM||[],all=state.habitPrograms||{},record=all[h.id]||{days:{}},done=record.days||{},count=Object.keys(done).filter(function(k){return done[k]&&done[k].completed;}).length,next=plan.find(function(d){return !done[d.day]||!done[d.day].completed;});
+ var html='<div class="card"><h2>🧭 Программа внедрения · 22 дня</h2><div class="footnote mb-2">Это структурированный цикл настройки и закрепления привычки, а не обещание, что автоматизм появится ровно за 22 дня.</div><div class="stat-value">'+count+' / 22</div><div class="progress mt-2"><div class="progress-fill" style="width:'+Math.round(count/22*100)+'%"></div></div>';
+ if(next){
+  html+='<div class="section-title mt-3">День '+next.day+' · '+esc(next.phase||'Практика')+'</div><h3>'+esc(next.title)+'</h3><div class="lesson-content">'+esc(next.text)+'</div><div class="footnote mt-2"><b>Задание:</b> '+esc(next.task)+'</div><div class="field mt-2"><label class="field-label">Что конкретно сделал или изменил?</label><textarea id="habitProgramNote" rows="2" maxlength="600" placeholder="Опиши действие и результат…"></textarea></div><button class="btn btn-primary btn-block" onclick="completeHabitProgramDay(\''+h.id+'\','+next.day+')">Подтвердить день '+next.day+'</button>';
+ }else{
+  html+='<div class="insight-card mt-2"><div class="insight-title">✓ Цикл из 22 шагов завершён</div><div class="insight-text">Продолжай отслеживать регулярность. Если привычка ещё требует усилий, продли практику и упрости условия.</div></div>';
+ }
+ html+='<div class="footnote mt-2">Отметки программы хранятся отдельно от ежедневных галочек привычки. Можно закрывать только следующий шаг, чтобы видеть реальную последовательность.</div></div>';
+ return html;
+}
+function completeHabitProgramDay(id,day){
+ var h=getUserHabit(id),plan=window.HABIT_22_DAY_SYSTEM||[],step=plan.find(function(x){return x.day===Number(day);}),note=((document.getElementById('habitProgramNote')||{}).value||'').trim();
+ if(!h||!step)return;if(note.length<5)return toast('Коротко опиши, что именно сделал','warning');
+ if(!state.habitPrograms)state.habitPrograms={};if(!state.habitPrograms[id])state.habitPrograms[id]={days:{}};
+ var rows=state.habitPrograms[id].days||{},count=Object.keys(rows).filter(function(k){return rows[k]&&rows[k].completed;}).length;
+ if(Number(day)!==count+1)return toast('Сначала заверши предыдущий шаг программы','warning');
+ if(rows[day]&&rows[day].completed)return toast('Этот шаг уже сохранён','info');
+ rows[day]={completed:true,completedAt:nowISO(),note:note};state.habitPrograms[id].days=rows;save();toast('Шаг программы сохранён','success');renderHabitDetail();
 }
 function openHabitEditor(id){ currentHabitId = id || null; navigate('habitEditor'); }
 function renderHabitEditor(){
@@ -1912,6 +1933,7 @@ window.renderHabitCatalog = renderHabitCatalog;
 window.addHabitFromWhy = addHabitFromWhy;
 window.addHabitFromTemplate = addHabitFromTemplate;
 window.openHabitDetail = openHabitDetail;
+window.completeHabitProgramDay = completeHabitProgramDay;
 window.saveHabitCheckin = saveHabitCheckin;
 window.openHabitEditor = openHabitEditor;
 window.saveHabit = saveHabit;
