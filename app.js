@@ -10,7 +10,7 @@
 /* ============ КОНСТАНТЫ ============ */
 var STORAGE_KEY = 'life_os_v45';
 var STORAGE_BACKUP = 'life_os_backup_v45';
-var CURRENT_VERSION = '47';
+var CURRENT_VERSION = '48';
 var LEGACY_KEYS = ['life_os_v44','life_os_v43','life_os_v40'];
 
 /* ============ TELEGRAM ============ */
@@ -516,10 +516,12 @@ var state;
 
 function save(){
   try{
-    state.settings.updatedAt = nowISO();
-    state.settings.version = CURRENT_VERSION;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  }catch(e){ console.error('[SAVE]', e); }
+    state.settings.updatedAt=nowISO();state.settings.version=CURRENT_VERSION;
+    var serialized=JSON.stringify(state),previous=localStorage.getItem(STORAGE_KEY);
+    if(previous&&previous!==serialized){try{localStorage.setItem(STORAGE_BACKUP,previous);}catch(backupError){}}
+    localStorage.setItem(STORAGE_KEY,serialized);window.__LIFE_OS_LAST_SAVED=Date.now();
+    window.dispatchEvent(new CustomEvent('lifeos:saved'));return true;
+  }catch(e){console.error('[SAVE]',e);try{if(typeof toast==='function')toast('Не удалось сохранить: память устройства заполнена','error',5000);}catch(ignore){}return false;}
 }
 
 /* ============ ГЛОБАЛЫ ============ */
@@ -4443,6 +4445,6 @@ if(document.readyState === 'loading'){
   init();
 }
 
-console.log('[APP v47 ✅] ФИНАЛ загружен. Все части: 1/4 + 2/4 + 3/4 + 4/4');
+console.log('[APP v48 ✅] ФИНАЛ загружен. Все части: 1/4 + 2/4 + 3/4 + 4/4');
 
 })();
