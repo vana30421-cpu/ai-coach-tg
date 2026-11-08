@@ -1504,6 +1504,14 @@ function renderHabitDetail(){
     h.how.forEach(function(x){ html += '<li style="margin-bottom:6px;">' + esc(x) + '</li>'; });
     html += '</ul></div>';
   }
+  if(h.trigger||h.minimumAction||h.reward){
+    html += '<div class="card"><h2>🧩 Твой план привычки</h2>';
+    if(h.trigger)html += '<div class="list-row"><div class="list-icon">⏰</div><div class="list-body"><div class="list-title">Сигнал</div><div class="footnote">' + esc(h.trigger) + '</div></div></div>';
+    if(h.minimumAction)html += '<div class="list-row"><div class="list-icon">👣</div><div class="list-body"><div class="list-title">Минимум на трудный день</div><div class="footnote">' + esc(h.minimumAction) + '</div></div></div>';
+    if(h.reward)html += '<div class="list-row"><div class="list-icon">🎁</div><div class="list-body"><div class="list-title">Награда</div><div class="footnote">' + esc(h.reward) + '</div></div></div>';
+    html += '</div>';
+  }
+  html += '<div class="footnote mb-2">Регулярность важнее идеальной серии. Пропуск не стирает накопленный прогресс — просто возвращайся к следующему удобному сигналу.</div>';
   if(h.science) html += '<div class="insight-card"><div class="insight-title">🔬 Наука</div><div class="insight-text">' + esc(h.science) + '</div></div>';
   html += '<button class="btn btn-ghost btn-block mb-2" onclick="openHabitEditor(\'' + h.id + '\')">✏️ Редактировать</button>';
   html += '<button class="btn btn-danger btn-block" onclick="deleteHabit(\'' + h.id + '\')">🗑 Удалить</button>';
@@ -1531,6 +1539,10 @@ function renderHabitEditor(){
   });
   html += '</select></div>';
   html += '<div class="field"><label class="field-label">Старт</label><input type="date" id="hab-start" value="' + (h.startDate||today()) + '"/></div>';
+  html += '<div class="field"><label class="field-label">Сигнал / триггер</label><input type="text" id="hab-trigger" maxlength="180" placeholder="Например: сразу после завтрака" value="' + esc(h.trigger||'') + '"/></div>';
+  html += '<div class="field"><label class="field-label">Минимальное действие</label><input type="text" id="hab-minimum" maxlength="180" placeholder="Например: открыть книгу и прочитать 1 страницу" value="' + esc(h.minimumAction||'') + '"/></div>';
+  html += '<div class="field"><label class="field-label">Небольшая награда</label><input type="text" id="hab-reward" maxlength="120" placeholder="Например: отметить прогресс и отдохнуть" value="' + esc(h.reward||'') + '"/></div>';
+  html += '<div class="footnote">Метод: привяжи привычку к стабильному событию, заранее упрости первый шаг и выбери приятное подкрепление. Пропуск — не провал.</div>';
   html += '</div>';
   html += '<button class="btn btn-primary btn-block mb-2" onclick="saveHabit()">' + (isNew ? '➕ Создать' : '💾 Сохранить') + '</button>';
   if(!isNew) html += '<button class="btn btn-danger btn-block" onclick="deleteHabit(\'' + h.id + '\')">🗑 Удалить</button>';
@@ -1544,6 +1556,9 @@ function saveHabit(){
   var category = (document.getElementById('hab-category')||{}).value || 'health';
   var duration = parseInt((document.getElementById('hab-duration')||{}).value) || 22;
   var startDate = (document.getElementById('hab-start')||{}).value || today();
+  var trigger = (document.getElementById('hab-trigger')||{}).value || '';
+  var minimumAction = (document.getElementById('hab-minimum')||{}).value || '';
+  var reward = (document.getElementById('hab-reward')||{}).value || '';
   if(currentHabitId){
     var h = getUserHabit(currentHabitId);
     if(!h) return;
@@ -1552,9 +1567,12 @@ function saveHabit(){
     h.category = category;
     h.duration = duration;
     h.startDate = startDate;
+    h.trigger = trigger.trim();
+    h.minimumAction = minimumAction.trim();
+    h.reward = reward.trim();
     h.updatedAt = nowISO();
   } else {
-    var newH = {id:uid(), title:title.trim(), emoji:emoji, category:category, scheduleType:'daily', duration:duration, startDate:startDate, streak:0, bestStreak:0, lastCompletedDate:null, active:true, createdAt:nowISO()};
+    var newH = {id:uid(), title:title.trim(), emoji:emoji, category:category, scheduleType:'daily', duration:duration, startDate:startDate, trigger:trigger.trim(), minimumAction:minimumAction.trim(), reward:reward.trim(), streak:0, bestStreak:0, lastCompletedDate:null, active:true, createdAt:nowISO()};
     state.habits.push(newH);
     currentHabitId = newH.id;
   }
