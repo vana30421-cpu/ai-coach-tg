@@ -17,6 +17,19 @@ test('command core loads before app runtime',()=>assert.ok(index.search(/src="ja
 test('Jarvis command core is included in offline shell cache',()=>assert.match(sw,/\.\/jarvis-core\.js/));
 test('PWA cache is versioned and activates the fresh worker without a stale waiting worker',()=>{assert.match(sw,/const CACHE='life-os-v\d+'/);assert.match(sw,/await self\.skipWaiting\(\)/);assert.match(sw,/ignoreSearch:true/);});
 test('app scripts use a cache-busting version',()=>{for(const name of ['content.js','content2.js','content3.js','jarvis-core.js','app.js','lifeos-workspaces.js','lifeos-systems.js'])assert.match(index,new RegExp('src="'+name.replace('.','[.]')+'[?]v=[0-9]+(?:-[0-9]+)?"'));});
+
+test('extension-backed routes are used instead of stale legacy renderers',()=>{
+  assert.match(app,/schedule: window\.renderSchedule \|\| renderSchedule/);
+  assert.match(app,/calendar: window\.renderCalendar \|\| renderCalendar/);
+  assert.match(app,/journal: window\.renderJournal \|\| renderJournal/);
+  assert.match(app,/antistress: window\.renderAntistress \|\| renderAntistress/);
+  assert.match(app,/pet: window\.renderPet \|\| renderPet/);
+  assert.match(app,/obsidian: window\.renderObsidian \|\| renderObsidian/);
+});
+test('quick water and mood actions are exported for inline controls and manual save exists',()=>{
+  for(const name of ['quickWaterLog','quickMoodLog','saveMood','addWater','removeWater','manualSaveAll'])assert.match(app,new RegExp('window\\.'+name+'\\s*='));
+});
+
 test('assistant messages and check-ins are stored in application state',()=>{
   assert.match(app,/if\(!state\.jarvis\)state\.jarvis=\{messages:\[\],checkins:\[\],focus:null,mode:'balanced',focusDefault:25\}/);
   assert.match(app,/d\.messages\.push/);
