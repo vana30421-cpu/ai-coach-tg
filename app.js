@@ -614,27 +614,34 @@ function startEffects(){
   if(!overlay)return;
   overlay.replaceChildren();
   try{
-    var reduced=(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)||(state.settingsV2&&state.settingsV2.reducedMotion);
-    if(document.hidden||reduced||state.settings.effectsEnabled===false)return;
-    var theme=(window.THEMES||[]).find(function(t){return t.id===state.settings.theme;})||{effect:'stars'};
-    var effect=theme.effect||'none';
-    if(effect==='none')return;
+    var settings=state&&state.settings?state.settings:{};
+    if(document.hidden||settings.effectsEnabled===false)return;
+    var theme=(window.THEMES||[]).find(function(t){return t.id===settings.theme;})||{effect:'stars'};
+    var effect=theme.effect||'stars';
+    if(effect==='none')effect='stars';
     var mobile=window.innerWidth<760;
-    var intensity=Math.max(.5,Math.min(1.5,Number(state.settings.effectsIntensity)||1));
-    var cap=mobile?10:18;
-    var counts={stars:12,petals:9,leaves:9,snow:10,sparkles:10,spark:10,dust:8,fireflies:8,bubbles:8,rain:9,fire:8,lava:8,pumpkin:6,bats:6,ghosts:6,bones:6,drops:8,candles:5,feathers:7};
+    var intensity=Math.max(.5,Math.min(1.5,Number(settings.effectsIntensity)||1));
+    var cap=mobile?9:16;
+    var counts={stars:12,petals:9,leaves:9,snow:10,sparkles:10,spark:10,dust:8,fireflies:8,bubbles:8,rain:9,fire:8,lava:8,pumpkin:6,bats:6,ghosts:6,bones:6,drops:8,candles:5,feathers:7,aurora:5,waves:5,lightning:4,spiderweb:4,fog:5};
     var count=Math.min(cap,Math.max(3,Math.round((counts[effect]||7)*intensity)));
-    var emoji={petals:['🌸','🌺','🌷'],leaves:['🍃','🍂','🌿'],snow:['❄','❅'],pumpkin:['🎃'],bats:['🦇'],ghosts:['👻'],bones:['💀'],candles:['🕯'],feathers:['🪶']};
+    var glyphs={petals:['✿','❀','✾'],leaves:['❧','❦','✽'],snow:['❄','❅','✧'],pumpkin:['🎃'],bats:['🦇'],ghosts:['👻'],bones:['☠'],candles:['♨','✧'],feathers:['❧'],stars:['✦','✧','⋆'],sparkles:['✧','✦','✴'],spark:['✧','✦'],fireflies:['✧','·'],bubbles:['◌','○'],rain:['╱','╲'],drops:['●','◦'],fog:['◌','○'],aurora:['✧','·'],waves:['〜','〰'],lightning:['ϟ','✦'],spiderweb:['✳','✧']};
     for(var i=0;i<count;i++){
-      var el=document.createElement('i'),x=Math.random()*100;
+      var el=document.createElement('i');
       el.className='life-effect life-effect-'+effect;
-      el.style.setProperty('--x',x+'%');
-      el.style.setProperty('--delay',(-Math.random()*12)+'s');
-      el.style.setProperty('--duration',(12+Math.random()*12)+'s');
-      if(emoji[effect])el.textContent=emoji[effect][Math.floor(Math.random()*emoji[effect].length)];
+      el.style.setProperty('--x',(Math.random()*100)+'%');
+      el.style.setProperty('--delay',(-Math.random()*10)+'s');
+      el.style.setProperty('--duration',(9+Math.random()*13)+'s');
+      el.style.setProperty('--drift',((Math.random()-.5)*90)+'px');
+      if(glyphs[effect])el.textContent=glyphs[effect][Math.floor(Math.random()*glyphs[effect].length)];
       overlay.appendChild(el);
     }
+    overlay.dataset.effect=effect;
+    overlay.dataset.active='true';
   }catch(e){console.warn('[Effects]',e);overlay.replaceChildren();}
+}
+if(!window.__lifeEffectsVisibilityBound){
+  window.__lifeEffectsVisibilityBound=true;
+  document.addEventListener('visibilitychange',function(){if(!document.hidden)startEffects();});
 }
 
 /* ============ applyTheme ============ */
@@ -710,6 +717,8 @@ function navigate(page, silent){
   if(!page) page = 'dashboard';
   var prev = currentPage;
   currentPage = page;
+  var appRoot=document.getElementById('app');
+  if(appRoot){appRoot.setAttribute('data-page',page);appRoot.className='app-main page-theme-'+String(page).replace(/[^a-z0-9_-]/gi,'');}
   if(!silent && prev && prev !== page){
     if(MAIN_PAGES.indexOf(page) >= 0){
       _backStack = [];
@@ -791,6 +800,12 @@ function navigate(page, silent){
   }
   try{
     fn();
+    var artMap={"dashboard":"<path d=\"M8 12 20 5l12 7v16H8z\"/><path d=\"M15 28V17h10v11M5 13l15-9 15 9\"/>","tasks":"<path d=\"m8 19 6 6 14-16\"/><path d=\"M6 5h24v26H6z\"/>","learning":"<path d=\"M4 11 20 4l16 7-16 7z\"/><path d=\"M10 15v10c6 5 14 5 20 0V15M36 12v12\"/>","calendar":"<rect x=\"5\" y=\"8\" width=\"30\" height=\"27\" rx=\"5\"/><path d=\"M12 4v8M28 4v8M5 15h30M12 22h5m5 0h5m-13 7h5\"/>","vision":"<path d=\"M3 20s6-11 17-11 17 11 17 11-6 11-17 11S3 20 3 20Z\"/><circle cx=\"20\" cy=\"20\" r=\"6\"/><circle cx=\"20\" cy=\"20\" r=\"2\"/>","ai":"<path d=\"M20 4v8m0 16v8M4 20h8m16 0h8M8 8l6 6m12 12 6 6m0-24-6 6m-12 12-6 6\"/><circle cx=\"20\" cy=\"20\" r=\"8\"/>","more":"<circle cx=\"8\" cy=\"20\" r=\"2\"/><circle cx=\"20\" cy=\"20\" r=\"2\"/><circle cx=\"32\" cy=\"20\" r=\"2\"/>","walks":"<path d=\"m22 5-4 8 6 5-4 8-7 7m5-20-8 2-5 9m19-10 7 7\"/>","health":"<path d=\"M20 34S5 25 5 14a8 8 0 0 1 15-4 8 8 0 0 1 15 4c0 11-15 20-15 20Z\"/><path d=\"M11 20h7l3-6 4 12 3-6h5\"/>","memory":"<path d=\"M10 8a5 5 0 0 1 9-3 5 5 0 0 1 9 3 5 5 0 0 1 5 8 5 5 0 0 1-2 9 5 5 0 0 1-9 5 5 5 0 0 1-9-5 5 5 0 0 1-2-9 5 5 0 0 1-1-8Z\"/><path d=\"M20 8v24m-8-18 8 5m8-5-8 5m-8 7 8-4m8 4-8-4\"/>","finance":"<path d=\"M6 32V8m0 24h29M12 26l7-8 6 4 9-12\"/><circle cx=\"34\" cy=\"10\" r=\"3\"/>","sleep":"<path d=\"M29 6a15 15 0 1 0 8 25A17 17 0 0 1 29 6Z\"/><path d=\"m9 8 1 3 3 1-3 1-1 3-1-3-3-1 3-1z\"/>"};
+    var artKey=({schedule:'calendar',walks:'walks',focus:'ai',eveningReview:'sleep',weeklyReview:'calendar',monthlyReview:'calendar',stats:'finance',detailedStats:'finance',profile:'ai',profileV2:'ai',settings:'more',settingsV2:'more',storage:'memory',screentracker:'vision',detoxcourse:'health',detox:'health',brain:'memory',brainGame:'memory',brainStats:'memory',water:'health',mood:'health',workouts:'health',meditation:'sleep',sleep:'sleep',sleepCalendar:'sleep',sleepEditor:'sleep',finance:'finance',wealth:'finance',visionex:'vision',visiontrack:'vision',visiontips:'vision',vision60:'vision',vision62:'vision'})[page]||page;
+    if(!artMap[artKey])artKey=({dashboard:'dashboard',tasks:'tasks',learning:'learning',calendar:'calendar',vision:'vision',ai:'ai',more:'more'})[page]||'more';
+    var art=document.createElement('div');art.className='life-page-art';art.setAttribute('aria-hidden','true');
+    art.innerHTML='<svg viewBox="0 0 40 40" role="presentation">'+artMap[artKey]+'</svg>';
+    main.insertBefore(art,main.firstChild);
     setTimeout(function(){ try{ attachVoiceAll('app'); }catch(e){} }, 50);
   }catch(e){
     console.error('Render [' + page + ']:', e);
