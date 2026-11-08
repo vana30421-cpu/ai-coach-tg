@@ -182,3 +182,32 @@ test('Jarvis analytics compare recorded screen use with saved personal goals and
   assert.match(app,/Экранное время не считывается автоматически/);
   assert.match(app,/function getJarvisAnalytics\(silent\)/);
 });
+
+
+test('personalization survey persists goals and screen-time budgets for analytics',()=>{
+ assert.match(app,/var LIFE_SURVEY_STEPS=/);
+ assert.match(app,/function finishLifePersonalization\(\)/);
+ assert.match(app,/screenBudgets=budgets/);
+ assert.match(app,/state\.screenStats\.dailyLimit=p\.personalPlan\.screenTotalMinutes/);
+ assert.match(app,/function renderSettings\(\)/);
+ assert.match(app,/function renderProfileV2\(\)/);
+});
+test('digital detox records before-and-after outcomes and eye breaks require a completed timer',()=>{
+ assert.match(app,/function saveDetoxReview\(\)/);
+ assert.match(app,/urgeBefore:before,urgeAfter:after/);
+ assert.match(app,/function buildDetoxOutcomeStats\(\)/);
+ assert.match(app,/function finishVisionBreak\(\)/);
+ assert.match(app,/window\.__visionBreakEndsAt=Date\.now\(\)\+20000/);
+ assert.match(app,/function saveVisionCheckin\(\)/);
+});
+test('learning includes active recall sessions and scheduled self-review',()=>{
+ assert.match(app,/function saveLearningPractice\(\)/);
+ assert.match(app,/function saveLearningReview\(id\)/);
+ assert.match(app,/nextReviewAt/);
+ assert.match(app,/studySessions/);
+});
+test('analytics compares recent and previous weeks and respects the selected domain filter',()=>{
+ assert.match(app,/screenChangePercent/);
+ assert.match(app,/var selected=getLifeStatsFilter\(\)\.category/);
+ assert.match(app,/function saveLifeStatsFilter\(key,value\)/);
+});
