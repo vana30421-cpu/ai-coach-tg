@@ -5096,6 +5096,104 @@ function renderStats(){
 }
 function renderDetailedStats(){renderStats();}
 
+
+/* LIFE OS PERSONALIZATION V2 */
+var LIFE_SURVEY_STEPS=[
+{title:'🎯 Цели',desc:'Что приложение должно улучшить?',fields:[
+['goals','Главные цели','multi',['Продуктивность','Обучение','Память','Здоровье и энергия','Сон','Зрение','Экранное время','Привычки','Финансы','Эмоциональный баланс']],
+['mainGoal','Главный результат на 3 месяца','text'],
+['obstacles','Что чаще мешает?','multi',['Телефон','Нет энергии','Сложно начать','Нет плана','Много задач','Нерегулярный сон','Теряю интерес','Не хватает времени']]]},
+{title:'🗓 Режим дня',desc:'Настроим под реальную нагрузку.',fields:[
+['workHours','Работа, часов в день','select',['0','1','2','2.5','3','4','5','6','8+']],
+['studyHours','Учёба, часов в день','select',['0','0.5','1','1.5','2','2.5','3','4+']],
+['freeMinutes','Свободное время, минут','select',['15','30','45','60','90','120','Более 2 часов']],
+['sleepStart','Обычно ложусь','time'],['wakeTime','Обычно просыпаюсь','time']]},
+{title:'📱 Экранное время',desc:'Задай личные лимиты. Аналитика будет сравнивать с фактом.',fields:[
+['screenTotalMinutes','Общий лимит в день, минут','number'],
+['budgetWork','Работа, минут','number'],['budgetStudy','Учёба, минут','number'],['budgetVideo','Видео / YouTube, минут','number'],['budgetEntertainment','Развлечения, минут','number'],['budgetOther','Прочее, минут','number'],
+['screenPain','Когда чаще всего залипаешь?','multi',['После пробуждения','Перед сном','Во время работы','Во время учёбы','Когда скучно/тревожно','Не замечаю время','Пока не знаю']]]},
+{title:'⏱ Фокус',desc:'Подберём рабочие блоки.',fields:[
+['focusMinutes','Длительность фокуса, минут','select',['10','15','20','25','30','45','50','60']],
+['planningStyle','Как планировать?','select',['Список задач','Календарь по времени','3 главных результата','Гибкий план']],
+['workStyle','Когда лучше работаешь?','select',['Утром','Днём','Вечером','Ночью','По-разному']],
+['breakStyle','Перерывы','select',['5 минут после 25','10 минут после 50','По самочувствию','Подобрать автоматически']]]},
+{title:'🎓 Обучение и память',desc:'Настроим практику и повторение.',fields:[
+['learningStyle','Как лучше учишься?','multi',['Короткая теория','Примеры','Практика','Тесты','Карточки','Видео/аудио','Проекты']],
+['learningMinutes','Учебный блок, минут','select',['10','15','20','25','30','45','60']],
+['learningPriority','Что важнее развивать?','multi',['Память','Внимание','Мышление','Английский','Профессия','Эрудиция','Глубокое понимание']],
+['difficulty','Сложность','select',['Постепенно','Средняя','С вызовом','Адаптировать по результатам']]]},
+{title:'❤️ Восстановление',desc:'Ориентиры самонаблюдения, не медицинская диагностика.',fields:[
+['sleepHours','Цель сна, часов','select',['6','6.5','7','7.5','8','8.5','9']],
+['exerciseDays','Движение в неделю, дней','select',['0','1','2','3','4','5','6','7']],
+['walkMinutes','Прогулка, минут в день','select',['0','10','20','30','45','60','90']],
+['recoveryPriority','Что улучшить?','multi',['Энергия','Сон','Стресс','Активность','Комфорт глаз','Настроение']]]},
+{title:'⚙️ Как работает LIFE OS',desc:'Настроим интерфейс и помощь.',fields:[
+['assistantTone','Стиль Джарвиса','select',['Кратко и по делу','Подробно','Строго','Поддерживающе','Аналитично']],
+['reminders','Какие напоминания нужны?','multi',['Утренний план','Перерывы от экрана','Вода и движение','Повторение','Подготовка ко сну','Вечерний обзор','Не нужны']],
+['notificationLevel','Частота','select',['Только важные','Умеренно','Чаще при пропусках','Без уведомлений']],
+['interfaceDensity','Плотность интерфейса','select',['Компактный','Сбалансированный','Подробный']],
+['accessibility','Доступность','multi',['Крупнее текст','Меньше анимаций','Высокий контраст','Меньше уведомлений','Виброотклик','Озвучивание']]]}
+];
+function lifeSurveyRead(){
+ var step=Math.max(0,Math.min(LIFE_SURVEY_STEPS.length-1,Number(state.profile.surveyStep)||0)),answers=state.profile.surveyAnswers||{};
+ LIFE_SURVEY_STEPS[step].fields.forEach(function(f){var id=f[0];if(f[2]==='multi')answers[id]=Array.from(document.querySelectorAll('[name="survey-'+id+'"]:checked')).map(function(x){return x.value;});else{var el=document.getElementById('survey-'+id);if(el)answers[id]=el.value;}});
+ state.profile.surveyAnswers=answers;save();
+}
+function renderPersonalizationSurvey(){
+ var step=Math.max(0,Math.min(LIFE_SURVEY_STEPS.length-1,Number(state.profile.surveyStep)||0)),cfg=LIFE_SURVEY_STEPS[step],a=state.profile.surveyAnswers||{};
+ var html='<div class="page"><div class="title-xl">🧭 Персональная настройка</div><div class="subtitle">7 коротких этапов. Можно пропускать вопросы и менять ответы позже.</div><div class="card mb-3"><div class="row-between"><b>Этап '+(step+1)+' / '+LIFE_SURVEY_STEPS.length+'</b><b>'+Math.round((step+1)/LIFE_SURVEY_STEPS.length*100)+'%</b></div><div class="progress mt-2"><div class="progress-fill" style="width:'+((step+1)/LIFE_SURVEY_STEPS.length*100)+'%"></div></div></div><div class="card"><h2>'+cfg.title+'</h2><div class="footnote mb-3">'+cfg.desc+'</div>';
+ cfg.fields.forEach(function(f){var id=f[0],type=f[2];html+='<div class="field"><label class="field-label">'+f[1]+'</label>';
+ if(type==='multi'){var selected=Array.isArray(a[id])?a[id]:[];f[3].forEach(function(o){html+='<label class="list-row"><input type="checkbox" name="survey-'+id+'" value="'+esc(o)+'" '+(selected.indexOf(o)>=0?'checked':'')+'><span>'+esc(o)+'</span></label>';});}
+ else if(type==='select'){html+='<select id="survey-'+id+'"><option value="">Выбрать…</option>';f[3].forEach(function(o){html+='<option '+(String(a[id]||'')===o?'selected':'')+'>'+esc(o)+'</option>';});html+='</select>';}
+ else html+='<input id="survey-'+id+'" type="'+(type==='number'?'number':type==='time'?'time':'text')+'" min="0" max="1440" inputmode="numeric" value="'+esc(a[id]||'')+'" placeholder="Необязательно">';
+ html+='</div>';});
+ html+='</div><div class="btn-row mt-3">'+(step?'<button class="btn btn-ghost" onclick="lifeSurveyMove(-1)">← Назад</button>':'')+'<button class="btn btn-primary" style="flex:1" onclick="lifeSurveyMove(1)">'+(step===LIFE_SURVEY_STEPS.length-1?'Сохранить цели':'Далее →')+'</button></div><button class="btn btn-ghost btn-block mt-2" onclick="lifeSurveySkip()">Пропустить этап</button><div class="footnote text-center mt-2">Ответы остаются в локальном профиле и входят в резервную копию.</div></div>';
+ document.getElementById('app').innerHTML=html;
+}
+function lifeSurveyMove(delta){lifeSurveyRead();var step=Number(state.profile.surveyStep)||0;if(step+delta>=LIFE_SURVEY_STEPS.length){finishLifePersonalization();return;}state.profile.surveyStep=step+delta;save();renderPersonalizationSurvey();}
+function lifeSurveySkip(){lifeSurveyRead();var step=Number(state.profile.surveyStep)||0;if(step>=LIFE_SURVEY_STEPS.length-1){finishLifePersonalization();return;}state.profile.surveyStep=step+1;save();renderPersonalizationSurvey();}
+function finishLifePersonalization(){
+ var p=state.profile,a=p.surveyAnswers||{},budgets={};
+ [['Работа','budgetWork'],['Учёба','budgetStudy'],['Видео','budgetVideo'],['Развлечения','budgetEntertainment'],['Другое','budgetOther']].forEach(function(x){var n=Number(a[x[1]]);if(n>0)budgets[x[0]]=n;});
+ a.screenBudgets=budgets;p.surveyAnswers=a;p.surveyDone=true;p.surveyCompletedAt=nowISO();p.surveyStep=0;
+ p.personalPlan={goals:a.goals||[],mainGoal:a.mainGoal||'',screenTotalMinutes:Number(a.screenTotalMinutes)||null,screenBudgets:budgets,sleepHours:Number(a.sleepHours)||7.5,focusMinutes:Number(a.focusMinutes)||25,learningStyle:a.learningStyle||[],updatedAt:nowISO()};
+ if(p.personalPlan.screenTotalMinutes){state.screenStats=state.screenStats||{};state.screenStats.dailyLimit=p.personalPlan.screenTotalMinutes;}
+ if(state.settingsV2){state.settingsV2.textSize=(a.accessibility||[]).indexOf('Крупнее текст')>=0?'large':'medium';state.settingsV2.animations=(a.accessibility||[]).indexOf('Меньше анимаций')<0;}
+ save();toast('Профиль, цели и лимиты сохранены','success');navigate('profile');
+}
+function updateLifePreference(group,key,value){
+ var allow={settingsV2:['textSize','scale','sound','soundVolume','haptic','animations','animationsSpeed','language','firstDayOfWeek','timeFormat','dateFormat','darkMode','effectsEnabled','effectsIntensity','effectsMotionOverride']};
+ if(!allow[group]||allow[group].indexOf(key)<0)return;if(!state[group])state[group]={};state[group][key]=value;
+ if(key==='effectsEnabled'||key==='effectsIntensity'||key==='effectsMotionOverride')startEffects();save();if(currentPage==='settings')renderSettings();
+}
+function renderSettings(){
+ var s=state.settingsV2||defaultState().settingsV2,themes=window.THEMES||[],theme=themes.find(function(t){return t.id===state.settings.theme;})||{name:'Тёмная'};
+ var row=function(title,desc,control){return '<div class="list-row"><div class="list-body"><div class="list-title">'+title+'</div><div class="footnote">'+desc+'</div></div>'+control+'</div>';};
+ var toggle=function(k,title,desc,v){return row(title,desc,'<button class="btn '+(v?'btn-primary':'btn-ghost')+' btn-xs" onclick="updateLifePreference(\'settingsV2\',\''+k+'\','+(!v)+')">'+(v?'Вкл.':'Выкл.')+'</button>');};
+ var html='<div class="page"><div class="title-xl">⚙️ Профессиональные настройки</div><div class="subtitle">Управление персонализацией, интерфейсом, доступностью и данными.</div><div class="card"><h2>👤 Профиль и цели</h2>'+row('Профиль','Личные параметры, цели и прогресс','<button class="btn btn-primary btn-xs" onclick="navigate(\'profile\')">Открыть</button>')+row('Большая анкета','7 этапов · быстрое заполнение · персональный план','<button class="btn btn-ghost btn-xs" onclick="state.profile.surveyStep=0;save();navigate(\'personalization\')">Заполнить</button>')+'</div>';
+ html+='<div class="card"><h2>🎨 Внешний вид</h2>'+row('Тема','Сейчас: '+esc(theme.name),'<button class="btn btn-ghost btn-xs" onclick="openThemePicker()">Выбрать</button>')+toggle('animations','Анимации интерфейса','Переходы и микровзаимодействия',s.animations!==false)+toggle('effectsEnabled','Частицы и фоновые эффекты','Необязательная визуальная нагрузка',state.settings.effectsEnabled!==false)+toggle('effectsMotionOverride','Переопределить системное ограничение','Включать эффекты при prefers-reduced-motion',!!state.settings.effectsMotionOverride);
+ html+=row('Скорость анимации','Настройка движения','<select onchange="updateLifePreference(\'settingsV2\',\'animationsSpeed\',this.value)"><option value="slow" '+(s.animationsSpeed==='slow'?'selected':'')+'>Медленно</option><option value="normal" '+(!s.animationsSpeed||s.animationsSpeed==='normal'?'selected':'')+'>Обычно</option><option value="fast" '+(s.animationsSpeed==='fast'?'selected':'')+'>Быстро</option></select>')+'</div>';
+ html+='<div class="card"><h2>♿ Доступность</h2>'+row('Размер текста','Комфортное чтение','<select onchange="updateLifePreference(\'settingsV2\',\'textSize\',this.value)"><option value="small" '+(s.textSize==='small'?'selected':'')+'>Маленький</option><option value="medium" '+(!s.textSize||s.textSize==='medium'?'selected':'')+'>Обычный</option><option value="large" '+(s.textSize==='large'?'selected':'')+'>Крупный</option></select>')+row('Масштаб','Размер элементов','<select onchange="updateLifePreference(\'settingsV2\',\'scale\',this.value)"><option value="90" '+(s.scale==='90'?'selected':'')+'>90%</option><option value="100" '+(!s.scale||s.scale==='100'?'selected':'')+'>100%</option><option value="110" '+(s.scale==='110'?'selected':'')+'>110%</option><option value="125" '+(s.scale==='125'?'selected':'')+'>125%</option></select>')+toggle('haptic','Тактильный отклик','Вибрация при поддержке устройством',s.haptic!==false)+toggle('sound','Звуки','Звуковая обратная связь',s.sound!==false)+'</div>';
+ html+='<div class="card"><h2>🗓 Форматы и планирование</h2>'+row('Язык','Язык интерфейса','<select onchange="updateLifePreference(\'settingsV2\',\'language\',this.value)"><option value="ru" '+(s.language==='ru'?'selected':'')+'>Русский</option><option value="en" '+(s.language==='en'?'selected':'')+'>English</option></select>')+row('Начало недели','Для календаря и отчётов','<select onchange="updateLifePreference(\'settingsV2\',\'firstDayOfWeek\',this.value)"><option value="monday" '+(s.firstDayOfWeek==='monday'?'selected':'')+'>Понедельник</option><option value="sunday" '+(s.firstDayOfWeek==='sunday'?'selected':'')+'>Воскресенье</option></select>')+row('Время','Формат часов','<select onchange="updateLifePreference(\'settingsV2\',\'timeFormat\',this.value)"><option value="24h" '+(s.timeFormat==='24h'?'selected':'')+'>24 часа</option><option value="12h" '+(s.timeFormat==='12h'?'selected':'')+'>12 часов</option></select>')+'</div>';
+ html+='<div class="card"><h2>🔔 Напоминания</h2><div class="footnote">Выбранные типы и частота сохраняются в персональной анкете. Push-уведомления зависят от разрешений браузера/Telegram.</div><button class="btn btn-ghost btn-block mt-2" onclick="navigate(\'notifications\')">Центр уведомлений</button></div>';
+ html+='<div class="card"><h2>🛡 Данные и приватность</h2><div class="footnote mb-2">Анкета, цели, трекеры и история входят в локальную резервную копию.</div><button class="btn btn-primary btn-block mb-2" onclick="exportDB()">📤 Экспорт JSON</button><button class="btn btn-ghost btn-block mb-2" onclick="importDB()">📥 Импорт JSON</button><button class="btn btn-ghost btn-block" onclick="navigate(\'storage\')">Хранилище и резервирование</button></div><div class="footnote text-center">LIFE OS v'+CURRENT_VERSION+'</div></div>';
+ document.getElementById('app').innerHTML=html;
+}
+function renderSettingsV2(){renderSettings();}
+function renderProfileV2(){
+ var p=state.profileV2||{},profile=state.profile||{},a=profile.surveyAnswers||{},plan=profile.personalPlan||{},g=state.gamification||{},goals=Array.isArray(a.goals)?a.goals:[];
+ var html='<div class="page"><div class="title-xl">👤 Персональный профиль</div><div class="profile-hero"><div class="avatar-btn" onclick="pickEmoji()" style="width:84px;height:84px;margin:0 auto 10px;font-size:42px">'+(profile.emoji||'👤')+'</div><div class="field"><label class="field-label">Имя</label><input id="profileNameField" maxlength="30" value="'+esc(profile.name||'')+'"></div><button class="btn btn-ghost btn-sm" onclick="saveProfileName((document.getElementById(\'profileNameField\')||{}).value)">Сохранить имя</button><div class="footnote mt-2">Уровень '+(g.level||1)+' · '+(g.xp||0)+' XP</div></div>';
+ html+='<div class="card"><h2>🎯 Персональные цели</h2><div class="footnote">'+(goals.length?goals.map(esc).join(' · '):'Анкета ещё не заполнена')+'</div>'+(a.mainGoal?'<div class="list-row"><div class="list-body"><b>Главная цель</b><div class="footnote">'+esc(a.mainGoal)+'</div></div></div>':'')+'<div class="grid-2 mt-2"><div><b>'+(plan.screenTotalMinutes||'—')+'</b><div class="footnote">Экран, мин/день</div></div><div><b>'+(plan.sleepHours||'—')+'</b><div class="footnote">Сон, часов</div></div><div><b>'+(plan.focusMinutes||'—')+'</b><div class="footnote">Фокус, минут</div></div><div><b>'+(profile.surveyDone?'Заполнена':'Не заполнена')+'</b><div class="footnote">Анкета</div></div></div><button class="btn btn-primary btn-block mt-3" onclick="state.profile.surveyStep=0;save();navigate(\'personalization\')">'+(profile.surveyDone?'Изменить персонализацию':'Заполнить большую анкету')+'</button></div>';
+ html+='<div class="card"><h2>📏 Параметры</h2><div class="grid-2"><div class="field"><label class="field-label">Возраст</label><input type="number" id="pv-age" min="1" max="120" value="'+(p.age||'')+'"></div><div class="field"><label class="field-label">Пол, необязательно</label><select id="pv-gender"><option value="">Не указывать</option><option value="female" '+(p.gender==='female'?'selected':'')+'>Женский</option><option value="male" '+(p.gender==='male'?'selected':'')+'>Мужской</option><option value="other" '+(p.gender==='other'?'selected':'')+'>Другое</option></select></div><div class="field"><label class="field-label">Рост, см</label><input type="number" id="pv-height" min="50" max="250" value="'+(p.height||'')+'"></div><div class="field"><label class="field-label">Вес, кг</label><input type="number" id="pv-weight" min="20" max="400" step="0.1" value="'+(p.weight||'')+'"></div></div><div class="field"><label class="field-label">Активность</label><select id="pv-activity"><option value="low" '+(p.activity==='low'?'selected':'')+'>Низкая</option><option value="moderate" '+(!p.activity||p.activity==='moderate'?'selected':'')+'>Умеренная</option><option value="high" '+(p.activity==='high'?'selected':'')+'>Высокая</option></select></div><div class="field"><label class="field-label">Основной фокус</label><select id="pv-goal"><option value="maintain" '+(!p.goal||p.goal==='maintain'?'selected':'')+'>Баланс</option><option value="fitness" '+(p.goal==='fitness'?'selected':'')+'>Физическая форма</option><option value="energy" '+(p.goal==='energy'?'selected':'')+'>Энергия</option><option value="learning" '+(p.goal==='learning'?'selected':'')+'>Обучение</option></select></div><button class="btn btn-primary btn-block" onclick="saveProfileV2()">Сохранить параметры</button></div><button class="btn btn-ghost btn-block" onclick="navigate(\'stats\')">📊 Аналитика</button><button class="btn btn-ghost btn-block mt-2" onclick="navigate(\'settings\')">⚙️ Настройки</button>'+renderPWAInstallBlock()+'</div>';
+ document.getElementById('app').innerHTML=html;
+}
+function saveProfileV2(){
+ if(!state.profileV2)state.profileV2=defaultState().profileV2;var p=state.profileV2;
+ p.age=Number((document.getElementById('pv-age')||{}).value)||null;p.gender=(document.getElementById('pv-gender')||{}).value||null;
+ p.height=Number((document.getElementById('pv-height')||{}).value)||null;p.weight=Number((document.getElementById('pv-weight')||{}).value)||null;
+ p.activity=(document.getElementById('pv-activity')||{}).value||'moderate';p.goal=(document.getElementById('pv-goal')||{}).value||'maintain';p.updatedAt=nowISO();save();toast('Параметры профиля сохранены','success');renderProfileV2();
+}
+
 /* Заглушки на window */
 window.renderMemory = renderMemory;
 window.startMemoryExercise = startMemoryExercise;
