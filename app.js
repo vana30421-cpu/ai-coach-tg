@@ -4397,7 +4397,40 @@ function renderLearningGames(){ renderStub('🎮 Игры'); }
 function renderGamePlay(){ renderStub('Игра'); }
 function renderMaterials(){ renderStub('📚 Материалы'); }
 function renderMaterialDetail(){ renderStub('Материал'); }
-function renderDailyReport(){ renderStub('📊 Отчёт дня'); }
+function renderDailyReport(){
+ var a=buildComprehensiveStats(1)||{},o=a.overview||{},f=a.focus||{},h=a.health||{},list=state.dailyReviews&&state.dailyReviews.history||[],r=list.find(function(x){return x.date===today();})||{};
+ var screen=Number(f.screenDailyAvg)||0,goal=Number(o.screenGoal)||Number(state.profile&&state.profile.personalPlan&&state.profile.personalPlan.screenTotalMinutes)||0,tips=[];
+ if(screen>=240)tips.push('Экранное время высокое: убери главный источник отвлечения с первого экрана телефона.');
+ if(goal&&screen>goal)tips.push('Экранное время выше личного лимита. Запланируй завтра один защищённый период без телефона.');
+ if(Number(o.overdue)>0)tips.push('Разбери просроченные задачи: выбери одну на 15 минут, остальные перенеси осознанно.');
+ if(!tips.length)tips.push('Сохрани устойчивый темп и выбери одну главную задачу на завтра.');
+ var html='<div class="page"><div class="title-xl">☀️ Отчёт и разбор дня</div><div class="subtitle">Факты → выводы → один следующий шаг.</div><div class="grid-2"><div class="card"><div class="stat-value">'+(o.tasksDonePeriod||0)+'</div><div class="stat-label">Задач завершено</div></div><div class="card"><div class="stat-value">'+(screen?screen+' мин':'—')+'</div><div class="stat-label">Экранное время</div></div><div class="card"><div class="stat-value">'+(f.focusMinutes||0)+' мин</div><div class="stat-label">Фокус</div></div><div class="card"><div class="stat-value">'+(h.sleepAvgHours||'—')+'</div><div class="stat-label">Средний сон, ч</div></div></div><div class="card"><h2>🧠 Анализ LIFE OS</h2>'+tips.map(function(t){return '<div class="list-row">• '+esc(t)+'</div>';}).join('')+'<div class="footnote">Выводы строятся только по сохранённым данным.</div></div><div class="card"><h2>🌙 Рефлексия</h2><label class="field-label">Что получилось?</label><textarea id="dailyWins" rows="2" maxlength="800">'+esc(r.wins||'')+'</textarea><label class="field-label">Что мешало?</label><textarea id="dailyBlockers" rows="2" maxlength="800">'+esc(r.blockers||'')+'</textarea><label class="field-label">Настроение (1–5)</label><select id="dailyMood"><option value="">—</option>'+[1,2,3,4,5].map(function(n){return '<option value="'+n+'" '+(Number(r.mood)===n?'selected':'')+'>'+n+'</option>';}).join('')+'</select><label class="field-label">Энергия (1–5)</label><select id="dailyEnergy"><option value="">—</option>'+[1,2,3,4,5].map(function(n){return '<option value="'+n+'" '+(Number(r.energy)===n?'selected':'')+'>'+n+'</option>';}).join('')+'</select><label class="field-label">Главное на завтра</label><input id="dailyTomorrow" maxlength="180" value="'+esc(r.tomorrow||'')+'" placeholder="Один результат"><label class="field-label">Первый шаг</label><input id="dailyFirstStep" maxlength="180" value="'+esc(r.firstStep||'')+'" placeholder="Действие на 5–15 минут"><button class="btn btn-primary btn-block mt-2" onclick="saveDailyReview()">Сохранить разбор дня</button></div></div>';
+ document.getElementById('app').innerHTML=html;
+}
+function saveDailyReview(){
+ var v=function(id){var x=document.getElementById(id);return x?String(x.value||'').trim():'';},r={date:today(),updatedAt:nowISO(),wins:v('dailyWins'),blockers:v('dailyBlockers'),mood:Number(v('dailyMood'))||null,energy:Number(v('dailyEnergy'))||null,tomorrow:v('dailyTomorrow'),firstStep:v('dailyFirstStep')};
+ if(!r.wins&&!r.blockers&&!r.mood&&!r.energy&&!r.tomorrow&&!r.firstStep)return toast('Заполни хотя бы одно поле','warning');
+ if(!state.dailyReviews)state.dailyReviews={history:[]};if(!Array.isArray(state.dailyReviews.history))state.dailyReviews.history=[];
+ var i=state.dailyReviews.history.findIndex(function(x){return x.date===r.date;});if(i>=0)state.dailyReviews.history[i]=r;else state.dailyReviews.history.push(r);
+ if(state.dailyReviews.history.length>400)state.dailyReviews.history=state.dailyReviews.history.slice(-400);
+ save();toast('Разбор дня сохранён','success');renderDailyReport();
+}
+function renderMonthlyReview(){
+ var a=buildComprehensiveStats(30)||{},o=a.overview||{},f=a.focus||{},h=a.health||{},list=state.monthlyReviews&&state.monthlyReviews.history||[],screen=Number(f.screenDailyAvg)||0,goal=Number(o.screenGoal)||Number(state.profile&&state.profile.personalPlan&&state.profile.personalPlan.screenTotalMinutes)||0,tips=[];
+ if(goal&&screen>goal*1.15)tips.push('Экранное время выше ориентира: выбери один цифровой барьер и отслеживай его каждую неделю.');
+ if(Number(o.overdue)>5)tips.push('Много просроченных задач: удали неактуальное, перенеси важное и разбей крупные задачи.');
+ if(!tips.length)tips.push('Сохрани работающие практики. На следующий месяц выбери только одно главное улучшение.');
+ var html='<div class="page"><div class="title-xl">🗓️ Итоги и разбор месяца</div><div class="subtitle">Результаты, нагрузка и план следующего месяца по фактическим записям.</div><div class="grid-2"><div class="card"><div class="stat-value">'+(o.tasksDonePeriod||0)+'</div><div class="stat-label">Задач за 30 дней</div></div><div class="card"><div class="stat-value">'+(screen?screen+' мин':'—')+'</div><div class="stat-label">Экран/день</div></div><div class="card"><div class="stat-value">'+(f.focusMinutes||0)+' мин</div><div class="stat-label">Фокус</div></div><div class="card"><div class="stat-value">'+(h.workouts||0)+'</div><div class="stat-label">Тренировок</div></div><div class="card"><div class="stat-value">'+(h.walks||0)+'</div><div class="stat-label">Прогулок</div></div><div class="card"><div class="stat-value">'+(h.meditation||0)+'</div><div class="stat-label">Медитаций</div></div></div><div class="card"><h2>🔎 Выводы</h2>'+tips.map(function(t){return '<div class="list-row">• '+esc(t)+'</div>';}).join('')+'<div class="footnote">Период — последние 30 дней, не календарный месяц. Полнота выводов зависит от заполнения дневников.</div></div><div class="card"><h2>🎯 Следующий месяц</h2><label class="field-label">Главный результат</label><textarea id="monthResult" rows="2" maxlength="800"></textarea><label class="field-label">Что продолжить?</label><textarea id="monthKeep" rows="2" maxlength="800"></textarea><label class="field-label">Что прекратить или упростить?</label><textarea id="monthStop" rows="2" maxlength="800"></textarea><label class="field-label">Главная область</label><select id="monthArea"><option value="focus">Фокус и экран</option><option value="health">Сон и здоровье</option><option value="learning">Обучение и память</option><option value="habits">Привычки</option><option value="balance">Баланс жизни</option></select><label class="field-label">Измеримая цель</label><input id="monthTarget" maxlength="180" placeholder="Например: 5 дней в неделю"><label class="field-label">Как измерим успех?</label><input id="monthMeasure" maxlength="180" placeholder="Метрика и значение"><button class="btn btn-primary btn-block mt-2" onclick="saveMonthlyReview()">Сохранить итоги</button></div><div class="section-title">История обзоров</div>';
+ list.slice().reverse().slice(0,24).forEach(function(r){html+='<div class="card"><b>'+esc(r.date||'')+'</b><div>'+esc(r.target||'')+'</div><div class="footnote">'+esc(r.result||'')+'</div></div>';});
+ html+='</div>';document.getElementById('app').innerHTML=html;
+}
+function saveMonthlyReview(){
+ var v=function(id){var x=document.getElementById(id);return x?String(x.value||'').trim():'';},r={date:today(),createdAt:nowISO(),result:v('monthResult'),keep:v('monthKeep'),stop:v('monthStop'),area:v('monthArea'),target:v('monthTarget'),measure:v('monthMeasure')};
+ if(!r.result&&!r.keep&&!r.stop&&!r.target&&!r.measure)return toast('Добавь вывод или цель','warning');
+ if(!state.monthlyReviews)state.monthlyReviews={history:[]};if(!Array.isArray(state.monthlyReviews.history))state.monthlyReviews.history=[];
+ state.monthlyReviews.history.push(r);if(state.monthlyReviews.history.length>36)state.monthlyReviews.history=state.monthlyReviews.history.slice(-36);
+ save();toast('Итоги месяца сохранены','success');renderMonthlyReview();
+}
 function renderWeeklyReport(){ renderWeeklyReview(); }
 function renderSnapshot(){ renderStub('🌐 Единая картина'); }
 function renderRecommendations(){ renderStub('💡 Рекомендации'); }
@@ -4436,7 +4469,7 @@ function saveWeeklyReview(){
  if(state.weeklyReview.history.length>104)state.weeklyReview.history=state.weeklyReview.history.slice(-104);
  save();toast('Недельный обзор сохранён','success');renderWeeklyReview();
 }
-function renderMonthlyReview(){ renderStub('📆 Итоги месяца'); }
+
 function renderTimer(){ renderStub('⏱ Таймер'); }
 function renderDomains(){ navigate('spheres'); }
 /* ============ ПРОГУЛКИ ============ */
@@ -5513,9 +5546,12 @@ window.renderSchedule = renderSchedule;
 window.renderScheduleEditor = renderScheduleEditor;
 window.renderFocus = renderFocus;
 window.renderEveningReview = renderEveningReview;
+window.renderDailyReport = renderDailyReport;
+window.saveDailyReview = saveDailyReview;
 window.renderWeeklyReview = renderWeeklyReview;
 window.saveWeeklyReview = saveWeeklyReview;
 window.renderMonthlyReview = renderMonthlyReview;
+window.saveMonthlyReview = saveMonthlyReview;
 window.renderTimer = renderTimer;
 window.renderDomains = renderDomains;
 window.renderWorkouts = renderWorkouts;
