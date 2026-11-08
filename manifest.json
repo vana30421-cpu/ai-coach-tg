@@ -1,8 +1,65 @@
 {
-  "id":"./","name":"Life OS","short_name":"Life OS",
-  "description":"Персональная система развития и управления жизнью",
-  "start_url":"./index.html","scope":"./","display":"standalone",
-  "display_override":["standalone","minimal-ui"],
-  "background_color":"#000000","theme_color":"#000000","orientation":"portrait",
-  "icons":[{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+  "id": "./",
+  "name": "Life OS",
+  "short_name": "Life OS",
+  "description": "Life OS — персональная система развития, планирования, обучения и отслеживания привычек.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": [
+    "lifestyle",
+    "productivity",
+    "education",
+    "health"
+  ],
+  "shortcuts": [
+    {
+      "name": "Задачи",
+      "short_name": "Задачи",
+      "url": "./?page=tasks",
+      "icons": [
+        {
+          "src": "icon.svg",
+          "sizes": "any"
+        }
+      ]
+    },
+    {
+      "name": "Обучение",
+      "short_name": "Обучение",
+      "url": "./?page=learning",
+      "icons": [
+        {
+          "src": "icon.svg",
+          "sizes": "any"
+        }
+      ]
+    },
+    {
+      "name": "Зрение",
+      "short_name": "Зрение",
+      "url": "./?page=vision",
+      "icons": [
+        {
+          "src": "icon.svg",
+          "sizes": "any"
+        }
+      ]
+    }
+  ]
 }
