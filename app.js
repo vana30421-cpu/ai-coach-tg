@@ -4223,24 +4223,35 @@ function jarvisAddMessage(role,text){
 }
 function buildJarvisAppContext(){
  var a={};try{a=buildComprehensiveStats(30)||{};}catch(e){}
- var tasks=(state.tasks||[]).filter(function(t){return t.status!=='completed';});
- var habits=[];try{habits=getHabitsForToday().map(function(h){return {title:h.title||getHabitTemplate(h.templateId)&&getHabitTemplate(h.templateId).title||'Привычка',done:isHabitDoneToday(h.id)};});}catch(e){}
- var water=(state.customWater||[]).find(function(x){return x.date===today();});
- var mood=(state.customMood||[]).find(function(x){return x.date===today();});
- var sleep=(state.sleepEntries||[]).slice().sort(function(x,y){return String(y.date).localeCompare(String(x.date));})[0]||null;
- var vm=state.vision&&state.vision.metrics&&state.vision.metrics[today()]||{};
+ var date=today(),tasks=(state.tasks||[]).filter(function(t){return t.status!=='completed';}),habits=[];
+ try{habits=getHabitsForToday().map(function(h){return {title:h.title||getHabitTemplate(h.templateId)&&getHabitTemplate(h.templateId).title||'Привычка',done:isHabitDoneToday(h.id)};});}catch(e){}
+ var water=(state.customWater||[]).find(function(x){return x.date===date;}),mood=(state.customMood||[]).find(function(x){return x.date===date;}),sleep=(state.sleepEntries||[]).slice().sort(function(x,y){return String(y.date).localeCompare(String(x.date));})[0]||null,vm=state.vision&&state.vision.metrics&&state.vision.metrics[date]||{};
+ var journal=(state.journalEntries||[]).filter(function(x){return x.date===date;})[0]||null;
+ var events=(state.calendarEvents||[]).filter(function(x){return x.date===date&&!x.done;}).slice(0,8).map(function(x){return {title:x.title,time:x.time||null,category:x.category||null};});
+ var screen=(state.screenEntries||[]).filter(function(x){return String(x.date||'').slice(0,10)===date;}).reduce(function(n,x){return n+(Number(x.minutes)||0);},0);
+ var stress=(state.antistressEntries||[]).slice(-3).map(function(x){return {title:x.title||x.practiceId,date:x.date,before:x.beforeStress,after:x.afterStress,durationSeconds:x.durationSeconds||0};});
+ var pet=state.pet||{},brain=state.secondBrain&&Array.isArray(state.secondBrain.notes)?state.secondBrain.notes:[];
+ var month=date.slice(0,7),finance=(state.financeEntries||[]).filter(function(x){return String(x.date||'').slice(0,7)===month;});
+ var income=finance.filter(function(x){return x.type==='income';}).reduce(function(n,x){return n+(Number(x.amount)||0);},0),expense=finance.filter(function(x){return x.type==='expense';}).reduce(function(n,x){return n+(Number(x.amount)||0);},0);
  return {
-  date:today(),period:"30 дней",
-  tasks:{active:tasks.length,overdue:tasks.filter(function(t){return t.due_date&&String(t.due_date).slice(0,10)<today();}).length,next:tasks.slice(0,6).map(function(t){return {title:t.title,priority:t.priority||'medium',due:t.due_date||null};})},
+  date:date,period:"30 дней",
+  tasks:{active:tasks.length,overdue:tasks.filter(function(t){return t.due_date&&String(t.due_date).slice(0,10)<date;}).length,next:tasks.slice(0,6).map(function(t){return {title:t.title,priority:t.priority||'medium',due:t.due_date||null};})},
   habits:{today:habits,completed:habits.filter(function(h){return h.done;}).length},
   water:{glasses:water?Number(water.count)||0:0,goal:getWaterGoal()},
   mood:mood?{score:mood.score}:null,
   sleep:sleep?{hours:sleep.hours,quality:sleep.quality,date:sleep.date}:null,
   vision:{eyeFatigue:vm.eyeFatigue||null,dryness:vm.dryness||null,headaches:!!vm.headaches,blur:!!vm.blur,screenHours:vm.screenHours||null},
-  analytics:{health:a.health||null,focus:a.focus||null,learning:a.learning||null,overview:a.overview||null}
+  journal:journal?{mood:journal.mood,energy:journal.energy,wins:String(journal.wins||'').slice(0,350),blockers:String(journal.blockers||'').slice(0,350),tomorrow:journal.tomorrow||null}:null,
+  calendar:{today:events,upcomingCount:(state.calendarEvents||[]).filter(function(x){return !x.done&&String(x.date||'')>=date;}).length},
+  screenTime:{minutes:screen},
+  antistress:{recent:stress},
+  pet:{name:pet.name||null,stage:pet.stage||1,xp:pet.xp||0,careToday:(pet.careLog||[]).filter(function(x){return x.date===date;}).length},
+  secondBrain:{notes:brain.length,recent:brain.slice(-5).map(function(x){return {title:x.title,tags:(x.tags||[]).slice(0,6)};})},
+  finance:{month:month,income:income,expense:expense,balance:income-expense,entries:finance.length},
+  learningProgress:{trackedTopics:Object.keys(state.libraryProgress||{}).length},
+  analytics:{health:a.health||null,focus:a.focus||null,learning:a.learning||null,overview:a.overview||null,life:a.life||null}
  };
 }
-function setJarvisProvider(value){var d=getJarvisState();if(value!=='openai'&&value!=='gemini')return;d.provider=value;save();toast('Провайдер: '+(value==='gemini'?'Google Gemini':'OpenAI'),'success');}
 function setJarvisApiUrl(value){var d=getJarvisState(),url=String(value||'').trim();if(url&& !/^https:\/\//i.test(url)){toast('URL сервера должен начинаться с https://','warning');return;}d.apiUrl=url.slice(0,500);save();}
 function setJarvisProvider(value){var d=getJarvisState();d.provider=value==='gemini'?'gemini':'openai';save();toast('Провайдер: '+(d.provider==='gemini'?'Gemini':'OpenAI'),'success');}
 function setJarvisAccessCode(value){var d=getJarvisState();d.accessCode=String(value||'').trim().slice(0,160);save();}
