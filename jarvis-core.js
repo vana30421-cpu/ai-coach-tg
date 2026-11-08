@@ -14,7 +14,7 @@
     {id:'schedule',keys:['расписание','план дня','планирование']},
     {id:'fsrs',keys:['карточки','повторение','fsrs']},
     {id:'coach',keys:['коуч','коучинг']},
-    {id:'stats',keys:['статистика','прогресс','отчет']},
+    {id:'stats',keys:['статистика','прогресс','отчет']},\n    {id:'habitList',keys:['привычки','привычку']},\n    {id:'projects',keys:['проекты','проект']},\n    {id:'finance',keys:['финансы','деньги','бюджет']},\n    {id:'brain',keys:['тренировка мозга','игры для мозга']},\n    {id:'sleep',keys:['режим сна','трекер сна']},
     {id:'settings',keys:['настройки','параметры']}
   ];
   function parseCommand(input){
@@ -26,7 +26,7 @@
     if(/^(?:сводка|мой день|как дела|статус|итоги дня)$/.test(text))return {type:'summary'};
     m=text.match(/^(?:фокус|помодоро|таймер)(?:\s+(\d{1,3}))?$/);
     if(m)return {type:'focus',minutes:Math.max(5,Math.min(90,Number(m[1])||25))};
-    if(/^(?:помощь|что умеешь|команды)$/.test(text))return {type:'help'};
+    m=text.match(/^(?:выполни|заверши|отметь)\\s+(?:задачу\\s*)?(\\d+)$/);\n    if(m)return {type:'complete_task',index:Number(m[1])};\n    if(/^(?:очисти|удали)\\s+(?:историю|диалог|чат)$/.test(text))return {type:'clear_chat'};\n    m=text.match(/^(?:режим|работай как)\\s+(планировщик|коуч|наставник|строгий|спокойный)$/);\n    if(m)return {type:'set_mode',mode:m[1]};\n    if(/^(?:помощь|что умеешь|команды)$/.test(text))return {type:'help'};
     for(var i=0;i<routes.length;i++){
       for(var k=0;k<routes[i].keys.length;k++){
         var key=normalize(routes[i].keys[k]);
