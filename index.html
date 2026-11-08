@@ -809,6 +809,8 @@ body{background:radial-gradient(ellipse at 15% 0%,color-mix(in srgb,var(--brand)
 .life-burst-particle{position:fixed;z-index:3;display:block;pointer-events:none;font-size:17px;color:var(--brand);text-shadow:0 0 12px var(--brand),0 0 24px var(--brand-2);animation:lifeBurst .9s cubic-bezier(.16,.75,.3,1) forwards;will-change:transform,opacity}
 @keyframes lifeBurst{0%{transform:translate3d(0,0,0) scale(.35) rotate(0);opacity:0}15%{opacity:1}100%{transform:translate3d(var(--dx),var(--dy),0) scale(1.15) rotate(150deg);opacity:0}}
 @media(prefers-reduced-motion:reduce){body.life-motion-override .life-effect{display:block!important;animation-duration:var(--duration,15s)!important;animation-iteration-count:infinite!important}body.life-motion-override .life-burst-particle{animation-duration:.9s!important;animation-iteration-count:1!important}}
+
+body.life-disable-motion *,body.life-disable-motion *::before,body.life-disable-motion *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
 </style>
 </head>
 <body class="theme-dark">
