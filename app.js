@@ -5194,6 +5194,43 @@ function saveProfileV2(){
  p.activity=(document.getElementById('pv-activity')||{}).value||'moderate';p.goal=(document.getElementById('pv-goal')||{}).value||'maintain';p.updatedAt=nowISO();save();toast('Параметры профиля сохранены','success');renderProfileV2();
 }
 
+
+/* DETOX OUTCOME TRACKING: baseline -> intervention -> outcome */
+function buildDetoxOutcomeStats(){
+ var rows=state.detox&&Array.isArray(state.detox.history)?state.detox.history.filter(function(x){return x&&x.kind==='review';}):[];
+ var recent=rows.slice(-14),avg=function(key){var v=recent.map(function(x){return Number(x[key]);}).filter(function(n){return Number.isFinite(n)&&n>=0;});return v.length?Math.round(v.reduce(function(a,b){return a+b;},0)/v.length*10)/10:null;};
+ var reductions=recent.map(function(x){return Number(x.urgeBefore)-Number(x.urgeAfter);}).filter(Number.isFinite);
+ return {total:rows.length,recent:recent.length,urgeBefore:avg('urgeBefore'),urgeAfter:avg('urgeAfter'),urgeReduction:reductions.length?Math.round(reductions.reduce(function(a,b){return a+b;},0)/reductions.length*10)/10:null,screen:avg('screenMinutes'),focus:avg('focusAfter'),mood:avg('moodAfter'),rows:rows};
+}
+function renderDetoxReview(){
+ var html='<div class="page"><div class="title-xl">🧪 Проверка эффекта детокса</div><div class="subtitle">Зафиксируй состояние до и после практики. Через несколько записей LIFE OS покажет, что действительно помогает.</div><div class="card"><h2>Самооценка после практики</h2><div class="field"><label class="field-label">Тяга открыть отвлекающее приложение ДО, 0–10</label><input id="detoxUrgeBefore" type="number" min="0" max="10" value="6"></div><div class="field"><label class="field-label">Тяга ПОСЛЕ, 0–10</label><input id="detoxUrgeAfter" type="number" min="0" max="10" value="3"></div><div class="field"><label class="field-label">Экранное время сегодня, минут (если знаешь)</label><input id="detoxScreenMinutes" type="number" min="0" max="1440" placeholder="Необязательно"></div><div class="field"><label class="field-label">Концентрация после, 1–5</label><select id="detoxFocusAfter"><option value="">Нет оценки</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div><div class="field"><label class="field-label">Самочувствие после, 1–5</label><select id="detoxMoodAfter"><option value="">Нет оценки</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div><div class="field"><label class="field-label">Что помогло?</label><select id="detoxAction"><option>Убрал телефон подальше</option><option>Прогулка</option><option>Дыхание / пауза</option><option>Заменил привычку другим действием</option><option>Блокировка уведомлений</option><option>Начал конкретную задачу</option><option>Другое</option></select></div><div class="field"><label class="field-label">Триггер или заметка</label><input id="detoxTrigger" maxlength="240" placeholder="Например: открыл видео от скуки"></div><button class="btn btn-primary btn-block" onclick="saveDetoxReview()">Сохранить результат</button></div><button class="btn btn-ghost btn-block" onclick="navigate(\'detox\')">← Назад к детоксу</button></div>';
+ document.getElementById('app').innerHTML=html;
+}
+function saveDetoxReview(){
+ var before=Number(document.getElementById('detoxUrgeBefore').value),after=Number(document.getElementById('detoxUrgeAfter').value);
+ if(!Number.isFinite(before)||!Number.isFinite(after)||before<0||before>10||after<0||after>10)return toast('Оцени тягу от 0 до 10','warning');
+ if(!state.detox)state.detox=defaultState().detox;if(!Array.isArray(state.detox.history))state.detox.history=[];
+ state.detox.history.push({id:uid(),kind:'review',date:today(),at:nowISO(),urgeBefore:before,urgeAfter:after,screenMinutes:Number(document.getElementById('detoxScreenMinutes').value)||null,focusAfter:Number(document.getElementById('detoxFocusAfter').value)||null,moodAfter:Number(document.getElementById('detoxMoodAfter').value)||null,action:document.getElementById('detoxAction').value,trigger:(document.getElementById('detoxTrigger').value||'').trim()});
+ if(state.detox.history.length>500)state.detox.history=state.detox.history.slice(-500);
+ save();toast('Результат практики сохранён','success');navigate('detox');
+}
+function renderDetoxHub(){
+ var d=state.detox||defaultState().detox,stats=buildDetoxOutcomeStats(),html='<div class="page"><div class="title-xl">🧘 Цифровой детокс</div><div class="subtitle">Не просто отмечай задания: измеряй тягу, экранное время и концентрацию до и после изменений.</div>';
+ html+='<div class="grid-2 mb-3"><div class="card"><div class="stat-value">'+(d.stats&&d.stats.cooldownCount||0)+'</div><div class="stat-label">Кулдаунов</div></div><div class="card"><div class="stat-value">'+stats.total+'</div><div class="stat-label">Оценок эффекта</div></div></div>';
+ html+='<div class="card mb-3"><h2>📉 Помогает ли детокс?</h2><div class="grid-2"><div><b>'+(stats.urgeBefore===null?'—':stats.urgeBefore+'/10')+'</b><div class="footnote">Тяга до практики</div></div><div><b>'+(stats.urgeAfter===null?'—':stats.urgeAfter+'/10')+'</b><div class="footnote">Тяга после</div></div><div><b>'+(stats.urgeReduction===null?'—':(stats.urgeReduction>0?'+':'')+stats.urgeReduction)+'</b><div class="footnote">Среднее снижение тяги</div></div><div><b>'+(stats.screen===null?'—':stats.screen+' мин')+'</b><div class="footnote">Средний экран в записях</div></div><div><b>'+(stats.focus===null?'—':stats.focus+'/5')+'</b><div class="footnote">Концентрация после</div></div><div><b>'+(stats.mood===null?'—':stats.mood+'/5')+'</b><div class="footnote">Самочувствие после</div></div></div><div class="footnote mt-2">'+(stats.total<3?'Нужно ещё минимум 3 записи, чтобы осторожно оценивать закономерности.':'Сравнивай не один день, а тенденцию последних 14 записей. Это личный эксперимент, не клиническая оценка.')+'</div><button class="btn btn-primary btn-block mt-2" onclick="navigate(\'detoxReview\')">＋ Записать результат практики</button></div>';
+ html+='<div class="card mb-3"><h2>❄️ Пауза перед импульсом</h2><div class="footnote mb-2">Короткая пауза помогает заметить автоматическое действие. Запиши, что вызвало желание открыть приложение.</div><button class="btn btn-primary btn-block" onclick="startCooldown()">Начать 10-минутную паузу</button></div>';
+ html+='<div class="card mb-3"><h2>😴 Режим сна</h2><div class="footnote">Расписание сна: '+esc((d.sleepMode&&d.sleepMode.start)||'22:00')+' — '+esc((d.sleepMode&&d.sleepMode.end)||'07:00')+'. Переключатель сохраняет предпочтение; он не блокирует системные приложения.</div><button class="btn '+(d.sleepMode&&d.sleepMode.enabled?'btn-primary':'btn-ghost')+' btn-block" onclick="toggleSleepMode()">'+(d.sleepMode&&d.sleepMode.enabled?'Выключить':'Включить')+'</button></div>';
+ html+='<div class="card mb-3"><h2>📚 Программа и привычки</h2><button class="btn btn-ghost btn-block mb-2" onclick="navigate(\'detox60\')">60-дневная программа</button><button class="btn btn-ghost btn-block" onclick="navigate(\'detoxcourse\')">62-дневный курс</button></div>';
+ if(stats.rows.length){html+='<div class="card"><h2>Последние результаты</h2>';stats.rows.slice(-8).reverse().forEach(function(x){html+='<div class="list-row"><div class="list-body"><div class="list-title">'+esc(x.date||'')+' · '+esc(x.action||'Практика')+'</div><div class="footnote">Тяга '+x.urgeBefore+' → '+x.urgeAfter+'/10'+(x.screenMinutes!==null?' · экран '+x.screenMinutes+' мин':'')+'</div>'+(x.trigger?'<div class="footnote">'+esc(x.trigger)+'</div>':'')+'</div><div class="list-value">'+(x.urgeBefore>x.urgeAfter?'↓':'↔')+'</div></div>';});html+='</div>';}
+ html+='</div>';document.getElementById('app').innerHTML=html;
+}
+function startCooldown(){
+ if(!state.detox)state.detox=defaultState().detox;if(!state.detox.stats)state.detox.stats={cooldownCount:0,pauseCount:0,sleepHours:0,screenMinutes:0,byApp:{}};
+ state.detox.cooldown={active:true,until:new Date(Date.now()+10*60*1000).toISOString(),minutes:10,trigger:'manual'};state.detox.stats.cooldownCount++;
+ if(!Array.isArray(state.detox.history))state.detox.history=[];state.detox.history.push({id:uid(),kind:'practice',date:today(),at:nowISO(),action:'10-минутная пауза'});
+ save();toast('Пауза запущена. После неё оцени эффект в детокс-разделе.','success');
+}
+
 /* Заглушки на window */
 window.renderMemory = renderMemory;
 window.startMemoryExercise = startMemoryExercise;
