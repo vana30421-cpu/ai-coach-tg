@@ -4405,7 +4405,37 @@ function renderSchedule(){ renderStub('📅 Расписание'); }
 function renderScheduleEditor(){ renderStub('Событие'); }
 function renderFocus(){ renderStub('⏱ Фокус'); }
 function renderEveningReview(){ renderStub('🌙 Вечерний обзор'); }
-function renderWeeklyReview(){ renderStub('📈 Итоги недели'); }
+function renderWeeklyReview(){
+ var rows=state.weeklyReview&&Array.isArray(state.weeklyReview.history)?state.weeklyReview.history:[];
+ var a=buildComprehensiveStats(7)||{},o=a.overview||{},f=a.focus||{},h=a.health||{};
+ var screen=Number(f.screenDailyAvg)||0,goal=Number(o.screenGoal)||Number(state.profile&&state.profile.personalPlan&&state.profile.personalPlan.screenTotalMinutes)||0;
+ var suggestions=[];
+ if(screen&&goal&&screen>goal*1.15)suggestions.push('Экранное время выше твоего ориентира. На следующей неделе выбери один главный источник отвлечения и поставь для него конкретное окно без телефона.');
+ else if(screen>=240)suggestions.push('Среднее экранное время высокое. Начни не с резкого запрета, а с двух защищённых периодов по 30 минут без развлекательных приложений.');
+ if(Number(o.overdue)>0)suggestions.push('Есть просроченные задачи. Перенеси или удали неактуальные; оставь на день не больше 1–3 главных результатов.');
+ if(Number(o.tasksPending)>8)suggestions.push('Большой хвост задач. Разбей одну важную задачу на первый шаг до 15 минут и запланируй его.');
+ if(!suggestions.length)suggestions.push('Сохрани текущий ритм и выбери одну небольшую настройку, которую реально поддерживать всю неделю.');
+ var html='<div class="page"><div class="title-xl">📈 Еженедельный обзор</div><div class="subtitle">Короткая рефлексия по методике weekly review: факты → вывод → конкретный план «если — то».</div>';
+ html+='<div class="grid-2 mb-3"><div class="card"><div class="stat-value">'+(o.tasksDonePeriod||0)+'</div><div class="stat-label">Задач выполнено за 7 дней</div></div><div class="card"><div class="stat-value">'+(screen?screen+' мин':'—')+'</div><div class="stat-label">Экранное время в день</div></div><div class="card"><div class="stat-value">'+(o.habitsToday||0)+'/'+(o.habitTotal||0)+'</div><div class="stat-label">Привычки сегодня</div></div><div class="card"><div class="stat-value">'+(f.focusMinutes||0)+' мин</div><div class="stat-label">Учтённый фокус</div></div></div>';
+ html+='<div class="card mb-3"><h2>🧠 Выводы LIFE OS</h2><div class="footnote mb-2">Это подсказки по записанным данным, а не автоматический диагноз. Если данных мало, приложение не делает вид, что знает больше.</div>'+suggestions.map(function(x){return '<div class="list-row"><span>•</span><span>'+esc(x)+'</span></div>';}).join('')+'</div>';
+ html+='<div class="card"><h2>📝 Разбор недели</h2><div class="field"><label class="field-label">1. Что получилось? (конкретные победы)</label><textarea id="weeklyWins" rows="2" maxlength="1000" placeholder="Например: 4 раза учился по 20 минут, два вечера провёл без соцсетей…"></textarea></div><div class="field"><label class="field-label">2. Что мешало или отнимало время?</label><textarea id="weeklyBlockers" rows="2" maxlength="1000" placeholder="Например: короткие видео перед сном, слишком много задач…"></textarea></div><div class="field"><label class="field-label">3. Энергия за неделю</label><select id="weeklyEnergy"><option value="">Не оценивать</option><option value="1">1 — очень низкая</option><option value="2">2 — низкая</option><option value="3" selected>3 — средняя</option><option value="4">4 — хорошая</option><option value="5">5 — высокая</option></select></div><div class="field"><label class="field-label">4. Главный фокус следующей недели</label><input id="weeklyFocus" maxlength="180" placeholder="Одна важная цель"></div><div class="field"><label class="field-label">5. План «если — то»</label><div class="footnote mb-1">Заранее свяжи препятствие с действием. Пример: «Если потянусь к коротким видео во время учёбы, то положу телефон в другую комнату и сделаю 5 минут первого шага».</div><input id="weeklyIf" maxlength="180" placeholder="Если произойдёт…"><input id="weeklyThen" class="mt-2" maxlength="180" placeholder="…то я сделаю…"></div><div class="field"><label class="field-label">6. Что изменить в системе?</label><select id="weeklyChange"><option value="keep">Оставить всё как есть</option><option value="reduce">Уменьшить нагрузку</option><option value="simplify">Упростить привычки и задачи</option><option value="protect">Защитить время без телефона</option><option value="sleep">Перенести приоритет на сон и восстановление</option><option value="learn">Добавить регулярное обучение</option></select></div><button class="btn btn-primary btn-block" onclick="saveWeeklyReview()">Сохранить обзор и план</button></div>';
+ html+='<div class="section-title mt-3">История обзоров</div>';
+ if(!rows.length)html+='<div class="card empty"><div class="empty-icon">🗓️</div><div class="empty-title">Пока нет обзоров</div><div class="empty-text">После сохранения здесь будут прошлые решения и их результаты.</div></div>';
+ rows.slice().reverse().slice(0,12).forEach(function(r){html+='<div class="card mb-2"><div class="row-between"><b>'+esc(r.date||'')+'</b><span class="badge">'+(r.energy?('Энергия '+r.energy+'/5'):'Обзор')+'</span></div>'+(r.focus?'<div class="mt-2"><b>Фокус:</b> '+esc(r.focus)+'</div>':'')+(r.ifText||r.thenText?'<div class="footnote mt-2">Если '+esc(r.ifText||'…')+' → то '+esc(r.thenText||'…')+'</div>':'')+(r.wins?'<div class="footnote mt-2">Победы: '+esc(r.wins)+'</div>':'')+'</div>';});
+ html+='<button class="btn btn-ghost btn-block mt-2" onclick="navigate(\'stats\')">← К полной статистике</button></div>';
+ document.getElementById('app').innerHTML=html;
+}
+function saveWeeklyReview(){
+ var el=function(id){return document.getElementById(id);},value=function(id){var x=el(id);return x?String(x.value||'').trim():'';};
+ var wins=value('weeklyWins'),blockers=value('weeklyBlockers'),focus=value('weeklyFocus'),ifText=value('weeklyIf'),thenText=value('weeklyThen'),energy=Number(value('weeklyEnergy'))||null;
+ if(!wins&&!blockers&&!focus&&!ifText&&!thenText)return toast('Добавь хотя бы один вывод или план','warning');
+ if((ifText&&!thenText)||(!ifText&&thenText))return toast('Заполни обе части плана «если — то»','warning');
+ if(!state.weeklyReview||typeof state.weeklyReview!=='object')state.weeklyReview={history:[]};
+ if(!Array.isArray(state.weeklyReview.history))state.weeklyReview.history=[];
+ state.weeklyReview.history.push({id:uid(),date:today(),createdAt:nowISO(),wins:wins,blockers:blockers,energy:energy,focus:focus,ifText:ifText,thenText:thenText,change:value('weeklyChange')||'keep'});
+ if(state.weeklyReview.history.length>104)state.weeklyReview.history=state.weeklyReview.history.slice(-104);
+ save();toast('Недельный обзор сохранён','success');renderWeeklyReview();
+}
 function renderMonthlyReview(){ renderStub('📆 Итоги месяца'); }
 function renderTimer(){ renderStub('⏱ Таймер'); }
 function renderDomains(){ navigate('spheres'); }
@@ -5484,6 +5514,7 @@ window.renderScheduleEditor = renderScheduleEditor;
 window.renderFocus = renderFocus;
 window.renderEveningReview = renderEveningReview;
 window.renderWeeklyReview = renderWeeklyReview;
+window.saveWeeklyReview = saveWeeklyReview;
 window.renderMonthlyReview = renderMonthlyReview;
 window.renderTimer = renderTimer;
 window.renderDomains = renderDomains;
