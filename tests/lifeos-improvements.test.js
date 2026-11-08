@@ -66,6 +66,24 @@ test('server endpoint never embeds the OpenAI secret in the browser and requires
  assert.doesNotMatch(app,/sk-[A-Za-z0-9]{20,}/);
 });
 
+
+test('memory training measures working and short-term recall, speed, accuracy and FSRS retention intervals',()=>{
+ assert.match(app,/function getMemoryTrainingMetrics\(\)/);
+ assert.match(app,/startMemoryExercise\\('working'\\)/);
+ assert.match(app,/startMemoryExercise\\('short'\\)/);
+ assert.match(app,/retentionDelaySeconds:challenge\.retentionDelaySeconds/);
+ assert.match(app,/memoryAccuracy/);
+ assert.match(app,/memoryBestSpan/);
+ assert.match(app,/Ежедневный план развития памяти · 10 минут/);
+ assert.match(app,/memoryTraining:\{sessions:/);
+ assert.match(app,/Долговременная память · 4 минуты/);
+});
+test('Jarvis context reads canonical second-brain notes and memory training data',()=>{
+ assert.match(app,/state\.secondBrain&&Array\.isArray\(state\.secondBrain\.notes\)/);
+ assert.match(app,/memoryTraining:\{sessions:memorySessions\.length/);
+ assert.match(app,/Анализ Джарвиса/);
+});
+
 test('all eight games have playable mechanics and no manual score entry placeholder',()=>{
  for(const id of ['memory','puzzle15','sequences','grids','reaction','math','typing','target'])assert.match(app,new RegExp("id:'"+id+"'"));
  for(const name of ['miniGameFlip','miniGamePuzzleMove','miniGameSequenceAdd','miniGameGridToggle','miniGameReactionClick','miniGameMathAnswer','miniGameTypingCheck','miniGameTargetHit','finishMiniGame'])assert.match(app,new RegExp('function '+name+'\\('));
