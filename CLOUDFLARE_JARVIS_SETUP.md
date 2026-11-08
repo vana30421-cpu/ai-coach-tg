@@ -4,7 +4,15 @@
 
 ## Обязательные секреты Cloudflare Pages
 
-В Cloudflare Dashboard создай Worker `lifeos-jarvis-api` из `workers/jarvis-worker.js` (или выполни `npx wrangler deploy --config wrangler.jarvis.toml`). Добавь Worker Secrets:
+В терминале в корне репозитория выполни:
+
+```bash
+npx wrangler secret put OPENAI_API_KEY --config wrangler.jarvis.toml
+npx wrangler secret put JARVIS_ACCESS_CODE --config wrangler.jarvis.toml
+npx wrangler deploy --config wrangler.jarvis.toml
+```
+
+Либо создай Worker вручную в Cloudflare Dashboard из `workers/jarvis-worker.js`. Добавь Worker Secrets:
 
 - `OPENAI_API_KEY` — Secret, API-ключ OpenAI. Не вставлять его в HTML, JavaScript или GitHub.
 - `JARVIS_ACCESS_CODE` — Secret, придумай отдельный длинный код доступа. Его нужно будет ввести в настройках Джарвиса внутри LIFEOS.
