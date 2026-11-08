@@ -3897,6 +3897,9 @@ function renderPlanToday(){ navigate('schedule'); }
 function renderPlanWeek(){ navigate('weeklyReview'); }
 function renderPlanMonth(){ navigate('monthlyReview'); }
 function renderObsidian(){ renderStub('📓 Obsidian'); }
+function renderProjectEditor(){ renderStub('✏️ Редактор проекта'); }
+function renderModuleDetail(){ renderStub('📖 Модуль курса'); }
+function renderAI(){ renderStub('🤖 ИИ-коуч'); }
 function renderMethods(){ renderStub('🎯 Методики'); }
 function renderRecovery(){ renderStub('🌿 Восстановление'); }
 function renderMedical(){ renderStub('🏥 Медицина'); }
