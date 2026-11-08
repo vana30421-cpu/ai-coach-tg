@@ -42,6 +42,6 @@ test('every detox task has an actionable guide and verification criterion', () =
 
 test('inline detox controls are exported for the Telegram WebView', () => {
   for (const handler of ['renderDetoxCourse', 'renderDetoxCourseReport', 'openDetoxDay', 'toggleDetoxCourseTask', 'saveDetoxDayReflection', 'completeDetoxDay']) {
-    assert.match(appSource, new RegExp('window\\\\.' + handler + '\\s*='));
+    assert.match(appSource, new RegExp('window\\.' + handler + '\\s*='));
   }
 });
