@@ -3021,7 +3021,7 @@ function quickMoodLog(){
   openSheet('Настроение?', html);
 }
 function saveMood(score){
- score=Math.max(1,Math.min(10,Number(score)||0));if(!score)return toast('Выбери настроение от 1 до 10','warning');
+ score=Number(score);if(!Number.isFinite(score)||score<1||score>10)return toast('Выбери настроение от 1 до 10','warning');score=Math.round(score);
  var t=today();if(!Array.isArray(state.customMood))state.customMood=[];
  var e=state.customMood.find(function(m){return m.date===t;}),isNew=!e;
  if(e)e.score=score;else state.customMood.push({id:uid(),date:t,score:score,created_at:nowISO()});
@@ -4819,7 +4819,7 @@ function renderCalendar(){
 function addCalendarEvent(){
   ensureLifeOSLists();var title=document.getElementById('calTitle'),date=document.getElementById('calDate');
   if(!title||!title.value.trim()||!date||!date.value)return toast('Укажи название и дату','warning');
-  state.calendarEvents.push({id:uid(),source:'lifeos',title:title.value.trim(),date:date.value,time:document.getElementById('calTime').value||'09:00',category:document.getElementById('calCategory').value,note:document.getElementById('calNote').value.trim(),done:false,createdAt:nowISO()});
+  window.LIFEOS_SELECTED_CAL_DATE=date.value;state.calendarEvents.push({id:uid(),source:'lifeos',title:title.value.trim(),date:date.value,time:document.getElementById('calTime').value||'09:00',category:document.getElementById('calCategory').value,note:document.getElementById('calNote').value.trim(),done:false,createdAt:nowISO()});
   save();toast('Событие добавлено','success');renderCalendar();
 }
 function toggleCalendarEvent(id){
