@@ -208,3 +208,22 @@ test('active anti-stress flow records partial sessions without awarding XP',()=>
  assert.match(systems,/if\(completed&&window\.addXP\)/);
  assert.match(systems,/Частичный результат сохранён без XP/);
 });
+
+test('media libraries, resources, medical log, medication log and notification preferences are functional',()=>{
+ for(const name of ['renderMovies','renderSeries','renderBooks','renderMusic','renderGames','renderPodcasts','renderEntertainment','renderResources','saveLifeResource','renderMedical','saveMedicalEntry','renderMeds','addLifeMedication','logMedicationTaken','renderNotifications','requestLifeOSNotificationPermission'])assert.match(systems,new RegExp('window\\.'+name+'=function'));
+ assert.match(systems,/state\.mediaLibrary/);
+ assert.match(systems,/state\.medicalEntries/);
+ assert.match(systems,/state\.medications/);
+ assert.match(systems,/state\.medicationLogs/);
+ assert.match(systems,/Notification\.requestPermission/);
+});
+test('all legacy renderer placeholders have a working replacement in an extension bundle',()=>{
+ const stubs=[...app.matchAll(/function\s+(render\w+)\s*\([^)]*\)\s*\{\s*renderStub\(/g)].map(m=>m[1]);
+ const extensions=ws+'\n'+systems;
+ const missing=stubs.filter(name=>!new RegExp('window\\.'+name+'\\s*=\\s*function').test(extensions));
+ assert.deepEqual(missing,[]);
+});
+test('finance transactions are included in the comprehensive analytics calculation',()=>{
+ assert.match(app,/var financeRows=arr\('financeEntries'\)\.slice\(\)/);
+ assert.match(app,/financePeriod=financeRows\.filter/);
+});
