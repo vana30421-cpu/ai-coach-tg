@@ -645,11 +645,11 @@ function lifeOSCelebrate(symbol){
   try{
     var overlay=document.getElementById('themeEffect');if(!overlay||!state.settings||state.settings.effectsEnabled===false)return;
     var rect=document.getElementById('app')?.getBoundingClientRect();if(!rect)return;
-    var x=Math.round(rect.width/2),y=Math.round(Math.min(window.innerHeight*.48,rect.top+window.innerHeight*.28));
+    var x=Math.round(rect.left+rect.width/2),y=Math.round(Math.min(window.innerHeight*.48,rect.top+window.innerHeight*.28));
     for(var i=0;i<14;i++){
       var p=document.createElement('i');p.className='life-burst-particle';p.textContent=symbol||'✦';
       p.style.left=x+'px';p.style.top=y+'px';p.style.setProperty('--dx',((Math.random()-.5)*180)+'px');p.style.setProperty('--dy',(-30-Math.random()*130)+'px');
-      overlay.appendChild(p);p.addEventListener('animationend',function(){this.remove();},{once:true});
+      document.body.appendChild(p);p.addEventListener('animationend',function(){this.remove();},{once:true});
     }
   }catch(e){console.warn('[Effects burst]',e);}
 }
