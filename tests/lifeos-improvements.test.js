@@ -71,7 +71,7 @@ test('memory training measures working and short-term recall, speed, accuracy an
  assert.match(app,/function getMemoryTrainingMetrics\(\)/);
  assert.match(app,/startMemoryExercise/);assert.match(app,/working/);
  assert.match(app,/short/);
- assert.match(app,/retentionDelaySeconds:challenge\.retentionDelaySeconds/);
+ assert.match(app,/retentionDelaySeconds:challenge\.retentionDelaySeconds/);assert.match(app,/prior\.length>=8&&accuracy>=80\?30:prior\.length>=4&&accuracy>=70\?15:5/);
  assert.match(app,/memoryAccuracy/);
  assert.match(app,/memoryBestSpan/);
  assert.match(app,/Ежедневный план развития памяти · 10 минут/);
