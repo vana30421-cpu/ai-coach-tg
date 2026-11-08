@@ -27,7 +27,7 @@ test('vision section has timed breaks, symptom logging, exam history and urgent-
  assert.match(app,/visionSuddenLoss/);
  assert.match(app,/visionFlashes/);
  assert.match(app,/visionFloaters/);
- assert.match(app,/срочную очную оценку/);
+ assert.match(app,/срочная очная оценка/);
  assert.match(content,/AAO — Computers, Digital Devices, and Eye Strain/);
 });
 
