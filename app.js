@@ -3843,9 +3843,13 @@ function renderStub(title){
   html+='<button class="btn btn-primary btn-block" onclick="addWorkspaceEntry()">Сохранить</button></div>';
   html+='<div class="row-between mb-2"><div class="section-title" style="margin:0">Мои записи</div><input type="search" style="max-width:48%" placeholder="Поиск" value="'+esc(window.__wsQuery||'')+'" oninput="window.__wsQuery=this.value;renderStub(\'Раздел\')"></div>';
   if(!visible.length)html+='<div class="card empty"><div class="empty-icon">📌</div><div class="empty-title">'+(rows.length?'Ничего не найдено':'Пока нет записей')+'</div><div class="empty-text">Добавь первую запись — она появится здесь.</div></div>';
-  visible.slice().reverse().forEach(function(r){html+='<div class="card workspace-entry"><div class="row-between"><b>'+esc(r.title)+'</b><span class="footnote">'+esc(r.category||'')+'</span></div>'+(r.note?'<div class="footnote mt-2">'+esc(r.note)+'</div>':'')+(finance?'<div class="stat-value mt-2">'+Number(r.amount||0).toLocaleString('ru-RU')+'</div>':'')+'<div class="btn-row mt-2"><button class="btn btn-ghost btn-xs" onclick="toggleWorkspaceEntry(\''+r.id+'\')">'+(r.done?'↩ Вернуть':'✓ Выполнено')+'</button><button class="btn btn-ghost btn-xs" onclick="deleteWorkspaceEntry(\''+r.id+'\')">Удалить</button></div></div>';});
+  visible.slice().reverse().forEach(function(r){html+='<div class="card workspace-entry" data-search="'+esc((r.title+' '+(r.note||'')+' '+(r.category||'')).toLowerCase())+'"><div class="row-between"><b>'+esc(r.title)+'</b><span class="footnote">'+esc(r.category||'')+'</span></div>'+(r.note?'<div class="footnote mt-2">'+esc(r.note)+'</div>':'')+(finance?'<div class="stat-value mt-2">'+Number(r.amount||0).toLocaleString('ru-RU')+'</div>':'')+'<div class="btn-row mt-2"><button class="btn btn-ghost btn-xs" onclick="toggleWorkspaceEntry(\''+r.id+'\')">'+(r.done?'↩ Вернуть':'✓ Выполнено')+'</button><button class="btn btn-ghost btn-xs" onclick="deleteWorkspaceEntry(\''+r.id+'\')">Удалить</button></div></div>';});
   html+='<div class="footnote text-tertiary text-center mt-3">Записи входят в резервную копию Life OS.</div></div>';
   document.getElementById('app').innerHTML=html;
+}
+function filterWorkspaceEntries(query){
+  var q=String(query||'').toLowerCase();
+  document.querySelectorAll('#app .workspace-entry').forEach(function(el){el.style.display=(el.getAttribute('data-search')||'').indexOf(q)>=0?'':'none';});
 }
 function addWorkspaceEntry(){
   var t=document.getElementById('wsTitle'),n=document.getElementById('wsNote'),c=document.getElementById('wsCategory');
