@@ -7,9 +7,9 @@
 В терминале в корне репозитория выполни:
 
 ```bash
+npx wrangler deploy --config wrangler.jarvis.toml
 npx wrangler secret put OPENAI_API_KEY --config wrangler.jarvis.toml
 npx wrangler secret put JARVIS_ACCESS_CODE --config wrangler.jarvis.toml
-npx wrangler deploy --config wrangler.jarvis.toml
 ```
 
 Либо создай Worker вручную в Cloudflare Dashboard из `workers/jarvis-worker.js`. Добавь Worker Secrets:
