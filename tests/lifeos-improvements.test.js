@@ -6,6 +6,7 @@ const vm=require('node:vm');
 const app=fs.readFileSync('app.js','utf8');
 const content=fs.readFileSync('content.js','utf8');
 const api=fs.readFileSync('functions/api/jarvis.js','utf8');
+const systems=fs.readFileSync('lifeos-systems.js','utf8');
 const worker=fs.readFileSync('workers/jarvis-worker.js','utf8');
 
 test('all changed browser scripts parse',()=>{
@@ -126,11 +127,13 @@ test('second brain stores searchable knowledge and exports diary and knowledge t
  assert.match(app,/## Знания/);
  assert.match(app,/obsidian:\/\/daily\?vault=/);
 });
-test('anti-stress fast actions use real content IDs and timed practices can be completed',()=>{
+test('anti-stress fast actions use real content IDs and guided before-after practices are saved',()=>{
  assert.match(content,/id:'as_ground_54321'/);
- for(const name of ['renderAntistress','startAntistress','startAntistressTimer','finishAntistress'])assert.match(app,new RegExp('function '+name+'\\('));
- assert.match(app,/id="antiTimer"/);
- assert.match(app,/clearInterval\(antiTimerHandle\)/);
+ for(const name of ['renderAntistress','startAntistress','finishAntistress'])assert.match(systems,new RegExp('window\\.'+name+'=function'));
+ assert.match(systems,/asBefore/);
+ assert.match(systems,/asAfter/);
+ assert.match(systems,/durationSeconds/);
+ assert.match(systems,/stepsDone/);
 });
 test('pet hunger changes with elapsed time and feeding updates the live value',()=>{
  for(const name of ['getPetLiveState','renderPet','renamePet','feedPet'])assert.match(app,new RegExp('function '+name+'\\('));
