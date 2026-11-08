@@ -1,0 +1,41 @@
+'use strict';
+const test=require('node:test');
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const app=fs.readFileSync('app.js','utf8');
+const content=fs.readFileSync('content.js','utf8');
+const index=fs.readFileSync('index.html','utf8');
+const sw=fs.readFileSync('sw.js','utf8');
+test('Jarvis is wired to the existing AI tab and direct route',()=>{
+  assert.match(app,/ai:\s*renderAI/);
+  assert.match(app,/jarvis:\s*renderJarvis/);
+  assert.match(app,/function renderAI\(\)\{\s*renderJarvis\(\);\s*\}/);
+});
+test('main navigation labels the assistant Jarvis',()=>assert.match(content,/id:'ai',emoji:'✧',label:'Джарвис'/));
+test('command core loads before app runtime',()=>{
+  assert.ok(index.indexOf('src="jarvis-core.js"')<index.indexOf('src="app.js"'));
+});
+test('Jarvis command core is included in offline shell cache',()=>assert.match(sw,/\.\/jarvis-core\.js/));
+test('assistant messages and check-ins are stored in application state',()=>{
+  assert.match(app,/state\.jarvis=\{messages:\[\],checkins:\[\],focus:null\}/);
+  assert.match(app,/d\.messages\.push/);
+  assert.match(app,/d\.checkins\.push/);
+});
+test('task creation uses the native task schema and saves state',()=>{
+  assert.match(app,/state\.tasks\.unshift\(\{id:uid\(\),title:cmd\.title/);
+  assert.match(app,/save\(\);return 'Добавил задачу/);
+});
+test('voice input degrades safely when SpeechRecognition is unavailable',()=>{
+  assert.match(app,/window\.SpeechRecognition\|\|window\.webkitSpeechRecognition/);
+  assert.match(app,/Голосовой ввод не поддерживается этим браузером/);
+});
+test('self-assessment is explicitly not represented as clinical diagnosis',()=>{
+  assert.match(app,/Не медицинский тест и не диагностика/);
+  assert.match(app,/не клинический тест и не диагноз/);
+});
+test('methodology cards cite primary or official sources',()=>{
+  assert.match(app,/www\.nice\.org\.uk/);
+  assert.match(app,/www\.who\.int/);
+  assert.match(app,/www\.cdc\.gov/);
+  assert.match(app,/open-spaced-repetition/);
+});
