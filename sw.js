@@ -1,4 +1,4 @@
-const CACHE = 'life-os-v50';
+const CACHE = 'life-os-v51';
 const CORE_ASSETS = ['./','./index.html','./content.js','./content2.js','./content3.js','./app.js','./manifest.json','./icon.svg'];
 self.addEventListener('message', event => { if(event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting(); });
 self.addEventListener('install', event => {
@@ -25,27 +25,18 @@ self.addEventListener('fetch', event => {
   if(url.origin!==self.location.origin) return;
   const isNavigation=request.mode==='navigate'||request.destination==='document';
   if(isNavigation){
-    event.respondWith((async()=>{
-      try{
-        const response=await fetch(request);
-        if(response&&response.ok){const cache=await caches.open(CACHE);await cache.put('./index.html',response.clone());}
-        return response;
-      }catch(error){
-        const cached=await caches.match('./index.html');
-        return cached||new Response('Life OS временно недоступен. Проверьте подключение к интернету.',{status:503,headers:{'Content-Type':'text/plain; charset=utf-8'}});
-      }
-    })());
-    return;
-  }
+    const isAppAsset=/\\.(?:js|css|json|svg|png|webp|woff2?)$/i.test(url.pathname);
   event.respondWith((async()=>{
     const cached=await caches.match(request);
-    if(cached) return cached;
     try{
-      const response=await fetch(request);
-      if(response&&response.ok&&response.type==='basic'){const cache=await caches.open(CACHE);await cache.put(request,response.clone());}
+      const response=await fetch(request,{cache:isAppAsset?'no-cache':'default'});
+      if(response&&response.ok&&response.type==='basic'){
+        const cache=await caches.open(CACHE);
+        await cache.put(request,response.clone());
+      }
       return response;
     }catch(error){
-      // Не подменяем JS/CSS/JSON/изображения документом index.html.
+      if(cached)return cached;
       return new Response('Ресурс временно недоступен: '+url.pathname,{status:503,headers:{'Content-Type':'text/plain; charset=utf-8'}});
     }
   })());
