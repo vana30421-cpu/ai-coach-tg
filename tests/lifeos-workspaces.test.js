@@ -157,3 +157,27 @@ test('Jarvis can normalize the second-brain store before building external AI co
  sandbox.window.ensureLifeOSBrain();
  assert.equal(sandbox.state.secondBrain.notes[0].title,'Знание');
 });
+
+test('closing an unfinished anti-stress practice saves a partial record without XP',()=>{
+ const {sandbox}=sandboxFor(systems);
+ sandbox.window.startAntistress('as_breath_sigh');
+ sandbox.window.__lifeosAntistress.startedAt=Date.now()-12000;
+ const xp=sandbox.state.pet.xp;
+ sandbox.window.closeSheet();
+ assert.equal(sandbox.state.antistressEntries.length,1);
+ assert.equal(sandbox.state.antistressEntries[0].completed,false);
+ assert.equal(sandbox.state.antistressEntries[0].closedEarly,true);
+ assert.ok(sandbox.state.antistressEntries[0].durationSeconds>=12);
+ assert.equal(sandbox.state.pet.xp,xp);
+});
+test('pet progress bar measures progress within the current evolution stage',()=>{
+ const {sandbox,appRoot}=sandboxFor(systems);
+ sandbox.PET_STAGES=[
+  {id:1,emoji:'🥚',name:'Яйцо',minXP:0,maxXP:100,desc:'Начало'},
+  {id:2,emoji:'🐣',name:'Птенец',minXP:100,maxXP:300,desc:'Рост'},
+  {id:3,emoji:'🐥',name:'Орёл',minXP:300,maxXP:700,desc:'Сила'}
+ ];
+ sandbox.state.pet.stage=2;sandbox.state.pet.xp=200;
+ sandbox.window.renderPet();
+ assert.match(appRoot.innerHTML,/width:50%/);
+});
