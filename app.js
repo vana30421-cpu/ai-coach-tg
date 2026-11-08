@@ -5342,6 +5342,10 @@ function applyJarvisRecommendation(id){
  navigate('stats');
 }
 /* Expose new inline-action handlers from the IIFE */
+window.runJarvisAutopilot=runJarvisAutopilot;
+window.setJarvisAutopilot=setJarvisAutopilot;
+window.renderJarvisCheckin=renderJarvisCheckin;
+window.renderJarvisMethods=renderJarvisMethods;
 window.saveLifeStatsFilter=saveLifeStatsFilter;
 window.setStatsDateFilter=setStatsDateFilter;
 window.setStatsPeriod=setStatsPeriod;
