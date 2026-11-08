@@ -13,7 +13,7 @@ test('front-end scripts parse without syntax errors', () => {
 });
 
 test('62-day detox course contains all days in order', () => {
-  const sandbox = { window: {} };
+  const sandbox = { window: {}, console: { log() {}, warn() {}, error() {} } };
   vm.runInNewContext(contentSource, sandbox, { filename: 'content.js' });
   const course = sandbox.window.DETOX_COURSE;
   assert.ok(Array.isArray(course));
