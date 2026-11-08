@@ -70,3 +70,12 @@ Research snapshot: 2026-11-08. This is a selection guide, not a claim that every
 - Digital-detox tracking records urge before/after, screen time, focus, mood and the intervention used, then summarizes the last 14 reviews.
 - Eye comfort tracking includes an actual 20-second timed break, daily symptom observations and a history view. It explicitly does not claim to cure refractive errors.
 - Learning includes active-recall logs and user-rated review scheduling, alongside existing FSRS cards.
+
+
+## 2026-11-08 follow-up verification
+
+- FSRS now persists each recall rating in a bounded review history, allowing long-term recall success and interval trends to be measured rather than inferred from a card counter.
+- The daily memory routine exposes separate working-memory, short-term recall and FSRS long-term review blocks; measured long-term success is shown only after actual review data exists.
+- Interrupted anti-stress sessions are preserved as partial records without completion XP.
+- Pet progression now measures progress within the current evolution stage rather than against the next absolute XP threshold.
+- The final responsive CSS layer normalizes the main content width, safe-area padding and two-column grids for Telegram WebView and desktop; visual device verification remains outstanding.

@@ -10,6 +10,7 @@ const api=fs.readFileSync('functions/api/jarvis.js','utf8');
 const systems=fs.readFileSync('lifeos-systems.js','utf8');
 const ws=fs.readFileSync('lifeos-workspaces.js','utf8');
 const worker=fs.readFileSync('workers/jarvis-worker.js','utf8');
+const setupDoc=fs.readFileSync('CLOUDFLARE_JARVIS_SETUP.md','utf8');
 
 test('all changed browser scripts parse',()=>{
  for(const [name,source] of [['app.js',app],['content.js',content],['jarvis-core.js',fs.readFileSync('jarvis-core.js','utf8')],['sw.js',fs.readFileSync('sw.js','utf8')]])assert.doesNotThrow(()=>new vm.Script(source,{filename:name}));
@@ -282,4 +283,10 @@ test('FSRS stores a persistent review history with rating and interval for long-
 test('daily learning plan exposes measured long-term recall retention',()=>{
  assert.match(app,/memoryMetrics\.longTermAccuracy===null\?'нет замеров':memoryMetrics.longTermAccuracy\+'%'/);
  assert.match(app,/Интервал удержания перед ответом/);
+});
+
+test('Gemini privacy documentation discloses second-brain excerpts sent with opt-in context',()=>{
+ assert.match(setupDoc,/короткие фрагменты текста/);
+ assert.match(setupDoc,/до 240 символов на заметку/);
+ assert.match(setupDoc,/Не включай функцию, если не согласен передавать эти данные/);
 });
