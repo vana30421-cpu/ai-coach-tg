@@ -3603,20 +3603,141 @@ function sendCoachEveningSummary(){
 }
 
 /* ============ STATS / MORE / SETTINGS / PROFILE ============ */
-function renderStats(){
-  var g = state.gamification || defaultState().gamification;
-  var html = '<div class="page"><div class="title-xl">📊 Статистика</div>';
-  html += '<div class="card card-gradient"><div style="font-size:14px;opacity:.9;">Уровень ' + (g.level||1) + '</div>';
-  html += '<div style="font-size:40px;font-weight:800;">' + (g.xp||0) + ' XP</div></div>';
-  html += '<div class="stat-grid mb-3">';
-  html += '<div class="stat-item"><div class="stat-value">' + (state.stats.streak||0) + '</div><div class="stat-label">Streak</div></div>';
-  html += '<div class="stat-item"><div class="stat-value">' + (state.tasks||[]).filter(function(t){ return t.status === 'completed'; }).length + '</div><div class="stat-label">Задач</div></div>';
-  html += '<div class="stat-item"><div class="stat-value">' + (state.habits||[]).length + '</div><div class="stat-label">Привычек</div></div>';
-  html += '</div>';
-  html += '</div>';
-  document.getElementById('app').innerHTML = html;
+var LIFE_STATS_PERIOD = 30;
+function lifeStatsDate(value){
+  if(!value)return null;
+  var d=new Date(value);
+  if(!Number.isFinite(d.getTime())){var m=String(value).match(/^(\d{4})-(\d{2})-(\d{2})$/);if(m)d=new Date(Number(m[1]),Number(m[2])-1,Number(m[3]));}
+  return Number.isFinite(d.getTime())?d:null;
 }
-function renderDetailedStats(){ renderStats(); }
+function lifeStatsInPeriod(value,days){
+  var d=lifeStatsDate(value);if(!d)return false;
+  var start=new Date();start.setHours(0,0,0,0);start.setDate(start.getDate()-(days===0?36500:days-1));
+  var end=new Date();end.setHours(23,59,59,999);
+  return d>=start&&d<=end;
+}
+function lifeStatsCountMap(value){
+  if(!value||typeof value!=='object')return 0;
+  return Object.keys(value).length;
+}
+function buildComprehensiveStats(days){
+  var s=state||{},period=Number(days)||30;
+  var arr=function(k){return Array.isArray(s[k])?s[k]:[];};
+  var within=function(x){return lifeStatsInPeriod(x,period);};
+  var byDate=function(x){return x&& (x.date||x.completedAt||x.completed_at||x.createdAt||x.created_at||x.at||x.timestamp);};
+  var tasks=arr('tasks'),done=tasks.filter(function(x){return x.status==='completed';}),pending=tasks.filter(function(x){return x.status!=='completed';});
+  var completedPeriod=done.filter(function(x){return within(x.completedAt||x.completed_at||x.updated_at||x.created_at);});
+  var overdue=pending.filter(function(x){return x.due_date&&String(x.due_date).slice(0,10)<today();});
+  var habits=arr('habits'),habitDone=habits.filter(function(x){return x.lastCompletedDate===today();});
+  var screen=arr('screenEntries').filter(function(x){return within(byDate(x));});
+  var screenMinutes=screen.reduce(function(n,x){return n+(Number(x.minutes)||0);},0);
+  var sleep=arr('sleepEntries').filter(function(x){return within(byDate(x));});
+  var sleepMinutes=sleep.reduce(function(n,x){var v=Number(x.minutes);if(!v)v=Number(x.hours)*60;if(!v)v=Number(x.duration);return n+(v>0&&v<1440?v:0);},0);
+  var mood=arr('customMood').filter(function(x){return within(byDate(x));});
+  var water=arr('customWater').filter(function(x){return within(byDate(x));});
+  var workouts=arr('customWorkouts').filter(function(x){return within(byDate(x));});
+  var meditation=arr('customMeditation').filter(function(x){return within(byDate(x));});
+  var walks=arr('walks').filter(function(x){return within(byDate(x));});
+  var brain=arr('brainPlays').filter(function(x){return within(byDate(x));});
+  var reviews=arr('fsrs').length?((s.fsrs&&Array.isArray(s.fsrs.reviews))?s.fsrs.reviews:[]):[];
+  var fsrsReviews=reviews.filter(function(x){return within(byDate(x));});
+  var calendar=arr('calendarEvents'),calendarPeriod=calendar.filter(function(x){return within(x.date||x.createdAt);});
+  var projects=arr('projects'),projectDone=projects.filter(function(x){return x.status==='completed'||x.done;});
+  var focusHistory=(s.focus&&Array.isArray(s.focus.history)?s.focus.history:[]).concat(s.timerSessions||[],s.focusSessions||[]).filter(function(x){return within(byDate(x));});
+  var antistress=arr('antistressEntries').filter(function(x){return within(byDate(x));});
+  var checkins=(s.jarvis&&Array.isArray(s.jarvis.checkins)?s.jarvis.checkins:[]).filter(function(x){return within(byDate(x));});
+  var xpHistory=s.gamification&&Array.isArray(s.gamification.xpHistory)?s.gamification.xpHistory:[];
+  var xpPeriod=xpHistory.filter(function(x){return within(byDate(x));}).reduce(function(n,x){return n+(Number(x.amount)||0);},0);
+  var financeRows=[];
+  Object.keys(s.workspaces||{}).forEach(function(k){if(/finance|money|budget/i.test(k)&&Array.isArray(s.workspaces[k]))financeRows=financeRows.concat(s.workspaces[k]);});
+  var financePeriod=financeRows.filter(function(x){return within(byDate(x));});
+  var sphereScores=s.spheres&&s.spheres.scores||{};
+  var sphereValues=Object.keys(sphereScores).map(function(k){return Number(sphereScores[k]);}).filter(function(n){return Number.isFinite(n)&&n>0;});
+  var learningCount=lifeStatsCountMap(s.levelProgress)+lifeStatsCountMap(s.englishProgress)+lifeStatsCountMap(s.skillsProgress)+lifeStatsCountMap(s.memoryProgress)+lifeStatsCountMap(s.iqProgress)+lifeStatsCountMap(s.eqProgress)+lifeStatsCountMap(s.neuroProgress)+lifeStatsCountMap(s.psychologyProgress)+lifeStatsCountMap(s.thinkingProgress);
+  var sectionKeys=Object.keys(s),inventory=sectionKeys.map(function(k){var v=s[k],count=Array.isArray(v)?v.length:(v&&typeof v==='object'?Object.keys(v).length:((v!==null&&v!==undefined&&v!=='')?1:0));return {key:k,count:count,type:Array.isArray(v)?'список':(v&&typeof v==='object'?'объект':'значение')};}).sort(function(a,b){return b.count-a.count;});
+  var trackedSections=['tasks','habits','screenEntries','sleepEntries','customMood','customWater','customWorkouts','customMeditation','walks','brainPlays','fsrs','calendarEvents','projects','spheres','memoryProgress','vision','detox','financeProgress','jarvis'];
+  var tracked=trackedSections.filter(function(k){var v=s[k];return Array.isArray(v)?v.length>0:(v&&typeof v==='object'&&Object.keys(v).length>0);}).length;
+  var avg=function(rows,key){var vals=rows.map(function(x){return Number(x[key]);}).filter(function(n){return Number.isFinite(n)&&n>0;});return vals.length?Math.round(vals.reduce(function(a,b){return a+b;},0)/vals.length*10)/10:null;};
+  var daily=[];for(var offset=period===0?29:Math.min(period-1,29);offset>=0;offset--){var d=new Date();d.setDate(d.getDate()-offset);var key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');daily.push({date:key,tasks:completedPeriod.filter(function(x){return String(x.completedAt||x.completed_at||x.updated_at||'').slice(0,10)===key;}).length,screen:screen.filter(function(x){return String(byDate(x)||'').slice(0,10)===key;}).reduce(function(n,x){return n+(Number(x.minutes)||0);},0),habits:habits.filter(function(x){return x.lastCompletedDate===key;}).length});}
+  return {
+    period:period,label:period===0?'За всё время':'За '+period+' дн.',
+    overview:{tasksTotal:tasks.length,tasksDone:done.length,tasksPending:pending.length,tasksDonePeriod:completedPeriod.length,overdue:overdue.length,habitTotal:habits.length,habitsToday:habitDone.length,streak:Number(s.stats&&s.stats.streak)||0,bestStreak:Number(s.stats&&s.stats.bestStreak)||0,xp:Number(s.gamification&&s.gamification.xp)||Number(s.xp)||0,xpPeriod:xpPeriod,level:Number(s.gamification&&s.gamification.level)||Number(s.level)||1},
+    health:{sleepEntries:sleep.length,sleepAvgHours:sleep.length?Math.round(sleepMinutes/sleep.length/60*10)/10:null,moodEntries:mood.length,moodAvg:avg(mood,'score'),waterEntries:water.length,waterTotal:water.reduce(function(n,x){return n+(Number(x.count)||Number(x.amount)||0);},0),workouts:workouts.length,meditation:meditation.length,walks:walks.length,walkMinutes:walks.reduce(function(n,x){return n+(Number(x.minutes)||0);},0),antistress:antistress.length},
+    focus:{screenEntries:screen.length,screenMinutes:screenMinutes,screenDailyAvg:Math.round(screenMinutes/Math.max(1,period===0?30:period)),screenLimit:Number(s.screenStats&&s.screenStats.dailyLimit)||null,focusSessions:focusHistory.length,focusMinutes:focusHistory.reduce(function(n,x){return n+(Number(x.minutes)||Number(x.duration)||0);},0),checkins:checkins.length,energyAvg:avg(checkins,'energy'),concentrationAvg:avg(checkins,'focus'),sleepQualityAvg:avg(checkins,'sleep'),stressAvg:avg(checkins,'stress')},
+    learning:{progressItems:learningCount,brainPlays:brain.length,brainAvgScore:avg(brain,'score'),fsrsCards:lifeStatsCountMap(s.fsrs&&s.fsrs.cards),fsrsReviews:fsrsReviews.length,fsrsDue:(s.fsrs&&Array.isArray(s.fsrs.dueToday)?s.fsrs.dueToday.length:0)},
+    life:{projects:projects.length,projectsDone:projectDone.length,calendarEvents:calendarPeriod.length,calendarDone:calendarPeriod.filter(function(x){return x.done;}).length,sphereScores:sphereValues.length,sphereAverage:sphereValues.length?Math.round(sphereValues.reduce(function(a,b){return a+b;},0)/sphereValues.length*10)/10:null,financeEntries:financePeriod.length,financeNet:financePeriod.reduce(function(n,x){return n+(Number(x.amount)||0);},0),visionLogs:lifeStatsCountMap(s.vision&&s.vision.metrics)+lifeStatsCountMap(s.vision&&s.vision.reviews),detoxEntries:(s.detox&&Array.isArray(s.detox.history)?s.detox.history.length:0)+(s.detox60Progress?lifeStatsCountMap(s.detox60Progress):0),memoryItems:lifeStatsCountMap(s.memoryProgress)+lifeStatsCountMap(s.fsrs&&s.fsrs.cards)},
+    coverage:{activeSections:tracked,totalTracked:trackedSections.length,percent:Math.round(tracked/trackedSections.length*100),inventory:inventory},
+    daily:daily
+  };
+}
+function getJarvisAnalytics(silent){
+  var a=buildComprehensiveStats(LIFE_STATS_PERIOD),d=getJarvisState(),items=[],focus=25;
+  if(a.overview.overdue>0)items.push({id:'overdue',level:'high',title:'Разобрать просроченные задачи',detail:'Просрочено: '+a.overview.overdue+'. Сначала выбери одну важную и перенеси или выполни остальные.',action:'Открой задачи и пересмотри сроки.'});
+  if(a.overview.tasksPending>8)items.push({id:'overload',level:'medium',title:'Снизить перегрузку задачами',detail:'Активных задач '+a.overview.tasksPending+'. Сузь список до 3 главных результатов на сегодня.',action:'Джарвис будет предлагать короткие фокус-сессии.'});
+  if(a.focus.screenLimit&&a.focus.screenDailyAvg>a.focus.screenLimit)items.push({id:'screen',level:'high',title:'Экранное время выше лимита',detail:'Среднее за период '+a.focus.screenDailyAvg+' мин/день при лимите '+a.focus.screenLimit+' мин.',action:'Запланируй паузу и сократи следующий сеанс.'});
+  if(a.focus.energyAvg!==null&&a.focus.energyAvg<2.8){focus=15;items.push({id:'energy',level:'high',title:'Учитываем низкую энергию',detail:'Средняя энергия по самооценке: '+a.focus.energyAvg+'/5.',action:'Переключить фокус на 15 минут и снизить нагрузку.'});}
+  if(a.focus.concentrationAvg!==null&&a.focus.concentrationAvg<2.8){focus=Math.min(focus,15);items.push({id:'concentration',level:'medium',title:'Поддержать концентрацию',detail:'Средняя концентрация: '+a.focus.concentrationAvg+'/5.',action:'Одна задача за раз, короткий фокус и перерыв.'});}
+  if(a.learning.fsrsDue>0)items.push({id:'reviews',level:'medium',title:'Есть материал для повторения',detail:'Карточек к повторению: '+a.learning.fsrsDue+'.',action:'Открой FSRS и повтори материал небольшими блоками.'});
+  if(a.health.sleepAvgHours!==null&&a.health.sleepAvgHours<6.5)items.push({id:'sleep',level:'high',title:'Недостаточно данных о сне',detail:'Среднее по записанным сессиям: '+a.health.sleepAvgHours+' ч. Это ориентир по журналу, не медицинская оценка.',action:'Зафиксируй сон и оставь запас времени на восстановление.'});
+  if(a.coverage.percent<35)items.push({id:'coverage',level:'info',title:'Недостаточно данных для точного управления',detail:'Заполнено '+a.coverage.activeSections+' из '+a.coverage.totalTracked+' основных трекеров.',action:'Добавь записи в важные для тебя разделы. Неактивные трекеры не считаются нулевыми результатами.'});
+  if(!items.length)items.push({id:'steady',level:'good',title:'Критичных сигналов не найдено',detail:'Продолжай текущий ритм. Джарвис проверяет только реально сохранённые записи.',action:'Сохрани регулярность и проведи вечерний обзор.'});
+  return {at:nowISO(),period:a.label,analytics:a,items:items,focusSuggestion:focus};
+}
+function runJarvisAutopilot(silent){
+  var d=getJarvisState(),analysis=getJarvisAnalytics(true),changed=false;
+  d.autopilotState=analysis;d.dailyPlan={date:today(),items:analysis.items.slice(0,5),updatedAt:nowISO()};
+  if(d.autopilotEnabled){
+    var suggested=analysis.focusSuggestion||25;
+    if(Number(d.focusDefault)!==suggested){d.focusDefault=suggested;changed=true;}
+    d.lastAutopilotAt=nowISO();
+    if(!Array.isArray(d.autopilotLog))d.autopilotLog=[];
+    d.autopilotLog.push({at:nowISO(),actions:changed?['focusDefault:'+suggested]:['plan-refreshed']});
+    if(d.autopilotLog.length>100)d.autopilotLog=d.autopilotLog.slice(-100);
+  }
+  save();
+  if(!silent&&typeof toast==='function')toast(d.autopilotEnabled?'Джарвис обновил план и безопасные настройки':'Анализ обновлён. Включи автопилот для автоматической адаптации','success');
+  return analysis;
+}
+function setJarvisAutopilot(enabled){
+  var d=getJarvisState();d.autopilotEnabled=!!enabled;
+  runJarvisAutopilot(true);renderJarvis();
+  toast(enabled?'Автопилот включён: только безопасная адаптация плана и фокуса':'Автопилот выключен','success');
+}
+function applyJarvisRecommendation(id){
+  var a=getJarvisAnalytics(true),item=a.items.find(function(x){return x.id===id;});
+  if(!item)return;
+  if(id==='energy'||id==='concentration'||id==='overload'){getJarvisState().focusDefault=15;save();toast('Фокус установлен на 15 минут','success');renderJarvis();return;}
+  if(id==='overdue'){navigate('tasks');return;}
+  if(id==='reviews'){navigate('fsrs');return;}
+  if(id==='screen'){navigate('screentracker');return;}
+  if(id==='sleep'){navigate('sleep');return;}
+  if(id==='coverage'){navigate('more');return;}
+  jarvisQuick('сводка');
+}
+function statsBar(label,value,max,unit){
+  var n=Math.max(0,Number(value)||0),m=Math.max(1,Number(max)||1),pct=Math.min(100,Math.round(n/m*100));
+  return '<div class="mb-2"><div class="row-between"><span class="footnote">'+esc(label)+'</span><b>'+esc(String(value===null?'—':value))+esc(unit||'')+'</b></div><div style="height:7px;background:var(--glass-2);border-radius:9px;overflow:hidden;margin-top:5px"><div style="height:100%;width:'+pct+'%;background:var(--brand);border-radius:9px"></div></div></div>';
+}
+function setStatsPeriod(days){LIFE_STATS_PERIOD=Number(days)||30;renderStats();}
+function renderStats(){
+  var a=buildComprehensiveStats(LIFE_STATS_PERIOD),o=a.overview,h=a.health,f=a.focus,l=a.learning,v=a.life,c=a.coverage,g=state.gamification||defaultState().gamification;
+  var html='<div class="page"><div class="title-xl">📊 Полная статистика LIFE OS</div><div class="subtitle">Все основные направления · фактические записи · динамика и качество данных</div>';
+  html+='<div class="btn-row mb-3"><button class="btn '+(LIFE_STATS_PERIOD===7?'btn-primary':'btn-ghost')+' btn-sm" onclick="setStatsPeriod(7)">7 дней</button><button class="btn '+(LIFE_STATS_PERIOD===30?'btn-primary':'btn-ghost')+' btn-sm" onclick="setStatsPeriod(30)">30 дней</button><button class="btn '+(LIFE_STATS_PERIOD===90?'btn-primary':'btn-ghost')+' btn-sm" onclick="setStatsPeriod(90)">90 дней</button><button class="btn '+(LIFE_STATS_PERIOD===0?'btn-primary':'btn-ghost')+' btn-sm" onclick="setStatsPeriod(0)">Всё время</button></div>';
+  html+='<div class="card card-gradient"><div class="row-between"><span>Уровень '+o.level+'</span><span>'+o.streak+' 🔥 дней серии</span></div><div style="font-size:36px;font-weight:850;margin:8px 0">'+o.xp+' XP</div><div class="footnote">+'+o.xpPeriod+' XP за выбранный период · лучший streak '+o.bestStreak+'</div></div>';
+  html+='<div class="grid-2 mb-3"><div class="card"><div class="stat-value">'+o.tasksDonePeriod+'</div><div class="stat-label">Задач завершено</div></div><div class="card"><div class="stat-value">'+o.tasksPending+'</div><div class="stat-label">Активные задачи</div></div><div class="card"><div class="stat-value">'+h.workouts+'</div><div class="stat-label">Тренировки</div></div><div class="card"><div class="stat-value">'+f.screenDailyAvg+' мин</div><div class="stat-label">Экран/день · среднее</div></div></div>';
+  html+='<div class="card mb-3"><div class="card-title">🎯 Работа и продуктивность</div>'+statsBar('Выполнено задач за период',o.tasksDonePeriod,Math.max(1,o.tasksDonePeriod+o.tasksPending),'')+statsBar('Привычки выполнены сегодня',o.habitsToday,Math.max(1,o.habitTotal),'')+'<div class="grid-2"><div><b>'+o.overdue+'</b><div class="footnote">Просрочено</div></div><div><b>'+o.tasksTotal+'</b><div class="footnote">Всего задач</div></div></div></div>';
+  html+='<div class="card mb-3"><div class="card-title">🧠 Обучение и память</div><div class="grid-2"><div><b>'+l.progressItems+'</b><div class="footnote">Записей прогресса</div></div><div><b>'+l.brainPlays+'</b><div class="footnote">Игровых тренировок</div></div><div><b>'+l.fsrsCards+'</b><div class="footnote">Карточек FSRS</div></div><div><b>'+l.fsrsDue+'</b><div class="footnote">К повторению сейчас</div></div><div><b>'+l.fsrsReviews+'</b><div class="footnote">Повторений за период</div></div><div><b>'+(l.brainAvgScore===null?'—':l.brainAvgScore)+'</b><div class="footnote">Средний игровой балл</div></div></div></div>';
+  html+='<div class="card mb-3"><div class="card-title">❤️ Здоровье и восстановление</div><div class="grid-2"><div><b>'+(h.sleepAvgHours===null?'Нет данных':h.sleepAvgHours+' ч')+'</b><div class="footnote">Средний сон по журналу</div></div><div><b>'+(h.moodAvg===null?'—':h.moodAvg+'/5')+'</b><div class="footnote">Среднее настроение</div></div><div><b>'+h.workouts+'</b><div class="footnote">Тренировок</div></div><div><b>'+h.meditation+'</b><div class="footnote">Медитаций</div></div><div><b>'+h.walks+'</b><div class="footnote">Прогулок</div></div><div><b>'+h.walkMinutes+' мин</b><div class="footnote">Ходьба</div></div><div><b>'+h.waterTotal+'</b><div class="footnote">Учтено воды (единицы журнала)</div></div><div><b>'+h.antistress+'</b><div class="footnote">Антистресс-записей</div></div></div><div class="footnote mt-2">Показатели отражают только внесённые данные и не являются медицинской диагностикой.</div></div>';
+  html+='<div class="card mb-3"><div class="card-title">⏱ Экранное время и фокус</div><div class="grid-2"><div><b>'+f.screenMinutes+' мин</b><div class="footnote">Экран за период</div></div><div><b>'+f.screenDailyAvg+' мин</b><div class="footnote">Среднее в день</div></div><div><b>'+f.focusSessions+'</b><div class="footnote">Фокус-сессий/таймеров</div></div><div><b>'+f.focusMinutes+' мин</b><div class="footnote">Учтённая длительность</div></div><div><b>'+(f.energyAvg===null?'—':f.energyAvg+'/5')+'</b><div class="footnote">Энергия</div></div><div><b>'+(f.concentrationAvg===null?'—':f.concentrationAvg+'/5')+'</b><div class="footnote">Концентрация</div></div></div><div class="footnote mt-2">Экранное время вводится вручную: приложение не считывает его автоматически с Windows или Android.</div></div>';
+  html+='<div class="card mb-3"><div class="card-title">🌐 Жизненные направления</div><div class="grid-2"><div><b>'+v.projectsDone+'/'+v.projects+'</b><div class="footnote">Проекты завершены</div></div><div><b>'+v.calendarDone+'/'+v.calendarEvents+'</b><div class="footnote">События выполнены</div></div><div><b>'+(v.sphereAverage===null?'—':v.sphereAverage+'/10')+'</b><div class="footnote">Средняя оценка сфер</div></div><div><b>'+v.visionLogs+'</b><div class="footnote">Записей зрения</div></div><div><b>'+v.memoryItems+'</b><div class="footnote">Элементов памяти/FSRS</div></div><div><b>'+v.detoxEntries+'</b><div class="footnote">Записей цифрового детокса</div></div><div><b>'+v.financeEntries+'</b><div class="footnote">Финансовых записей</div></div><div><b>'+v.financeNet.toLocaleString('ru-RU')+'</b><div class="footnote">Сальдо учтённых записей</div></div></div></div>';
+  html+='<div class="card mb-3"><div class="card-title">📈 Динамика последних 30 дней</div>';
+  a.daily.forEach(function(d){var width=Math.min(100,d.tasks*12);html+='<div class="row-between" style="gap:8px;margin:6px 0"><span class="footnote" style="width:78px">'+d.date.slice(5)+'</span><div style="flex:1;height:7px;background:var(--glass-2);border-radius:8px;overflow:hidden"><div style="height:100%;width:'+width+'%;background:var(--brand)"></div></div><span class="footnote" style="width:55px;text-align:right">'+d.tasks+' задач</span></div>';});
+  html+='</div><div class="card mb-3"><div class="card-title">🧾 Полнота данных</div><div class="stat-value">'+c.percent+'%</div><div class="footnote">'+c.activeSections+' из '+c.totalTracked+' основных трекеров содержат данные. Пустой раздел — это «нет данных», а не нулевой результат.</div>';
+  c.inventory.forEach(function(x){html+='<div class="list-row"><div class="list-body"><div class="list-title">'+esc(x.key)+'</div><div class="footnote">'+esc(x.type)+'</div></div><div class="list-value">'+x.count+'</div></div>';});
+  html+='</div><button class="btn btn-primary btn-block mb-2" onclick="navigate(\'ai\')">✧ Открыть анализ Джарвиса</button><button class="btn btn-ghost btn-block" onclick="exportDB()">📤 Экспортировать все данные</button></div>';
+  document.getElementById('app').innerHTML=html;
+}
+function renderDetailedStats(){renderStats();}
 function renderMore(){
   var groups = [
     {title:'🎯 Основное',items:[
@@ -3927,15 +4048,20 @@ function getJarvisState(){
   if(!Array.isArray(state.jarvis.checkins))state.jarvis.checkins=[];
   if(!state.jarvis.mode)state.jarvis.mode='balanced';
   if(!Number.isFinite(Number(state.jarvis.focusDefault)))state.jarvis.focusDefault=25;
+  if(typeof state.jarvis.autopilotEnabled!=='boolean')state.jarvis.autopilotEnabled=false;
+  if(!Array.isArray(state.jarvis.autopilotLog))state.jarvis.autopilotLog=[];
+  if(!state.jarvis.dailyPlan)state.jarvis.dailyPlan=null;
   return state.jarvis;
 }
 function renderJarvis(){
   var data=getJarvisState(),tasks=state.tasks||[],pending=tasks.filter(function(t){return t.status!=='completed';});
+  var analysis=runJarvisAutopilot(true),stats=analysis.analytics;
   var focus=data.focus,remaining=focus&&focus.active?Math.max(0,Math.ceil((focus.endsAt-Date.now())/1000)):0;
   var modes=[['balanced','Баланс'],['planner','Планировщик'],['coach','Коуч'],['strict','Строгий']];
   var html='<div class="page jarvis-page">';
   html+='<div class="jarvis-hero"><div class="jarvis-orb"><span>J</span><i></i></div><div class="jarvis-hero-copy"><div class="jarvis-kicker">LIFE OS · PERSONAL ASSISTANT</div><div class="title-xl">Джарвис</div><div class="jarvis-status"><span class="jarvis-dot"></span> Локальный помощник · '+(window.LifeOSJarvisCore?'команды готовы':'базовый режим')+'</div></div></div>';
   html+='<div class="grid-2 mb-3"><div class="card"><div class="stat-value">'+pending.length+'</div><div class="stat-label">Активные задачи</div></div><div class="card"><div class="stat-value">'+(state.stats.streak||0)+'</div><div class="stat-label">Дней активности</div></div></div>';
+  html+='<div class="card jarvis-settings-card mb-3"><div class="row-between"><b>🧭 Автопилот по статистике</b><label class="row" style="gap:7px"><input type="checkbox" '+(data.autopilotEnabled?'checked':'')+' onchange="setJarvisAutopilot(this.checked)"> <span class="footnote">Включён</span></label></div><div class="footnote mt-2">Джарвис анализирует реальные записи всех разделов, формирует план и при включении автоматически адаптирует только длительность фокуса. Задачи, финансы, здоровье и личные данные без подтверждения не меняет.</div><div class="grid-2 mt-2"><div><b>'+stats.overview.tasksPending+'</b><div class="footnote">Активные задачи</div></div><div><b>'+stats.focus.screenDailyAvg+' мин</b><div class="footnote">Экран/день</div></div><div><b>'+stats.coverage.percent+'%</b><div class="footnote">Полнота данных</div></div><div><b>'+stats.learning.fsrsDue+'</b><div class="footnote">Повторений ждут</div></div></div><div class="row-between mt-2"><span class="footnote">Период анализа: '+esc(analysis.period)+'</span><button class="btn btn-ghost btn-xs" onclick="runJarvisAutopilot(false);renderJarvis()">↻ Пересчитать</button></div></div>
   html+='<div class="card jarvis-settings-card mb-3"><div class="row-between"><b>Режим помощника</b><span class="footnote">Меняется в любой момент</span></div><div class="jarvis-mode-row">';
   modes.forEach(function(m){html+='<button class="jarvis-mode '+(data.mode===m[0]?'active':'')+'" onclick="setJarvisMode(\''+m[0]+'\')">'+m[1]+'</button>';});
   html+='</div><div class="row-between mt-2"><label class="footnote" for="jarvisFocusDefault">Длительность фокуса по умолчанию</label><select id="jarvisFocusDefault" onchange="setJarvisFocusDefault(this.value)"><option value="15" '+(Number(data.focusDefault)===15?'selected':'')+'>15 минут</option><option value="25" '+(Number(data.focusDefault)===25?'selected':'')+'>25 минут</option><option value="45" '+(Number(data.focusDefault)===45?'selected':'')+'>45 минут</option><option value="50" '+(Number(data.focusDefault)===50?'selected':'')+'>50 минут</option></select></div></div>';
@@ -3945,6 +4071,9 @@ function renderJarvis(){
   if(!data.messages.length)html+='<div class="jarvis-message bot"><b>Джарвис</b><p>Готов помогать с задачами, планом, фокусом и обучением. Выбери режим, напиши команду или используй быстрые действия. В офлайн-режиме доступны локальные функции; генеративный ИИ требует отдельного подключения.</p></div>';
   data.messages.slice(-60).forEach(function(m){html+='<div class="jarvis-message '+(m.role==='user'?'user':'bot')+'"><b>'+(m.role==='user'?'Ты':'Джарвис')+'</b><p>'+esc(m.text).replace(/\n/g,'<br>')+'</p></div>';});
   html+='</div><div class="jarvis-compose"><input id="jarvisInput" type="text" maxlength="1000" autocomplete="off" placeholder="Например: добавь задачу — подготовить план" onkeydown="if(event.key===\'Enter\'){event.preventDefault();sendJarvisMessage();}"><button class="btn btn-primary" onclick="sendJarvisMessage()" aria-label="Отправить">➤</button><button class="btn btn-ghost" onclick="startJarvisVoice()" title="Голосовой ввод">🎙</button></div></div>';
+  html+='<div class="section-title mt-3">Решения Джарвиса</div><div class="card mb-3">';
+  analysis.items.forEach(function(item){var color=item.level==='high'?'#e06a62':item.level==='good'?'#35b77b':'var(--brand)';html+='<div class="list-row" style="align-items:flex-start"><div style="width:8px;height:8px;border-radius:50%;background:'+color+';margin-top:7px;flex-shrink:0"></div><div class="list-body"><div class="list-title">'+esc(item.title)+'</div><div class="footnote">'+esc(item.detail)+'</div><div class="footnote mt-1">'+esc(item.action)+'</div></div><button class="btn btn-ghost btn-xs" onclick="applyJarvisRecommendation(\''+item.id+'\')">Применить</button></div>';});
+  html+='<button class="btn btn-ghost btn-block mt-2" onclick="navigate(\'detailedStats\')">Открыть полную статистику →</button></div>';
   html+='<div class="section-title mt-3">Инструменты</div><div class="grid-2"><button class="card jarvis-tool" onclick="jarvisQuick(\'самооценка\')">📋 Самооценка<br><small>Дневной срез состояния</small></button><button class="card jarvis-tool" onclick="jarvisQuick(\'методики\')">🧪 Методики<br><small>Практики с источниками</small></button><button class="card jarvis-tool" onclick="navigate(\'fsrs\')">🧠 Повторение<br><small>Карточки и FSRS</small></button><button class="card jarvis-tool" onclick="navigate(\'diagnostic\')">🛠 Диагностика<br><small>Проверка приложения</small></button><button class="card jarvis-tool" onclick="renderJarvisAIProviders()">🤖 Каталог ИИ<br><small>Популярные помощники</small></button></div>';
   if(data.checkins.length){var recent=data.checkins.slice(-7);var avg=function(k){return (recent.reduce(function(n,x){return n+(Number(x[k])||0);},0)/recent.length).toFixed(1);};html+='<div class="card mt-3"><div class="card-title">Самооценка · последние '+recent.length+' записей</div><div class="grid-2"><div class="footnote">Энергия <b>'+avg('energy')+'/5</b></div><div class="footnote">Фокус <b>'+avg('focus')+'/5</b></div><div class="footnote">Сон <b>'+avg('sleep')+'/5</b></div><div class="footnote">Стресс <b>'+avg('stress')+'/5</b></div></div><div class="footnote mt-2">Личный трекер, не клинический тест.</div></div>';}
   html+='<div class="card mt-3"><div class="card-title">Возможности и ограничения</div><p class="footnote">Офлайн: задачи, переходы, таймер, история и самооценка. Голос зависит от браузера и разрешений. Для свободных ответов уровня ChatGPT нужен подключённый ИИ-сервис и безопасное хранение ключа на сервере.</p></div></div>';
