@@ -137,11 +137,14 @@ test('anti-stress fast actions use real content IDs and guided before-after prac
  assert.match(systems,/durationSeconds/);
  assert.match(systems,/stepsDone/);
 });
-test('pet hunger changes with elapsed time and feeding updates the live value',()=>{
- for(const name of ['getPetLiveState','renderPet','renamePet','feedPet'])assert.match(app,new RegExp('function '+name+'\\('));
- assert.match(app,/elapsed\*3/);
- assert.match(app,/getPetLiveState\(\)\.hunger \+ 20/);
- assert.match(app,/feedHistory/);
+test('pet care actions update needs, record history and prevent XP farming without punishing missed days',()=>{
+ assert.match(systems,/window\.renderPet=function/);
+ assert.match(systems,/window\.lifePetAction=function/);
+ assert.match(systems,/window\.renameLifePet=function/);
+ assert.match(systems,/window\.feedPet=function/);
+ assert.match(systems,/limit=\{feed:3,play:1,rest:1,clean:1\}/);
+ assert.match(systems,/p\.careLog\.push/);
+ assert.match(systems,/Пропуски не наказываются/);
 });
 test('Jarvis exposes the Gemini provider and the Worker uses a server-side Gemini secret',()=>{
  assert.match(app,/function setJarvisProvider\(value\)/);
