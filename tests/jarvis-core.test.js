@@ -7,8 +7,14 @@ test('parses task creation',()=>assert.deepEqual(core.parseCommand('Добавь
 test('parses task list',()=>assert.equal(core.parseCommand('покажи мои задачи').type,'list_tasks'));
 test('parses daily summary',()=>assert.equal(core.parseCommand('сводка').type,'summary'));
 test('bounds focus duration',()=>assert.equal(core.parseCommand('фокус 999').minutes,90));
-test('uses default focus duration',()=>assert.equal(core.parseCommand('помодоро').minutes,25));
+test('leaves an omitted focus duration to the user preference',()=>assert.equal(core.parseCommand('помодоро').minutes,null));
 test('routes section navigation',()=>assert.deepEqual(core.parseCommand('открой память'),{type:'navigate',page:'memory'}));
 test('recognizes self-check',()=>assert.equal(core.parseCommand('запусти самооценку').type,'checkin'));
 test('unknown text remains chat',()=>assert.deepEqual(core.parseCommand('Привет, Джарвис'),{type:'chat',text:'Привет, Джарвис'}));
 test('empty input is safe',()=>assert.equal(core.parseCommand('   ').type,'empty'));
+
+test('parses task completion by active-list position',()=>assert.deepEqual(core.parseCommand('выполни 2'),{type:'complete_task',index:2}));
+test('parses assistant mode changes',()=>assert.deepEqual(core.parseCommand('режим планировщик'),{type:'set_mode',mode:'планировщик'}));
+test('parses clearing only the chat history',()=>assert.equal(core.parseCommand('очисти диалог').type,'clear_chat'));
+test('routes to habits',()=>assert.deepEqual(core.parseCommand('открой привычки'),{type:'navigate',page:'habitList'}));
+test('bounds explicit focus duration to 90 minutes',()=>assert.equal(core.parseCommand('фокус 999').minutes,90));
