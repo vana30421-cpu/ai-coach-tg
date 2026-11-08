@@ -560,6 +560,22 @@ function restoreVaultSnapshot(){
     setTimeout(function(){location.reload();},700);
   }).catch(function(e){toast(e.message||'Не удалось восстановить копию','error',4000);});
 }
+function manualSaveAll(){
+  var ok=save();
+  if(!ok){toast('Не удалось сохранить данные. Скачай резервную копию JSON.','error',5000);return false;}
+  backupStorage();
+  try{var raw=localStorage.getItem(STORAGE_KEY);if(raw&&typeof writeVaultSnapshot==='function')writeVaultSnapshot(raw).then(function(){window.__LIFE_OS_VAULT_READY=true;toast('Все данные сохранены и резервная копия обновлена.','success');}).catch(function(){toast('Основные данные сохранены. Расширенная копия будет создана автоматически.','warning');});else toast('Данные сохранены на устройстве.','success');}catch(e){toast('Данные сохранены на устройстве.','success');}
+  return true;
+}
+var _lifeAutosaveTimer=null;
+function queueJournalAutosave(){
+  if(_lifeAutosaveTimer)clearTimeout(_lifeAutosaveTimer);
+  var status=document.getElementById('journalAutosaveStatus');
+  if(status)status.textContent='Есть несохранённые изменения…';
+  _lifeAutosaveTimer=setTimeout(function(){
+    try{saveJournalEntry(true);}catch(e){console.warn('[JOURNAL AUTOSAVE]',e);}
+  },900);
+}
 function save(){
   try{
     state.settings.updatedAt=nowISO();state.settings.version=CURRENT_VERSION;
@@ -3896,8 +3912,10 @@ function renderSettings(){
   html += '<div class="card"><h2>Профиль</h2><div class="field"><label class="field-label">Имя</label><input type="text" value="' + esc(state.profile.name||'') + '" onchange="saveProfileName(this.value)"/></div>';
   html += '<div class="list-row" onclick="openThemePicker()"><div class="list-icon">🎨</div><div class="list-body"><div class="list-title">Тема</div></div><div class="list-value">' + currentTheme.name + '</div></div></div>';
   html += renderPWAInstallBlock();
-  html += '<div class="card"><h2>Данные</h2>';
-  html += '<button class="btn btn-primary btn-block mb-2" onclick="exportDB()">📤 Экспорт JSON</button>';
+  html += '<div class="card"><h2>Сохранение данных</h2><div class="footnote mb-2">Автосохранение выполняется при изменении данных. Здесь можно принудительно сохранить всё и обновить локальную резервную копию.</div><button class="btn btn-primary btn-block mb-2" onclick="manualSaveAll()">💾 Сохранить всё сейчас</button><div class="footnote">Последнее сохранение: '+(window.__LIFE_OS_LAST_SAVED?new Date(window.__LIFE_OS_LAST_SAVED).toLocaleString('ru-RU'):'при запуске приложения')+'</div></div>';
+  html += '<div class="card"><h2>Резервные копии</h2>';
+  html += '<button class="btn btn-primary btn-block mb-2" onclick="manualSaveAll()">💾 Сохранить и создать копию</button>';
+  html += '<button class="btn btn-ghost btn-block mb-2" onclick="exportDB()">📤 Скачать JSON-копию</button>';
   html += '<button class="btn btn-ghost btn-block mb-2" onclick="importDB()">📥 Импорт JSON</button>';
   html += '<button class="btn btn-danger btn-block" onclick="resetAllWithConfirm()">🗑 Полный сброс</button>';
   html += '</div>';
@@ -4406,13 +4424,13 @@ function togglePersonalGoal(id){
 function renderGoals(){ renderPersonalCollection('goals'); }
 function renderNotes(){ renderPersonalCollection('notes'); }
 function renderJournal(){
- var rows=Array.isArray(state.journalEntries)?state.journalEntries:[],todayEntry=rows.find(function(x){return x.date===today();})||{},html='<div class="page workspace-page"><div class="title-xl">📓 Личный дневник</div><div class="subtitle">Рефлексия, эмоции, энергия, события и планы — всё хранится локально.</div>';
- html+='<div class="card mb-3"><div class="row-between"><b>Запись за день</b><span class="footnote">'+new Date().toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'})+'</span></div><div class="field"><label class="field-label">Что произошло сегодня?</label><textarea id="journalText" rows="4" maxlength="5000" placeholder="Свободно опиши события, мысли и наблюдения...">'+esc(todayEntry.text||'')+'</textarea></div><div class="grid-2"><div class="field"><label class="field-label">Настроение</label><select id="journalMood"><option value="">Не указано</option>'+['Тяжёлое','Ниже обычного','Нейтральное','Хорошее','Отличное'].map(function(x){return '<option '+(todayEntry.mood===x?'selected':'')+'>'+x+'</option>';}).join('')+'</select></div><div class="field"><label class="field-label">Энергия (1–5)</label><select id="journalEnergy"><option value="">Не указано</option>'+[1,2,3,4,5].map(function(n){return '<option value="'+n+'" '+(Number(todayEntry.energy)===n?'selected':'')+'>'+n+'/5</option>';}).join('')+'</select></div></div><div class="field"><label class="field-label">Что сегодня получилось?</label><textarea id="journalWins" rows="2" maxlength="1200">'+esc(todayEntry.wins||'')+'</textarea></div><div class="field"><label class="field-label">Что было трудным / что мешало?</label><textarea id="journalBlockers" rows="2" maxlength="1200">'+esc(todayEntry.blockers||'')+'</textarea></div><div class="field"><label class="field-label">За что благодарен?</label><textarea id="journalGratitude" rows="2" maxlength="800">'+esc(todayEntry.gratitude||'')+'</textarea></div><div class="field"><label class="field-label">Главное на завтра</label><input id="journalTomorrow" maxlength="180" value="'+esc(todayEntry.tomorrow||'')+'" placeholder="Один важный результат"></div><button class="btn btn-primary btn-block" onclick="saveJournalEntry()">Сохранить дневник</button></div>';
+ var rows=Array.isArray(state.journalEntries)?state.journalEntries:[],todayEntry=rows.find(function(x){return x.date===today();})||{},html='<div class="page workspace-page"><div class="title-xl">📓 Личный дневник</div><div class="subtitle">Рефлексия, эмоции, энергия, события и планы. Автосохранение во время ввода и ручное сохранение.</div><div class="footnote mb-2" id="journalAutosaveStatus">Изменения сохраняются автоматически</div>';
+ html+='<div class="card mb-3"><div class="row-between"><b>Запись за день</b><span class="footnote">'+new Date().toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'})+'</span></div><div class="field"><label class="field-label">Что произошло сегодня?</label><textarea id="journalText" rows="4" maxlength="5000" placeholder="Свободно опиши события, мысли и наблюдения..." oninput="queueJournalAutosave()" onchange="queueJournalAutosave()">'+esc(todayEntry.text||'')+'</textarea></div><div class="grid-2"><div class="field"><label class="field-label">Настроение</label><select id="journalMood" oninput="queueJournalAutosave()" onchange="queueJournalAutosave()"><option value="">Не указано</option>'+['Тяжёлое','Ниже обычного','Нейтральное','Хорошее','Отличное'].map(function(x){return '<option '+(todayEntry.mood===x?'selected':'')+'>'+x+'</option>';}).join('')+'</select></div><div class="field"><label class="field-label">Энергия (1–5)</label><select id="journalEnergy" oninput="queueJournalAutosave()" onchange="queueJournalAutosave()"><option value="">Не указано</option>'+[1,2,3,4,5].map(function(n){return '<option value="'+n+'" '+(Number(todayEntry.energy)===n?'selected':'')+'>'+n+'/5</option>';}).join('')+'</select></div></div><div class="field"><label class="field-label">Что сегодня получилось?</label><textarea id="journalWins" rows="2" maxlength="1200" oninput="queueJournalAutosave()" onchange="queueJournalAutosave()">'+esc(todayEntry.wins||'')+'</textarea></div><div class="field"><label class="field-label">Что было трудным / что мешало?</label><textarea id="journalBlockers" rows="2" maxlength="1200" oninput="queueJournalAutosave()" onchange="queueJournalAutosave()">'+esc(todayEntry.blockers||'')+'</textarea></div><div class="field"><label class="field-label">За что благодарен?</label><textarea id="journalGratitude" rows="2" maxlength="800" oninput="queueJournalAutosave()" onchange="queueJournalAutosave()">'+esc(todayEntry.gratitude||'')+'</textarea></div><div class="field"><label class="field-label">Главное на завтра</label><input id="journalTomorrow" maxlength="180" value="'+esc(todayEntry.tomorrow||'')+'" placeholder="Один важный результат" oninput="queueJournalAutosave()" onchange="queueJournalAutosave()"></div><button class="btn btn-primary btn-block" onclick="saveJournalEntry(false)">Сохранить дневник</button></div>';
  html+='<div class="row-between mb-2"><b>История записей</b><span class="footnote">'+rows.length+' дней</span></div>';
  rows.slice().sort(function(a,b){return String(b.date||'').localeCompare(String(a.date||''));}).slice(0,60).forEach(function(e){html+='<article class="card mb-2"><div class="row-between"><b>'+esc(e.date||'')+'</b><span class="badge">'+esc(e.mood||'Без оценки')+'</span></div>'+(e.text?'<p class="body-text mt-2">'+esc(e.text).replace(/\n/g,'<br>')+'</p>':'')+(e.wins?'<div class="footnote mt-2"><b>Получилось:</b> '+esc(e.wins)+'</div>':'')+(e.blockers?'<div class="footnote mt-1"><b>Мешало:</b> '+esc(e.blockers)+'</div>':'')+(e.gratitude?'<div class="footnote mt-1"><b>Благодарность:</b> '+esc(e.gratitude)+'</div>':'')+'<div class="btn-row mt-2"><button class="btn btn-ghost btn-xs" onclick="editJournalDate(\''+e.date+'\')">Открыть день</button><button class="btn btn-ghost btn-xs" onclick="deleteJournalEntry(\''+e.date+'\')">Удалить</button></div></article>';});
  html+='</div>';document.getElementById('app').innerHTML=html;
 }
-function saveJournalEntry(){var get=function(id){var e=document.getElementById(id);return e?e.value.trim():'';};var entry={date:today(),text:get('journalText'),mood:get('journalMood'),energy:Number(get('journalEnergy'))||null,wins:get('journalWins'),blockers:get('journalBlockers'),gratitude:get('journalGratitude'),tomorrow:get('journalTomorrow'),updatedAt:nowISO()};if(!entry.text&&!entry.wins&&!entry.blockers&&!entry.gratitude&&!entry.tomorrow&&!entry.mood&&!entry.energy)return toast('Добавь хотя бы одну мысль или оценку','warning');if(!Array.isArray(state.journalEntries))state.journalEntries=[];var old=state.journalEntries.findIndex(function(x){return x.date===today();});if(old>=0)state.journalEntries[old]=Object.assign({},state.journalEntries[old],entry);else state.journalEntries.push(Object.assign({id:uid(),createdAt:nowISO()},entry));save();toast('Запись дневника сохранена','success');renderJournal();}
+function saveJournalEntry(silent){var get=function(id){var e=document.getElementById(id);return e?e.value.trim():'';};var entry={date:today(),text:get('journalText'),mood:get('journalMood'),energy:Number(get('journalEnergy'))||null,wins:get('journalWins'),blockers:get('journalBlockers'),gratitude:get('journalGratitude'),tomorrow:get('journalTomorrow'),updatedAt:nowISO()};if(!entry.text&&!entry.wins&&!entry.blockers&&!entry.gratitude&&!entry.tomorrow&&!entry.mood&&!entry.energy)return toast('Добавь хотя бы одну мысль или оценку','warning');if(!Array.isArray(state.journalEntries))state.journalEntries=[];var old=state.journalEntries.findIndex(function(x){return x.date===today();});if(old>=0)state.journalEntries[old]=Object.assign({},state.journalEntries[old],entry);else state.journalEntries.push(Object.assign({id:uid(),createdAt:nowISO()},entry));save();if(silent){var status=document.getElementById('journalAutosaveStatus');if(status)status.textContent='✓ Автосохранено в '+new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});return;}toast('Запись дневника сохранена','success');renderJournal();}
 function editJournalDate(date){var e=(state.journalEntries||[]).find(function(x){return x.date===date;});if(!e)return;var field=document.getElementById('journalText');if(field)field.value=e.text||'';toast('История: открой запись из списка; редактирование доступно для текущего дня.','info');}
 function deleteJournalEntry(date){if(!confirm('Удалить запись за '+date+'?'))return;state.journalEntries=(state.journalEntries||[]).filter(function(x){return x.date!==date;});save();renderJournal();}
 
@@ -5036,6 +5054,8 @@ function checkCooldownAndSleep(){
 /* ============ ПОДКЛЮЧЕНИЕ К WINDOW ============ */
 window.state = state;
 window.save = save;
+window.manualSaveAll = manualSaveAll;
+window.queueJournalAutosave = queueJournalAutosave;
 window.today = today;
 window.yesterday = yesterday;
 window.nowISO = nowISO;
