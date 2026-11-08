@@ -2314,6 +2314,7 @@ function completeEnglish(id){
 }
 
 /* ============ RENDERCOURSE (общий для 12 курсов) ============ */
+function startNextCourseReview(courseId){var course=getCourseById(courseId);if(!course)return;var progress=state[courseId+"Progress"]||{},found=null;(course.modules||[]).some(function(mod){return (mod.lessons||[]).some(function(l,idx){var r=progress[courseId+"_"+mod.id+"_"+idx];if(r&&typeof r==="object"&&r.nextReviewAt&&r.nextReviewAt<=today()){found={moduleId:mod.id,index:idx};return true;}return false;});});if(found)openCourseLesson(courseId,found.moduleId,found.index);else toast("Повторений пока нет","info");}
 function renderCourseGeneric(course, progressKey){
   if(!course){
     document.getElementById('app').innerHTML = '<div class="page"><div class="card"><div class="empty"><div class="empty-icon">⚠️</div><div class="empty-title">Курс не найден</div></div></div></div>';
@@ -2329,6 +2330,8 @@ function renderCourseGeneric(course, progressKey){
     });
   });
   var pct = totalLessons ? Math.round(doneLessons/totalLessons*100) : 0;
+  var dueLessons=[];
+  (course.modules||[]).forEach(function(mod){(mod.lessons||[]).forEach(function(l,idx){var k=course.id+'_'+mod.id+'_'+idx,r=progress[k];if(r&&typeof r==='object'&&r.nextReviewAt&&r.nextReviewAt<=today())dueLessons.push({moduleId:mod.id,index:idx,title:l.title});});});
   var html = '<div class="page">';
   html += '<div style="text-align:center;margin-bottom:20px;">';
   html += '<div style="font-size:56px;">' + course.emoji + '</div>';
@@ -2340,6 +2343,7 @@ function renderCourseGeneric(course, progressKey){
   html += '<div style="font-size:40px;font-weight:800;">' + pct + '%</div>';
   html += '<div style="font-size:12px;opacity:.9;margin-top:6px;">' + doneLessons + ' / ' + totalLessons + ' уроков</div>';
   html += '</div>';
+  if(dueLessons.length)html += '<div class="card"><h2>🔁 Пора закрепить</h2><div class="footnote">'+dueLessons.length+' уроков требуют повторения по твоим предыдущим оценкам.</div><button class="btn btn-primary btn-block mt-2" onclick="startNextCourseReview(&quot;'+course.id+'&quot;)">Повторить следующий урок</button></div>';
   (course.modules||[]).forEach(function(mod){
     html += '<div class="card"><h2>' + mod.emoji + ' ' + esc(mod.title) + '</h2>';
     (mod.lessons||[]).forEach(function(l, idx){
@@ -2905,6 +2909,7 @@ window.openEnglishLesson = openEnglishLesson;
 window.completeEnglish = completeEnglish;
 window.renderCourseGeneric = renderCourseGeneric;
 window.openCourseLesson = openCourseLesson;
+window.startNextCourseReview = startNextCourseReview;
 window.completeCourseLesson = completeCourseLesson;
 window.renderVision = renderVision;
 window.startVisionBreak = startVisionBreak;
