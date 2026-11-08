@@ -239,3 +239,8 @@ test('new personalization, learning practice and detox review screens are reacha
  assert.match(app,/detoxReview: renderDetoxReview/);
  assert.match(app,/personalization: renderPersonalizationSurvey/);
 });
+
+
+test('Jarvis autopilot controls are callable from the interface',()=>{
+ for(const name of ['runJarvisAutopilot','setJarvisAutopilot'])assert.match(app,new RegExp('window\\.'+name+'='+name));
+});
