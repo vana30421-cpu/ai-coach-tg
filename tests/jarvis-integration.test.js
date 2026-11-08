@@ -134,3 +134,18 @@ test('all-time statistics and FSRS review history are counted correctly',()=>{
   assert.match(app,/var reviews=s\.fsrs&&Array\.isArray\(s\.fsrs\.reviews\)\?s\.fsrs\.reviews:\[\]/);
   assert.match(app,/function setStatsPeriod\(days\)\{LIFE_STATS_PERIOD=Number\(days\)===0\?/);
 });
+
+
+test('custom habits support stable cues, a minimum action, and a reward',()=>{
+  assert.match(app,/id="hab-trigger"/);
+  assert.match(app,/id="hab-minimum"/);
+  assert.match(app,/id="hab-reward"/);
+  assert.match(app,/h\.trigger = trigger\.trim\(\)/);
+  assert.match(app,/h\.minimumAction = minimumAction\.trim\(\)/);
+  assert.match(app,/h\.reward = reward\.trim\(\)/);
+  assert.match(app,/Регулярность важнее идеальной серии/);
+});
+test('research and product guardrails are documented',()=>{
+  assert.match(index,/life-burst-particle/);
+  assert.match(app,/effectsMotionOverride/);
+});
