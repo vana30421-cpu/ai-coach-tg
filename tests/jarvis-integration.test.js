@@ -71,3 +71,34 @@ test('AI directory documents major assistants and safe integration boundaries',(
   assert.match(app,/function renderJarvisAIProviders/);
   assert.match(app,/без хранения секретных API-ключей в браузере/);
 });
+
+test('workouts tracker is functional and uses existing persistent state',()=>{
+  assert.match(app,/function renderWorkouts\(\)\{/);
+  assert.match(app,/function addWorkoutEntry\(\)/);
+  assert.match(app,/function deleteWorkoutEntry\(id\)/);
+  assert.match(app,/state\.customWorkouts\.push/);
+  assert.match(app,/state\.stats\.totalWorkouts/);
+  assert.doesNotMatch(app,/function renderWorkouts\(\)\{\s*renderStub/);
+});
+test('meditation has a real resumable timer and persisted session history',()=>{
+  for(const name of ['startMeditation','pauseMeditation','resumeMeditation','finishMeditation','cancelMeditation'])assert.match(app,new RegExp('function '+name+'\\('));
+  assert.match(app,/state\.meditationTimer/);
+  assert.match(app,/state\.customMeditation\.push/);
+  assert.match(app,/Date\.now\(\).*endsAt/s);
+  assert.doesNotMatch(app,/function renderMeditation\(\)\{\s*renderStub/);
+});
+test('screen time tracker clearly records manual input and supports daily limits',()=>{
+  assert.match(app,/function renderScreenTracker\(\)\{/);
+  assert.match(app,/function addScreenEntry\(\)/);
+  assert.match(app,/function saveScreenLimit\(\)/);
+  assert.match(app,/state\.screenEntries\.push/);
+  assert.match(app,/state\.screenStats\.dailyLimit/);
+  assert.match(app,/ручной журнал, а не автоматическое считывание/);
+  assert.doesNotMatch(app,/function renderScreenTracker\(\)\{\s*renderStub/);
+});
+test('calendar supports local event create, complete and delete',()=>{
+  for(const name of ['addCalendarEvent','toggleCalendarEvent','deleteCalendarEvent'])assert.match(app,new RegExp('function '+name+'\\('));
+  assert.match(app,/state\.calendarEvents\.push/);
+  assert.match(app,/source:'lifeos'/);
+  assert.doesNotMatch(app,/function renderCalendar\(\)\{\s*renderStub/);
+});
