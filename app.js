@@ -2657,9 +2657,10 @@ function getDetoxCourseRecord(day){
   state.detoxCourseProgress[day]=old;
   return old;
 }
+function detoxReflectionHasData(reflection){return !!(reflection&&(reflection.screenMinutes!==null&&reflection.screenMinutes!==undefined&&reflection.screenMinutes!==''||reflection.unplannedOpens!==null&&reflection.unplannedOpens!==undefined&&reflection.unplannedOpens!==''||reflection.sleepHours!==null&&reflection.sleepHours!==undefined&&reflection.sleepHours!==''||reflection.focus!==null&&reflection.focus!==undefined&&reflection.focus!==''||reflection.helped!==null&&reflection.helped!==undefined&&reflection.helped!==''||String(reflection.note||'').trim()));}
 function getDetoxCourseStats(){
   var rows=state.detoxCourseProgress||{},completed=0,reflections=0,screen=[];
-  Object.keys(rows).forEach(function(k){var r=rows[k];if(r===true||r&&r.completed)completed++;if(r&&r.reflection&&Object.keys(r.reflection).length){reflections++;var raw=r.reflection.screenMinutes;if(raw!==null&&raw!==undefined&&raw!==''&&Number.isFinite(Number(raw)))screen.push({day:Number(k),minutes:Number(raw)});}});
+  Object.keys(rows).forEach(function(k){var r=rows[k];if(r===true||r&&r.completed)completed++;if(r&&detoxReflectionHasData(r.reflection)){reflections++;var raw=r.reflection.screenMinutes;if(raw!==null&&raw!==undefined&&raw!==''&&Number.isFinite(Number(raw)))screen.push({day:Number(k),minutes:Number(raw)});}});
   var first=screen.slice().sort(function(a,b){return a.day-b.day;})[0];
   var recent=screen.slice().sort(function(a,b){return b.day-a.day;}).slice(0,7);
   var recentAvg=recent.length?Math.round(recent.reduce(function(n,x){return n+x.minutes;},0)/recent.length):null;
@@ -2702,7 +2703,7 @@ function openDetoxDay(day){
 
 function renderDetoxCourseReport(){
   var stats=getDetoxCourseStats(),rows=Object.keys(state.detoxCourseProgress||{}).map(function(k){var r=state.detoxCourseProgress[k];return {day:Number(k),record:r===true?{completed:true}:r};}).sort(function(x,y){return x.day-y.day;});
-  var reflections=rows.filter(function(x){return x.record&&x.record.reflection&&Object.keys(x.record.reflection).length;});
+  var reflections=rows.filter(function(x){return x.record&&detoxReflectionHasData(x.record.reflection);});
   var avg=function(key){var vals=reflections.map(function(x){return x.record.reflection[key];}).filter(function(v){return v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v));}).map(Number);return vals.length?Math.round(vals.reduce(function(a,b){return a+b;},0)/vals.length*10)/10:null;};
   var sleep=avg('sleepHours'),focus=avg('focus'),help=avg('helped'),opens=avg('unplannedOpens');
   var screenDirection=stats.screenDelta===null?'нет достаточных данных':stats.screenDelta<0?'снижение':stats.screenDelta>0?'рост':'без изменения';
