@@ -3440,24 +3440,15 @@ function renderPet(){
 }
 function renamePet(name){if(!state.pet)state.pet=defaultState().pet;state.pet.name=String(name||'Питомец').trim().slice(0,24)||'Питомец';save();toast('Имя питомца сохранено','success');}
 function feedPet(){
-  if(!state.pet) state.pet = defaultState().pet;
-  state.pet.hunger = Math.min(100, getPetLiveState().hunger + 20);
-  state.pet.fedCount = (state.pet.fedCount||0) + 1;
-  state.pet.lastFed = nowISO();
-  if(!Array.isArray(state.pet.feedHistory))state.pet.feedHistory=[];
-  var fedToday=state.pet.feedHistory.filter(function(x){return x.date===today();}).length;
-  if(fedToday>=3){toast('На сегодня питомец уже получил достаточно корма.','info');return;}
-  var previousHunger=getPetLiveState().hunger;
-  state.pet.hunger = Math.min(100, previousHunger + 20);
-  state.pet.fedCount = Math.max(0,(state.pet.fedCount||0));
-  state.pet.lastFed = nowISO();
-  state.pet.feedHistory.push({date:today(),at:nowISO()});state.pet.feedHistory=state.pet.feedHistory.slice(-100);
-  state.pet.mood = state.pet.hunger >= 50 ? 'happy' : 'hungry';
-  if(state.pet.hunger>previousHunger)addPetXP(5);
-  save();
-  haptic('success');
-  toast('🍽 Питомец покормлен','success');
-  renderPet();
+ if(!state.pet)state.pet=defaultState().pet;
+ if(!Array.isArray(state.pet.feedHistory))state.pet.feedHistory=[];
+ var fedToday=state.pet.feedHistory.filter(function(x){return x.date===today();}).length;
+ if(fedToday>=3){toast('На сегодня питомец уже получил достаточно корма.','info');return;}
+ var before=getPetLiveState().hunger,after=Math.min(100,before+20);
+ if(after<=before){toast('Питомец сыт — дополнительный корм не нужен.','info');return;}
+ state.pet.hunger=after;state.pet.fedCount=(state.pet.fedCount||0)+1;state.pet.lastFed=nowISO();
+ state.pet.feedHistory.push({date:today(),at:nowISO()});state.pet.feedHistory=state.pet.feedHistory.slice(-100);
+ state.pet.mood=after>=50?'happy':'hungry';addPetXP(5);save();haptic('success');toast('🍽 Питомец покормлен · +5 XP','success');renderPet();
 }
 function playPet(){
  if(!state.pet)state.pet=defaultState().pet;
