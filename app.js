@@ -1094,7 +1094,7 @@ function renderDashboard(){
   /* Быстрые действия */
   html += '<div class="card"><h2>⚡ Быстро</h2><div class="group-grid">';
   html += '<div class="group-item" onclick="openEntityEditor(\'task\',null)"><div class="group-item-icon">➕</div><div class="group-item-label">Задача</div></div>';
-  html += '<div class="group-item" onclick="addWater()"><div class="group-item-icon">💧</div><div class="group-item-label">Вода</div></div>';
+  html += '<div class="group-item" onclick="quickWaterLog()"><div class="group-item-icon">💧</div><div class="group-item-label">Вода</div></div>';
   html += '<div class="group-item" onclick="quickMoodLog()"><div class="group-item-icon">💭</div><div class="group-item-label">Настроение</div></div>';
   html += '<div class="group-item" onclick="navigate(\'eveningReview\')"><div class="group-item-icon">🌙</div><div class="group-item-label">Вечерний обзор</div></div>';
   html += '<div class="group-item" onclick="navigate(\'projects\')"><div class="group-item-icon">📁</div><div class="group-item-label">Проекты</div></div>';
@@ -2937,19 +2937,21 @@ function getWaterGoal(){
   return state.settings.waterGoal || 8;
 }
 function addWater(){
-  var t = today();
-  if(!state.customWater) state.customWater = [];
-  var e = state.customWater.find(function(w){ return w.date === t; });
-  if(e) e.count++;
-  else state.customWater.push({id:uid(), date:t, count:1, created_at:nowISO()});
-  state.stats.totalWater = (state.stats.totalWater||0) + 1;
-  addXP(2, 'water');
-  save();
-  toast('💧 +1','success');
-  haptic('success');
-  if(currentPage === 'dashboard') renderDashboard();
-  else if(currentPage === 'water') renderWater();
+ var t=today();if(!Array.isArray(state.customWater))state.customWater=[];
+ var e=state.customWater.find(function(w){return w.date===t;});if(e)e.count=(Number(e.count)||0)+1;else state.customWater.push({id:uid(),date:t,count:1,created_at:nowISO()});
+ state.stats=state.stats||{};state.stats.totalWater=(Number(state.stats.totalWater)||0)+1;addXP(2,'water');save();toast('💧 +1 стакан','success');haptic('success');
+ if(currentPage==='dashboard')renderDashboard();else if(currentPage==='water')renderWater();else if(currentPage==='health')renderHealth();
 }
+function removeWater(){
+ var t=today(),e=(state.customWater||[]).find(function(w){return w.date===t;});if(!e||Number(e.count)<=0)return toast('Сегодня ещё нет записей воды','info');
+ e.count=Math.max(0,Number(e.count)-1);state.stats=state.stats||{};state.stats.totalWater=Math.max(0,(Number(state.stats.totalWater)||0)-1);save();toast('Последний стакан отменён','info');
+ if(currentPage==='dashboard')renderDashboard();else if(currentPage==='water')renderWater();else if(currentPage==='health')renderHealth();
+}
+function quickWaterLog(){
+ var e=(state.customWater||[]).find(function(w){return w.date===today();}),count=e?Number(e.count)||0:0;
+ openSheet('Вода сегодня','<div style="text-align:center"><div style="font-size:54px">💧</div><div class="stat-value" id="quickWaterCount">'+count+'</div><div class="footnote">стаканов · ориентир '+getWaterGoal()+'</div><div class="row mt-3" style="gap:8px"><button class="btn btn-ghost" onclick="removeWater();var x=document.getElementById(&quot;quickWaterCount&quot;);if(x)x.textContent=Math.max(0,Number(x.textContent)-1)">− 1</button><button class="btn btn-primary" onclick="addWater();var x=document.getElementById(&quot;quickWaterCount&quot;);if(x)x.textContent=Number(x.textContent)+1">＋ 1 стакан</button></div><p class="footnote mt-3">Цель — персональный ориентир приложения, не обязательная медицинская норма.</p></div>');
+}
+
 function quickMoodLog(){
   var moods = ['😢','😔','😐','🙂','😊'];
   var html = '<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;">';
@@ -2960,27 +2962,21 @@ function quickMoodLog(){
   openSheet('Настроение?', html);
 }
 function saveMood(score){
-  var t = today();
-  if(!state.customMood) state.customMood = [];
-  var e = state.customMood.find(function(m){ return m.date === t; });
-  if(e) e.score = score;
-  else state.customMood.push({id:uid(), date:t, score:score, created_at:nowISO()});
-  state.stats.totalMoodLogs = (state.stats.totalMoodLogs||0) + 1;
-  save();
-  closeSheet();
-  toast('✓','success');
-  if(currentPage === 'dashboard') renderDashboard();
-  else if(currentPage === 'mood') renderMood();
+ score=Math.max(1,Math.min(10,Number(score)||0));if(!score)return toast('Выбери настроение от 1 до 10','warning');
+ var t=today();if(!Array.isArray(state.customMood))state.customMood=[];
+ var e=state.customMood.find(function(m){return m.date===t;}),isNew=!e;
+ if(e)e.score=score;else state.customMood.push({id:uid(),date:t,score:score,created_at:nowISO()});
+ state.stats=state.stats||{};if(isNew)state.stats.totalMoodLogs=(Number(state.stats.totalMoodLogs)||0)+1;
+ save();closeSheet();toast('Настроение сохранено · '+score+'/10','success');
+ if(currentPage==='dashboard')renderDashboard();else if(currentPage==='mood')renderMood();else if(currentPage==='health')renderHealth();
 }
+
 function renderWater(){
-  var e = (state.customWater||[]).find(function(w){ return w.date === today(); });
-  var count = e ? e.count : 0;
-  var goal = getWaterGoal();
-  var html = '<div class="page"><div class="title-xl">💧 Вода</div>';
-  html += '<div class="card card-gradient" style="text-align:center;"><div style="font-size:56px;">💧</div><div style="font-size:40px;font-weight:800;">' + count + '/' + goal + '</div></div>';
-  html += '<button class="btn btn-primary btn-block" onclick="addWater()">+1 стакан</button></div>';
-  document.getElementById('app').innerHTML = html;
+ var e=(state.customWater||[]).find(function(w){return w.date===today();}),count=e?Number(e.count)||0:0,goal=getWaterGoal();
+ var html='<div class="page"><div class="title-xl">💧 Вода</div><div class="subtitle">Учитывай жажду, активность, погоду и рекомендации врача. Количество стаканов — личный ориентир.</div><div class="card card-gradient" style="text-align:center"><div style="font-size:56px">💧</div><div class="stat-value">'+count+' / '+goal+'</div><div class="progress mt-2"><div class="progress-fill" style="width:'+Math.min(100,Math.round(count/Math.max(1,goal)*100))+'%"></div></div><div class="footnote mt-2">Записано сегодня · условный стакан 250 мл</div></div><div class="row" style="gap:8px"><button class="btn btn-primary" style="flex:1" onclick="addWater()">＋ 1 стакан</button><button class="btn btn-ghost" style="flex:1" onclick="removeWater()">− Отменить</button></div></div>';
+ document.getElementById('app').innerHTML=html;
 }
+
 function renderMood(){
   var m = state.customMood || [];
   var html = '<div class="page"><div class="title-xl">💭 Настроение</div>';
