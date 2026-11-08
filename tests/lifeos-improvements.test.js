@@ -227,3 +227,18 @@ test('finance transactions are included in the comprehensive analytics calculati
  assert.match(app,/var financeRows=arr\('financeEntries'\)\.slice\(\)/);
  assert.match(app,/financePeriod=financeRows\.filter/);
 });
+
+test('Obsidian full export includes linked life areas, health and finance while keeping local vault selection user-controlled',()=>{
+ assert.match(ws,/window\.showDirectoryPicker/);
+ assert.match(ws,/getDirectoryHandle\('Areas'/);
+ for(const key of ['Tasks.md','Habits.md','Calendar.md','Finance.md','Mood-and-Water.md','Antistress.md'])assert.ok(ws.includes(key),key);
+ assert.match(ws,/window\.importObsidianFiles=function/);
+ assert.match(ws,/obsidian:\/\/open\?vault=/);
+ assert.match(ws,/Экспортировать в выбранный Obsidian Vault/);
+});
+test('entertainment category cards navigate to the correct media-library routes',()=>{
+ assert.match(systems,/\['movies','🎬','Фильмы','movies'\]/);
+ assert.match(systems,/\['music','🎵','Музыка','musiclib'\]/);
+ assert.match(systems,/\['games','🎮','Игры','gameslib'\]/);
+ assert.match(systems,/window\.renderEntertainment=function/);
+});
