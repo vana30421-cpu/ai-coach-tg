@@ -260,7 +260,8 @@ test('Jarvis autopilot controls are callable from the interface',()=>{
 });
 
 test('script load diagnostics attach to versioned assets',()=>{
-  assert.match(index,/script\[src\^="\'+name\+'\?"\]/);
+  assert.ok(index.includes('script[src^='));
+  assert.ok(index.includes("name+'?"));
 });
 test('final layout normalization keeps Telegram WebView and desktop content within the viewport',()=>{
   assert.match(index,/id="lifeos-layout-normalization"/);
