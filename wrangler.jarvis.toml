@@ -1,0 +1,7 @@
+name = "lifeos-jarvis-api"
+main = "workers/jarvis-worker.js"
+compatibility_date = "2026-11-08"
+
+[vars]
+OPENAI_MODEL = "gpt-5-mini"
+ALLOWED_ORIGIN = "https://vana30421-cpu.github.io"
