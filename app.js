@@ -4325,6 +4325,7 @@ window.showWelcome = showWelcome;
 window.startOnboarding = startOnboarding;
 window.finishOnboarding = finishOnboarding;
 window.renderStub = renderStub;
+window.filterWorkspaceEntries = filterWorkspaceEntries;
 window.addWorkspaceEntry = addWorkspaceEntry;
 window.toggleWorkspaceEntry = toggleWorkspaceEntry;
 window.deleteWorkspaceEntry = deleteWorkspaceEntry;
