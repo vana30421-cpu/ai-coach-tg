@@ -3159,12 +3159,30 @@ function renderAntistress(){
 }
 function startAntistress(id){
  var p=(window.ANTISTRESS_PRACTICES||[]).find(function(x){return x.id===id;});if(!p){toast('Практика не найдена','error');return;}currentAntistressId=id;
- var html='<div style="text-align:center"><div style="font-size:52px">'+p.emoji+'</div><h2>'+esc(p.title)+'</h2><p class="footnote">'+esc(p.desc||'')+'</p><div class="stat-value" id="antiTimer">'+Math.floor((p.duration||60)/60)+':'+String((p.duration||60)%60).padStart(2,'0')+'</div></div><div class="card mt-2"><b>Пошагово</b><ol class="lesson-content">'+(p.steps||[]).map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ol></div><div class="footnote">Научная оговорка: это упражнение для саморегуляции, а не лечение. Не задерживай дыхание и не форсируй вдохи; при дискомфорте вернись к обычному дыханию.</div><div class="btn-row mt-3"><button class="btn btn-primary" onclick="finishAntistress()">Отметить выполненным</button><button class="btn btn-ghost" onclick="closeSheet()">Закрыть</button></div>';
- openSheet(p.title,html);startAntistressTimer(p.duration||60);
+ var duration=Math.max(15,Number(p.duration)||60);
+ var html='<div style="text-align:center"><div style="font-size:52px">'+p.emoji+'</div><h2>'+esc(p.title)+'</h2><p class="footnote">'+esc(p.desc||'')+'</p><div class="stat-value" id="antiTimer">'+Math.floor(duration/60)+':'+String(duration%60).padStart(2,'0')+'</div><div class="progress mt-2"><div class="progress-fill" id="antiProgress" style="width:0%"></div></div><div class="footnote mt-2" id="antiTimerHint">Практика идёт. Кнопка завершения станет доступна по окончании таймера.</div></div><div class="card mt-2"><b>Пошагово</b><ol class="lesson-content">'+(p.steps||[]).map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ol></div><div class="footnote">Это упражнение для саморегуляции, а не лечение. Не задерживай дыхание и не форсируй вдохи; при дискомфорте остановись.</div><div class="btn-row mt-3"><button class="btn btn-primary" id="antiFinishBtn" disabled onclick="finishAntistress()">Завершить после таймера</button><button class="btn btn-ghost" onclick="finishAntistressEarly()">Завершить досрочно</button><button class="btn btn-ghost" onclick="cancelAntistress()">Отмена</button></div>';
+ openSheet(p.title,html);startAntistressTimer(duration);
 }
-var antiTimerHandle=null;
-function startAntistressTimer(seconds){if(antiTimerHandle)clearInterval(antiTimerHandle);var left=Math.max(1,Number(seconds)||60),node=document.getElementById('antiTimer');if(node)node.textContent=Math.floor(left/60)+':'+String(left%60).padStart(2,'0');antiTimerHandle=setInterval(function(){left--;var n=document.getElementById('antiTimer');if(n)n.textContent=Math.floor(Math.max(0,left)/60)+':'+String(Math.max(0,left)%60).padStart(2,'0');if(left<=0){clearInterval(antiTimerHandle);antiTimerHandle=null;haptic('success');toast('Время практики завершено. Можно спокойно завершить или продолжить.','success');}},1000);}
-function finishAntistress(){if(!currentAntistressId)return;if(antiTimerHandle){clearInterval(antiTimerHandle);antiTimerHandle=null;}if(!Array.isArray(state.antistressEntries))state.antistressEntries=[];state.antistressEntries.push({id:uid(),practiceId:currentAntistressId,date:today(),time:nowISO(),durationCompleted:true});addXP(5,'antistress');save();haptic('success');toast('Практика сохранена · +5 XP','success');closeSheet();currentAntistressId=null;renderAntistress();}
+var antiTimerHandle=null,antiTimerStartedAt=0,antiTimerDuration=0,antiTimerFinished=false;
+function startAntistressTimer(seconds){
+ if(antiTimerHandle)clearInterval(antiTimerHandle);
+ antiTimerDuration=Math.max(1,Number(seconds)||60);antiTimerStartedAt=Date.now();antiTimerFinished=false;
+ function tick(){var elapsed=Math.min(antiTimerDuration,Math.floor((Date.now()-antiTimerStartedAt)/1000)),left=Math.max(0,antiTimerDuration-elapsed),node=document.getElementById('antiTimer'),bar=document.getElementById('antiProgress');if(node)node.textContent=Math.floor(left/60)+':'+String(left%60).padStart(2,'0');if(bar)bar.style.width=Math.round(elapsed/antiTimerDuration*100)+'%';if(left<=0){clearInterval(antiTimerHandle);antiTimerHandle=null;antiTimerFinished=true;var btn=document.getElementById('antiFinishBtn'),hint=document.getElementById('antiTimerHint');if(btn){btn.disabled=false;btn.textContent='✓ Завершить практику';}if(hint)hint.textContent='Время вышло. Если готов — сохрани результат.';haptic('success');}}
+ tick();antiTimerHandle=setInterval(tick,250);
+}
+function finishAntistressRecord(completed){
+ if(!currentAntistressId)return;
+ if(antiTimerHandle){clearInterval(antiTimerHandle);antiTimerHandle=null;}
+ var elapsed=Math.min(antiTimerDuration,Math.max(0,Math.floor((Date.now()-antiTimerStartedAt)/1000)));
+ if(!Array.isArray(state.antistressEntries))state.antistressEntries=[];
+ state.antistressEntries.push({id:uid(),practiceId:currentAntistressId,date:today(),time:nowISO(),duration:elapsed,plannedDuration:antiTimerDuration,durationCompleted:!!completed});
+ if(completed)addXP(5,'antistress');
+ save();haptic('success');toast(completed?'Практика завершена · +5 XP':'Досрочное завершение сохранено без бонуса XP',completed?'success':'info');closeSheet();currentAntistressId=null;renderAntistress();
+}
+function finishAntistress(){if(!antiTimerFinished){toast('Сначала закончи таймер или выбери досрочное завершение.','warning');return;}finishAntistressRecord(true);}
+function finishAntistressEarly(){if(!currentAntistressId)return;finishAntistressRecord(false);}
+function cancelAntistress(){if(antiTimerHandle){clearInterval(antiTimerHandle);antiTimerHandle=null;}currentAntistressId=null;closeSheet();}
+
 function renderAntistressDetail(){renderAntistress();}
 
 /* ============ BRAIN TRAINING ============ */
