@@ -1111,6 +1111,8 @@ function renderDashboard(){
   html += '<div class="group-item" onclick="navigate(\'leagues\')"><div class="group-item-icon">🏅</div><div class="group-item-label">Лиги</div></div>';
   html += '<div class="group-item" onclick="navigate(\'antistress\')"><div class="group-item-icon">🌬</div><div class="group-item-label">Антистресс</div></div>';
   html += '<div class="group-item" onclick="navigate(\'calendar\')"><div class="group-item-icon">🗓</div><div class="group-item-label">Календарь</div></div>';
+  html += '<div class="group-item" onclick="navigate(\'journal\')"><div class="group-item-icon">📔</div><div class="group-item-label">Дневник</div></div>';
+  html += '<div class="group-item" onclick="navigate(\'obsidian\')"><div class="group-item-icon">🧠</div><div class="group-item-label">Второй мозг</div></div>';
   html += '</div></div>';
 
   /* Задачи */
