@@ -820,6 +820,39 @@ body.life-disable-motion *,body.life-disable-motion *::before,body.life-disable-
 .detox-day-detail .lesson-content{line-height:1.65}
 .detox-day-detail .footnote{line-height:1.5}
 </style>
+
+<style id="lifeos-layout-normalization">
+/* One final responsive contract for Telegram WebView, Android and desktop. */
+html,body{width:100%;max-width:100%;overflow-x:hidden}
+body{min-width:320px;min-height:100dvh}
+.app-main{width:100%;max-width:1200px;min-width:0;box-sizing:border-box;margin-inline:auto;padding:clamp(14px,2.2vw,28px) clamp(12px,3vw,34px) calc(120px + env(safe-area-inset-bottom,0px));overflow:visible!important}
+#app{width:100%;max-width:100%;min-width:0;min-height:calc(100dvh - 88px);box-sizing:border-box;overflow:visible!important}
+#app>.page,.page{width:100%;max-width:100%;min-width:0;box-sizing:border-box}
+.page>*{min-width:0;max-width:100%}
+.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.grid-2>*{min-width:0}
+input,select,textarea{box-sizing:border-box;max-width:100%;min-width:0}
+img,video,canvas,svg{max-width:100%}
+pre,code{max-width:100%;overflow-wrap:anywhere;word-break:break-word}
+.jarvis-page{max-width:1040px;width:100%;margin-inline:auto}
+.life-page-art{pointer-events:none}
+@media(max-width:759px){
+ .app-main{padding:14px 12px calc(116px + env(safe-area-inset-bottom,0px))}
+ .app-header .header-inner{padding-left:14px;padding-right:14px}
+ .tab-bar-wrap{padding-left:max(8px,env(safe-area-inset-left,0px));padding-right:max(8px,env(safe-area-inset-right,0px))}
+ .life-page-art{opacity:.22}
+}
+@media(max-width:390px){
+ .app-main{padding-left:10px;padding-right:10px}
+ .grid-2{gap:8px}
+ .card{padding:14px}
+ .title-xl{overflow-wrap:anywhere}
+}
+@media(min-width:760px){
+ .app-main{padding-bottom:calc(124px + env(safe-area-inset-bottom,0px))}
+}
+</style>
+
 </head>
 <body class="theme-dark">
 <div class="theme-effect" id="themeEffect"></div>
@@ -842,14 +875,14 @@ body.life-disable-motion *,body.life-disable-motion *::before,body.life-disable-
 <script defer src="content2.js?v=20261108-4"></script>
 <script defer src="content3.js?v=20261108-4"></script>
 <script defer src="jarvis-core.js?v=20261108-5"></script>
-<script defer src="app.js?v=20261108-24"></script>
+<script defer src="app.js?v=20261108-25"></script>
 <script defer src="lifeos-workspaces.js?v=20261108-5"></script>
-<script defer src="lifeos-systems.js?v=20261108-8"></script>
+<script defer src="lifeos-systems.js?v=20261108-9"></script>
 <script>
 (function(){
   var failed=[];
   ['content.js','content2.js','content3.js','jarvis-core.js','app.js','lifeos-workspaces.js','lifeos-systems.js'].forEach(function(name){
-    var script=document.querySelector('script[src="'+name+'"]');
+    var script=document.querySelector('script[src^="'+name+'?"]')||document.querySelector('script[src="'+name+'"]');
     if(script) script.addEventListener('error',function(){failed.push(name);show('Не загрузился файл: '+name+'. Проверьте публикацию и доступность файлов.');});
   });
   function show(message){
