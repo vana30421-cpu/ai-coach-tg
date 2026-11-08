@@ -10,7 +10,7 @@
 /* ============ КОНСТАНТЫ ============ */
 var STORAGE_KEY = 'life_os_v45';
 var STORAGE_BACKUP = 'life_os_backup_v45';
-var CURRENT_VERSION = '51';
+var CURRENT_VERSION = '52';
 var LEGACY_KEYS = ['life_os_v44','life_os_v43','life_os_v40'];
 
 /* ============ TELEGRAM ============ */
@@ -3957,8 +3957,8 @@ function jarvisReply(text){
   }
   if(cmd.type==='navigate'){navigate(cmd.page);return 'Открываю раздел «'+cmd.page+'».';}
   if(cmd.type==='focus'){startJarvisFocus(cmd.minutes);return 'Запустил фокус на '+cmd.minutes+' минут. Одна задача, уведомления по возможности отключи. Перерыв сделаем после сессии.';}
-  if(cmd.type==='checkin'){renderJarvisCheckin();return 'Открыл короткую самооценку. Оцени показатели по шкале от 1 до 5.';}
-  if(cmd.type==='methods'){renderJarvisMethods();return 'Открыл библиотеку методик с пояснениями и источниками.';}
+  if(cmd.type==='checkin')return 'Открыл короткую самооценку. Оцени показатели по шкале от 1 до 5.';
+  if(cmd.type==='methods')return 'Открыл библиотеку методик с пояснениями и источниками.';
   if(cmd.type==='help')return 'Команды:\n• «Добавь задачу: …»\n• «Покажи мои задачи»\n• «Сводка»\n• «Фокус 25»\n• «Открой память / обучение / зрение / прогулки / сон»\n• «Самооценка»\n• «Методики».';
   if(/привет|здравствуй|добрый день|доброе утро/i.test(text))return 'Привет. Готов помочь навести порядок в задачах и планах. Что сейчас важнее всего?';
   if(/устал|нет сил|не могу начать|прокрастин/i.test(text))return 'Не будем пытаться решить всё сразу.\n1. Выбери действие на 2 минуты.\n2. Убери один очевидный отвлекающий фактор.\n3. Сформулируй план «Когда ___, я сделаю ___».\nКакое самое маленькое начало подходит прямо сейчас?';
@@ -3970,8 +3970,12 @@ function sendJarvisMessage(){
   var input=document.getElementById('jarvisInput');if(!input)return;
   var text=input.value.trim();if(!text)return;input.value='';
   jarvisAddMessage('user',text);
+  var core=window.LifeOSJarvisCore,parsed=core?core.parseCommand(text):{type:'chat'};
   var reply=jarvisReply(text);
-  if(reply){jarvisAddMessage('assistant',reply);if(currentPage==='ai'||currentPage==='jarvis')renderJarvis();}
+  if(reply)jarvisAddMessage('assistant',reply);
+  if(parsed.type==='checkin')renderJarvisCheckin();
+  else if(parsed.type==='methods')renderJarvisMethods();
+  else if(currentPage==='ai'||currentPage==='jarvis')renderJarvis();
 }
 function jarvisQuick(text){var input=document.getElementById('jarvisInput');if(input)input.value=text;sendJarvisMessage();}
 function startJarvisVoice(){
@@ -4009,6 +4013,7 @@ function renderJarvisMethods(){
   var methods=[
     ['Активное вспоминание','Закрой материал и попробуй воспроизвести ответ по памяти. Затем проверь ошибки.','Высокая полезность для обучения','https://journals.sagepub.com/stoken/rbtfl/Z10jaVH/60XQM/full?cookieSet=1'],
     ['Распределённая практика','Повторяй материал в несколько сессий с интервалами, а не одним длинным блоком.','Высокая полезность для долговременного запоминания','https://journals.sagepub.com/stoken/rbtfl/Z10jaVH/60XQM/full?cookieSet=1'],
+    ['Интервальное повторение FSRS','После изучения возвращайся к карточке в рассчитанный срок. Оценивай честно: забыл, трудно, хорошо или легко.','Адаптивное расписание повторений; алгоритм не гарантирует конкретный результат','https://github.com/open-spaced-repetition/awesome-fsrs/wiki/The-Algorithm'],
     ['План «если — то»','Заранее свяжи ситуацию с действием: «Если наступит 19:00, то я открою урок и позанимаюсь 10 минут».','Практика планирования поведения','https://www.nice.org.uk/Guidance/PH49/chapter/recommendations'],
     ['Самонаблюдение и обратная связь','Записывай поведение и результат, затем корректируй цель по фактическим данным.','Рекомендации NICE по изменению поведения','https://www.nice.org.uk/Guidance/PH49/chapter/recommendations'],
     ['Постепенная физическая активность','Начинай с доступного объёма и наращивай постепенно; рекомендации зависят от возраста и состояния здоровья.','Ориентир ВОЗ для взрослых: 150–300 минут умеренной активности в неделю','https://www.who.int/initiatives/behealthy/physical-activity/'],
