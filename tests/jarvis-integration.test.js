@@ -156,3 +156,12 @@ test('completion particle burst is layered over the interface and uses viewport 
   assert.match(app,/document\.body\.appendChild\(p\)/);
   assert.match(index,/life-burst-particle\{position:fixed/);
 });
+
+
+test('task editor can propose editable next actions without replacing existing checklist items',()=>{
+  assert.match(app,/function suggestTaskSteps\(\)/);
+  assert.match(app,/Воспроизвести и точно описать результат\/ошибку/);
+  assert.match(app,/Запланировать интервальные повторения/);
+  assert.match(app,/onclick="suggestTaskSteps\(\)"/);
+  assert.match(app,/if\(_clBuffer\.length<20/);
+});
