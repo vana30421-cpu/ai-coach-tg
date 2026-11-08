@@ -70,6 +70,16 @@ test('legacy second-brain items migrate without deleting the source array',()=>{
  assert.equal(sandbox.state.secondBrainItems.length,1);
 });
 
+
+test('legacy notes merge into an existing canonical second brain without duplication',()=>{
+ const {sandbox}=sandboxFor(workspaces);
+ sandbox.state.secondBrain={notes:[{id:'new-1',title:'Современная',body:'Новая',tags:[],links:[]}]};
+ sandbox.state.secondBrainItems=[{id:'old-1',title:'Старая',text:'Старый текст'}];
+ sandbox.window.renderObsidian();
+ assert.equal(sandbox.state.secondBrain.notes.length,2);
+ assert.equal(sandbox.state.secondBrainItems.length,1);
+});
+
 test('weekly schedule and month calendar include events and due tasks',()=>{
  const {sandbox,appRoot}=sandboxFor(systems);
  sandbox.state.calendarEvents=[{id:'e1',source:'lifeos',title:'Тренировка',date:'2026-11-08',time:'09:00'}];
