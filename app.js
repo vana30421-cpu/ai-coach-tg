@@ -2557,29 +2557,9 @@ function completeEyeExercise(){
   navigate(currentPage);
 }
 function renderVision62(){
-  var d62 = (state.vision && state.vision.detox62) || defaultState().vision.detox62;
-  var html = '<div class="page"><div class="title-xl">🌟 62-дневный путь</div>';
-  html += '<div class="card card-gradient">';
-  html += '<div style="font-size:12px;opacity:.9;">Прогресс</div>';
-  html += '<div style="font-size:40px;font-weight:800;">' + d62.currentDay + ' / 62</div>';
-  html += '<div style="font-size:12px;opacity:.9;margin-top:6px;">Этап ' + d62.currentStage + ' · ' + (d62.status === 'active' ? 'Активен' : d62.status) + '</div>';
-  html += '<div class="progress mt-3"><div class="progress-fill" style="width:' + Math.round(d62.currentDay/62*100) + '%"></div></div>';
-  html += '</div>';
-  var stages = d62.stages || [];
-  stages.forEach(function(st){
-    var active = d62.currentStage === st.id;
-    var done = st.completedAt ? true : false;
-    html += '<div class="method-card" style="' + (active?'border-left:3px solid var(--brand);':'') + '">';
-    html += '<div class="method-header"><div class="method-emoji">' + (done?'✓':st.id) + '</div>';
-    html += '<div style="flex:1;"><div class="method-title">' + st.name + '</div>';
-    html += '<div class="method-cat">Дни ' + st.days[0] + '-' + st.days[1] + (done?' · Готово':'') + '</div></div></div></div>';
-  });
-  if(d62.status === 'active'){
-    html += '<button class="btn btn-primary btn-block mb-2" onclick="completeDetox62Day()">✓ День ' + d62.currentDay + ' пройден</button>';
-    html += '<button class="btn btn-ghost btn-block mb-2" onclick="skipDetox62Day()">⏭ Пропустить день</button>';
-  }
-  html += '</div>';
-  document.getElementById('app').innerHTML = html;
+ var stats=getDetoxCourseStats();
+ var html='<div class="page"><div class="title-xl">🌟 62-дневная программа</div><div class="subtitle">Единая подробная программа: задания, практика, дневник и анализ результата.</div><div class="card card-gradient"><div class="stat-value">'+stats.completed+' / 62</div><div class="stat-label">Дней действительно отмечено в подробном курсе</div><div class="progress mt-2"><div class="progress-fill" style="width:'+stats.percent+'%"></div></div></div><div class="card"><h2>📚 Полная программа</h2><div class="footnote">Здесь используется тот же прогресс, что и в подробном 62-дневном детоксе. Старые отметки отдельного трекера не удаляются, но больше не создают второй независимый счётчик.</div><button class="btn btn-primary btn-block mt-3" onclick="navigate(\'detoxcourse\')">Открыть задания, дневник и аналитику</button></div><button class="btn btn-ghost btn-block" onclick="navigate(\'vision\')">← К разделу зрения</button></div>';
+ document.getElementById('app').innerHTML=html;
 }
 function startDetox62(){
   if(!state.vision) state.vision = defaultState().vision;
@@ -2591,7 +2571,7 @@ function startDetox62(){
   state.vision.detox62.currentStage = 1;
   save();
   toast('🚀 Программа начата','success');
-  navigate('vision62');
+  navigate('detoxcourse');
 }
 function completeDetox62Day(){
   var d62 = state.vision.detox62;
