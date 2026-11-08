@@ -3436,7 +3436,7 @@ function renderLeagues(){
 function getPetLiveState(){var p=state.pet||defaultState().pet,elapsed=p.lastFed?Math.max(0,(Date.now()-new Date(p.lastFed).getTime())/3600000):0;return {hunger:Math.max(0,Math.min(100,Math.round((Number(p.hunger)||100)-elapsed*3))),hours:Math.floor(elapsed)};}
 function renderPet(){
  var pet=state.pet||defaultState().pet,live=getPetLiveState(),stage=(window.PET_STAGES||[]).find(function(x){return x.id===pet.stage;})||{emoji:'🥚',name:'Яйцо',desc:'Развитие'},xpNext=Number(pet.xpToNext)||100,pct=Math.min(100,Math.round((Number(pet.xp)||0)/xpNext*100)),fedToday=(pet.feedHistory||[]).filter(function(x){return x.date===today();}).length;
- var mood=live.hunger<20?'hungry':live.hunger>70?'happy':'normal',html='<div class="page"><div class="title-xl">🐾 Питомец</div><div class="subtitle">Развитие связано с твоей активностью в LIFE OS. Забота о питомце — игровая мотивация, не обязанность.</div><div class="card card-gradient" style="text-align:center"><div style="font-size:96px">'+stage.emoji+'</div><div class="field"><input id="petNameInput" maxlength="24" value="'+esc(pet.name||'Питомец')+'" aria-label="Имя питомца" onchange="renamePet(this.value)" style="text-align:center;font-weight:800"></div><div class="title-lg">'+esc(stage.name)+'</div><div class="footnote">Стадия '+pet.stage+' · '+esc(stage.desc||'')+'</div><div class="progress mt-3"><div class="progress-fill" style="width:'+pct+'%"></div></div><div class="footnote mt-2">'+(pet.xp||0)+' / '+xpNext+' XP до следующей стадии</div></div><div class="card"><h2>Состояние</h2><div class="row-between"><span>🍽 Сытость</span><b>'+live.hunger+'%</b></div><div class="progress mt-2"><div class="progress-fill" style="width:'+live.hunger+'%"></div></div><div class="row-between mt-3"><span>Настроение</span><b>'+(mood==='happy'?'😊 Доволен':mood==='hungry'?'🍽 Голоден':'😐 Спокоен')+'</b></div><div class="row-between mt-2"><span>Покормлен сегодня</span><b>'+fedToday+' раз</b></div><div class="row-between mt-2"><span>Всего кормлений</span><b>'+(pet.fedCount||0)+'</b></div></div><button class="btn btn-primary btn-block" onclick="feedPet()">🍽 Покормить питомца</button><div class="card mt-3"><b>Как питомец развивается</b><p class="footnote mt-2">XP начисляется за реальные действия в приложении. Сытость постепенно снижается со временем и восстанавливается кормлением. Не нужно заходить каждый час — это только игровой элемент.</p></div></div>';document.getElementById('app').innerHTML=html;
+ var mood=live.hunger<20?'hungry':live.hunger>70?'happy':'normal',html='<div class="page"><div class="title-xl">🐾 Питомец</div><div class="subtitle">Развитие связано с твоей активностью в LIFE OS. Забота о питомце — игровая мотивация, не обязанность.</div><div class="card card-gradient" style="text-align:center"><div style="font-size:96px">'+stage.emoji+'</div><div class="field"><input id="petNameInput" maxlength="24" value="'+esc(pet.name||'Питомец')+'" aria-label="Имя питомца" onchange="renamePet(this.value)" style="text-align:center;font-weight:800"></div><div class="title-lg">'+esc(stage.name)+'</div><div class="footnote">Стадия '+pet.stage+' · '+esc(stage.desc||'')+'</div><div class="progress mt-3"><div class="progress-fill" style="width:'+pct+'%"></div></div><div class="footnote mt-2">'+(pet.xp||0)+' / '+xpNext+' XP до следующей стадии</div></div><div class="card"><h2>Состояние</h2><div class="row-between"><span>🍽 Сытость</span><b>'+live.hunger+'%</b></div><div class="progress mt-2"><div class="progress-fill" style="width:'+live.hunger+'%"></div></div><div class="row-between mt-3"><span>Настроение</span><b>'+(mood==='happy'?'😊 Доволен':mood==='hungry'?'🍽 Голоден':'😐 Спокоен')+'</b></div><div class="row-between mt-2"><span>Покормлен сегодня</span><b>'+fedToday+' раз</b></div><div class="row-between mt-2"><span>Всего кормлений</span><b>'+(pet.fedCount||0)+'</b></div></div><div class="grid-2"><button class="btn btn-primary" onclick="feedPet()">🍽 Покормить</button><button class="btn btn-ghost" onclick="playPet()">🎾 Поиграть</button></div><div class="card mt-3"><b>Как питомец развивается</b><p class="footnote mt-2">XP начисляется за реальные действия в приложении. Сытость постепенно снижается со временем и восстанавливается кормлением. Не нужно заходить каждый час — это только игровой элемент.</p></div></div>';document.getElementById('app').innerHTML=html;
 }
 function renamePet(name){if(!state.pet)state.pet=defaultState().pet;state.pet.name=String(name||'Питомец').trim().slice(0,24)||'Питомец';save();toast('Имя питомца сохранено','success');}
 function feedPet(){
@@ -3444,13 +3444,27 @@ function feedPet(){
   state.pet.hunger = Math.min(100, getPetLiveState().hunger + 20);
   state.pet.fedCount = (state.pet.fedCount||0) + 1;
   state.pet.lastFed = nowISO();
-  if(!Array.isArray(state.pet.feedHistory))state.pet.feedHistory=[];state.pet.feedHistory.push({date:today(),at:nowISO()});state.pet.feedHistory=state.pet.feedHistory.slice(-100);
+  if(!Array.isArray(state.pet.feedHistory))state.pet.feedHistory=[];
+  var fedToday=state.pet.feedHistory.filter(function(x){return x.date===today();}).length;
+  if(fedToday>=3){toast('На сегодня питомец уже получил достаточно корма.','info');return;}
+  var previousHunger=getPetLiveState().hunger;
+  state.pet.hunger = Math.min(100, previousHunger + 20);
+  state.pet.fedCount = Math.max(0,(state.pet.fedCount||0));
+  state.pet.lastFed = nowISO();
+  state.pet.feedHistory.push({date:today(),at:nowISO()});state.pet.feedHistory=state.pet.feedHistory.slice(-100);
   state.pet.mood = state.pet.hunger >= 50 ? 'happy' : 'hungry';
-  addPetXP(5);
+  if(state.pet.hunger>previousHunger)addPetXP(5);
   save();
   haptic('success');
   toast('🍽 Питомец покормлен','success');
   renderPet();
+}
+function playPet(){
+ if(!state.pet)state.pet=defaultState().pet;
+ if(!Array.isArray(state.pet.playHistory))state.pet.playHistory=[];
+ if(state.pet.playHistory.some(function(x){return x.date===today();})){toast('Сегодня вы уже играли. Питомцу нужен отдых.','info');return;}
+ state.pet.playHistory.push({date:today(),at:nowISO()});state.pet.playHistory=state.pet.playHistory.slice(-120);
+ state.pet.mood='happy';addPetXP(3);save();haptic('success');toast('🎾 Отлично поиграли · +3 XP','success');renderPet();
 }
 function addPetXP(amount){
   if(!state.pet) state.pet = defaultState().pet;
@@ -4536,8 +4550,8 @@ function deleteJournalEntry(date){if(!confirm('Удалить запись за 
 function renderDailySurvey(){ renderStub('📋 Опрос'); }
 function renderSurvey(){ renderStub('📋 Опрос'); }
 function renderPersonalPlan(){ renderStub('🧭 Персональный план'); }
-function renderLearningGames(){ renderStub('🎮 Игры'); }
-function renderGamePlay(){ renderStub('Игра'); }
+function renderLearningGames(){ renderGamesHub(); }
+function renderGamePlay(){ renderGamesHub(); }
 function renderMaterials(){ renderStub('📚 Материалы'); }
 function renderMaterialDetail(){ renderStub('Материал'); }
 function renderDailyReport(){
