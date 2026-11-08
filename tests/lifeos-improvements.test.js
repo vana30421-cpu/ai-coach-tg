@@ -8,6 +8,7 @@ const content=fs.readFileSync('content.js','utf8');
 const content2=fs.readFileSync('content2.js','utf8');
 const api=fs.readFileSync('functions/api/jarvis.js','utf8');
 const systems=fs.readFileSync('lifeos-systems.js','utf8');
+const ws=fs.readFileSync('lifeos-workspaces.js','utf8');
 const worker=fs.readFileSync('workers/jarvis-worker.js','utf8');
 
 test('all changed browser scripts parse',()=>{
