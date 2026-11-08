@@ -227,3 +227,8 @@ test('Jarvis recommendation actions navigate to the recommendation target',()=>{
 test('statistics navigation is treated as a primary tab',()=>{
  assert.match(app,/MAIN_PAGES = \['dashboard','tasks','learning','calendar','stats','vision','ai','more'\]/);
 });
+
+
+test('all new inline controls are exported from the application scope',()=>{
+ for(const name of ['saveLifeStatsFilter','setStatsDateFilter','setStatsPeriod','applyJarvisRecommendation','lifeSurveyMove','lifeSurveySkip','updateLifePreference','saveDetoxReview','saveLearningPractice','startLearningReview','saveLearningReview','cancelVisionBreak','saveVisionCheckin'])assert.match(app,new RegExp('window\\.'+name+'='+name));
+});
