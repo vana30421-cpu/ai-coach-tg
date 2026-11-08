@@ -3986,9 +3986,28 @@ function renderGcal(){ renderStub('📅 Календарь'); }
 function renderCalendar(){ renderStub('📅 Календарь'); }
 function renderNotifications(){ renderStub('🔔 Уведомления'); }
 function renderIntegrations(){ renderStub('🔗 Интеграции'); }
-function renderStorage(){ renderStub('🗄 Хранилище'); }
+function renderStorage(){
+  var bytes=0;try{bytes=new Blob([JSON.stringify(state)]).size;}catch(e){}
+  var kb=(bytes/1024).toFixed(1),html='<div class="page"><div class="title-xl">🗄 Хранилище</div><div class="subtitle">Локальные данные, резервные копии и офлайн-режим</div>';
+  html+='<div class="grid-2 mb-3"><div class="card"><div class="stat-value">'+kb+' КБ</div><div class="stat-label">Размер данных</div></div><div class="card"><div class="stat-value">'+(navigator.onLine?'Онлайн':'Офлайн')+'</div><div class="stat-label">Подключение</div></div></div>';
+  html+='<div class="card mb-3"><div class="card-title">Защита данных</div><div class="footnote mb-2">Автосохранение выполняется после действий и периодически. Перед перезаписью создаётся резервная копия предыдущего состояния.</div><button class="btn btn-primary btn-block mb-2" onclick="exportDB()">📤 Скачать резервную копию JSON</button><button class="btn btn-ghost btn-block mb-2" onclick="importDB()">📥 Восстановить из JSON</button><button class="btn btn-ghost btn-block" onclick="restoreStorageBackup()">↩ Восстановить предыдущую копию</button></div>';
+  html+='<div class="card mb-3"><div class="card-title">Офлайн-режим</div><div class="footnote">Основные файлы приложения сохраняются на устройстве после первого успешного открытия. Внешние функции (например, Telegram API и сетевые AI-запросы) без интернета недоступны.</div><div class="footnote mt-2" id="storageEstimate">Проверка свободного места…</div></div>';
+  html+='<div class="card"><div class="card-title">Сброс</div><div class="footnote mb-2">Перед удалением текущие данные останутся в резервной копии.</div><button class="btn btn-danger btn-block" onclick="resetAllWithConfirm()">Удалить данные приложения</button></div></div>';
+  document.getElementById('app').innerHTML=html;
+  if(navigator.storage&&navigator.storage.estimate)navigator.storage.estimate().then(function(x){var el=document.getElementById('storageEstimate');if(el)el.textContent='Использовано хранилища браузера: '+(x.usage/1048576).toFixed(2)+' МБ из '+(x.quota/1048576).toFixed(0)+' МБ (оценка)';}).catch(function(){});
+}
+function restoreStorageBackup(){
+  if(!confirm('Восстановить предыдущую резервную копию? Текущие данные будут заменены.'))return;
+  try{var raw=localStorage.getItem(STORAGE_BACKUP);if(!raw)throw new Error('backup missing');var parsed=JSON.parse(raw);if(!parsed||typeof parsed!=='object')throw new Error('invalid backup');localStorage.setItem(STORAGE_KEY,raw);toast('Копия восстановлена. Перезапускаю…','success');setTimeout(function(){location.reload();},700);}catch(e){toast('Резервная копия не найдена или повреждена','error');}
+}
 function renderScreenTracker(){ renderStub('📱 Экран'); }
-function renderDiagnostic(){ renderStub('🔍 Диагностика'); }
+function renderDiagnostic(){
+  var checks=[['Состояние данных',!!state&&typeof state==='object'],['Локальное хранилище',!!window.localStorage],['Service Worker','serviceWorker'in navigator],['Поддержка офлайн-кеша','caches'in window],['Экспорт данных',typeof exportDB==='function'],['Резервная копия',!!localStorage.getItem(STORAGE_BACKUP)]];
+  var html='<div class="page"><div class="title-xl">🔍 Диагностика</div><div class="subtitle">Проверка возможностей устройства и сохранности данных</div><div class="card">';
+  checks.forEach(function(c){html+='<div class="list-row"><div class="list-body"><div class="list-title">'+esc(c[0])+'</div></div><div class="list-value">'+(c[1]?'✓':'—')+'</div></div>';});
+  html+='<button class="btn btn-primary btn-block mt-3" onclick="navigate(\'storage\')">Открыть хранилище</button></div></div>';
+  document.getElementById('app').innerHTML=html;
+}
 function renderOnboarding(){ renderStub('👋 Добро пожаловать'); }
 
 /* ============ XP-СИСТЕМА ============ */
