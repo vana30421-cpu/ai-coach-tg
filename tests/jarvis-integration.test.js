@@ -39,3 +39,7 @@ test('methodology cards cite primary or official sources',()=>{
   assert.match(app,/www\.cdc\.gov/);
   assert.match(app,/open-spaced-repetition/);
 });
+test('focus and methods sections use functional Jarvis tools instead of placeholder screens',()=>{
+  assert.match(app,/function renderFocus\(\)\{ renderJarvis\(\); \}/);
+  assert.match(app,/function renderMethods\(\)\{ renderJarvisMethods\(\); \}/);
+});
