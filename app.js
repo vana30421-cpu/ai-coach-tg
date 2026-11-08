@@ -3792,7 +3792,7 @@ function buildComprehensiveStatsLegacy(days){
   var checkins=(s.jarvis&&Array.isArray(s.jarvis.checkins)?s.jarvis.checkins:[]).filter(function(x){return within(byDate(x));});
   var xpHistory=s.gamification&&Array.isArray(s.gamification.xpHistory)?s.gamification.xpHistory:[];
   var xpPeriod=xpHistory.filter(function(x){return within(byDate(x));}).reduce(function(n,x){return n+(Number(x.amount)||0);},0);
-  var financeRows=[];
+  var financeRows=arr('financeEntries').slice();
   Object.keys(s.workspaces||{}).forEach(function(k){if(/finance|money|budget/i.test(k)&&Array.isArray(s.workspaces[k]))financeRows=financeRows.concat(s.workspaces[k]);});
   var financePeriod=financeRows.filter(function(x){return within(byDate(x));});
   var sphereScores=s.spheres&&s.spheres.scores||{};
