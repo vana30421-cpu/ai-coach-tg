@@ -188,3 +188,13 @@ test('weekly schedule add action defaults to the currently selected date',()=>{
  assert.match(app,/function addScheduleEvent\(date\)\{date=date\|\|window\.LIFEOS_SELECTED_CAL_DATE\|\|today\(\)/);
  assert.match(systems,/onclick="addScheduleEvent\(\)"/);
 });
+
+test('Jarvis context now includes diary calendar screen anti-stress pet second brain and finance summaries',()=>{
+ for(const field of ['journal:journal?','calendar:{today:events','screenTime:{minutes:screen}','antistress:{recent:stress}','pet:{name:pet.name','secondBrain:{notes:brain.length','finance:{month:month','learningProgress:{trackedTopics'])assert.ok(app.includes(field),field);
+ assert.match(app,/дневник, календарь, экранное время, антистресс, питомец, второй мозг/);
+});
+test('learning materials and game routes no longer point to empty placeholders',()=>{
+ for(const name of ['renderLearningGames','renderGamePlay','renderMaterials','renderMaterialDetail','renderDailySurvey','renderSurvey','renderPersonalPlan','renderTimer','renderSnapshot','renderRecommendations','renderGcal','renderProjectEditor','renderModuleDetail','renderOnboarding'])assert.match(systems,new RegExp('window\\.'+name+'=function'));
+ assert.match(systems,/renderGamesHub\(\)/);
+ assert.match(systems,/window\.LEARNING_MATERIALS/);
+});
