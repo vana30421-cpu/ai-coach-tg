@@ -258,3 +258,15 @@ test('new personalization, learning practice and detox review screens are reacha
 test('Jarvis autopilot controls are callable from the interface',()=>{
  for(const name of ['runJarvisAutopilot','setJarvisAutopilot'])assert.match(app,new RegExp('window\\.'+name+'='+name));
 });
+
+test('script load diagnostics attach to versioned assets',()=>{
+  assert.ok(index.includes('script[src^='));
+  assert.ok(index.includes("name+'?"));
+});
+test('final layout normalization keeps Telegram WebView and desktop content within the viewport',()=>{
+  assert.match(index,/id="lifeos-layout-normalization"/);
+  assert.match(index,/max-width:1200px/);
+  assert.match(index,/grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
+  assert.match(index,/env\(safe-area-inset-bottom,0px\)/);
+  assert.match(sw,/life-os-v93/);
+});
