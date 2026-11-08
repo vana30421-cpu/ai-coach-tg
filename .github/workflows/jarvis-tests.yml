@@ -4,6 +4,8 @@ on:
     branches: [main]
     paths:
       - 'app.js'
+      - 'lifeos-systems.js'
+      - 'lifeos-workspaces.js'
       - 'content.js'
       - 'index.html'
       - 'sw.js'
@@ -42,6 +44,8 @@ jobs:
       - name: Check JavaScript syntax
         run: |
           node --check app.js
+          node --check lifeos-workspaces.js
+          node --check lifeos-systems.js
           node --check content.js
           node --check sw.js
           node --check jarvis-core.js
