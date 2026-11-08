@@ -149,3 +149,10 @@ test('research and product guardrails are documented',()=>{
   assert.match(index,/life-burst-particle/);
   assert.match(app,/effectsMotionOverride/);
 });
+
+
+test('completion particle burst is layered over the interface and uses viewport coordinates',()=>{
+  assert.match(app,/rect\.left\+rect\.width\/2/);
+  assert.match(app,/document\.body\.appendChild\(p\)/);
+  assert.match(index,/life-burst-particle\{position:fixed/);
+});
