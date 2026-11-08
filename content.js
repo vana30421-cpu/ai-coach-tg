@@ -292,7 +292,7 @@ var TABS=[
 {id:'learning',emoji:'🎓',label:'Обучение'},
 {id:'calendar',emoji:'📅',label:'Календарь'},
 {id:'vision',emoji:'👁',label:'Зрение'},
-{id:'ai',emoji:'✨',label:'AI'},
+{id:'ai',emoji:'✧',label:'Джарвис'},
 {id:'more',emoji:'⋯',label:'Ещё'}
 ];
 
