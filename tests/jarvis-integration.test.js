@@ -30,7 +30,7 @@ test('voice input degrades safely when SpeechRecognition is unavailable',()=>{
 });
 test('self-assessment is explicitly not represented as clinical diagnosis',()=>{
   assert.match(app,/Не медицинский тест и не диагностика/);
-  assert.match(app,/не клинический тест и не диагноз/);
+  assert.match(app,/Личный трекер, не клинический тест/);
 });
 test('methodology cards cite primary or official sources',()=>{
   assert.match(app,/www\.nice\.org\.uk/);
