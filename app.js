@@ -10,7 +10,7 @@
 /* ============ КОНСТАНТЫ ============ */
 var STORAGE_KEY = 'life_os_v45';
 var STORAGE_BACKUP = 'life_os_backup_v45';
-var CURRENT_VERSION = '50';
+var CURRENT_VERSION = '51';
 var LEGACY_KEYS = ['life_os_v44','life_os_v43','life_os_v40'];
 
 /* ============ TELEGRAM ============ */
@@ -610,156 +610,31 @@ function applyUserSettings(){
 
 /* ============ ЭФФЕКТЫ ТЕМ ============ */
 function startEffects(){
-  var overlay = document.getElementById('themeEffect');
-  if(!overlay) return;
-  overlay.innerHTML = '';
+  var overlay=document.getElementById('themeEffect');
+  if(!overlay)return;
+  overlay.replaceChildren();
   try{
-    if(state.settings.effectsEnabled === undefined) state.settings.effectsEnabled = true;
-    if(state.settingsV2 && state.settingsV2.reducedMotion) return;
-    if(!state.settings.effectsEnabled) return;
-    var theme = (window.THEMES || []).find(function(t){ return t.id === state.settings.theme; }) || {effect:'stars'};
-    var effect = theme.effect || 'stars';
-    var intensity = state.settings.effectsIntensity || 1;
-    function cnt(base){ return Math.round(base * intensity * 2.5); }
-    var i, el;
-    var helpers = {
-      petal: function(emoji){
-        el = document.createElement('div');
-        el.className = 'effect-petal';
-        el.textContent = emoji;
-        el.style.left = Math.random()*100 + '%';
-        el.style.animationDuration = (6 + Math.random()*6) + 's';
-        el.style.animationDelay = Math.random()*8 + 's';
-        el.style.fontSize = (14 + Math.random()*14) + 'px';
-        overlay.appendChild(el);
-      },
-      star: function(cls){
-        el = document.createElement('div');
-        el.className = 'effect-star ' + cls;
-        el.style.left = Math.random()*100 + '%';
-        el.style.top = Math.random()*100 + '%';
-        el.style.animationDelay = Math.random()*5 + 's';
-        overlay.appendChild(el);
-      },
-      spark: function(){
-        el = document.createElement('div');
-        el.className = 'effect-spark';
-        el.style.left = Math.random()*100 + '%';
-        el.style.top = Math.random()*100 + '%';
-        overlay.appendChild(el);
-      },
-      dust: function(){
-        el = document.createElement('div');
-        el.className = 'effect-dust';
-        el.style.left = Math.random()*100 + '%';
-        el.style.top = Math.random()*100 + '%';
-        overlay.appendChild(el);
-      }
-    };
-    if(effect === 'stars' || effect === 'none'){
-      for(i = 0; i < cnt(30); i++) helpers.star('small');
-      for(i = 0; i < cnt(15); i++) helpers.star('medium');
-    } else if(effect === 'rain'){
-      for(i = 0; i < cnt(40); i++){
-        el = document.createElement('div');
-        el.className = 'effect-drop';
-        el.style.left = Math.random()*100 + '%';
-        el.style.height = (15 + Math.random()*35) + 'px';
-        overlay.appendChild(el);
-      }
-    } else if(effect === 'petals'){
-      var p = ['🌸','🌺','🌷','💮'];
-      for(i = 0; i < cnt(20); i++) helpers.petal(p[Math.floor(Math.random()*p.length)]);
-    } else if(effect === 'leaves'){
-      var l = ['🍃','🍂','🍁','🌿'];
-      for(i = 0; i < cnt(20); i++) helpers.petal(l[Math.floor(Math.random()*l.length)]);
-    } else if(effect === 'snow'){
-      var sn = ['❄','❅','❆'];
-      for(i = 0; i < cnt(25); i++){
-        el = document.createElement('div');
-        el.className = 'effect-snowflake';
-        el.textContent = sn[Math.floor(Math.random()*sn.length)];
-        el.style.left = Math.random()*100 + '%';
-        overlay.appendChild(el);
-      }
-    } else if(effect === 'waves'){
-      for(i = 0; i < 4; i++){
-        el = document.createElement('div');
-        el.className = 'effect-wave';
-        el.style.bottom = (i*50) + 'px';
-        overlay.appendChild(el);
-      }
-    } else if(effect === 'sparkles' || effect === 'spark'){
-      for(i = 0; i < cnt(35); i++) helpers.spark();
-    } else if(effect === 'dust' || effect === 'fireflies'){
-      for(i = 0; i < cnt(25); i++) helpers.dust();
-    } else if(effect === 'bubbles'){
-      for(i = 0; i < cnt(20); i++){
-        el = document.createElement('div');
-        el.className = 'effect-bubble';
-        el.style.left = Math.random()*100 + '%';
-        el.style.bottom = (Math.random()*20) + '%';
-        el.style.width = el.style.height = (6 + Math.random()*20) + 'px';
-        overlay.appendChild(el);
-      }
-    } else if(effect === 'fire' || effect === 'lava'){
-      for(i = 0; i < cnt(25); i++){
-        el = document.createElement('div');
-        el.className = 'effect-fire';
-        el.style.left = Math.random()*100 + '%';
-        overlay.appendChild(el);
-      }
-    } else if(effect === 'lightning' || effect === 'storm'){
-      for(i = 0; i < 3; i++){
-        el = document.createElement('div');
-        el.className = 'effect-lightning';
-        el.style.left = (20 + Math.random()*60) + '%';
-        overlay.appendChild(el);
-      }
-    } else if(effect === 'aurora'){
-      for(i = 0; i < 3; i++){
-        el = document.createElement('div');
-        el.className = 'effect-aurora';
-        el.style.top = (i*20) + '%';
-        overlay.appendChild(el);
-      }
-    } else if(effect === 'pumpkin'){
-      for(i = 0; i < cnt(15); i++) helpers.petal('🎃');
-    } else if(effect === 'bats'){
-      for(i = 0; i < cnt(12); i++) helpers.petal('🦇');
-    } else if(effect === 'ghosts'){
-      for(i = 0; i < cnt(12); i++) helpers.petal('👻');
-    } else if(effect === 'bones'){
-      for(i = 0; i < cnt(12); i++) helpers.petal('💀');
-    } else if(effect === 'drops'){
-      for(i = 0; i < cnt(20); i++) helpers.dust();
-    } else if(effect === 'candles'){
-      for(i = 0; i < cnt(8); i++) helpers.petal('🕯');
-    } else if(effect === 'feathers'){
-      for(i = 0; i < cnt(15); i++) helpers.petal('🪶');
-    } else if(effect === 'spiderweb'){
-      for(i = 0; i < 3; i++){
-        el = document.createElement('div');
-        el.style.position = 'absolute';
-        el.style.left = (i*33) + '%';
-        el.style.top = '0';
-        el.style.width = '1px';
-        el.style.height = '100%';
-        el.style.background = 'linear-gradient(180deg,transparent,#00ff88,transparent)';
-        el.style.opacity = '.15';
-        overlay.appendChild(el);
-      }
-    } else if(effect === 'fog'){
-      for(i = 0; i < cnt(10); i++){
-        el = document.createElement('div');
-        el.className = 'effect-wave';
-        el.style.bottom = (Math.random()*100) + '%';
-        overlay.appendChild(el);
-      }
-    } else {
-      for(i = 0; i < cnt(15); i++) helpers.star('small');
+    var reduced=(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)||(state.settingsV2&&state.settingsV2.reducedMotion);
+    if(document.hidden||reduced||state.settings.effectsEnabled===false)return;
+    var theme=(window.THEMES||[]).find(function(t){return t.id===state.settings.theme;})||{effect:'stars'};
+    var effect=theme.effect||'none';
+    if(effect==='none')return;
+    var mobile=window.innerWidth<760;
+    var intensity=Math.max(.5,Math.min(1.5,Number(state.settings.effectsIntensity)||1));
+    var cap=mobile?10:18;
+    var counts={stars:12,petals:9,leaves:9,snow:10,sparkles:10,spark:10,dust:8,fireflies:8,bubbles:8,rain:9,fire:8,lava:8,pumpkin:6,bats:6,ghosts:6,bones:6,drops:8,candles:5,feathers:7};
+    var count=Math.min(cap,Math.max(3,Math.round((counts[effect]||7)*intensity)));
+    var emoji={petals:['🌸','🌺','🌷'],leaves:['🍃','🍂','🌿'],snow:['❄','❅'],pumpkin:['🎃'],bats:['🦇'],ghosts:['👻'],bones:['💀'],candles:['🕯'],feathers:['🪶']};
+    for(var i=0;i<count;i++){
+      var el=document.createElement('i'),x=Math.random()*100;
+      el.className='life-effect life-effect-'+effect;
+      el.style.setProperty('--x',x+'%');
+      el.style.setProperty('--delay',(-Math.random()*12)+'s');
+      el.style.setProperty('--duration',(12+Math.random()*12)+'s');
+      if(emoji[effect])el.textContent=emoji[effect][Math.floor(Math.random()*emoji[effect].length)];
+      overlay.appendChild(el);
     }
-  }catch(e){ console.warn('[Effects]', e); }
+  }catch(e){console.warn('[Effects]',e);overlay.replaceChildren();}
 }
 
 /* ============ applyTheme ============ */
@@ -834,7 +709,7 @@ function navigate(page, silent){
     spheres: renderSpheres, sphereDetail: renderSphereDetail,
     projects: renderProjects, projectDetail: renderProjectDetail, projectEditor: renderProjectEditor,
     coach: renderCoach, coachSettings: renderCoachSettings, coachChat: renderCoachChat,
-    schedule: renderSchedule, scheduleEditor: renderScheduleEditor,
+    schedule: renderSchedule, scheduleEditor: renderScheduleEditor, walks: renderWalks,
     focus: renderFocus, eveningReview: renderEveningReview,
     weeklyReview: renderWeeklyReview, monthlyReview: renderMonthlyReview,
     achievements: renderAchievements, achievementsCategory: renderAchievementsCategory,
@@ -1951,6 +1826,9 @@ function fallbackReply(persona, text){
 
 /* ============ EXPORTS ============ */
 window.renderDashboard = renderDashboard;
+window.renderWalks = renderWalks;
+window.addWalkEntry = addWalkEntry;
+window.deleteWalkEntry = deleteWalkEntry;
 window.renderSpheres = renderSpheres;
 window.openSphereDetail = openSphereDetail;
 window.saveSphereScore = saveSphereScore;
@@ -3701,6 +3579,7 @@ function renderDetailedStats(){ renderStats(); }
 function renderMore(){
   var groups = [
     {title:'🎯 Основное',items:[
+      {key:'walks',emoji:'🚶',label:'Прогулки'},
       {key:'dashboard',emoji:'🏠',label:'Главная'},
       {key:'spheres',emoji:'🎯',label:'Сферы'},
       {key:'projects',emoji:'📁',label:'Проекты'},
@@ -4073,6 +3952,31 @@ function renderWeeklyReview(){ renderStub('📈 Итоги недели'); }
 function renderMonthlyReview(){ renderStub('📆 Итоги месяца'); }
 function renderTimer(){ renderStub('⏱ Таймер'); }
 function renderDomains(){ navigate('spheres'); }
+/* ============ ПРОГУЛКИ ============ */
+function getWalkEntries(){if(!Array.isArray(state.walks))state.walks=[];return state.walks;}
+function renderWalks(){
+  var rows=getWalkEntries().slice().sort(function(a,b){return (b.date||'').localeCompare(a.date||'');});
+  var weekStart=new Date();weekStart.setDate(weekStart.getDate()-6);weekStart.setHours(0,0,0,0);
+  var recent=rows.filter(function(w){return new Date((w.date||today())+'T00:00:00')>=weekStart;});
+  var minutes=recent.reduce(function(n,w){return n+(Number(w.minutes)||0);},0);
+  var km=recent.reduce(function(n,w){return n+(Number(w.distance)||0);},0);
+  var html='<div class="page walks-page"><div class="walks-hero"><div class="walks-kicker">MOVE · RECOVER · EXPLORE</div><div class="title-xl">Прогулки</div><div class="walks-lead">Выйди на улицу, переключись и зафиксируй свой маршрут.</div><div class="walks-metrics"><div><strong>'+minutes+'</strong><span>мин за 7 дней</span></div><div><strong>'+km.toFixed(1)+'</strong><span>км за 7 дней</span></div><div><strong>'+recent.length+'</strong><span>выходов</span></div></div></div>';
+  html+='<div class="card walks-form"><div class="card-title">＋ Записать прогулку</div><div class="walks-fields"><label>Дата<input id="walkDate" type="date" value="'+today()+'"></label><label>Длительность, мин<input id="walkMinutes" type="number" min="1" max="1440" placeholder="30"></label><label>Дистанция, км<input id="walkDistance" type="number" min="0" max="500" step="0.1" placeholder="2.5"></label><label>Шаги<input id="walkSteps" type="number" min="0" max="200000" placeholder="3500"></label><label class="walks-wide">Как прошла прогулка<select id="walkMood"><option value="great">Отлично</option><option value="good" selected>Хорошо</option><option value="calm">Спокойно</option><option value="tired">Устал</option></select></label><label class="walks-wide">Маршрут или заметка<textarea id="walkNote" rows="2" maxlength="500" placeholder="Парк, набережная, новые места…"></textarea></label></div><button class="btn btn-primary btn-block" onclick="addWalkEntry()">Сохранить прогулку</button></div>';
+  html+='<div class="row-between mb-2"><div class="section-title" style="margin:0">История</div><span class="footnote">'+rows.length+' прогулок всего</span></div>';
+  if(!rows.length)html+='<div class="card empty"><div class="empty-icon">🌿</div><div class="empty-title">Пока нет прогулок</div><div class="empty-text">Добавь первую — здесь появится твоя история активности.</div></div>';
+  rows.slice(0,60).forEach(function(w){var mood={great:'✨ Отлично',good:'🙂 Хорошо',calm:'🌿 Спокойно',tired:'😮‍💨 Устал'}[w.mood]||'🚶 Прогулка';html+='<article class="card walk-entry"><div class="row-between"><div><div class="walk-date">'+esc(w.date||'')+'</div><div class="walk-title">'+(Number(w.minutes)||0)+' мин прогулки</div></div><span class="walk-mood">'+mood+'</span></div><div class="walk-stats"><span>📍 '+(Number(w.distance)||0)+' км</span><span>👟 '+(Number(w.steps)||0).toLocaleString('ru-RU')+' шагов</span></div>'+(w.note?'<div class="walk-note">'+esc(w.note)+'</div>':'')+'<button class="btn btn-ghost btn-xs mt-2" onclick="deleteWalkEntry(\''+w.id+'\')">Удалить запись</button></article>';});
+  html+='</div>';document.getElementById('app').innerHTML=html;
+}
+function addWalkEntry(){
+  var date=document.getElementById('walkDate'),mins=document.getElementById('walkMinutes'),dist=document.getElementById('walkDistance'),steps=document.getElementById('walkSteps'),mood=document.getElementById('walkMood'),note=document.getElementById('walkNote');
+  var duration=Math.round(Number(mins&&mins.value)||0),distance=Number(dist&&dist.value)||0,stepCount=Math.round(Number(steps&&steps.value)||0);
+  if(!duration||duration<1||duration>1440){toast('Укажи длительность от 1 до 1440 минут','error');return;}
+  if(distance<0||distance>500||stepCount<0||stepCount>200000){toast('Проверь дистанцию и количество шагов','error');return;}
+  getWalkEntries().push({id:uid(),date:date&&date.value||today(),minutes:duration,distance:Math.round(distance*10)/10,steps:stepCount,mood:mood&&mood.value||'good',note:(note&&note.value||'').trim(),createdAt:nowISO()});
+  save();if(typeof addXP==='function')addXP(5,'walk');toast('Прогулка сохранена','success');renderWalks();
+}
+function deleteWalkEntry(id){if(!confirm('Удалить эту прогулку?'))return;state.walks=getWalkEntries().filter(function(w){return w.id!==id;});save();renderWalks();}
+
 function renderWorkouts(){ renderStub('🏋️ Тренировки'); }
 function renderMeditation(){ renderStub('🧘 Медитации'); }
 function renderMeds(){ renderStub('💊 Лекарства'); }
