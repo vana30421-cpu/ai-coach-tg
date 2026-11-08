@@ -59,3 +59,14 @@ Research snapshot: 2026-11-08. This is a selection guide, not a claim that every
 4. Add a weekly review that converts measured friction into a small number of user-approved changes.
 5. Expand Jarvis's explainable decision rules and audit log; use an external LLM only through a secure, opt-in backend with explicit permissions.
 6. Add integration tests for migrations, offline reload, animation accessibility, task completion, habit cue persistence and FSRS statistics.
+
+
+## 2026-11-08 implementation update
+
+- The primary navigation now includes Statistics, in addition to the existing header shortcut.
+- Analytics supports preset periods, custom date ranges and domain filters; it compares screen time with personal total/category budgets and compares recent versus previous weeks.
+- A seven-step optional onboarding questionnaire saves goals, schedule, screen-time budgets, focus preferences, learning style, recovery targets and accessibility preferences locally.
+- Profile and Settings now expose those preferences, accessibility, animation, theme, format, export and storage controls.
+- Digital-detox tracking records urge before/after, screen time, focus, mood and the intervention used, then summarizes the last 14 reviews.
+- Eye comfort tracking includes an actual 20-second timed break, daily symptom observations and a history view. It explicitly does not claim to cure refractive errors.
+- Learning includes active-recall logs and user-rated review scheduling, alongside existing FSRS cards.
