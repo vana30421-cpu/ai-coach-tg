@@ -576,17 +576,38 @@ function queueJournalAutosave(){
     try{saveJournalEntry(true);}catch(e){console.warn('[JOURNAL AUTOSAVE]',e);}
   },900);
 }
+function updateGlobalSaveStatus(status,detail){
+ try{
+  var root=document.getElementById('lifeosSaveDock');
+  if(!root&&document.body){
+   root=document.createElement('div');root.id='lifeosSaveDock';root.setAttribute('role','status');
+   root.style.cssText='position:fixed;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 86px);z-index:9998;display:flex;align-items:center;gap:8px;padding:7px 9px;border:1px solid var(--glass-border,rgba(255,255,255,.14));border-radius:999px;background:var(--card,rgba(20,25,38,.94));box-shadow:0 8px 28px rgba(0,0,0,.24);backdrop-filter:blur(14px);font:12px system-ui;color:var(--text,#fff)';
+   var label=document.createElement('span');label.id='lifeosSaveLabel';label.textContent='Автосохранение';
+   var button=document.createElement('button');button.type='button';button.textContent='💾';button.title='Сохранить все данные';button.setAttribute('aria-label','Сохранить все данные');button.style.cssText='border:0;border-radius:50%;width:32px;height:32px;background:var(--brand,#5b8cff);color:#fff;font-size:16px';button.addEventListener('click',function(){manualSaveAll();});
+   root.append(label,button);document.body.appendChild(root);
+  }
+  var node=document.getElementById('lifeosSaveLabel');if(node)node.textContent=status==='saving'?'Сохранение…':status==='error'?'Ошибка сохранения':(detail||'Сохранено');
+ }catch(e){}
+}
+function initGlobalSaveControls(){
+ if(LIFEOS_SAVE_UI_READY)return;LIFEOS_SAVE_UI_READY=true;
+ updateGlobalSaveStatus('saved',window.__LIFE_OS_LAST_SAVED?'Сохранено':'Автосохранение включено');
+ window.addEventListener('lifeos:saved',function(){updateGlobalSaveStatus('saved','Сохранено '+new Date(window.__LIFE_OS_LAST_SAVED||Date.now()).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}));});
+ window.addEventListener('pagehide',function(){try{save();}catch(e){}});
+ document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden'){try{save();}catch(e){}}});
+}
 function save(){
-  try{
-    state.settings.updatedAt=nowISO();state.settings.version=CURRENT_VERSION;
+ updateGlobalSaveStatus('saving');
+ try{
+  state.settings.updatedAt=nowISO();state.settings.version=CURRENT_VERSION;
     var serialized=JSON.stringify(state),previous=localStorage.getItem(STORAGE_KEY);
     if(previous&&previous!==serialized){try{localStorage.setItem(STORAGE_BACKUP,previous);}catch(backupError){}}
     localStorage.setItem(STORAGE_KEY,serialized);
     queueVaultSnapshot(serialized);
     window.__LIFE_OS_LAST_SAVED=Date.now();
-    window.dispatchEvent(new CustomEvent('lifeos:saved'));return true;
+    window.__LIFE_OS_LAST_SAVED=Date.now();updateGlobalSaveStatus('saved','Сохранено '+new Date(window.__LIFE_OS_LAST_SAVED).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}));window.dispatchEvent(new CustomEvent('lifeos:saved'));return true;
   }catch(e){
-    console.error('[SAVE]',e);
+    console.error('[SAVE]',e);updateGlobalSaveStatus('error','Ошибка сохранения');
     try{queueVaultSnapshot(JSON.stringify(state));}catch(ignore){}
     try{if(typeof toast==='function')toast('Локальное хранилище заполнено. Сохраняю резервную копию отдельно…','error',5000);}catch(ignore2){}
     return false;
@@ -595,6 +616,8 @@ function save(){
 
 /* ============ ГЛОБАЛЫ ============ */
 var currentPage = 'dashboard';
+var LIFE_JOURNAL_DATE = today();
+var LIFEOS_SAVE_UI_READY = false;
 var currentLevelId = null, currentModuleId = null, currentLessonIdx = null;
 var taskFilter = 'all', taskSearch = '', skillsFilter = 'all';
 var currentDailySurveyStep = 0, currentDailySurveyAnswers = {};
@@ -5010,6 +5033,7 @@ function finishOnboarding(){
 /* ============ INIT ============ */
 function init(){
   try{
+    initGlobalSaveControls();
     applyTheme(state.settings.theme);
     applyUserSettings();
     updateHeader();
