@@ -9,6 +9,8 @@ on:
       - 'sw.js'
       - 'jarvis-core.js'
       - 'functions/api/jarvis.js'
+      - 'tests/lifeos-improvements.test.js'
+      - 'functions/api/jarvis.js'
       - 'CLOUDFLARE_JARVIS_SETUP.md'
       - 'tests/**'
       - '.github/workflows/jarvis-tests.yml'
@@ -19,6 +21,8 @@ on:
       - 'index.html'
       - 'sw.js'
       - 'jarvis-core.js'
+      - 'functions/api/jarvis.js'
+      - 'tests/lifeos-improvements.test.js'
       - 'tests/**'
       - '.github/workflows/jarvis-tests.yml'
   workflow_dispatch:
