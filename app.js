@@ -4078,6 +4078,7 @@ function renderJarvisMethods(){
 function renderMethods(){ renderJarvisMethods(); }
 function renderRecovery(){ renderStub('🌿 Восстановление'); }
 function renderMedical(){ renderStub('🏥 Медицина'); }
+function renderMeds(){ renderStub('💊 Лекарства'); }
 function renderEntertainment(){ renderStub('🎬 Досуг'); }
 function renderResources(){ renderStub('🔗 Ресурсы'); }
 function renderMovies(){ renderStub('🎥 Фильмы'); }
