@@ -16,7 +16,7 @@ function sandboxFor(source){
   console,Date,Math,Number,String,Array,Object,JSON,RegExp,Promise,Blob,URL,Response,Request,FileReader:function(){},
   setTimeout:()=>1,clearTimeout:()=>{},setInterval:()=>1,clearInterval:()=>{},
   state:{tasks:[],calendarEvents:[],journalEntries:[],pet:{enabled:true,name:'Пиксель',stage:1,xp:0,xpToNext:100,hunger:60,mood:'happy',fedCount:0},antistressEntries:[]},
-  document:{getElementById(id){return id==='app'?appRoot:(values[id]||null);},createElement(){return {click(){},set href(v){},set download(v){}};}},
+  document:{getElementById(id){return id==='app'?appRoot:(values[id]||null);},addEventListener(){},createElement(){return {click(){},set href(v){},set download(v){}};}},
   save(){},toast(){},haptic(){},uid:(()=>{let n=0;return()=>'id-'+(++n);})(),today:()=> '2026-11-08',nowISO:()=> '2026-11-08T12:00:00.000Z',
   esc(v){return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));},
   openSheet(title,html){appRoot.innerHTML=html;},closeSheet(){},navigate(){},confirm(){return true;},addXP(){},addPetXP(n){sandbox.state.pet.xp+=n;},
@@ -47,7 +47,27 @@ test('professional journal validates and saves structured daily reflections',()=
  const {sandbox,values}=sandboxFor(workspaces);
  Object.assign(values,{journalDate:{value:'2026-11-08'},journalTitle:{value:'Спокойный день'},journalText:{value:'Закончил важную задачу.'},journalWins:{value:'Сделал главное'},journalBlockers:{value:'Отвлекался'},journalMood:{value:'8'},journalEnergy:{value:'4'},journalInsight:{value:'Короткий план помогает'},journalGratitude:{value:'Поддержка'},journalTomorrow:{value:'Повторить тему'},journalTags:{value:'работа, обучение'}});
  sandbox.window.saveJournalEntry();const entry=sandbox.state.journalEntries[0];
- assert.equal(entry.mood,8);assert.equal(entry.energy,4);assert.equal(entry.date,'2026-11-08');assert.equal(entry.wins,'Сделал главное');assert.deepEqual(Array.from(entry.tags),['работа','обучение']);
+ assert.equal(entry.mood,8);assert.equal(entry.energy,4);assert.equal(entry.date,'2026-11-08');assert.equal(entry.wins,'Сделал главное');assert.deepEqual(Array.from(entry.tags),['работа','обучение']);assert.equal(sandbox.state.secondBrain.notes.length,1);assert.equal(sandbox.state.secondBrain.notes[0].source,'journal');assert.match(sandbox.state.secondBrain.notes[0].body,/Сделал главное/);
+});
+
+
+test('workspace drafts autosave locally and restore after reopening the editor',()=>{
+ const {sandbox,values}=sandboxFor(workspaces);
+ values.brainTitle={value:'Новая идея'};values.brainBody={value:'Черновик, который нельзя потерять'};values.brainType={value:'permanent'};values.brainTags={value:'идея'};
+ assert.equal(sandbox.window.captureWorkspaceDraft('brain'),true);
+ assert.equal(sandbox.state.workspaceDrafts.brain.values.brainBody,'Черновик, который нельзя потерять');
+ values.brainBody.value='';
+ sandbox.window.renderObsidian();
+ assert.equal(values.brainBody.value,'Черновик, который нельзя потерять');
+});
+test('legacy second-brain items migrate without deleting the source array',()=>{
+ const {sandbox}=sandboxFor(workspaces);
+ sandbox.state.secondBrainItems=[{id:'legacy-1',title:'Старая заметка',text:'Старое содержимое',tags:'память, идея'}];
+ sandbox.window.renderObsidian();
+ assert.equal(sandbox.state.secondBrain.notes.length,1);
+ assert.equal(sandbox.state.secondBrain.notes[0].title,'Старая заметка');
+ assert.match(sandbox.state.secondBrain.notes[0].body,/Старое содержимое/);
+ assert.equal(sandbox.state.secondBrainItems.length,1);
 });
 
 test('weekly schedule and month calendar include events and due tasks',()=>{
