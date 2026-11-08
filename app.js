@@ -3667,7 +3667,7 @@ function lifeStatsCountMap(value){
   if(!value||typeof value!=='object')return 0;
   return Object.keys(value).length;
 }
-function buildComprehensiveStats(days){
+function buildComprehensiveStatsLegacy(days){
   var s=state||{},period=Number(days)===0?0:(Number(days)||30);
   var arr=function(k){return Array.isArray(s[k])?s[k]:[];};
   var within=function(x){return lifeStatsInPeriod(x,period);};
@@ -4934,6 +4934,167 @@ window.feedPet = feedPet;
 window.renderDetoxHub = renderDetoxHub;
 window.startCooldown = startCooldown;
 window.toggleSleepMode = toggleSleepMode;
+
+
+/* ============ LIFE OS ANALYTICS V2 / PROFILE / PERSONALIZATION ============ */
+var LIFE_STATS_FILTER={category:'all',from:'',to:''};
+function getLifeStatsFilter(){
+  if(state&&state.analyticsFilters)LIFE_STATS_FILTER=Object.assign({},LIFE_STATS_FILTER,state.analyticsFilters);
+  return LIFE_STATS_FILTER;
+}
+function saveLifeStatsFilter(key,value){
+  var f=getLifeStatsFilter();f[key]=String(value||'');
+  if(!state.analyticsFilters)state.analyticsFilters={};
+  state.analyticsFilters[key]=f[key];LIFE_STATS_FILTER=f;save();renderStats();
+}
+function lifeStatsDateV2(value){
+  if(value===null||value===undefined||value==='')return null;
+  if(typeof value==='number'&&value<1e12)value*=1000;
+  var d=new Date(value);
+  if(!Number.isFinite(d.getTime()))return null;
+  return d;
+}
+function lifeStatsDateAllowed(value,days){
+  var d=lifeStatsDateV2(value);if(!d)return false;
+  var f=getLifeStatsFilter(),start,end;
+  if(f.from){start=new Date(f.from+'T00:00:00');if(Number.isFinite(start.getTime())&&d<start)return false;}
+  if(f.to){end=new Date(f.to+'T23:59:59.999');if(Number.isFinite(end.getTime())&&d>end)return false;}
+  if(f.from||f.to)return true;
+  if(Number(days)===0)return d<=new Date();
+  var n=Math.max(1,Number(days)||30);start=new Date();start.setHours(0,0,0,0);start.setDate(start.getDate()-n+1);end=new Date();end.setHours(23,59,59,999);
+  return d>=start&&d<=end;
+}
+function buildComprehensiveStats(days){
+  var s=state||{},period=Number(days)===0?0:(Number(days)||30),f=getLifeStatsFilter();
+  var arr=function(k){return Array.isArray(s[k])?s[k]:[];};
+  var dateOf=function(x){return x&&(x.date||x.completedAt||x.completed_at||x.createdAt||x.created_at||x.at||x.timestamp||x.time)||null;};
+  var within=function(x){return lifeStatsDateAllowed(x,period);};
+  var tasks=arr('tasks'),done=tasks.filter(function(x){return x.status==='completed';}),pending=tasks.filter(function(x){return x.status!=='completed';});
+  var completed=done.filter(function(x){return within(x.completedAt||x.completed_at||x.updated_at||x.created_at);});
+  var overdue=pending.filter(function(x){return x.due_date&&String(x.due_date).slice(0,10)<today();});
+  var habits=arr('habits'),habitHistory=s.habitHistory||{},habitEvents=0,habitDays={};
+  Object.keys(habitHistory).forEach(function(id){var rows=habitHistory[id]||{};Object.keys(rows).forEach(function(day){if(rows[day]&&within(day)){habitEvents++;habitDays[day]=(habitDays[day]||0)+1;}});});
+  var screen=arr('screenEntries').filter(function(x){return within(dateOf(x));});
+  var screenMinutes=screen.reduce(function(n,x){return n+Math.max(0,Number(x.minutes)||0);},0),screenByCategory={};
+  screen.forEach(function(x){var k=String(x.category||'Другое');screenByCategory[k]=(screenByCategory[k]||0)+Math.max(0,Number(x.minutes)||0);});
+  var screenDates=screen.map(function(x){return String(dateOf(x)||'').slice(0,10);}).filter(Boolean);
+  var daysInPeriod=period||0;
+  if(f.from||f.to){
+    var ds=f.from?new Date(f.from+'T00:00:00'):new Date(Math.min.apply(null,screen.map(function(x){var d=lifeStatsDateV2(dateOf(x));return d?d.getTime():Date.now();})));
+    var de=f.to?new Date(f.to+'T00:00:00'):new Date();
+    daysInPeriod=Math.max(1,Math.floor((de-ds)/86400000)+1);
+  }else if(!period){
+    var valid=screenDates.slice().sort();var first=valid[0]?new Date(valid[0]+'T00:00:00'):new Date();
+    var now=new Date();now.setHours(0,0,0,0);daysInPeriod=Math.max(1,Math.floor((now-first)/86400000)+1);
+  }
+  if(!daysInPeriod)daysInPeriod=Math.max(1,period||30);
+  var screenDailyAvg=screen.length?Math.round(screenMinutes/daysInPeriod):null;
+  var screenGoal=Number(s.profile&&s.profile.surveyAnswers&&s.profile.surveyAnswers.screenTotalMinutes)||Number(s.profile&&s.profile.personalPlan&&s.profile.personalPlan.screenTotalMinutes)||Number(s.screenStats&&s.screenStats.dailyLimit)||null;
+  var screenBudgets=(s.profile&&s.profile.surveyAnswers&&s.profile.surveyAnswers.screenBudgets)||{};
+  var screenCategoryStats=Object.keys(screenByCategory).map(function(k){var avg=Math.round(screenByCategory[k]/daysInPeriod);var goal=Number(screenBudgets[k])||null;return {category:k,total:screenByCategory[k],dailyAvg:avg,target:goal,deviation:goal?Math.round((avg-goal)/goal*100):null};}).sort(function(a,b){return b.dailyAvg-a.dailyAvg;});
+  var sleep=arr('sleepEntries').filter(function(x){return within(dateOf(x));});
+  var sleepMinutes=sleep.reduce(function(n,x){var v=Number(x.minutes);if(!v)v=Number(x.hours)*60;if(!v)v=Number(x.duration);return n+(v>0&&v<1440?v:0);},0);
+  var mood=arr('customMood').filter(function(x){return within(dateOf(x));}),water=arr('customWater').filter(function(x){return within(dateOf(x));});
+  var workouts=arr('customWorkouts').filter(function(x){return within(dateOf(x));}),meditation=arr('customMeditation').filter(function(x){return within(dateOf(x));});
+  var walks=arr('walks').filter(function(x){return within(dateOf(x));}),brain=arr('brainPlays').filter(function(x){return within(dateOf(x));});
+  var reviews=s.fsrs&&Array.isArray(s.fsrs.reviews)?s.fsrs.reviews:[],fsrsReviews=reviews.filter(function(x){return within(dateOf(x));});
+  var cards=s.fsrs&&s.fsrs.cards||{},fsrsDue=Object.keys(cards).filter(function(id){var c=cards[id];return !c.nextReview||new Date(c.nextReview)<=new Date();}).length;
+  var focusHistory=(s.focus&&Array.isArray(s.focus.history)?s.focus.history:[]).concat(Array.isArray(s.timerSessions)?s.timerSessions:[],Array.isArray(s.focusSessions)?s.focusSessions:[]).filter(function(x){return within(dateOf(x));});
+  var checkins=s.jarvis&&Array.isArray(s.jarvis.checkins)?s.jarvis.checkins.filter(function(x){return within(dateOf(x));}):[];
+  var vision=s.vision||{},metrics=vision.metrics||{},visionDays=Object.keys(metrics).filter(function(day){return within(day);}).sort();
+  var fatigue=visionDays.map(function(day){return Number(metrics[day].eyeFatigue)||0;}).filter(function(n){return n>0;});
+  var headaches=visionDays.filter(function(day){return !!metrics[day].headaches;}).length;
+  var breaks=vision.breakTracker||{},breakHistory=breaks.history||{},breakDone=Object.keys(breakHistory).filter(function(day){return within(day);}).reduce(function(n,day){return n+(Number(breakHistory[day].done)||0);},0);
+  var eyeExercises=arr('eyeExercises').filter(function(x){return within(dateOf(x));});
+  var detox=s.detox||{},detoxHistory=Array.isArray(detox.history)?detox.history.filter(function(x){return within(dateOf(x));}):[];
+  var detoxCourse=Object.keys(s.detoxCourseProgress||{}).filter(function(day){var x=s.detoxCourseProgress[day];return x&&within(x.completedAt||x.date||x);}).length;
+  var detoxReviews=detoxHistory.filter(function(x){return x.kind==='review'||x.type==='review'||x.screenMinutes!==undefined;});
+  var projects=arr('projects'),projectDone=projects.filter(function(x){return x.status==='completed'||x.done;});
+  var calendar=arr('calendarEvents').filter(function(x){return within(x.date||x.createdAt);});
+  var finance=[];Object.keys(s.workspaces||{}).forEach(function(k){if(/finance|money|budget/i.test(k)&&Array.isArray(s.workspaces[k]))finance=finance.concat(s.workspaces[k]);});
+  finance=finance.filter(function(x){return within(dateOf(x));});
+  var spheres=s.spheres&&s.spheres.scores||{},sphereValues=Object.keys(spheres).map(function(k){return Number(spheres[k]);}).filter(function(n){return Number.isFinite(n)&&n>0;});
+  var count=function(v){return v&&typeof v==='object'?Object.keys(v).length:0;};
+  var learningCount=count(s.levelProgress)+count(s.englishProgress)+count(s.skillsProgress)+count(s.memoryProgress)+count(s.iqProgress)+count(s.eqProgress)+count(s.neuroProgress)+count(s.psychologyProgress)+count(s.thinkingProgress);
+  var avg=function(rows,key){var values=rows.map(function(x){return Number(x[key]);}).filter(function(n){return Number.isFinite(n)&&n>0;});return values.length?Math.round(values.reduce(function(a,b){return a+b;},0)/values.length*10)/10:null;};
+  var xpHistory=s.gamification&&Array.isArray(s.gamification.xpHistory)?s.gamification.xpHistory:[];
+  var xpPeriod=xpHistory.filter(function(x){return within(dateOf(x));}).reduce(function(n,x){return n+(Number(x.amount)||0);},0);
+  var tracked=['tasks','habits','screenEntries','sleepEntries','customMood','customWater','customWorkouts','customMeditation','walks','brainPlays','fsrs','calendarEvents','projects','spheres','memoryProgress','vision','detox','jarvis','eyeExercises'];
+  var active=tracked.filter(function(k){var v=s[k];return Array.isArray(v)?v.length>0:!!(v&&typeof v==='object'&&Object.keys(v).length);}).length;
+  var inventory=Object.keys(s).map(function(k){var v=s[k],n=Array.isArray(v)?v.length:(v&&typeof v==='object'?Object.keys(v).length:((v!==null&&v!==undefined&&v!=='')?1:0));return {key:k,count:n,type:Array.isArray(v)?'список':(v&&typeof v==='object'?'объект':'значение')};}).sort(function(a,b){return b.count-a.count;});
+  var daily=[];for(var off=29;off>=0;off--){var d=new Date();d.setDate(d.getDate()-off);var key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');daily.push({date:key,tasks:completed.filter(function(x){return String(x.completedAt||x.completed_at||x.updated_at||'').slice(0,10)===key;}).length,screen:screen.filter(function(x){return String(dateOf(x)||'').slice(0,10)===key;}).reduce(function(n,x){return n+(Number(x.minutes)||0);},0),habits:habitDays[key]||0});}
+  var profile=s.profile||{},survey=profile.surveyAnswers||{},sleepTarget=Number(survey.sleepHours)||7.5;
+  return {
+    period:period,label:f.from||f.to?'Выбранный диапазон':(period===0?'За всё время':'За '+period+' дн.'),
+    filters:{category:f.category||'all',from:f.from||'',to:f.to||''},daysInPeriod:daysInPeriod,
+    overview:{tasksTotal:tasks.length,tasksDone:done.length,tasksPending:pending.length,tasksDonePeriod:completed.length,overdue:overdue.length,habitTotal:habits.length,habitsToday:habits.filter(function(x){return x.lastCompletedDate===today();}).length,habitEvents:habitEvents,streak:Number(s.stats&&s.stats.streak)||0,bestStreak:Number(s.stats&&s.stats.bestStreak)||0,xp:Number(s.gamification&&s.gamification.xp)||Number(s.xp)||0,xpPeriod:xpPeriod,level:Number(s.gamification&&s.gamification.level)||Number(s.level)||1},
+    health:{sleepEntries:sleep.length,sleepAvgHours:sleep.length?Math.round(sleepMinutes/sleep.length/60*10)/10:null,sleepTarget:sleepTarget,moodEntries:mood.length,moodAvg:avg(mood,'score'),waterEntries:water.length,waterTotal:water.reduce(function(n,x){return n+(Number(x.count)||Number(x.amount)||0);},0),workouts:workouts.length,meditation:meditation.length,walks:walks.length,walkMinutes:walks.reduce(function(n,x){return n+(Number(x.minutes)||0);},0),antistress:arr('antistressEntries').filter(function(x){return within(dateOf(x));}).length},
+    focus:{screenEntries:screen.length,screenMinutes:screenMinutes,screenDailyAvg:screenDailyAvg,screenLimit:screenGoal,screenDeviation:screenGoal&&screenDailyAvg!==null?Math.round((screenDailyAvg-screenGoal)/screenGoal*100):null,screenByCategory:screenCategoryStats,screenDays:screenDates.length,focusSessions:focusHistory.length,focusMinutes:focusHistory.reduce(function(n,x){return n+(Number(x.minutes)||Number(x.duration)||0);},0),checkins:checkins.length,energyAvg:avg(checkins,'energy'),concentrationAvg:avg(checkins,'focus'),sleepQualityAvg:avg(checkins,'sleep'),stressAvg:avg(checkins,'stress')},
+    learning:{progressItems:learningCount,brainPlays:brain.length,brainAvgScore:avg(brain,'score'),fsrsCards:count(cards),fsrsReviews:fsrsReviews.length,fsrsDue:fsrsDue,eyeExercises:eyeExercises.length},
+    life:{projects:projects.length,projectsDone:projectDone.length,calendarEvents:calendar.length,calendarDone:calendar.filter(function(x){return x.done;}).length,sphereScores:sphereValues.length,sphereAverage:sphereValues.length?Math.round(sphereValues.reduce(function(a,b){return a+b;},0)/sphereValues.length*10)/10:null,financeEntries:finance.length,financeNet:finance.reduce(function(n,x){return n+(Number(x.amount)||0);},0),visionLogs:visionDays.length,eyeFatigueAvg:fatigue.length?Math.round(fatigue.reduce(function(a,b){return a+b;},0)/fatigue.length*10)/10:null,headaches:headaches,eyeBreaks:breakDone,detoxEntries:detoxHistory.length+detoxCourse,memoryItems:count(s.memoryProgress)+count(cards),detoxReviews:detoxReviews.length},
+    coverage:{activeSections:active,totalTracked:tracked.length,percent:Math.round(active/tracked.length*100),inventory:inventory},daily:daily
+  };
+}
+function getJarvisAnalytics(silent){
+  var a=buildComprehensiveStats(LIFE_STATS_PERIOD),items=[],focus=25,profile=state.profile||{},survey=profile.surveyAnswers||{};
+  var push=function(id,level,title,detail,action,target,confidence){items.push({id:id,level:level,title:title,detail:detail,action:action,target:target||'stats',confidence:confidence||'По сохранённым записям'});};
+  if(a.overview.overdue)push('overdue','high','Просроченные задачи',a.overview.overdue+' задач требуют пересмотра.','Разобрать сроки и оставить реалистичный план.','tasks',a.overview.overdue+' задач');
+  if(a.overview.tasksPending>8)push('overload','medium','Слишком длинный список задач','Активных задач: '+a.overview.tasksPending+'.','Выбрать до трёх главных результатов и разбить следующий шаг.','tasks');
+  if(a.focus.screenDailyAvg!==null){
+    if(a.focus.screenLimit&&a.focus.screenDailyAvg>a.focus.screenLimit)push('screen','high','Экранное время выше личной цели','Среднее '+a.focus.screenDailyAvg+' мин/день при цели '+a.focus.screenLimit+' мин/день ('+Math.abs(a.focus.screenDeviation)+'% выше).','Сократить наиболее затратную категорию, добавить запланированные офлайн-паузы и проверить результат через 7 дней.','screentracker',a.focus.screenEntries+' записей');
+    else if(!a.focus.screenLimit)push('screen-target','info','Не задана личная цель экранного времени','Есть '+a.focus.screenMinutes+' минут записей за выбранный период, но нет сохранённого целевого лимита.','Заполни короткую анкету или задай лимит в трекере, чтобы сравнение было персональным.','personalization');
+    a.focus.screenByCategory.forEach(function(x){if(x.target&&x.dailyAvg>x.target)push('screen-'+x.category,'medium','Перерасход: '+x.category,x.dailyAvg+' мин/день при бюджете '+x.target+' мин ('+x.deviation+'% выше).','Уменьшить эту категорию небольшим шагом и повторно оценить среднее через неделю.','screentracker',x.total+' минут записано');});
+  }else push('screen-data','info','Недостаточно данных об экранном времени','Экранное время не считывается автоматически: статистика использует только ручные записи.','Вноси фактические минуты по категориям или подключи отдельную нативную интеграцию.','screentracker');
+  if(a.health.sleepAvgHours!==null&&a.health.sleepAvgHours<a.health.sleepTarget-0.5)push('sleep','high','Сон ниже личной цели','Среднее '+a.health.sleepAvgHours+' ч при цели '+a.health.sleepTarget+' ч.','Проверь вечерний график и попробуй сдвинуть подготовку ко сну на 15–30 минут.','sleep',a.health.sleepEntries+' записей');
+  if(a.health.sleepAvgHours===null)push('sleep-data','info','Нет достаточных записей о сне','Без записей нельзя оценить динамику сна.','Записывай время сна и пробуждения; не делаем выводов по отсутствующим данным.','sleep');
+  if(a.focus.energyAvg!==null&&a.focus.energyAvg<2.8){focus=15;push('energy','high','Низкая энергия','Средняя самооценка '+a.focus.energyAvg+'/5.','Снизить длительность фокуса до 15 минут, выбрать одну небольшую задачу и оценить состояние позже.','ai',a.focus.checkins+' самооценок');}
+  if(a.focus.concentrationAvg!==null&&a.focus.concentrationAvg<2.8){focus=Math.min(focus,15);push('concentration','medium','Снижение концентрации','Средняя оценка '+a.focus.concentrationAvg+'/5.','Убрать переключения, разбить работу на короткие блоки и сделать паузу.','focus');}
+  if(a.overview.habitTotal&&a.overview.habitsToday<a.overview.habitTotal)push('habits','info','Не все привычки отмечены сегодня',a.overview.habitsToday+' из '+a.overview.habitTotal+' отмечены на сегодня.','Проверь, реалистична ли нагрузка; используй минимальную версию привычки.','habitList');
+  if(a.learning.fsrsDue)push('reviews','medium','Накопились повторения',a.learning.fsrsDue+' карточек ожидают повторения.','Сделай короткую сессию активного воспроизведения.','fsrs');
+  if(a.life.eyeFatigueAvg!==null&&a.life.eyeFatigueAvg>=7)push('vision-fatigue','medium','Повышенная усталость глаз','Средняя оценка усталости '+a.life.eyeFatigueAvg+'/10.','Сделай перерыв от экрана, проверь освещение и дистанцию. При стойкой боли, ухудшении или внезапных симптомах обратись к специалисту.','vision');
+  if(a.life.headaches>=3)push('vision-headache','high','Повторяющиеся записи о головной боли','За период отмечено '+a.life.headaches+' дней с головной болью.','Не продолжай упражнения через боль; обратись за медицинской оценкой, если симптом повторяется или усиливается.','vision');
+  if(a.life.detoxReviews&&a.life.detoxReviews<3)push('detox-feedback','info','Нужно проверить эффект детокса','Мало записей с оценкой результата: '+a.life.detoxReviews+'.','После практики зафиксируй тягу, фактическое экранное время и самочувствие — затем сравним динамику.','detox');
+  if(a.coverage.percent<30)push('coverage','info','Недостаточно данных для точных решений','Заполнено '+a.coverage.activeSections+' из '+a.coverage.totalTracked+' отслеживаемых областей.','Заполняй только важные тебе трекеры. Пустые разделы не считаются плохими результатами.','personalization');
+  if(!items.length)push('steady','good','Критичных отклонений не найдено','По доступным записям цели не нарушены.','Продолжай наблюдение и сравни результаты на следующем недельном обзоре.','stats');
+  return {at:nowISO(),period:a.label,analytics:a,items:items,focusSuggestion:focus};
+}
+function setStatsPeriod(days){LIFE_STATS_PERIOD=Number(days)===0?0:(Number(days)||30);if(state.analyticsFilters){state.analyticsFilters.from='';state.analyticsFilters.to='';}LIFE_STATS_FILTER.from='';LIFE_STATS_FILTER.to='';save();renderStats();}
+function setStatsDateFilter(){var from=(document.getElementById('statsFrom')||{}).value||'',to=(document.getElementById('statsTo')||{}).value||'';if(from&&to&&from>to)return toast('Начало периода позже окончания','warning');saveLifeStatsFilter('from',from);saveLifeStatsFilter('to',to);}
+function renderStats(){
+  var a=buildComprehensiveStats(LIFE_STATS_PERIOD),o=a.overview,h=a.health,f=a.focus,l=a.learning,v=a.life,c=a.coverage,filter=getLifeStatsFilter(),analysis=getJarvisAnalytics(true);
+  var cat=filter.category||'all',show=function(k){return cat==='all'||cat===k;},fmt=function(n){return n===null||n===undefined?'—':String(n);};
+  var html='<div class="page"><div class="title-xl">📊 Полная аналитика LIFE OS</div><div class="subtitle">Показатели, личные цели, динамика и рекомендации Джарвиса. Только сохранённые данные.</div>';
+  html+='<div class="card mb-3"><div class="card-title">Фильтры аналитики</div><div class="btn-row mb-2">';
+  [[7,'7 дней'],[30,'30 дней'],[90,'90 дней'],[0,'Всё время']].forEach(function(x){html+='<button class="btn '+(LIFE_STATS_PERIOD===x[0]&&!filter.from&&!filter.to?'btn-primary':'btn-ghost')+' btn-xs" onclick="setStatsPeriod('+x[0]+')">'+x[1]+'</button>';});
+  html+='</div><div class="grid-2"><div class="field"><label class="field-label">С даты</label><input type="date" id="statsFrom" value="'+esc(filter.from||'')+'" onchange="setStatsDateFilter()"></div><div class="field"><label class="field-label">По дату</label><input type="date" id="statsTo" value="'+esc(filter.to||'')+'" onchange="setStatsDateFilter()"></div></div>';
+  html+='<div class="field"><label class="field-label">Направление</label><select onchange="saveLifeStatsFilter(\'category\',this.value)">';
+  [['all','Все разделы'],['productivity','Работа и задачи'],['screen','Экранное время'],['health','Здоровье и сон'],['learning','Обучение и память'],['life','Жизненные сферы']].forEach(function(x){html+='<option value="'+x[0]+'" '+(cat===x[0]?'selected':'')+'>'+x[1]+'</option>';});
+  html+='</select></div><div class="footnote">Период: '+esc(a.label)+' · календарных дней в расчёте: '+a.daysInPeriod+'. Изменение фильтров пересчитывает и рекомендации.</div></div>';
+  html+='<div class="card card-gradient mb-3"><div class="row-between"><span>Уровень '+o.level+'</span><span>'+o.streak+' 🔥 дней активности</span></div><div style="font-size:34px;font-weight:850;margin:8px 0">'+o.xp+' XP</div><div class="footnote">+'+o.xpPeriod+' XP за период · лучший streak '+o.bestStreak+'</div></div>';
+  html+='<div class="grid-2 mb-3"><div class="card"><div class="stat-value">'+o.tasksDonePeriod+'</div><div class="stat-label">Задач выполнено</div></div><div class="card"><div class="stat-value">'+o.tasksPending+'</div><div class="stat-label">Активных задач</div></div><div class="card"><div class="stat-value">'+fmt(f.screenDailyAvg)+'</div><div class="stat-label">Экран, мин/день</div></div><div class="card"><div class="stat-value">'+fmt(h.sleepAvgHours)+'</div><div class="stat-label">Сон, часов/ночь</div></div></div>';
+  html+='<div class="card mb-3"><div class="card-title">🧭 Анализ и решения Джарвиса</div><div class="footnote mb-2">Сравнивает фактические записи с твоими целями. Автоматические изменения ограничены безопасными настройками; личные данные и задачи без подтверждения не меняются.</div>';
+  analysis.items.forEach(function(x){var color=x.level==='high'?'var(--danger)':x.level==='good'?'var(--success)':'var(--brand)';html+='<div class="list-row" style="align-items:flex-start"><div style="width:8px;height:8px;border-radius:50%;background:'+color+';margin-top:7px;flex-shrink:0"></div><div class="list-body"><div class="list-title">'+esc(x.title)+'</div><div class="footnote">'+esc(x.detail)+'</div><div class="footnote mt-1">'+esc(x.action)+'</div><div class="footnote mt-1">Основание: '+esc(x.confidence)+'</div></div><button class="btn btn-ghost btn-xs" onclick="applyJarvisRecommendation(\''+x.id+'\')">Открыть</button></div>';});
+  html+='<button class="btn btn-primary btn-block mt-2" onclick="runJarvisAutopilot(false);renderStats()">↻ Пересчитать аналитику</button><button class="btn btn-ghost btn-block mt-2" onclick="navigate(\'ai\')">Открыть Джарвиса</button></div>';
+  if(show('all')||show('productivity'))html+='<div class="card mb-3"><div class="card-title">🎯 Работа, задачи и привычки</div>'+statsBar('Завершённые задачи за период',o.tasksDonePeriod,Math.max(1,o.tasksTotal),'')+statsBar('Привычки, отмеченные сегодня',o.habitsToday,Math.max(1,o.habitTotal),'')+'<div class="grid-2"><div><b>'+o.overdue+'</b><div class="footnote">Просрочено</div></div><div><b>'+o.tasksPending+'</b><div class="footnote">В работе</div></div><div><b>'+o.habitEvents+'</b><div class="footnote">Отметок привычек</div></div><div><b>'+o.habitTotal+'</b><div class="footnote">Активных привычек</div></div></div><button class="btn btn-ghost btn-block mt-2" onclick="navigate(\'tasks\')">Задачи и приоритеты</button></div>';
+  if(show('all')||show('screen')){html+='<div class="card mb-3"><div class="card-title">📱 Экранное время: факт против цели</div><div class="grid-2"><div><b>'+fmt(f.screenDailyAvg)+' мин</b><div class="footnote">Среднее в день</div></div><div><b>'+(f.screenLimit?f.screenLimit+' мин':'Не задана')+'</b><div class="footnote">Личная цель</div></div><div><b>'+f.screenMinutes+' мин</b><div class="footnote">Всего записано</div></div><div><b>'+(f.screenDeviation===null?'—':(f.screenDeviation>0?'+':'')+f.screenDeviation+'%')+'</b><div class="footnote">Отклонение от цели</div></div></div>';
+    if(f.screenLimit&&f.screenDailyAvg!==null)html+=statsBar('Дневной лимит',f.screenDailyAvg,f.screenLimit,' мин');
+    html+='<div class="section-title mt-2">По категориям</div>';
+    if(!f.screenByCategory.length)html+='<div class="footnote">Нет записей за этот период.</div>';
+    f.screenByCategory.forEach(function(x){html+='<div class="list-row"><div class="list-body"><div class="list-title">'+esc(x.category)+'</div><div class="footnote">'+x.total+' мин всего · '+x.dailyAvg+' мин/день'+(x.target?' · цель '+x.target+' мин/день':' · цель не задана')+'</div></div><div class="list-value">'+(x.deviation===null?'—':(x.deviation>0?'+':'')+x.deviation+'%')+'</div></div>';});
+    html+='<button class="btn btn-ghost btn-block mt-2" onclick="navigate(\'screentracker\')">Открыть трекер экрана</button><div class="footnote mt-2">Учёт ручной. Для автоматических данных Android/Windows нужна отдельная нативная интеграция и разрешение.</div></div>';}
+  if(show('all')||show('health'))html+='<div class="card mb-3"><div class="card-title">❤️ Здоровье и восстановление</div><div class="grid-2"><div><b>'+fmt(h.sleepAvgHours)+' ч</b><div class="footnote">Средний сон</div></div><div><b>'+h.sleepTarget+' ч</b><div class="footnote">Твоя цель сна</div></div><div><b>'+fmt(h.moodAvg)+'/5</b><div class="footnote">Настроение</div></div><div><b>'+h.waterTotal+'</b><div class="footnote">Единиц воды в журнале</div></div><div><b>'+h.workouts+'</b><div class="footnote">Тренировок</div></div><div><b>'+h.meditation+'</b><div class="footnote">Медитаций</div></div><div><b>'+h.walks+'</b><div class="footnote">Прогулок</div></div><div><b>'+h.walkMinutes+' мин</b><div class="footnote">Ходьба</div></div><div><b>'+h.antistress+'</b><div class="footnote">Антистресс-сессий</div></div></div><div class="footnote mt-2">Это журнал самонаблюдения, не медицинская оценка.</div></div>';
+  if(show('all')||show('learning'))html+='<div class="card mb-3"><div class="card-title">🧠 Обучение и память</div><div class="grid-2"><div><b>'+l.progressItems+'</b><div class="footnote">Элементов учебного прогресса</div></div><div><b>'+l.brainPlays+'</b><div class="footnote">Тренировок мозга</div></div><div><b>'+l.fsrsCards+'</b><div class="footnote">Карточек FSRS</div></div><div><b>'+l.fsrsDue+'</b><div class="footnote">К повторению сейчас</div></div><div><b>'+l.fsrsReviews+'</b><div class="footnote">Повторений за период</div></div><div><b>'+fmt(l.brainAvgScore)+'</b><div class="footnote">Средний балл тренировки</div></div><div><b>'+l.eyeExercises+'</b><div class="footnote">Практик для глаз отмечено</div></div></div><button class="btn btn-ghost btn-block mt-2" onclick="navigate(\'fsrs\')">Открыть интервальное повторение</button></div>';
+  if(show('all')||show('life'))html+='<div class="card mb-3"><div class="card-title">🌐 Жизненные направления</div><div class="grid-2"><div><b>'+v.projectsDone+'/'+v.projects+'</b><div class="footnote">Завершено проектов</div></div><div><b>'+v.calendarDone+'/'+v.calendarEvents+'</b><div class="footnote">Выполнено событий</div></div><div><b>'+fmt(v.sphereAverage)+'/10</b><div class="footnote">Средняя оценка сфер</div></div><div><b>'+v.financeEntries+'</b><div class="footnote">Финансовых записей</div></div><div><b>'+v.financeNet.toLocaleString('ru-RU')+'</b><div class="footnote">Сальдо записей</div></div><div><b>'+v.detoxEntries+'</b><div class="footnote">Записей детокса</div></div></div></div>';
+  if(show('all')||show('health'))html+='<div class="card mb-3"><div class="card-title">👁 Зрение и цифровая нагрузка</div><div class="grid-2"><div><b>'+fmt(v.eyeFatigueAvg)+'/10</b><div class="footnote">Средняя усталость глаз</div></div><div><b>'+v.headaches+'</b><div class="footnote">Дней с головной болью</div></div><div><b>'+v.eyeBreaks+'</b><div class="footnote">Перерывов 20-20-20</div></div><div><b>'+v.visionLogs+'</b><div class="footnote">Дней с метриками</div></div></div><button class="btn btn-ghost btn-block mt-2" onclick="navigate(\'vision\')">Открыть программу зрения</button></div>';
+  if(show('all')||show('life'))html+='<div class="card mb-3"><div class="card-title">🧘 Детокс: проверка результата</div><div class="grid-2"><div><b>'+v.detoxEntries+'</b><div class="footnote">Практик и записей</div></div><div><b>'+v.detoxReviews+'</b><div class="footnote">Оценок эффекта</div></div></div><button class="btn btn-primary btn-block mt-2" onclick="navigate(\'detox\')">Открыть анализ детокса</button></div>';
+  html+='<div class="card mb-3"><div class="card-title">📈 Динамика последних 30 дней</div>';
+  a.daily.forEach(function(d){var max=Math.max(1,...a.daily.map(function(x){return x.screen;}));html+='<div class="mb-2"><div class="row-between"><span class="footnote">'+d.date.slice(5)+'</span><span class="footnote">'+d.tasks+' задач · '+d.screen+' мин экрана · '+d.habits+' привычек</span></div><div style="height:5px;background:var(--glass-2);border-radius:9px;margin-top:4px;overflow:hidden"><div style="height:100%;width:'+Math.min(100,d.screen/max*100)+'%;background:var(--brand)"></div></div></div>';});
+  html+='</div><div class="card mb-3"><div class="card-title">🧾 Полнота данных</div><div class="stat-value">'+c.percent+'%</div><div class="footnote">'+c.activeSections+' из '+c.totalTracked+' основных областей имеют записи. Отсутствие записей не считается плохим результатом.</div><details class="mt-2"><summary>Инвентаризация данных</summary>';
+  c.inventory.forEach(function(x){html+='<div class="list-row"><div class="list-body"><div class="list-title">'+esc(x.key)+'</div><div class="footnote">'+esc(x.type)+'</div></div><div class="list-value">'+x.count+'</div></div>';});
+  html+='</details></div><button class="btn btn-ghost btn-block" onclick="exportDB()">📤 Экспортировать данные</button></div>';
+  document.getElementById('app').innerHTML=html;
+}
+function renderDetailedStats(){renderStats();}
 
 /* Заглушки на window */
 window.renderMemory = renderMemory;
