@@ -1,4 +1,4 @@
-const CACHE = 'life-os-v48';
+const CACHE = 'life-os-v49';
 const CORE_ASSETS = ['./','./index.html','./content.js','./content2.js','./content3.js','./app.js','./manifest.json','./icon.svg'];
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
