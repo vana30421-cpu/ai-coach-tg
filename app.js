@@ -793,7 +793,7 @@ function navigate(page, silent){
     spheres: renderSpheres, sphereDetail: renderSphereDetail,
     projects: renderProjects, projectDetail: renderProjectDetail, projectEditor: renderProjectEditor,
     coach: renderCoach, coachSettings: renderCoachSettings, coachChat: renderCoachChat,
-    schedule: renderSchedule, scheduleEditor: renderScheduleEditor, walks: renderWalks,
+    schedule: window.renderSchedule || renderSchedule, scheduleEditor: renderScheduleEditor, walks: renderWalks,
     focus: renderFocus, eveningReview: renderEveningReview,
     weeklyReview: renderWeeklyReview, monthlyReview: renderMonthlyReview,
     achievements: renderAchievements, achievementsCategory: renderAchievementsCategory,
@@ -805,7 +805,7 @@ function navigate(page, silent){
     etiquette: renderEtiquette, hormones: renderHormones, wealth: renderWealth,
     planning: renderPlanning, plantoday: renderPlanToday, planweek: renderPlanWeek,
     planmonth: renderPlanMonth, obsidian: renderObsidian, gcal: renderGcal,
-    calendar: renderCalendar,
+    calendar: window.renderCalendar || renderCalendar,
     vision: renderVision, visionex: renderVisionExercises,
     visiontrack: renderVisionTracker, visiontips: renderVisionTips,
     vision60: renderVision60, vision62: renderVision62,
@@ -818,7 +818,7 @@ function navigate(page, silent){
     habitList: renderHabitList, habitCatalog: renderHabitCatalog,
     habitDetail: renderHabitDetail, habitEditor: renderHabitEditor,
     brain: renderBrain, brainGame: renderBrainGame, brainStats: renderBrainStats,
-    antistress: renderAntistress, antistressDetail: renderAntistressDetail,
+    antistress: window.renderAntistress || renderAntistress, antistressDetail: renderAntistressDetail,
     sleep: renderSleep, sleepCalendar: renderSleepCalendar, sleepEditor: renderSleepEditor,
     games: renderLearningGames, gamePlay: renderGamePlay,
     materials: renderMaterials, materialDetail: renderMaterialDetail,
@@ -826,18 +826,18 @@ function navigate(page, silent){
     snapshot: renderSnapshot, recommendations: renderRecommendations,
     dailyReport: renderDailyReport, weeklyReport: renderWeeklyReport,
     goals: renderGoals, notes: renderNotes, journal: renderJournal,
-    more: renderMore, stats: renderStats, detailedStats: renderDetailedStats,
+    more: renderMore, stats: renderStats, detailedStats: renderDetailedStats, journal: window.renderJournal || renderJournal,
     learningPractice: renderLearningPractice, detoxReview: renderDetoxReview, personalization: renderPersonalizationSurvey,
     timer: renderTimer, domains: renderDomains,
     profile: renderProfile, profileV2: renderProfileV2,
     settings: renderSettings, settingsV2: renderSettingsV2,
     integrations: renderIntegrations, storage: renderStorage,
     screentracker: renderScreenTracker, detoxcourse: renderDetoxCourse,
-    detox60: renderDetox60, obsidianIntegration: renderObsidianIntegration,
+    detox60: renderDetox60, obsidian: window.renderObsidian || renderObsidian, obsidianIntegration: window.renderObsidianIntegration || renderObsidianIntegration,
     telegramSetup: renderTelegramSetup,
     gamesHub: renderGamesHub,
     leagues: renderLeagues,
-    pet: renderPet,
+    pet: window.renderPet || renderPet,
     fsrs: renderFSRS,
     fsrsReview: renderFSRSReview,
     detox: renderDetoxHub,
@@ -4216,7 +4216,7 @@ function renderJarvis(){
   html+='<div class="jarvis-hero"><div class="jarvis-orb"><span>J</span><i></i></div><div class="jarvis-hero-copy"><div class="jarvis-kicker">LIFE OS · PERSONAL ASSISTANT</div><div class="title-xl">Джарвис</div><div class="jarvis-status"><span class="jarvis-dot"></span> '+(data.cloudAIEnabled?'ИИ включён · контекст LIFEOS':'Локальный режим · '+(window.LifeOSJarvisCore?'команды готовы':'базовый режим'))+'</div></div></div>';
   html+='<div class="grid-2 mb-3"><div class="card"><div class="stat-value">'+pending.length+'</div><div class="stat-label">Активные задачи</div></div><div class="card"><div class="stat-value">'+(state.stats.streak||0)+'</div><div class="stat-label">Дней активности</div></div></div>';
   html+='<div class="card jarvis-settings-card mb-3"><div class="row-between"><b>🧭 Автопилот по статистике</b><label class="row" style="gap:7px"><input type="checkbox" '+(data.autopilotEnabled?'checked':'')+' onchange="setJarvisAutopilot(this.checked)"> <span class="footnote">Включён</span></label></div><div class="footnote mt-2">Джарвис анализирует реальные записи всех разделов, формирует план и при включении автоматически адаптирует только длительность фокуса. Задачи, финансы, здоровье и личные данные без подтверждения не меняет.</div><div class="grid-2 mt-2"><div><b>'+stats.overview.tasksPending+'</b><div class="footnote">Активные задачи</div></div><div><b>'+stats.focus.screenDailyAvg+' мин</b><div class="footnote">Экран/день</div></div><div><b>'+stats.coverage.percent+'%</b><div class="footnote">Полнота данных</div></div><div><b>'+stats.learning.fsrsDue+'</b><div class="footnote">Повторений ждут</div></div></div><div class="row-between mt-2"><span class="footnote">Период анализа: '+esc(analysis.period)+'</span><button class="btn btn-ghost btn-xs" onclick="runJarvisAutopilot(false);renderJarvis()">↻ Пересчитать</button></div>'+(data.dailyPlan&&data.dailyPlan.tasks&&data.dailyPlan.tasks.length?'<div class="footnote mt-2"><b>Приоритеты на сегодня:</b><br>'+data.dailyPlan.tasks.map(function(t,i){return (i+1)+'. '+esc(t.title);}).join('<br>')+'</div>':'<div class="footnote mt-2">План на сегодня: выбери одну важную задачу и начни с короткого фокус-блока.</div>')+'</div>';
-  html+='<div class="card jarvis-settings-card mb-3"><div class="field"><label class="field-label">AI-провайдер</label><select id="jarvisProvider" onchange="setJarvisProvider(this.value)"><option value="openai" '+((data.provider||'openai')==='openai'?'selected':'')+'>OpenAI</option><option value="gemini" '+(data.provider==='gemini'?'selected':'')+'>Google Gemini</option></select><div class="footnote">Для выбранной модели нужен соответствующий серверный ключ.</div></div><div class="field"><label class="field-label">URL AI-сервера</label><input type="url" id="jarvisApiUrl" autocomplete="off" value="'+esc(data.apiUrl||'')+'" placeholder="https://...workers.dev" onchange="setJarvisApiUrl(this.value)"></div><div class="field"><label class="field-label">Код доступа к AI-серверу</label><input type="password" id="jarvisAccessCode" autocomplete="off" value="'+esc(data.accessCode||'')+'" placeholder="Введи код, заданный в Cloudflare" onchange="setJarvisAccessCode(this.value)"></div><div class="field"><label class="field-label">AI-модель Джарвиса</label><select id="jarvisProvider" onchange="setJarvisProvider(this.value)"><option value="openai" '+((data.provider||'openai')==='openai'?'selected':'')+'>OpenAI</option><option value="gemini" '+(data.provider==='gemini'?'selected':'')+'>Google Gemini</option></select><div class="footnote">Для Gemini добавь GEMINI_API_KEY в секреты Cloudflare Worker. Секрет не хранится в приложении.</div></div><div class="row-between"><b>🤖 Разговорный ИИ</b><label class="row" style="gap:7px"><input type="checkbox" '+(data.cloudAIEnabled?'checked':'')+' onchange="setJarvisCloudAI(this.checked)"><span class="footnote">Подключён</span></label></div><div class="footnote mt-2">При включении сообщение, недавний диалог и сводка LIFEOS (задачи, привычки, сон, вода, настроение, зрение, дневник, календарь, экранное время, антистресс, питомец, второй мозг и месячные итоги финансов) отправляются выбранному AI-провайдеру. Ключ хранится только на сервере, не в браузере. Без настройки серверного ключа работает локальный помощник.</div></div>';
+  html+='<div class="card jarvis-settings-card mb-3"><div class="field"><label class="field-label">AI-провайдер</label><select id="jarvisProvider" onchange="setJarvisProvider(this.value)"><option value="openai" '+((data.provider||'openai')==='openai'?'selected':'')+'>OpenAI</option><option value="gemini" '+(data.provider==='gemini'?'selected':'')+'>Google Gemini</option></select><div class="footnote">Для выбранной модели нужен соответствующий серверный ключ.</div></div><div class="field"><label class="field-label">URL AI-сервера</label><input type="url" id="jarvisApiUrl" autocomplete="off" value="'+esc(data.apiUrl||'')+'" placeholder="https://...workers.dev" onchange="setJarvisApiUrl(this.value)"></div><div class="field"><label class="field-label">Код доступа к AI-серверу</label><input type="password" id="jarvisAccessCode" autocomplete="off" value="'+esc(data.accessCode||'')+'" placeholder="Введи код, заданный в Cloudflare" onchange="setJarvisAccessCode(this.value)"></div><div class="footnote mt-2">Модель выбирается на защищённом Worker через OPENAI_MODEL или GEMINI_MODEL. Секреты не хранятся в браузере.</div><div class="row-between"><b>🤖 Разговорный ИИ</b><label class="row" style="gap:7px"><input type="checkbox" '+(data.cloudAIEnabled?'checked':'')+' onchange="setJarvisCloudAI(this.checked)"><span class="footnote">Подключён</span></label></div><div class="footnote mt-2">При включении сообщение, недавний диалог и сводка LIFEOS (задачи, привычки, сон, вода, настроение, зрение, дневник, календарь, экранное время, антистресс, питомец, второй мозг и месячные итоги финансов) отправляются выбранному AI-провайдеру. Ключ хранится только на сервере, не в браузере. Без настройки серверного ключа работает локальный помощник.</div></div>';
   html+='<div class="card jarvis-settings-card mb-3"><div class="row-between"><b>Режим помощника</b><span class="footnote">Меняется в любой момент</span></div><div class="jarvis-mode-row">';
   modes.forEach(function(m){html+='<button class="jarvis-mode '+(data.mode===m[0]?'active':'')+'" onclick="setJarvisMode(\''+m[0]+'\')">'+m[1]+'</button>';});
   html+='</div><div class="row-between mt-2"><label class="footnote" for="jarvisFocusDefault">Длительность фокуса по умолчанию</label><select id="jarvisFocusDefault" onchange="setJarvisFocusDefault(this.value)"><option value="15" '+(Number(data.focusDefault)===15?'selected':'')+'>15 минут</option><option value="25" '+(Number(data.focusDefault)===25?'selected':'')+'>25 минут</option><option value="45" '+(Number(data.focusDefault)===45?'selected':'')+'>45 минут</option><option value="50" '+(Number(data.focusDefault)===50?'selected':'')+'>50 минут</option></select></div></div>';
@@ -4249,7 +4249,7 @@ function buildJarvisAppContext(){
  var events=(state.calendarEvents||[]).filter(function(x){return x.date===date&&!x.done;}).slice(0,8).map(function(x){return {title:x.title,time:x.time||null,category:x.category||null};});
  var screen=(state.screenEntries||[]).filter(function(x){return String(x.date||'').slice(0,10)===date;}).reduce(function(n,x){return n+(Number(x.minutes)||0);},0);
  var stress=(state.antistressEntries||[]).slice(-3).map(function(x){return {title:x.title||x.practiceId,date:x.date,before:x.beforeStress,after:x.afterStress,durationSeconds:x.durationSeconds||0};});
- var pet=state.pet||{},brain=Array.isArray(state.secondBrainItems)?state.secondBrainItems:[],journalRecent=(state.journalEntries||[]).slice().sort(function(x,y){return String(y.date||'').localeCompare(String(x.date||''));}).slice(0,5).map(function(x){return {date:x.date,mood:x.mood,energy:x.energy,wins:String(x.wins||'').slice(0,180),blockers:String(x.blockers||'').slice(0,180)};});
+ var pet=state.pet||{},brain=state.secondBrain&&Array.isArray(state.secondBrain.notes)?state.secondBrain.notes:(Array.isArray(state.secondBrainItems)?state.secondBrainItems:[]),memorySessions=state.memoryTraining&&Array.isArray(state.memoryTraining.sessions)?state.memoryTraining.sessions:[],journalRecent=(state.journalEntries||[]).slice().sort(function(x,y){return String(y.date||'').localeCompare(String(x.date||''));}).slice(0,5).map(function(x){return {date:x.date,mood:x.mood,energy:x.energy,wins:String(x.wins||'').slice(0,180),blockers:String(x.blockers||'').slice(0,180)};});
  var month=date.slice(0,7),finance=(state.financeEntries||[]).filter(function(x){return String(x.date||'').slice(0,7)===month;});
  var income=finance.filter(function(x){return x.type==='income';}).reduce(function(n,x){return n+(Number(x.amount)||0);},0),expense=finance.filter(function(x){return x.type==='expense';}).reduce(function(n,x){return n+(Number(x.amount)||0);},0);
  return {
@@ -4266,6 +4266,7 @@ function buildJarvisAppContext(){
   antistress:{recent:stress},
   pet:{name:pet.name||null,stage:pet.stage||1,xp:pet.xp||0,careToday:(pet.careLog||[]).filter(function(x){return x.date===date;}).length},
   secondBrain:{notes:brain.length,recent:brain.slice(-8).map(function(x){return {title:x.title,tags:(x.tags||[]).slice(0,6),excerpt:String(x.body||'').slice(0,240)};})},
+  memoryTraining:{sessions:memorySessions.length,bestSpan:Number(state.memoryTraining&&state.memoryTraining.bestSpan)||0,recent:memorySessions.slice(-12).map(function(x){return {type:x.type,accuracy:Number(x.accuracy)||Math.round((Number(x.score)||0)/Math.max(1,Number(x.length)||1)*100),seconds:Number(x.seconds)||null,date:String(x.at||'').slice(0,10)};})},
   journalHistory:journalRecent,
   finance:{month:month,income:income,expense:expense,balance:income-expense,entries:finance.length},
   learningProgress:{trackedTopics:Object.keys(state.libraryProgress||{}).length},
@@ -5692,6 +5693,12 @@ window.saveVisionCheckin=saveVisionCheckin;
 window.renderMemory = renderMemory;
 window.startMemoryExercise = startMemoryExercise;
 window.submitMemoryAnswer = submitMemoryAnswer;
+window.quickWaterLog = quickWaterLog;
+window.quickMoodLog = quickMoodLog;
+window.saveMood = saveMood;
+window.addWater = addWater;
+window.removeWater = removeWater;
+window.manualSaveAll = manualSaveAll;
 window.renderIQ = renderIQ;
 window.renderEQ = renderEQ;
 window.renderFinance = renderFinance;
