@@ -291,6 +291,7 @@ var TABS=[
 {id:'tasks',emoji:'✅',label:'Задачи'},
 {id:'learning',emoji:'🎓',label:'Обучение'},
 {id:'calendar',emoji:'📅',label:'Календарь'},
+{id:'stats',emoji:'📊',label:'Статистика'},
 {id:'vision',emoji:'👁',label:'Зрение'},
 {id:'ai',emoji:'✧',label:'Джарвис'},
 {id:'more',emoji:'⋯',label:'Ещё'}
