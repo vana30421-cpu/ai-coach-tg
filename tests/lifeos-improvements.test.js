@@ -119,7 +119,7 @@ test('schedule renders a selectable week and saves day-specific events with dura
 test('journal stores one editable daily entry with reflection fields and preserves history',()=>{
  for(const name of ['renderJournal','saveJournalEntry','deleteJournalEntry'])assert.match(app,new RegExp('function '+name+'\\('));
  for(const id of ['journalText','journalMood','journalEnergy','journalWins','journalBlockers','journalGratitude','journalTomorrow'])assert.match(app,new RegExp('id="'+id+'"'));
- assert.match(app,/state\.journalEntries\.findIndex\(function\(x\)\{return x\.date===today\(\);\}\)/);
+ assert.match(ws,/state\.journalEntries\.findIndex\(function\(x\)\{return x\.id===row\.id;\}\)/);
 });
 test('second brain stores searchable knowledge and exports diary and knowledge to Markdown',()=>{
  for(const name of ['renderObsidianIntegration','saveSecondBrainItem','filterSecondBrain','deleteSecondBrainItem','exportToObsidian','openObsidianDailyNote'])assert.match(app,new RegExp('function '+name+'\\('));
