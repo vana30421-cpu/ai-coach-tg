@@ -232,3 +232,10 @@ test('statistics navigation is treated as a primary tab',()=>{
 test('all new inline controls are exported from the application scope',()=>{
  for(const name of ['saveLifeStatsFilter','setStatsDateFilter','setStatsPeriod','applyJarvisRecommendation','lifeSurveyMove','lifeSurveySkip','updateLifePreference','saveDetoxReview','saveLearningPractice','startLearningReview','saveLearningReview','cancelVisionBreak','saveVisionCheckin'])assert.match(app,new RegExp('window\\.'+name+'='+name));
 });
+
+
+test('new personalization, learning practice and detox review screens are reachable through navigation',()=>{
+ assert.match(app,/learningPractice: renderLearningPractice/);
+ assert.match(app,/detoxReview: renderDetoxReview/);
+ assert.match(app,/personalization: renderPersonalizationSurvey/);
+});
