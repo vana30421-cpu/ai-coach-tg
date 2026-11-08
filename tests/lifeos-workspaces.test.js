@@ -19,7 +19,7 @@ function sandboxFor(source){
   document:{getElementById(id){return id==='app'?appRoot:(values[id]||null);},createElement(){return {click(){},set href(v){},set download(v){}};}},
   save(){},toast(){},haptic(){},uid:(()=>{let n=0;return()=>'id-'+(++n);})(),today:()=> '2026-11-08',nowISO:()=> '2026-11-08T12:00:00.000Z',
   esc(v){return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));},
-  openSheet(){},closeSheet(){},navigate(){},confirm(){return true;},addXP(){},addPetXP(n){sandbox.state.pet.xp+=n;},
+  openSheet(title,html){appRoot.innerHTML=html;},closeSheet(){},navigate(){},confirm(){return true;},addXP(){},addPetXP(n){sandbox.state.pet.xp+=n;},
   ANTISTRESS_CATEGORIES:[{id:'breath',emoji:'🌬',name:'Дыхание'}],
   ANTISTRESS_PRACTICES:[{id:'as_breath_sigh',cat:'breath',emoji:'😮‍💨',title:'Физиологический вздох',desc:'Спокойный выдох',duration:60,steps:['Вдох','Двойной вдох','Длинный выдох']}],
   PET_STAGES:[{id:1,emoji:'🥚',name:'Яйцо',minXP:0,maxXP:100,desc:'Начало'},{id:2,emoji:'🐣',name:'Птенец',minXP:100,maxXP:300,desc:'Рост'}]
@@ -75,7 +75,7 @@ test('pet care actions are logged and daily limits prevent XP farming',()=>{
 
 test('antistress has guided steps, before-after self-rating and stored practice outcome',()=>{
  const {sandbox,values,appRoot}=sandboxFor(systems);sandbox.window.renderAntistress();assert.match(appRoot.innerHTML,/Быстрый выбор/);
- sandbox.window.startAntistress('as_breath_sigh');assert.match(appRoot.innerHTML,/Антистресс/);
+ sandbox.window.startAntistress('as_breath_sigh');assert.match(appRoot.innerHTML,/Выполняй по шагам/);
  values.asBefore={value:'7'};values.asAfter={value:'4'};values.asReflection={value:'Стало спокойнее'};sandbox.window.finishAntistress();
  const row=sandbox.state.antistressEntries[0];assert.equal(row.beforeStress,7);assert.equal(row.afterStress,4);assert.equal(row.reflection,'Стало спокойнее');
 });
@@ -105,5 +105,5 @@ test('Jarvis Worker rejects wrong origin and wrong access code before calling pr
 });
 
 test('Jarvis statistics action and Gemini selector are wired to the real provider request',()=>{
- assert.match(app,/function setJarvisProvider\(value\)/);assert.match(app,/provider:d\.provider\|\|'openai'/);assert.match(app,/id="jarvisProvider"/);assert.match(app,/askJarvisAboutStats/);
+ assert.match(app,/function setJarvisProvider\(value\)/);assert.match(app,/provider:d\.provider\|\|'openai'/);assert.match(app,/id="jarvisProvider"/);assert.match(systems,/askJarvisAboutStats/);
 });
