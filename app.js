@@ -4169,9 +4169,10 @@ function renderJarvis(){
   var focus=data.focus,remaining=focus&&focus.active?Math.max(0,Math.ceil((focus.endsAt-Date.now())/1000)):0;
   var modes=[['balanced','Баланс'],['planner','Планировщик'],['coach','Коуч'],['strict','Строгий']];
   var html='<div class="page jarvis-page">';
-  html+='<div class="jarvis-hero"><div class="jarvis-orb"><span>J</span><i></i></div><div class="jarvis-hero-copy"><div class="jarvis-kicker">LIFE OS · PERSONAL ASSISTANT</div><div class="title-xl">Джарвис</div><div class="jarvis-status"><span class="jarvis-dot"></span> Локальный помощник · '+(window.LifeOSJarvisCore?'команды готовы':'базовый режим')+'</div></div></div>';
+  html+='<div class="jarvis-hero"><div class="jarvis-orb"><span>J</span><i></i></div><div class="jarvis-hero-copy"><div class="jarvis-kicker">LIFE OS · PERSONAL ASSISTANT</div><div class="title-xl">Джарвис</div><div class="jarvis-status"><span class="jarvis-dot"></span> '+(data.cloudAIEnabled?'ИИ включён · контекст LIFEOS':'Локальный режим · '+(window.LifeOSJarvisCore?'команды готовы':'базовый режим'))+'</div></div></div>';
   html+='<div class="grid-2 mb-3"><div class="card"><div class="stat-value">'+pending.length+'</div><div class="stat-label">Активные задачи</div></div><div class="card"><div class="stat-value">'+(state.stats.streak||0)+'</div><div class="stat-label">Дней активности</div></div></div>';
   html+='<div class="card jarvis-settings-card mb-3"><div class="row-between"><b>🧭 Автопилот по статистике</b><label class="row" style="gap:7px"><input type="checkbox" '+(data.autopilotEnabled?'checked':'')+' onchange="setJarvisAutopilot(this.checked)"> <span class="footnote">Включён</span></label></div><div class="footnote mt-2">Джарвис анализирует реальные записи всех разделов, формирует план и при включении автоматически адаптирует только длительность фокуса. Задачи, финансы, здоровье и личные данные без подтверждения не меняет.</div><div class="grid-2 mt-2"><div><b>'+stats.overview.tasksPending+'</b><div class="footnote">Активные задачи</div></div><div><b>'+stats.focus.screenDailyAvg+' мин</b><div class="footnote">Экран/день</div></div><div><b>'+stats.coverage.percent+'%</b><div class="footnote">Полнота данных</div></div><div><b>'+stats.learning.fsrsDue+'</b><div class="footnote">Повторений ждут</div></div></div><div class="row-between mt-2"><span class="footnote">Период анализа: '+esc(analysis.period)+'</span><button class="btn btn-ghost btn-xs" onclick="runJarvisAutopilot(false);renderJarvis()">↻ Пересчитать</button></div>'+(data.dailyPlan&&data.dailyPlan.tasks&&data.dailyPlan.tasks.length?'<div class="footnote mt-2"><b>Приоритеты на сегодня:</b><br>'+data.dailyPlan.tasks.map(function(t,i){return (i+1)+'. '+esc(t.title);}).join('<br>')+'</div>':'<div class="footnote mt-2">План на сегодня: выбери одну важную задачу и начни с короткого фокус-блока.</div>')+'</div>';
+  html+='<div class="card jarvis-settings-card mb-3"><div class="row-between"><b>🤖 Разговорный ИИ</b><label class="row" style="gap:7px"><input type="checkbox" '+(data.cloudAIEnabled?'checked':'')+' onchange="setJarvisCloudAI(this.checked)"><span class="footnote">Подключён</span></label></div><div class="footnote mt-2">При включении сообщение, недавний диалог и сводные данные LIFEOS (задачи, привычки, сон, настроение, экранное время) отправляются на сервер ИИ для ответа. Ключ хранится только на сервере, не в браузере. Без настройки серверного ключа работает локальный помощник.</div></div>';
   html+='<div class="card jarvis-settings-card mb-3"><div class="row-between"><b>Режим помощника</b><span class="footnote">Меняется в любой момент</span></div><div class="jarvis-mode-row">';
   modes.forEach(function(m){html+='<button class="jarvis-mode '+(data.mode===m[0]?'active':'')+'" onclick="setJarvisMode(\''+m[0]+'\')">'+m[1]+'</button>';});
   html+='</div><div class="row-between mt-2"><label class="footnote" for="jarvisFocusDefault">Длительность фокуса по умолчанию</label><select id="jarvisFocusDefault" onchange="setJarvisFocusDefault(this.value)"><option value="15" '+(Number(data.focusDefault)===15?'selected':'')+'>15 минут</option><option value="25" '+(Number(data.focusDefault)===25?'selected':'')+'>25 минут</option><option value="45" '+(Number(data.focusDefault)===45?'selected':'')+'>45 минут</option><option value="50" '+(Number(data.focusDefault)===50?'selected':'')+'>50 минут</option></select></div></div>';
@@ -4194,6 +4195,72 @@ function renderJarvis(){
 function jarvisAddMessage(role,text){
   var d=getJarvisState();d.messages.push({role:role,text:String(text||'').slice(0,3000),at:nowISO()});
   if(d.messages.length>160)d.messages=d.messages.slice(-160);save();
+}
+function buildJarvisAppContext(){
+ var a={};try{a=buildComprehensiveStats(30)||{};}catch(e){}
+ var tasks=(state.tasks||[]).filter(function(t){return t.status!=='completed';});
+ var habits=[];try{habits=getHabitsForToday().map(function(h){return {title:h.title||getHabitTemplate(h.templateId)&&getHabitTemplate(h.templateId).title||'Привычка',done:isHabitDoneToday(h.id)};});}catch(e){}
+ var water=(state.customWater||[]).find(function(x){return x.date===today();});
+ var mood=(state.customMood||[]).find(function(x){return x.date===today();});
+ var sleep=(state.sleepEntries||[]).slice().sort(function(x,y){return String(y.date).localeCompare(String(x.date));})[0]||null;
+ var vm=state.vision&&state.vision.metrics&&state.vision.metrics[today()]||{};
+ return {
+  date:today(),period:"30 дней",
+  tasks:{active:tasks.length,overdue:tasks.filter(function(t){return t.due_date&&String(t.due_date).slice(0,10)<today();}).length,next:tasks.slice(0,6).map(function(t){return {title:t.title,priority:t.priority||'medium',due:t.due_date||null};})},
+  habits:{today:habits,completed:habits.filter(function(h){return h.done;}).length},
+  water:{glasses:water?Number(water.count)||0:0,goal:getWaterGoal()},
+  mood:mood?{score:mood.score}:null,
+  sleep:sleep?{hours:sleep.hours,quality:sleep.quality,date:sleep.date}:null,
+  vision:{eyeFatigue:vm.eyeFatigue||null,dryness:vm.dryness||null,headaches:!!vm.headaches,blur:!!vm.blur,screenHours:vm.screenHours||null},
+  analytics:{health:a.health||null,focus:a.focus||null,learning:a.learning||null,overview:a.overview||null}
+ };
+}
+function setJarvisCloudAI(enabled){
+ var d=getJarvisState();
+ if(enabled&&!d.cloudAIConsent){
+  var ok=confirm('Разрешить отправлять твои сообщения, недавний диалог и сводные данные LIFEOS на настроенный сервер ИИ для персональных ответов? API-ключ хранится только на сервере. Продолжить?');
+  if(!ok){d.cloudAIEnabled=false;save();renderJarvis();return;}
+  d.cloudAIConsent=true;
+ }
+ d.cloudAIEnabled=!!enabled;save();renderJarvis();
+ toast(enabled?'Разговорный ИИ включён':'Используется локальный режим','success');
+}
+async function sendJarvisCloudMessage(text){
+ var d=getJarvisState(),placeholder={role:'assistant',text:'Думаю над ответом…',at:nowISO(),pending:true};
+ d.messages.push(placeholder);if(d.messages.length>160)d.messages=d.messages.slice(-160);save();renderJarvis();
+ try{
+  var history=d.messages.slice(-13,-2).map(function(m){return {role:m.role==='assistant'?'assistant':'user',content:m.text};});
+  var response=await fetch('/api/jarvis',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:text,history:history,context:buildJarvisAppContext()})});
+  var data=await response.json().catch(function(){return {};});
+  if(!response.ok){
+   if(data.error==='AI_NOT_CONFIGURED')throw new Error('Серверный ИИ пока не настроен: добавь OPENAI_API_KEY в секреты Cloudflare Pages. Ключ нельзя вставлять в приложение.');
+   throw new Error(data.message||'ИИ временно недоступен ('+response.status+').');
+  }
+  placeholder.text=String(data.reply||'Не получил текст ответа.');placeholder.pending=false;
+ }catch(e){
+  placeholder.text='Не удалось получить ответ ИИ: '+String(e.message||e).slice(0,280)+'\nЛокальные функции LIFEOS продолжают работать.';
+  placeholder.pending=false;
+ }
+ save();if(currentPage==='ai'||currentPage==='jarvis')renderJarvis();
+}
+function buildJarvisLocalReply(text){
+ var q=String(text||'').toLowerCase(),c=buildJarvisAppContext(),a;
+ try{a=getJarvisAnalytics(true);}catch(e){a={items:[]};}
+ if(/как я|мои результаты|проанализируй|анализ|что со мной|как у меня дела/.test(q)){
+  var out=['Вот что вижу по сохранённым данным LIFEOS:','• Активных задач: '+c.tasks.active+' (просрочено: '+c.tasks.overdue+').','• Привычки сегодня: '+c.habits.completed+'/'+c.habits.today.length+'.','• Вода: '+c.water.glasses+'/'+c.water.goal+' стаканов.','• Настроение: '+(c.mood?c.mood.score+'/10':'записи пока нет')+'.','• Сон: '+(c.sleep?c.sleep.hours+' ч, качество '+c.sleep.quality+'/10':'записи пока нет')+'.'];
+  if(c.vision.eyeFatigue)out.push('• Усталость глаз: '+c.vision.eyeFatigue+'/10.');
+  if(a.items&&a.items.length)out.push('Главный сигнал: '+a.items[0].title+'. '+a.items[0].detail);
+  out.push('Это анализ записей, а не оценка того, чего ты не отслеживал. Что разберём первым?');return out.join('\n');
+ }
+ if(/вода|пить/.test(q))return 'Сегодня в трекере '+c.water.glasses+' из '+c.water.goal+' стаканов. Это ориентир приложения, а не обязательная норма: учитывай жажду, активность, погоду и рекомендации врача. Хочешь, помогу настроить удобные напоминания?';
+ if(/настроен|груст|плохо|тревог|стресс|злюсь|устал/.test(q))return 'Я посмотрел записи: настроение сегодня '+(c.mood?c.mood.score+'/10':'не отмечено')+', энергия и стресс оцениваются только если ты заполнял самооценку. Не буду делать вывод по одному числу. Что сильнее всего повлияло на состояние сегодня?';
+ if(/зрение|глаз|экран/.test(q))return 'По разделу зрения сегодня: усталость '+(c.vision.eyeFatigue?c.vision.eyeFatigue+'/10':'не отмечена')+', экран '+(c.vision.screenHours?c.vision.screenHours+' ч':'не записан')+'. Полезнее начать с перерывов, моргания, расстояния до экрана и проверки зрения у офтальмолога, а не пытаться «натренировать» близорукость. Открой раздел «Зрение» — там дневник и протоколы.';
+ if(/привыч|режим|дисциплин/.test(q))return 'Сегодня выполнено '+c.habits.completed+' из '+c.habits.today.length+' привычек. Выбери одну, которую хочешь закрепить. Я помогу уменьшить её до минимального действия и привязать к конкретному сигналу.';
+ if(/сон|спал/.test(q))return c.sleep?'Последняя запись сна — '+c.sleep.hours+' ч, качество '+c.sleep.quality+'/10 ('+c.sleep.date+'). Если хочешь улучшить режим, сначала сравним время отхода ко сну и подъёма за 7 дней.':'Пока нет записи сна. Добавь хотя бы несколько ночей — тогда я смогу сравнивать тенденции, а не гадать.';
+ if(/учеб|учить|запомин|курс/.test(q))return 'В обучении лучше проверить не количество прочитанных уроков, а воспроизведение без подсказок и практическое применение. Могу помочь составить короткую проверку по теме, которую сейчас изучаешь.';
+ if(/игр|играть/.test(q))return 'Игры должны запускаться как интерактивные задания, а не просить вручную вводить очки. Я обновляю игровой раздел, чтобы результат считался по реальным действиям.';
+ var last=dummy= getJarvisState().messages.slice(-3).filter(function(m){return m.role==='user';}).map(function(m){return m.text;});
+ return 'Я на связи в локальном режиме и вижу твои сохранённые показатели LIFEOS. Могу разобрать задачи, привычки, сон, воду, настроение, экранное время, зрение и обучение. Сейчас по данным: '+c.tasks.active+' активных задач, '+c.habits.completed+'/'+c.habits.today.length+' привычек сегодня. Для свободного диалога уровня языковой модели включи «Разговорный ИИ» и настрой серверный ключ. Что именно хочешь решить?';
 }
 function jarvisReply(text){
   var core=window.LifeOSJarvisCore,cmd=core?core.parseCommand(text):{type:'chat',text:text};
@@ -4235,16 +4302,17 @@ function jarvisReply(text){
   return 'Эта версия работает как локальный помощник-командный центр, а не как подключённая языковая модель. Я могу управлять задачами, таймером, разделами и локальными записями. Напиши «помощь» для списка команд.';
 }
 function sendJarvisMessage(){
-  var input=document.getElementById('jarvisInput');if(!input)return;
-  var text=input.value.trim();if(!text)return;input.value='';
-  jarvisAddMessage('user',text);
-  var core=window.LifeOSJarvisCore,parsed=core?core.parseCommand(text):{type:'chat'};
-  var reply=jarvisReply(text);
-  if(reply)jarvisAddMessage('assistant',reply);
-  if(parsed.type==='checkin')renderJarvisCheckin();
-  else if(parsed.type==='methods')renderJarvisMethods();
-  else if(currentPage==='ai'||currentPage==='jarvis')renderJarvis();
+ var input=document.getElementById('jarvisInput');if(!input)return;
+ var text=input.value.trim();if(!text)return;input.value='';
+ var d=getJarvisState();jarvisAddMessage('user',text);
+ var core=window.LifeOSJarvisCore,parsed=core?core.parseCommand(text):{type:'chat'};
+ if(parsed.type==='chat'&&d.cloudAIEnabled){sendJarvisCloudMessage(text);return;}
+ var reply=jarvisReply(text);if(reply)jarvisAddMessage('assistant',reply);
+ if(parsed.type==='checkin')renderJarvisCheckin();
+ else if(parsed.type==='methods')renderJarvisMethods();
+ else if(currentPage==='ai'||currentPage==='jarvis')renderJarvis();
 }
+
 function jarvisQuick(text){var input=document.getElementById('jarvisInput');if(input)input.value=text;sendJarvisMessage();}
 function setJarvisMode(mode){var allowed=['balanced','planner','coach','strict'];if(allowed.indexOf(mode)<0)return;getJarvisState().mode=mode;save();renderJarvis();}
 function setJarvisFocusDefault(value){var n=Number(value);if([15,25,45,50].indexOf(n)<0)return;getJarvisState().focusDefault=n;save();toast('Длительность фокуса сохранена','success');}
