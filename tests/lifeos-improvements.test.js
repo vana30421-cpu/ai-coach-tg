@@ -202,3 +202,9 @@ test('learning materials and game routes no longer point to empty placeholders',
  assert.match(systems,/renderGamesHub\(\)/);
  assert.match(systems,/window\.LEARNING_MATERIALS/);
 });
+
+test('active anti-stress flow records partial sessions without awarding XP',()=>{
+ assert.match(systems,/plannedDuration:planned,completed:completed/);
+ assert.match(systems,/if\(completed&&window\.addXP\)/);
+ assert.match(systems,/Частичный результат сохранён без XP/);
+});
