@@ -10,7 +10,7 @@
 /* ============ КОНСТАНТЫ ============ */
 var STORAGE_KEY = 'life_os_v45';
 var STORAGE_BACKUP = 'life_os_backup_v45';
-var CURRENT_VERSION = '46';
+var CURRENT_VERSION = '47';
 var LEGACY_KEYS = ['life_os_v44','life_os_v43','life_os_v40'];
 
 /* ============ TELEGRAM ============ */
@@ -169,6 +169,7 @@ function attachVoiceAll(rootId){
 /* ============ DEFAULT STATE ============ */
 function defaultState(){
   return {
+    workspaces:{},
     /* Старое (совместимость с v44) */
     tasks:[],customHabits:[],customGoals:[],customNotes:[],journalEntries:[],
     customWater:[],customMood:[],customMeds:[],customMeditation:[],customWorkouts:[],
@@ -439,6 +440,7 @@ function migrateState(data){
   if(!data.notifications) data.notifications = defaultState().notifications;
   if(!data.spheres) data.spheres = {scores:{},lastScores:{},history:[]};
   if(!Array.isArray(data.projects)) data.projects = [];
+  if(!data.workspaces || typeof data.workspaces !== 'object') data.workspaces = {};
   if(!data.coach) data.coach = defaultState().coach;
   if(!data.coach.digests) data.coach.digests = [];
   if(!data.coach.weeklyAnalytics) data.coach.weeklyAnalytics = [];
