@@ -10,7 +10,7 @@
 /* ============ КОНСТАНТЫ ============ */
 var STORAGE_KEY = 'life_os_v45';
 var STORAGE_BACKUP = 'life_os_backup_v45';
-var CURRENT_VERSION = '49';
+var CURRENT_VERSION = '50';
 var LEGACY_KEYS = ['life_os_v44','life_os_v43','life_os_v40'];
 
 /* ============ TELEGRAM ============ */
@@ -514,14 +514,66 @@ var state;
   }catch(e){}
 })();
 
+/* IndexedDB — расширенное хранилище и ротация резервных копий */
+var LIFE_DB_NAME='life-os-vault',LIFE_DB_STORE='snapshots',_lifeDbPromise=null,_lifeDbTimer=null;
+function openLifeVault(){
+  if(!('indexedDB'in window))return Promise.reject(new Error('IndexedDB недоступен'));
+  if(_lifeDbPromise)return _lifeDbPromise;
+  _lifeDbPromise=new Promise(function(resolve,reject){
+    var request=indexedDB.open(LIFE_DB_NAME,1);
+    request.onupgradeneeded=function(){var db=request.result;if(!db.objectStoreNames.contains(LIFE_DB_STORE))db.createObjectStore(LIFE_DB_STORE,{keyPath:'id',autoIncrement:true});};
+    request.onsuccess=function(){resolve(request.result);};
+    request.onerror=function(){reject(request.error||new Error('Не удалось открыть IndexedDB'));};
+  });
+  return _lifeDbPromise;
+}
+function writeVaultSnapshot(serialized){
+  return openLifeVault().then(function(db){return new Promise(function(resolve,reject){
+    var tx=db.transaction(LIFE_DB_STORE,'readwrite'),store=tx.objectStore(LIFE_DB_STORE);
+    store.add({savedAt:Date.now(),version:CURRENT_VERSION,data:serialized});
+    tx.oncomplete=function(){
+      var trim=db.transaction(LIFE_DB_STORE,'readwrite'),s=trim.objectStore(LIFE_DB_STORE),count=s.count();
+      count.onsuccess=function(){var excess=count.result-12;if(excess>0){var cursor=s.openCursor();cursor.onsuccess=function(){var c=cursor.result;if(!c||excess<=0)return;c.delete();excess--;c.continue();};}};
+      resolve(true);
+    };
+    tx.onerror=function(){reject(tx.error||new Error('Ошибка записи резервной копии'));};
+  });});
+}
+function queueVaultSnapshot(serialized){
+  clearTimeout(_lifeDbTimer);
+  _lifeDbTimer=setTimeout(function(){writeVaultSnapshot(serialized).then(function(){window.__LIFE_OS_VAULT_READY=true;}).catch(function(e){console.warn('[VAULT]',e);});},900);
+}
+function getLatestVaultSnapshot(){
+  return openLifeVault().then(function(db){return new Promise(function(resolve,reject){
+    var tx=db.transaction(LIFE_DB_STORE,'readonly'),request=tx.objectStore(LIFE_DB_STORE).openCursor(null,'prev');
+    request.onsuccess=function(){resolve(request.result?request.result.value:null);};
+    request.onerror=function(){reject(request.error);};
+  });});
+}
+function restoreVaultSnapshot(){
+  getLatestVaultSnapshot().then(function(item){
+    if(!item||!item.data)throw new Error('Резервных копий пока нет');
+    var parsed=JSON.parse(item.data);if(!parsed||typeof parsed!=='object')throw new Error('Копия повреждена');
+    localStorage.setItem(STORAGE_KEY,item.data);
+    toast('Копия из расширенного хранилища восстановлена','success');
+    setTimeout(function(){location.reload();},700);
+  }).catch(function(e){toast(e.message||'Не удалось восстановить копию','error',4000);});
+}
 function save(){
   try{
     state.settings.updatedAt=nowISO();state.settings.version=CURRENT_VERSION;
     var serialized=JSON.stringify(state),previous=localStorage.getItem(STORAGE_KEY);
     if(previous&&previous!==serialized){try{localStorage.setItem(STORAGE_BACKUP,previous);}catch(backupError){}}
-    localStorage.setItem(STORAGE_KEY,serialized);window.__LIFE_OS_LAST_SAVED=Date.now();
+    localStorage.setItem(STORAGE_KEY,serialized);
+    queueVaultSnapshot(serialized);
+    window.__LIFE_OS_LAST_SAVED=Date.now();
     window.dispatchEvent(new CustomEvent('lifeos:saved'));return true;
-  }catch(e){console.error('[SAVE]',e);try{if(typeof toast==='function')toast('Не удалось сохранить: память устройства заполнена','error',5000);}catch(ignore){}return false;}
+  }catch(e){
+    console.error('[SAVE]',e);
+    try{queueVaultSnapshot(JSON.stringify(state));}catch(ignore){}
+    try{if(typeof toast==='function')toast('Локальное хранилище заполнено. Сохраняю резервную копию отдельно…','error',5000);}catch(ignore2){}
+    return false;
+  }
 }
 
 /* ============ ГЛОБАЛЫ ============ */
@@ -4030,13 +4082,16 @@ function renderNotifications(){ renderStub('🔔 Уведомления'); }
 function renderIntegrations(){ renderStub('🔗 Интеграции'); }
 function renderStorage(){
   var bytes=0;try{bytes=new Blob([JSON.stringify(state)]).size;}catch(e){}
-  var kb=(bytes/1024).toFixed(1),html='<div class="page"><div class="title-xl">🗄 Хранилище</div><div class="subtitle">Локальные данные, резервные копии и офлайн-режим</div>';
-  html+='<div class="grid-2 mb-3"><div class="card"><div class="stat-value">'+kb+' КБ</div><div class="stat-label">Размер данных</div></div><div class="card"><div class="stat-value">'+(navigator.onLine?'Онлайн':'Офлайн')+'</div><div class="stat-label">Подключение</div></div></div>';
-  html+='<div class="card mb-3"><div class="card-title">Защита данных</div><div class="footnote mb-2">Автосохранение выполняется после действий и периодически. Перед перезаписью создаётся резервная копия предыдущего состояния.</div><button class="btn btn-primary btn-block mb-2" onclick="exportDB()">📤 Скачать резервную копию JSON</button><button class="btn btn-ghost btn-block mb-2" onclick="importDB()">📥 Восстановить из JSON</button><button class="btn btn-ghost btn-block" onclick="restoreStorageBackup()">↩ Восстановить предыдущую копию</button></div>';
-  html+='<div class="card mb-3"><div class="card-title">Офлайн-режим</div><div class="footnote">Основные файлы приложения сохраняются на устройстве после первого успешного открытия. Внешние функции (например, Telegram API и сетевые AI-запросы) без интернета недоступны.</div><div class="footnote mt-2" id="storageEstimate">Проверка свободного места…</div></div>';
+  var kb=(bytes/1024).toFixed(1),html='<div class="page"><div class="title-xl">🗄 Хранилище</div><div class="subtitle">Расширенное локальное хранилище · автоматические копии · офлайн</div>';
+  html+='<div class="grid-2 mb-3"><div class="card"><div class="stat-value">'+kb+' КБ</div><div class="stat-label">Текущий объём данных</div></div><div class="card"><div class="stat-value">'+(navigator.onLine?'Онлайн':'Офлайн')+'</div><div class="stat-label">Подключение</div></div></div>';
+  html+='<div class="card mb-3"><div class="card-title">🛡 Расширенное хранилище IndexedDB</div><div class="footnote mb-2">Отдельная база браузера хранит до 12 последних автоматических снимков данных. Она не зависит от лимита localStorage и помогает восстановить данные при его переполнении.</div><div class="stat-label" id="vaultStatus">Проверка базы…</div><button class="btn btn-ghost btn-block mt-2" onclick="restoreVaultSnapshot()">↩ Восстановить последнюю копию из расширенного хранилища</button></div>';
+  html+='<div class="card mb-3"><div class="card-title">Резервные копии</div><div class="footnote mb-2">Экспортируй JSON-файл отдельно и храни его вне устройства. Импорт поддерживает объединение с текущей структурой приложения.</div><button class="btn btn-primary btn-block mb-2" onclick="exportDB()">📤 Скачать полную копию JSON</button><button class="btn btn-ghost btn-block mb-2" onclick="importDB()">📥 Импортировать копию</button><button class="btn btn-ghost btn-block" onclick="restoreStorageBackup()">↩ Вернуть предыдущую копию</button></div>';
+  html+='<div class="card mb-3"><div class="card-title">Место на устройстве</div><div class="footnote" id="storageEstimate">Проверка квоты браузера…</div><div class="footnote mt-2">Фактическая квота зависит от браузера и свободного места. Доступно через IndexedDB значительно больше, чем в localStorage; система использует обе технологии.</div></div>';
+  html+='<div class="card mb-3"><div class="card-title">Офлайн-режим</div><div class="footnote">Данные и сохранённые файлы доступны без интернета после первого открытия. AI-запросы, синхронизация и внешние API требуют сеть.</div></div>';
   html+='<div class="card"><div class="card-title">Сброс</div><div class="footnote mb-2">Перед удалением текущие данные останутся в резервной копии.</div><button class="btn btn-danger btn-block" onclick="resetAllWithConfirm()">Удалить данные приложения</button></div></div>';
   document.getElementById('app').innerHTML=html;
-  if(navigator.storage&&navigator.storage.estimate)navigator.storage.estimate().then(function(x){var el=document.getElementById('storageEstimate');if(el)el.textContent='Использовано хранилища браузера: '+(x.usage/1048576).toFixed(2)+' МБ из '+(x.quota/1048576).toFixed(0)+' МБ (оценка)';}).catch(function(){});
+  getLatestVaultSnapshot().then(function(item){var el=document.getElementById('vaultStatus');if(el)el.textContent=item?'✓ Последняя копия: '+new Date(item.savedAt).toLocaleString('ru-RU')+' · версия '+item.version:'Пока нет копий — создадутся автоматически после сохранения';}).catch(function(){var el=document.getElementById('vaultStatus');if(el)el.textContent='IndexedDB недоступна в этом режиме браузера';});
+  if(navigator.storage&&navigator.storage.estimate)navigator.storage.estimate().then(function(x){var el=document.getElementById('storageEstimate');if(el)el.textContent='Использовано: '+(x.usage/1048576).toFixed(2)+' МБ · доступная квота: '+(x.quota/1048576).toFixed(0)+' МБ';}).catch(function(){});
 }
 function restoreStorageBackup(){
   if(!confirm('Восстановить предыдущую резервную копию? Текущие данные будут заменены.'))return;
@@ -4414,6 +4469,7 @@ window.pickEmoji = pickEmoji;
 window.setEmoji = setEmoji;
 window.saveProfileName = saveProfileName;
 window.exportDB = exportDB;
+window.restoreVaultSnapshot = restoreVaultSnapshot;
 window.importDB = importDB;
 window.resetAllWithConfirm = resetAllWithConfirm;
 window.exportToObsidian = exportToObsidian;
