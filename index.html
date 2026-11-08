@@ -823,15 +823,15 @@ body{background:radial-gradient(ellipse at 15% 0%,color-mix(in srgb,var(--brand)
 
 <div class="toast-container" id="toasts"></div>
 
-<script defer src="content.js"></script>
-<script defer src="content2.js"></script>
-<script defer src="content3.js"></script>
-<script defer src="jarvis-core.js"></script>
-<script defer src="app.js"></script>
+<script defer src="content.js?v=20261108-2"></script>
+<script defer src="content2.js?v=20261108-2"></script>
+<script defer src="content3.js?v=20261108-2"></script>
+<script defer src="jarvis-core.js?v=20261108-2"></script>
+<script defer src="app.js?v=20261108-2"></script>
 <script>
 (function(){
   var failed=[];
-  ['content.js','content2.js','content3.js','app.js'].forEach(function(name){
+  ['content.js','content2.js','content3.js','jarvis-core.js','app.js'].forEach(function(name){
     var script=document.querySelector('script[src="'+name+'"]');
     if(script) script.addEventListener('error',function(){failed.push(name);show('Не загрузился файл: '+name+'. Проверьте публикацию и доступность файлов.');});
   });
