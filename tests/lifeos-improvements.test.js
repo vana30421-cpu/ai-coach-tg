@@ -28,7 +28,7 @@ test('vision section has timed breaks, symptom logging, exam history and urgent-
  assert.match(app,/visionFlashes/);
  assert.match(app,/visionFloaters/);
  assert.match(app,/срочную очную оценку/);
- assert.match(app,/AAO — Computers, Digital Devices, and Eye Strain/);
+ assert.match(content,/AAO — Computers, Digital Devices, and Eye Strain/);
 });
 
 test('Jarvis can send opt-in conversations with app analytics to a server-side API',()=>{
@@ -61,7 +61,7 @@ test('all eight games have playable mechanics and no manual score entry placehol
 
 test('quick water and mood actions safely save, undo, and avoid duplicate daily mood counts',()=>{
  for(const name of ['quickWaterLog','addWater','removeWater','quickMoodLog','saveMood'])assert.match(app,new RegExp('function '+name+'\\('));
- assert.match(app,/totalMoodLogs=.*if\(isNew\)/);
+ assert.match(app,/if\(isNew\)state\.stats\.totalMoodLogs=/);
  assert.match(app,/function removeWater\(\)/);
  assert.match(app,/function quickWaterLog\(\)/);
  assert.match(app,/onclick="quickWaterLog\(\)"/);
