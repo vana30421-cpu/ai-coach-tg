@@ -228,11 +228,12 @@ test('active anti-stress flow records partial sessions without awarding XP',()=>
 });
 
 test('media libraries, resources, medical log, medication log and notification preferences are functional',()=>{
- for(const name of ['renderMovies','renderSeries','renderBooks','renderMusic','renderGames','renderPodcasts','renderEntertainment','renderResources','saveLifeResource','renderMedical','saveMedicalEntry','renderMeds','addLifeMedication','logMedicationTaken','renderNotifications','requestLifeOSNotificationPermission'])assert.match(systems,new RegExp('window\\.'+name+'=function'));
+ for(const name of ['renderMovies','renderSeries','renderBooks','renderMusic','renderGames','renderPodcasts','renderEntertainment','renderResources','saveLifeResource','renderMedical','saveMedicalEntry','renderMeds','addLifeMedication','logMedicationTaken','renderNotifications'])assert.match(systems,new RegExp('window\\.'+name+'=function'));
  assert.match(systems,/state\.mediaLibrary/);
  assert.match(systems,/state\.medicalEntries/);
  assert.match(systems,/state\.medications/);
  assert.match(systems,/state\.medicationLogs/);
+ assert.match(systems,/window\.requestLifeOSNotificationPermission=async function/);
  assert.match(systems,/Notification\.requestPermission/);
 });
 test('all legacy renderer placeholders have a working replacement in an extension bundle',()=>{
