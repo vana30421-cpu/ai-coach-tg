@@ -147,18 +147,18 @@ window.addFinanceEntry=function(){var v=function(id){return String((document.get
 window.deleteFinanceEntry=function(id){if(!confirm('Удалить операцию?'))return;state.financeEntries=(state.financeEntries||[]).filter(function(x){return x.id!==id;});save();window.renderFinance();};
 
 /* COMPLETE THE SECOND LEARNING LIBRARY AND CONNECT LEGACY GAME ROUTES */
-window.renderLearningGames=function(){renderGamesHub();};
-window.renderGamePlay=function(){renderGamesHub();};
+window.renderLearningGames=function(){if(window.renderGamesHub)window.renderGamesHub();else window.navigate('gamesHub');};
+window.renderGamePlay=function(){if(window.renderGamesHub)window.renderGamesHub();else window.navigate('gamesHub');};
 window.renderMaterials=function(){renderLifeLibrary('📚 Материалы','Книги и учебные материалы. Ключевые идеи — краткие заметки, не замена полному источнику.',window.LEARNING_MATERIALS,{key:'materials'});};
 window.renderMaterialDetail=function(){renderMaterials();};
-window.renderDailySurvey=function(){if(typeof window.renderPersonalizationSurvey==='function')window.renderPersonalizationSurvey();else window.renderDashboard();};
-window.renderSurvey=function(){window.renderDailySurvey();};
-window.renderPersonalPlan=function(){if(typeof window.renderPlanToday==='function')window.renderPlanToday();else window.renderJarvis();};
+window.renderDailySurvey=function(){window.navigate('personalization');};
+window.renderSurvey=function(){window.navigate('personalization');};
+window.renderPersonalPlan=function(){window.navigate('plantoday');};
 window.renderTimer=function(){window.renderFocus();};
-window.renderSnapshot=function(){window.renderStats();};
-window.renderRecommendations=function(){window.renderStats();};
+window.renderSnapshot=function(){window.navigate('stats');};
+window.renderRecommendations=function(){window.navigate('stats');};
 window.renderGcal=function(){window.renderCalendar();toast('Показан локальный календарь. Синхронизация Google Calendar не подключена.','info');};
-window.renderProjectEditor=function(){window.renderProjects();};
-window.renderModuleDetail=function(){window.renderLearning();};
-window.renderOnboarding=function(){window.renderDashboard();};
+window.renderProjectEditor=function(){window.navigate('projects');};
+window.renderModuleDetail=function(){window.navigate('learning');};
+window.renderOnboarding=function(){window.navigate('dashboard');};
 })();
