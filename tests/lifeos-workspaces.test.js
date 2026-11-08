@@ -137,3 +137,23 @@ test('Jarvis Worker rejects wrong origin and wrong access code before calling pr
 test('Jarvis statistics action and Gemini selector are wired to the real provider request',()=>{
  assert.match(app,/function setJarvisProvider\(value\)/);assert.match(app,/provider:d\.provider\|\|'openai'/);assert.match(app,/id="jarvisProvider"/);assert.match(systems,/askJarvisAboutStats/);
 });
+
+test('legacy and canonical second-brain stores are merged idempotently',()=>{
+ const {sandbox}=sandboxFor(workspaces);
+ sandbox.state.secondBrain={notes:[{id:'canonical-1',title:'Основная заметка',body:'Текст',tags:[],links:[]}]};
+ sandbox.state.secondBrainItems=[{id:'legacy-2',title:'Старая заметка',body:'Не потерять',tags:'память'}];
+ sandbox.window.ensureLifeOSBrain();
+ assert.equal(sandbox.state.secondBrain.notes.length,2);
+ sandbox.window.ensureLifeOSBrain();
+ assert.equal(sandbox.state.secondBrain.notes.length,2);
+ assert.ok(sandbox.state.secondBrain.notes.some(n=>n.id==='legacy-2'));
+ assert.equal(sandbox.state.secondBrainItems.length,1);
+});
+test('Jarvis can normalize the second-brain store before building external AI context',()=>{
+ const {sandbox}=sandboxFor(workspaces);
+ assert.equal(typeof sandbox.window.ensureLifeOSBrain,'function');
+ sandbox.state.secondBrain={notes:[]};
+ sandbox.state.secondBrainItems=[{id:'legacy-3',title:'Знание',body:'Содержимое',tags:'AI'}];
+ sandbox.window.ensureLifeOSBrain();
+ assert.equal(sandbox.state.secondBrain.notes[0].title,'Знание');
+});
