@@ -2702,7 +2702,7 @@ function openDetoxDay(day){
 function renderDetoxCourseReport(){
   var stats=getDetoxCourseStats(),rows=Object.keys(state.detoxCourseProgress||{}).map(function(k){var r=state.detoxCourseProgress[k];return {day:Number(k),record:r===true?{completed:true}:r};}).sort(function(x,y){return x.day-y.day;});
   var reflections=rows.filter(function(x){return x.record&&x.record.reflection&&Object.keys(x.record.reflection).length;});
-  var avg=function(key){var vals=reflections.map(function(x){return x.record.reflection[key];}).filter(function(v){return v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v))).map(Number);return vals.length?Math.round(vals.reduce(function(a,b){return a+b;},0)/vals.length*10)/10:null;};
+  var avg=function(key){var vals=reflections.map(function(x){return x.record.reflection[key];}).filter(function(v){return v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v));}).map(Number);return vals.length?Math.round(vals.reduce(function(a,b){return a+b;},0)/vals.length*10)/10:null;};
   var sleep=avg('sleepHours'),focus=avg('focus'),help=avg('helped'),opens=avg('unplannedOpens');
   var screenDirection=stats.screenDelta===null?'нет достаточных данных':stats.screenDelta<0?'снижение':stats.screenDelta>0?'рост':'без изменения';
   var insight='Пока недостаточно записей для выводов. Заполни исходный замер и дневные наблюдения минимум за 7 дней.';
