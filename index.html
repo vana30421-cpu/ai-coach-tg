@@ -7,6 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Life OS">
+<link rel="apple-touch-icon" href="icon.svg">
 <meta name="mobile-web-app-capable" content="yes">
 <title>Life OS</title>
 <link rel="manifest" href="manifest.json">
@@ -211,6 +212,8 @@ body::before{
 
 .app-main{position:relative;z-index:2;max-width:760px;margin:0 auto;width:100%;padding:14px;padding-bottom:calc(72px + var(--safe-bottom) + 72px)!important;min-height:calc(100dvh - 110px)}
 .page{animation:pageIn .35s var(--spring-snap) both}
+.workspace-entry{animation:workspaceRise .28s ease both;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}.workspace-entry:active{transform:scale(.985)}.workspace-entry:hover{border-color:var(--glass-border-strong);box-shadow:0 12px 30px rgba(0,0,0,.18)}@keyframes workspaceRise{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+button,.card,.icon-btn,.tab-item{transition-duration:.22s;transition-timing-function:cubic-bezier(.2,.8,.2,1)}
 @keyframes pageIn{0%{opacity:0;transform:translate3d(0,12px,0) scale(.98)}100%{opacity:1;transform:translate3d(0,0,0) scale(1)}}
 .quick-tabs{position:sticky;top:calc(env(safe-area-inset-top,0px) + 92px);z-index:50;display:flex;gap:6px;overflow-x:auto;padding:8px 4px;margin:-6px -4px 12px;background:linear-gradient(180deg,color-mix(in srgb,var(--bg) 85%,transparent) 60%,transparent);backdrop-filter:blur(var(--glass-blur)) saturate(180%);-webkit-backdrop-filter:blur(var(--glass-blur)) saturate(180%);scrollbar-width:none}
 .quick-tabs::-webkit-scrollbar{display:none}
@@ -584,7 +587,7 @@ input[type="checkbox"]:checked::after{content:'✓';position:absolute;inset:0;di
 (function(){
   if('serviceWorker' in navigator){
     window.addEventListener('load',function(){
-      navigator.serviceWorker.register('sw.js').catch(function(){});
+      navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(reg){if(reg.waiting)reg.waiting.postMessage({type:'SKIP_WAITING'});reg.update().catch(function(){});}).catch(function(error){console.warn('[PWA] Service Worker:',error);});
     });
   }
 })();
