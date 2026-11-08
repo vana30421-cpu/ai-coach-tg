@@ -4055,7 +4055,8 @@ function getJarvisState(){
 }
 function renderJarvis(){
   var data=getJarvisState(),tasks=state.tasks||[],pending=tasks.filter(function(t){return t.status!=='completed';});
-  var analysis=runJarvisAutopilot(true),stats=analysis.analytics;
+  var analysis=getJarvisAnalytics(true),stats=analysis.analytics;
+  if(data.autopilotEnabled&&(!data.lastAutopilotAt||Date.now()-new Date(data.lastAutopilotAt).getTime()>3600000)){analysis=runJarvisAutopilot(true);stats=analysis.analytics;}
   var focus=data.focus,remaining=focus&&focus.active?Math.max(0,Math.ceil((focus.endsAt-Date.now())/1000)):0;
   var modes=[['balanced','Баланс'],['planner','Планировщик'],['coach','Коуч'],['strict','Строгий']];
   var html='<div class="page jarvis-page">';
