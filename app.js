@@ -1048,6 +1048,9 @@ function renderDashboard(){
     html += '<div style="flex:1;font-size:13px;line-height:1.5;">' + esc(tip.text) + '</div></div></div>';
   }
 
+  /* Персональная подсказка Джарвиса на главном экране */
+  try{var jarvisPeek=getJarvisAnalytics(true),jarvisTop=jarvisPeek.items&&jarvisPeek.items[0];if(jarvisTop&&jarvisTop.id!=='steady'&&jarvisTop.id!=='coverage'){html+='<div class="card" style="border-left:3px solid '+(jarvisTop.level==='high'?'var(--danger)':'var(--brand)')+'"><div class="row-between"><b>✧ Джарвис заметил</b><button class="btn btn-ghost btn-xs" onclick="navigate(\'ai\')">Обсудить →</button></div><div class="list-title mt-2">'+esc(jarvisTop.title)+'</div><div class="footnote mt-1">'+esc(jarvisTop.detail)+'</div></div>';}}catch(jarvisDashboardError){}
+
   /* Привычки */
   var habitsToday = getHabitsForToday();
   if(habitsToday.length){
