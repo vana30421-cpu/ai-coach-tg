@@ -848,6 +848,8 @@ function openSheet(title, content){
   }catch(e){ console.error('[Sheet]', e); }
 }
 function closeSheet(){
+  if(window.__miniGameTimer){clearTimeout(window.__miniGameTimer);clearInterval(window.__miniGameTimer);window.__miniGameTimer=null;}
+  __miniGame=null;
   if(window.__visionBreakInterval){clearInterval(window.__visionBreakInterval);window.__visionBreakInterval=null;}
   if(window.__eyeExerciseInterval){clearInterval(window.__eyeExerciseInterval);window.__eyeExerciseInterval=null;}
   document.querySelectorAll('.overlay').forEach(function(o){ o.remove(); });
@@ -3246,14 +3248,14 @@ function finishBrainGame(){
 
 /* ============ ИГРЫ (8 игр из Mini Games Collection) ============ */
 var GAMES_LIBRARY = [
-  {id:'snake', emoji:'🐍', title:'Змейка', desc:'Собирай еду, расти', duration:60},
-  {id:'tetris', emoji:'🧱', title:'Тетрис', desc:'Складывай фигуры', duration:120},
-  {id:'memory', emoji:'🧠', title:'Память', desc:'Найди пары', duration:90},
-  {id:'puzzle15', emoji:'🧩', title:'Пятнашки', desc:'Собери числа по порядку', duration:120},
-  {id:'sudoku', emoji:'🔢', title:'Судоку', desc:'Заполни клетки', duration:300},
-  {id:'pairs', emoji:'🃏', title:'Пары', desc:'Найди одинаковые', duration:60},
-  {id:'grids', emoji:'▦', title:'Сетки', desc:'Запомни узор', duration:60},
-  {id:'sequences', emoji:'🔗', title:'Последовательности', desc:'Продолжи ряд', duration:60}
+ {id:'memory',emoji:'🧠',title:'Пары',desc:'Найди 6 пар одинаковых карточек',duration:90},
+ {id:'puzzle15',emoji:'🧩',title:'Пятнашки 3×3',desc:'Собери числа по порядку',duration:120},
+ {id:'sequences',emoji:'🔢',title:'Последовательность',desc:'Запомни и повтори цифры',duration:60},
+ {id:'grids',emoji:'▦',title:'Сетка памяти',desc:'Повтори узор на поле',duration:60},
+ {id:'reaction',emoji:'⚡',title:'Реакция',desc:'Нажми после сигнала',duration:30},
+ {id:'math',emoji:'➗',title:'Счёт в уме',desc:'Реши 5 коротких примеров',duration:60},
+ {id:'typing',emoji:'⌨️',title:'Точность ввода',desc:'Набери фразу без ошибок',duration:45},
+ {id:'target',emoji:'🎯',title:'Быстрые нажатия',desc:'Нажми на цель за 15 секунд',duration:15}
 ];
 function renderGamesHub(){
   var scores = (state.games && state.games.scores) || {};
@@ -3268,36 +3270,94 @@ function renderGamesHub(){
   html += '</div></div>';
   document.getElementById('app').innerHTML = html;
 }
+var __miniGame=null;
 function startGame(gameId){
-  var g = GAMES_LIBRARY.find(function(x){ return x.id === gameId; });
-  if(!g) return;
-  var html = '<div style="text-align:center;margin-bottom:16px;"><div style="font-size:56px;">' + g.emoji + '</div><div style="font-size:22px;font-weight:800;">' + esc(g.title) + '</div><div class="footnote text-secondary">' + esc(g.desc) + '</div></div>';
-  html += '<div class="card"><h2>Очки</h2><div class="field"><input type="number" id="game-score" placeholder="Сколько набрал?"/></div>';
-  html += '<button class="btn btn-primary btn-block" onclick="saveGameScore(\'' + gameId + '\')">💾 Сохранить</button></div>';
-  openSheet(g.title, html);
+ var g=GAMES_LIBRARY.find(function(x){return x.id===gameId;});if(!g)return;
+ if(window.__miniGameTimer){clearTimeout(window.__miniGameTimer);clearInterval(window.__miniGameTimer);window.__miniGameTimer=null;}
+ var game={id:gameId,startedAt:Date.now(),moves:0,score:0,phase:'ready'};
+ if(gameId==='memory'){var symbols=['🍎','🚀','🌙','🐬','🎸','🌻'];game.cards=symbols.concat(symbols).sort(function(){return Math.random()-.5;});game.open=[];game.matched=[];}
+ if(gameId==='puzzle15'){game.tiles=[1,2,3,4,5,6,7,8,0];var blank=8,prev=-1;for(var k=0;k<120;k++){var ns=[];[blank-3,blank+3,blank-1,blank+1].forEach(function(n){if(n>=0&&n<9&&Math.abs(Math.floor(n/3)-Math.floor(blank/3))+Math.abs(n%3-blank%3)===1&&n!==prev)ns.push(n);});var n=ns[Math.floor(Math.random()*ns.length)];if(n==null)continue;game.tiles[blank]=game.tiles[n];game.tiles[n]=0;prev=blank;blank=n;}}
+ if(gameId==='sequences'){game.sequence=Array.from({length:5},function(){return Math.floor(Math.random()*9)+1;});game.answer=[];}
+ if(gameId==='grids'){game.target=[];while(game.target.length<4){var n=Math.floor(Math.random()*9);if(game.target.indexOf(n)<0)game.target.push(n);}game.selected=[];game.phase='show';}
+ if(gameId==='reaction'){game.phase='waiting';}
+ if(gameId==='math'){game.round=0;game.correct=0;game.problem=makeMiniMathProblem();}
+ if(gameId==='typing'){var phrases=['Сначала главное, потом остальное','Маленькие шаги создают устойчивый прогресс','Сосредоточься на одном действии'];game.phrase=phrases[Math.floor(Math.random()*phrases.length)];}
+ if(gameId==='target'){game.timeLeft=15;game.hits=0;game.phase='playing';}
+ __miniGame=game;
+ openSheet(g.title,'<div id="miniGameBody"></div>');
+ renderMiniGame();
+ if(gameId==='grids'){window.__miniGameTimer=setTimeout(function(){if(__miniGame&&__miniGame.id==='grids'&&__miniGame.phase==='show'){__miniGame.phase='input';renderMiniGame();}},2200);}
+ if(gameId==='reaction'){var delay=1600+Math.floor(Math.random()*3000);window.__miniGameTimer=setTimeout(function(){if(__miniGame&&__miniGame.id==='reaction'&&__miniGame.phase==='waiting'){__miniGame.phase='go';__miniGame.goAt=Date.now();renderMiniGame();}},delay);}
+ if(gameId==='target'){window.__miniGameTimer=setInterval(function(){if(!__miniGame||__miniGame.id!=='target')return;__miniGame.timeLeft--;var el=document.getElementById('miniGameTimer');if(el)el.textContent=__miniGame.timeLeft;if(__miniGame.timeLeft<=0){clearInterval(window.__miniGameTimer);window.__miniGameTimer=null;finishMiniGame(__miniGame.hits*10);}},1000);}
 }
-function saveGameScore(gameId, score){
-  if(score === undefined){
-    score = parseInt((document.getElementById('game-score')||{}).value) || 0;
-  }
-  if(!state.games) state.games = {scores:{}, records:{}, stats:{totalPlays:0,totalTime:0,avgScore:0,favoriteGame:null}, achievements:[]};
-  if(!state.games.scores[gameId]) state.games.scores[gameId] = {best:0, plays:0, totalTime:0};
-  var s = state.games.scores[gameId];
-  s.plays++;
-  if(score > s.best){
-    s.best = score;
-    if(!state.games.records) state.games.records = {};
-    state.games.records[gameId] = {date:today(), score:score};
-    addXP(25, 'game_record');
-    toast('🏅 Новый рекорд: ' + score,'success');
-  }
-  state.games.stats.totalPlays = (state.games.stats.totalPlays||0) + 1;
-  addXP(5, 'game');
-  addPetXP(2);
-  save();
-  haptic('success');
-  closeSheet();
-  renderGamesHub();
+function renderMiniGame(){
+ var g=__miniGame,el=document.getElementById('miniGameBody');if(!g||!el)return;
+ var html='<div class="footnote mb-2">Игра идёт по реальным действиям. Результат сохранится после завершения.</div>';
+ if(g.id==='memory'){
+  html+='<div class="row-between"><b>Совпадения: '+g.matched.length/2+' / 6</b><span>Ходы: '+g.moves+'</span></div><div class="grid-2 mt-2" style="grid-template-columns:repeat(4,minmax(0,1fr));gap:8px">';
+  g.cards.forEach(function(c,i){var visible=g.open.indexOf(i)>=0||g.matched.indexOf(i)>=0;html+='<button class="btn '+(g.matched.indexOf(i)>=0?'btn-primary':'btn-ghost')+'" style="min-height:64px;font-size:26px" '+(visible?'disabled':'')+' onclick="miniGameFlip('+i+')">'+(visible?c:'❔')+'</button>';});
+  html+='</div>';
+ }else if(g.id==='puzzle15'){
+  html+='<div class="footnote">Нажимай на плитку рядом с пустой клеткой. Ходы: '+g.moves+'</div><div class="grid-2 mt-2" style="grid-template-columns:repeat(3,minmax(0,1fr));gap:7px">';
+  g.tiles.forEach(function(n,i){html+='<button class="btn '+(n?'btn-ghost':'')+'" style="min-height:68px;font-size:22px" '+(!n?'disabled':'')+' onclick="miniGamePuzzleMove('+i+')">'+(n||'')+'</button>';});html+='</div>';
+ }else if(g.id==='sequences'){
+  html+='<div class="card"><div class="footnote">Запомни последовательность и повтори её кнопками.</div><div class="stat-value">'+(g.phase==='show'?g.sequence.join(' · '):g.answer.map(function(n){return n;}).join(' · ')||'—')+'</div><div class="row wrap mt-2" style="gap:6px">';
+  for(var n=1;n<=9;n++)html+='<button class="btn btn-ghost" onclick="miniGameSequenceAdd('+n+')">'+n+'</button>';
+  html+='</div><button class="btn btn-primary btn-block mt-2" onclick="miniGameSequenceCheck()">Проверить</button><button class="btn btn-ghost btn-block" onclick="miniGameSequenceReset()">Сбросить ответ</button></div>';
+ }else if(g.id==='grids'){
+  html+='<div class="footnote">'+(g.phase==='show'?'Запомни подсвеченные клетки…':'Повтори узор. Выбрано: '+g.selected.length+'/4')+'</div><div class="grid-2 mt-2" style="grid-template-columns:repeat(3,minmax(0,1fr));gap:7px">';
+  for(var i=0;i<9;i++){var on=g.phase==='show'?g.target.indexOf(i)>=0:g.selected.indexOf(i)>=0;html+='<button class="btn '+(on?'btn-primary':'btn-ghost')+'" style="min-height:64px" '+(g.phase==='show'?'disabled':'')+' onclick="miniGameGridToggle('+i+')">'+(on?'●':'')+'</button>';}
+  html+='</div><button class="btn btn-primary btn-block mt-2" '+(g.phase==='show'?'disabled':'')+' onclick="miniGameGridCheck()">Проверить узор</button>';
+ }else if(g.id==='reaction'){
+  html+='<div class="card" style="text-align:center"><div class="stat-value">'+(g.phase==='waiting'?'Подожди…':g.phase==='go'?'ЖМИ!':'Готов')+'</div><p class="footnote">Не нажимай до появления зелёного сигнала.</p><button class="btn '+(g.phase==='go'?'btn-primary':'btn-ghost')+' btn-block" style="min-height:70px" onclick="miniGameReactionClick()">'+(g.phase==='go'?'НАЖАТЬ':'ЖДИ')+'</button></div>';
+ }else if(g.id==='math'){
+  html+='<div class="card"><div class="footnote">Раунд '+(g.round+1)+' / 5 · верно: '+g.correct+'</div><div class="stat-value">'+g.problem.q+'</div><div class="grid-2 mt-2">';
+  g.problem.options.forEach(function(n){html+='<button class="btn btn-ghost" onclick="miniGameMathAnswer('+n+')">'+n+'</button>';});html+='</div></div>';
+ }else if(g.id==='typing'){
+  html+='<div class="card"><div class="footnote">Набери фразу точно:</div><b>'+esc(g.phrase)+'</b><textarea id="miniGameTyping" rows="3" class="mt-2" placeholder="Начни печатать…"></textarea><button class="btn btn-primary btn-block mt-2" onclick="miniGameTypingCheck()">Проверить</button></div>';
+ }else if(g.id==='target'){
+  html+='<div class="row-between"><b>Время: <span id="miniGameTimer">'+g.timeLeft+'</span> сек</b><b>Попадания: '+g.hits+'</b></div><button class="btn btn-primary btn-block mt-3" style="min-height:120px;font-size:42px" onclick="miniGameTargetHit()">🎯</button>';
+ }
+ el.innerHTML=html;
+}
+function makeMiniMathProblem(){
+ var a=Math.floor(Math.random()*12)+3,b=Math.floor(Math.random()*9)+2,op=Math.random()<.5?'+':'−',answer=op==='+'?a+b:a-b,opts=[answer,answer+2,answer-1,answer+4].sort(function(){return Math.random()-.5;});return {q:a+' '+op+' '+b+' = ?',answer:answer,options:opts};
+}
+function miniGameFlip(i){
+ var g=__miniGame;if(!g||g.id!=='memory'||g.open.length>=2||g.open.indexOf(i)>=0||g.matched.indexOf(i)>=0)return;
+ g.open.push(i);if(g.open.length===2){g.moves++;var x=g.open[0],y=g.open[1];if(g.cards[x]===g.cards[y]){g.matched.push(x,y);g.open=[];if(g.matched.length===g.cards.length)finishMiniGame(Math.max(20,120-g.moves*5));}else{renderMiniGame();window.__miniGameTimer=setTimeout(function(){if(__miniGame&&__miniGame.id==='memory'){__miniGame.open=[];renderMiniGame();}},750);return;}}
+ renderMiniGame();
+}
+function miniGamePuzzleMove(i){
+ var g=__miniGame;if(!g||g.id!=='puzzle15')return;var z=g.tiles.indexOf(0),dist=Math.abs(Math.floor(i/3)-Math.floor(z/3))+Math.abs(i%3-z%3);if(dist!==1)return;
+ g.tiles[z]=g.tiles[i];g.tiles[i]=0;g.moves++;renderMiniGame();if(g.tiles.join(',')==='1,2,3,4,5,6,7,8,0')finishMiniGame(Math.max(10,300-g.moves*3));
+}
+function miniGameSequenceAdd(n){var g=__miniGame;if(!g||g.id!=='sequences'||g.answer.length>=g.sequence.length)return;g.answer.push(n);renderMiniGame();}
+function miniGameSequenceCheck(){var g=__miniGame;if(!g||g.id!=='sequences')return;var ok=g.answer.join('')===g.sequence.join('');if(ok)finishMiniGame(100);else{toast('Последовательность не совпала. Попробуй ещё раз.','warning');g.answer=[];renderMiniGame();}}
+function miniGameSequenceReset(){if(__miniGame&&__miniGame.id==='sequences'){__miniGame.answer=[];renderMiniGame();}}
+function miniGameGridToggle(i){var g=__miniGame;if(!g||g.id!=='grids'||g.phase!=='input')return;var n=g.selected.indexOf(i);if(n>=0)g.selected.splice(n,1);else if(g.selected.length<4)g.selected.push(i);renderMiniGame();}
+function miniGameGridCheck(){var g=__miniGame;if(!g||g.id!=='grids')return;var a=g.target.slice().sort().join(','),b=g.selected.slice().sort().join(',');if(a===b)finishMiniGame(100);else{toast('Узор не совпал. Попробуй ещё раз.','warning');g.selected=[];renderMiniGame();}}
+function miniGameReactionClick(){
+ var g=__miniGame;if(!g||g.id!=='reaction')return;
+ if(g.phase==='waiting'){if(window.__miniGameTimer)clearTimeout(window.__miniGameTimer);window.__miniGameTimer=null;g.phase='false';renderMiniGame();return;}
+ if(g.phase==='go'){var ms=Date.now()-g.goAt;finishMiniGame(Math.max(1,Math.round(1000/ms*100)));return;}
+ if(g.phase==='false'){toast('Фальстарт. Начни заново.','warning');startGame('reaction');}
+}
+function miniGameMathAnswer(n){var g=__miniGame;if(!g||g.id!=='math')return;if(n===g.problem.answer)g.correct++;g.round++;if(g.round>=5)finishMiniGame(g.correct*20);else{g.problem=makeMiniMathProblem();renderMiniGame();}}
+function miniGameTypingCheck(){var g=__miniGame;if(!g||g.id!=='typing')return;var value=(document.getElementById('miniGameTyping')||{}).value||'';var score=Math.round(value.split('').filter(function(c,i){return c===g.phrase[i];}).length/Math.max(1,g.phrase.length)*100);if(value.trim()!==g.phrase){toast('Есть ошибки или пропуски. Исправь текст и проверь ещё раз.','warning');return;}finishMiniGame(score);}
+function miniGameTargetHit(){var g=__miniGame;if(!g||g.id!=='target'||g.timeLeft<=0)return;g.hits++;var el=document.querySelector('#miniGameBody .row-between b:last-child');if(el)el.textContent='Попадания: '+g.hits;}
+function finishMiniGame(score){
+ var g=__miniGame;if(!g)return;if(window.__miniGameTimer){clearTimeout(window.__miniGameTimer);clearInterval(window.__miniGameTimer);window.__miniGameTimer=null;}
+ var id=g.id;__miniGame=null;saveGameScore(id,Math.max(0,Math.round(Number(score)||0)));
+}
+function saveGameScore(gameId,score){
+ if(score===undefined)score=0;score=Math.max(0,Math.min(1000,parseInt(score,10)||0));
+ if(!state.games)state.games={scores:{},records:{},stats:{totalPlays:0,totalTime:0,avgScore:0,favoriteGame:null},achievements:[]};
+ if(!state.games.scores)state.games.scores={};if(!state.games.scores[gameId])state.games.scores[gameId]={best:0,plays:0,totalTime:0};
+ var x=state.games.scores[gameId];x.plays=(x.plays||0)+1;if(score>x.best){x.best=score;if(!state.games.records)state.games.records={};state.games.records[gameId]={date:today(),score:score};}
+ state.games.stats=state.games.stats||{totalPlays:0,totalTime:0,avgScore:0,favoriteGame:null};state.games.stats.totalPlays=(state.games.stats.totalPlays||0)+1;
+ var scores=Object.keys(state.games.scores).map(function(k){return state.games.scores[k];}),total=scores.reduce(function(n,z){return n+(Number(z.totalScore)||Number(z.best)||0);},0),plays=scores.reduce(function(n,z){return n+(Number(z.plays)||0);},0);state.games.stats.avgScore=plays?Math.round(total/plays):0;
+ addXP(5,'game');addPetXP(2);save();haptic('success');closeSheet();renderGamesHub();toast('Игра завершена · '+score+' очков','success');
 }
 
 /* ============ ЛИГИ ============ */
