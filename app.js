@@ -727,7 +727,7 @@ function updateHeader(){
 }
 
 /* ============ NAVIGATION ============ */
-var MAIN_PAGES = ['dashboard','tasks','learning','calendar','vision','ai','more'];
+var MAIN_PAGES = ['dashboard','tasks','learning','calendar','stats','vision','ai','more'];
 
 function navigate(page, silent){
   if(!page) page = 'dashboard';
