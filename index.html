@@ -524,6 +524,68 @@ input,select,textarea{max-width:100%;min-width:0}.workspace-page{animation:pageE
 @media(max-width:759px){.app-main{padding-left:14px;padding-right:14px}.app-header{padding-top:calc(var(--safe-top) + 10px)}.tab-bar-wrap{padding-bottom:var(--safe-bottom)}}
 @media(hover:none){.card:hover,.group-card:hover{transform:none}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.workspace-page{animation:none}}
+
+/* LIFE OS — visual system refresh 2026 */
+:root{
+ --bg:#090d16;--bg-1:#101827;--bg-2:#141f30;--bg-3:#1c2a3e;
+ --brand:#7c9cff;--brand-2:#9b8cff;--brand-3:#62d9d0;--brand-glow:rgba(124,156,255,.25);
+ --glass-1:rgba(255,255,255,.035);--glass-2:rgba(255,255,255,.065);--glass-3:rgba(255,255,255,.10);--glass-4:rgba(255,255,255,.15);
+ --glass-border:rgba(185,204,255,.11);--glass-border-strong:rgba(185,204,255,.2);--glass-highlight:rgba(255,255,255,.08);
+ --divider:rgba(190,210,245,.10);--text:#f3f6ff;--text-2:#b9c5d9;--text-3:#8291aa;--text-4:#63718a;
+ --r-sm:14px;--r-md:20px;--r-lg:26px;--r-xl:32px;
+ --shadow-sm:0 5px 18px rgba(0,0,0,.16);--shadow-md:0 14px 38px rgba(0,0,0,.24);--shadow-lg:0 24px 70px rgba(0,0,0,.34);
+ --glass-blur:18px;--glass-blur-strong:28px;
+}
+html{background:var(--bg);scroll-padding-top:100px}
+body{background:radial-gradient(ellipse at 12% 0%,rgba(91,124,220,.13),transparent 38%),radial-gradient(ellipse at 92% 55%,rgba(69,177,171,.08),transparent 35%),var(--bg);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:0;line-height:1.5}
+body::before{opacity:.22;filter:blur(70px)}
+.theme-effect{opacity:.28}
+.app-header{padding-top:calc(var(--safe-top) + 12px);padding-bottom:12px;background:linear-gradient(180deg,rgba(9,13,22,.94),rgba(9,13,22,.72));border-bottom:1px solid var(--glass-border);box-shadow:0 8px 28px rgba(0,0,0,.12)}
+.header-inner{justify-content:flex-end;max-width:1280px;gap:10px}
+.avatar-btn,.icon-btn{width:46px;height:46px;border-radius:15px;background:rgba(255,255,255,.055);border:1px solid var(--glass-border);box-shadow:inset 0 1px 0 rgba(255,255,255,.06);font-size:19px}
+.app-main{max-width:1280px;padding:28px 34px calc(110px + var(--safe-bottom))}
+.page{max-width:100%;animation:lifePageIn .32s cubic-bezier(.2,.7,.2,1) both}
+@keyframes lifePageIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.title-xl{font-size:clamp(27px,3vw,38px);font-weight:850;letter-spacing:-.045em;line-height:1.12}
+.subtitle{font-size:14px;color:var(--text-3);margin-top:7px;margin-bottom:22px}
+.section-title,.card-title{font-size:15px;font-weight:750;letter-spacing:-.015em}
+.card,.group-card,.method-card,.insight-card,.level-hero,.profile-hero,.lesson-section,.detox-progress-hero{
+ border:1px solid var(--glass-border);border-radius:22px;background:linear-gradient(145deg,rgba(255,255,255,.065),rgba(255,255,255,.025));box-shadow:var(--shadow-sm),inset 0 1px 0 rgba(255,255,255,.045);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)
+}
+.card{padding:19px;margin-bottom:13px}
+.group-card,.method-card{padding:18px}
+.card:hover,.group-card:hover,.method-card:hover{border-color:var(--glass-border-strong);box-shadow:var(--shadow-md)}
+.stat-value{font-size:clamp(24px,3vw,34px);font-weight:850;letter-spacing:-.04em}
+.stat-label,.footnote{color:var(--text-3);font-size:12px;line-height:1.5}
+.btn{border-radius:14px;min-height:42px;font-weight:700;letter-spacing:0}
+.btn-primary{background:linear-gradient(135deg,#7597ff,#8c83f3);color:#081326;box-shadow:0 8px 20px rgba(105,133,255,.22)}
+.btn-ghost{background:rgba(255,255,255,.055);border:1px solid var(--glass-border);color:var(--text)}
+input,select,textarea{border-radius:13px!important;border:1px solid var(--glass-border)!important;background:rgba(3,8,18,.34)!important;color:var(--text)!important;padding:12px 14px!important}
+input::placeholder,textarea::placeholder{color:var(--text-4)}
+.tab-bar-wrap{z-index:500}
+.tab-bar{gap:4px}
+.tab-item{border-radius:15px;padding:10px 12px;min-height:58px}
+.tab-item.active{background:linear-gradient(135deg,rgba(124,156,255,.19),rgba(155,140,255,.11));border:1px solid rgba(124,156,255,.2);color:#c8d5ff}
+.tab-item .tab-label{font-weight:650}
+.toast{border:1px solid var(--glass-border);border-radius:15px;box-shadow:var(--shadow-md);backdrop-filter:blur(18px)}
+.group-grid{grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:10px}
+.group-item{padding:17px 10px;border-radius:18px;background:rgba(255,255,255,.045);border:1px solid var(--glass-border)}
+.group-item-icon{font-size:25px;margin-bottom:8px}.group-item-label{font-size:11px}
+.compact-grid{gap:10px}.compact-item{border-radius:17px;padding:15px;background:rgba(255,255,255,.045);border:1px solid var(--glass-border)}
+.lesson-row{border:1px solid var(--glass-border);border-radius:14px;padding:13px 15px}
+.matrix-quadrant{border-radius:19px}
+.update-banner{background:rgba(17,26,42,.96);border-color:var(--glass-border-strong)}
+@media(min-width:760px){
+ .app-main{padding-top:34px;padding-bottom:120px}
+ .tab-bar-wrap{width:min(900px,calc(100% - 48px));bottom:22px;border-radius:23px;background:rgba(15,23,37,.9);border:1px solid var(--glass-border-strong);padding:8px;backdrop-filter:blur(24px)}
+ .tab-item{flex:1}
+ .grid-2{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+}
+@media(min-width:1200px){.app-main{padding-left:46px;padding-right:46px}.page>.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:759px){.app-main{padding:18px 16px calc(100px + var(--safe-bottom))}.app-header .header-inner{padding:0 16px}.card{padding:16px;border-radius:19px}.title-xl{font-size:27px}.tab-bar-wrap{background:rgba(10,15,25,.94);border-top:1px solid var(--glass-border);backdrop-filter:blur(24px)}}
+@media(max-width:390px){.app-main{padding-left:12px;padding-right:12px}.group-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.card{padding:14px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
 </style>
 </head>
 <body class="theme-dark">
