@@ -3957,9 +3957,50 @@ function renderBooks(){ renderStub('📚 Книги'); }
 function renderMusic(){ renderStub('🎵 Музыка'); }
 function renderGames(){ renderStub('🎮 Игры'); }
 function renderPodcasts(){ renderStub('🎧 Подкасты'); }
-function renderGoals(){ renderStub('🎯 Цели'); }
-function renderNotes(){ renderStub('📝 Заметки'); }
-function renderJournal(){ renderStub('📓 Дневник'); }
+function renderPersonalCollection(kind){
+  var config={
+    goals:{title:'🎯 Цели',subtitle:'Формулируй результат и отмечай завершение',key:'customGoals',placeholder:'Например: выучить JavaScript',button:'Добавить цель',category:'Приоритет',options:['Высокий','Средний','Низкий']},
+    notes:{title:'📝 Заметки',subtitle:'Идеи, наблюдения и полезные мысли',key:'customNotes',placeholder:'Заголовок заметки',button:'Сохранить заметку',category:'Тип',options:['Идея','Работа','Обучение','Личное']},
+    journal:{title:'📓 Дневник',subtitle:'Фиксируй события, мысли и состояние',key:'journalEntries',placeholder:'Что сегодня произошло?',button:'Записать в дневник',category:'Настроение',options:['😊 Хорошее','😐 Нейтральное','😔 Сложное','🔥 Продуктивное']}
+  }[kind];
+  var rows=state[config.key];if(!Array.isArray(rows))rows=[];
+  var html='<div class="page workspace-page"><div class="title-xl">'+config.title+'</div><div class="subtitle">'+config.subtitle+'</div>';
+  html+='<div class="card mb-3"><div class="field"><label class="field-label">'+(kind==='journal'?'Запись':'Название')+'</label><textarea id="collectionText" maxlength="3000" placeholder="'+config.placeholder+'"></textarea></div>';
+  html+='<div class="field"><label class="field-label">'+config.category+'</label><select id="collectionCategory">'+config.options.map(function(o){return '<option>'+o+'</option>';}).join('')+'</select></div>';
+  html+='<button class="btn btn-primary btn-block" onclick="addPersonalCollection(\''+kind+'\')">'+config.button+'</button></div>';
+  html+='<div class="row-between mb-2"><div class="card-title">История</div><div class="footnote">'+rows.length+' записей</div></div>';
+  if(!rows.length)html+='<div class="empty"><div class="empty-icon">'+(kind==='goals'?'🎯':kind==='notes'?'📝':'📓')+'</div><div class="empty-title">Пока пусто</div><div class="footnote">Добавь первую запись выше</div></div>';
+  rows.slice().reverse().forEach(function(item){
+    html+='<div class="card mb-2"><div class="row-between"><div class="list-title">'+esc(item.title||item.text||'Без названия')+'</div><button class="btn btn-ghost btn-sm" onclick="deletePersonalCollection(\''+kind+'\',\''+esc(item.id)+'\')">Удалить</button></div>';
+    if(item.category)html+='<div class="footnote">'+esc(item.category)+'</div>';
+    if(item.note)html+='<div class="body-text mt-2">'+esc(item.note)+'</div>';
+    if(item.createdAt)html+='<div class="footnote mt-2">'+new Date(item.createdAt).toLocaleString('ru-RU')+'</div>';
+    if(kind==='goals')html+='<button class="btn '+(item.done?'btn-ghost':'btn-primary')+' btn-sm mt-2" onclick="togglePersonalGoal(\''+esc(item.id)+'\')">'+(item.done?'✓ Выполнено':'Отметить выполненной')+'</button>';
+    html+='</div>';
+  });
+  html+='</div>';document.getElementById('app').innerHTML=html;
+}
+function addPersonalCollection(kind){
+  var cfg={goals:'customGoals',notes:'customNotes',journal:'journalEntries'}[kind];
+  var field=document.getElementById('collectionText'),category=document.getElementById('collectionCategory');
+  if(!cfg||!field||!field.value.trim()){toast('Сначала добавь текст','warning');return;}
+  if(!Array.isArray(state[cfg]))state[cfg]=[];
+  var value=field.value.trim();
+  state[cfg].push({id:uid(),title:kind==='journal'?value.split(/\\n/)[0].slice(0,100):value,text:value,note:kind==='journal'?'':value,category:category?category.value:'',done:false,createdAt:nowISO()});
+  save();haptic('success');toast('Сохранено','success');renderPersonalCollection(kind);
+}
+function deletePersonalCollection(kind,id){
+  var cfg={goals:'customGoals',notes:'customNotes',journal:'journalEntries'}[kind];
+  if(!cfg||!Array.isArray(state[cfg]))return;
+  state[cfg]=state[cfg].filter(function(x){return x.id!==id;});save();renderPersonalCollection(kind);
+}
+function togglePersonalGoal(id){
+  var item=(state.customGoals||[]).find(function(x){return x.id===id;});if(!item)return;
+  item.done=!item.done;item.completedAt=item.done?nowISO():null;save();haptic('success');renderPersonalCollection('goals');
+}
+function renderGoals(){ renderPersonalCollection('goals'); }
+function renderNotes(){ renderPersonalCollection('notes'); }
+function renderJournal(){ renderPersonalCollection('journal'); }
 function renderDailySurvey(){ renderStub('📋 Опрос'); }
 function renderSurvey(){ renderStub('📋 Опрос'); }
 function renderPersonalPlan(){ renderStub('🧭 Персональный план'); }
