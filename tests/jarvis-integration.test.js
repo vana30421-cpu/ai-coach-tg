@@ -211,3 +211,14 @@ test('analytics compares recent and previous weeks and respects the selected dom
  assert.match(app,/var selected=getLifeStatsFilter\(\)\.category/);
  assert.match(app,/function saveLifeStatsFilter\(key,value\)/);
 });
+
+
+test('settings preferences actually apply font scale, motion and haptic controls',()=>{
+ assert.match(app,/life-disable-motion/);
+ assert.match(app,/state\.settings\[key\]=value/);
+ assert.match(app,/state\.settingsV2\.haptic===false/);
+ assert.match(index,/body\.life-disable-motion/);
+});
+test('Jarvis recommendation actions navigate to the recommendation target',()=>{
+ assert.match(app,/function applyJarvisRecommendation\(id\)[\s\S]*?if\(item\.target\)\{?navigate\(item\.target\)/);
+});
