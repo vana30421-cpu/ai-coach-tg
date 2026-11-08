@@ -104,3 +104,18 @@ test('calendar supports local event create, complete and delete',()=>{
   assert.match(app,/source:'lifeos'/);
   assert.doesNotMatch(app,/function renderCalendar\(\)\{\s*renderStub/);
 });
+
+test('statistics dashboard aggregates detailed data across LIFE OS domains',()=>{
+  for(const name of ['buildComprehensiveStats','getJarvisAnalytics','runJarvisAutopilot','renderDetailedStats','setStatsPeriod'])assert.ok(app.includes('function '+name),name+' exists');
+  assert.match(app,/screenDailyAvg/);
+  assert.match(app,/fsrsReviews/);
+  assert.match(app,/coverage/);
+  assert.match(app,/financeNet/);
+});
+test('Jarvis autopilot uses statistics and only changes safe focus settings',()=>{
+  assert.match(app,/function setJarvisAutopilot\(enabled\)/);
+  assert.match(app,/d\.autopilotEnabled/);
+  assert.match(app,/d\.focusDefault=suggested/);
+  assert.match(app,/Задачи, финансы, здоровье и личные данные без подтверждения не меняет/);
+  assert.match(app,/function applyJarvisRecommendation\(id\)/);
+});
