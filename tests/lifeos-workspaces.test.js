@@ -24,7 +24,7 @@ function sandboxFor(source){
   ANTISTRESS_PRACTICES:[{id:'as_breath_sigh',cat:'breath',emoji:'😮‍💨',title:'Физиологический вздох',desc:'Спокойный выдох',duration:60,steps:['Вдох','Двойной вдох','Длинный выдох']}],
   PET_STAGES:[{id:1,emoji:'🥚',name:'Яйцо',minXP:0,maxXP:100,desc:'Начало'},{id:2,emoji:'🐣',name:'Птенец',minXP:100,maxXP:300,desc:'Рост'}]
  };
- sandbox.window=sandbox;vm.createContext(sandbox);vm.runInContext(source,sandbox);return {sandbox,values,appRoot};
+ sandbox.addEventListener=()=>{};sandbox.window=sandbox;vm.createContext(sandbox);vm.runInContext(source,sandbox);return {sandbox,values,appRoot};
 }
 
 test('workspace and system extensions are syntactically valid and loaded by the PWA',()=>{
