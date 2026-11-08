@@ -23,7 +23,7 @@ export default {
     if (origin && origin !== allowedOrigin) return json({ error: "ORIGIN_NOT_ALLOWED" }, 403, headers);
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: headers });
     if (request.method !== "POST") return json({ error: "METHOD_NOT_ALLOWED" }, 405, headers);
-    if (!env.OPENAI_API_KEY || !env.JARVIS_ACCESS_CODE) return json({ error: "AI_NOT_CONFIGURED", message: "На Worker не настроены секреты OPENAI_API_KEY и JARVIS_ACCESS_CODE." }, 503, headers);
+    if (!env.JARVIS_ACCESS_CODE) return json({ error: "AI_NOT_CONFIGURED", message: "На Worker не настроен секрет JARVIS_ACCESS_CODE." }, 503, headers);
     if (!safeEqual(request.headers.get("X-Jarvis-Access-Code"), env.JARVIS_ACCESS_CODE)) return json({ error: "UNAUTHORIZED", message: "Код доступа Джарвиса неверный." }, 401, headers);
     const length = Number(request.headers.get("content-length") || 0);
     if (length > 24000) return json({ error: "REQUEST_TOO_LARGE" }, 413, headers);
@@ -48,26 +48,52 @@ export default {
       "Помогай анализировать привычки, задачи, сон, воду, настроение, экранное время, обучение и зрительные симптомы. Не ставь диагнозы и не назначай лечение. При внезапной потере зрения, сильной боли, новых вспышках или множественных новых мушках советуй срочную очную медицинскую помощь.",
       "Если данных недостаточно, прямо скажи, каких именно данных не хватает, и предложи один простой следующий шаг."
     ].join("\n");
-    let upstream;
+    const provider = body.provider === "gemini" ? "gemini" : "openai";
+    let upstream, data = {}, answer = "";
     try {
-      upstream = await fetch("https://api.openai.com/v1/responses", {
-        method: "POST",
-        headers: { "Authorization": "Bearer " + env.OPENAI_API_KEY, "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: env.OPENAI_MODEL || "gpt-5-mini",
-          instructions: instructions + "\n\nСводка данных LIFEOS (может быть неполной):\n" + context,
-          input: history.concat([{ role: "user", content: message }]),
-          max_output_tokens: 650
-        })
-      });
+      if (provider === "gemini") {
+        if (!env.GEMINI_API_KEY) return json({ error: "PROVIDER_NOT_CONFIGURED", message: "Для Gemini добавь секрет GEMINI_API_KEY в Cloudflare Worker." }, 503, headers);
+        const contents = history.concat([{ role: "user", content: message }]).map(function (m) {
+          return { role: m.role === "assistant" ? "model" : "user", parts: [{ text: m.content }] };
+        });
+        upstream = await fetch("https://generativelanguage.googleapis.com/v1beta/models/" + (env.GEMINI_MODEL || "gemini-2.5-flash") + ":generateContent", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "x-goog-api-key": env.GEMINI_API_KEY },
+          body: JSON.stringify({
+            systemInstruction: { parts: [{ text: instructions + "\n\nСводка данных LIFEOS (может быть неполной):\n" + context }] },
+            contents: contents,
+            generationConfig: { maxOutputTokens: 700, temperature: 0.5 }
+          })
+        });
+      } else {
+        if (!env.OPENAI_API_KEY) return json({ error: "PROVIDER_NOT_CONFIGURED", message: "Для OpenAI добавь секрет OPENAI_API_KEY в Cloudflare Worker." }, 503, headers);
+        upstream = await fetch("https://api.openai.com/v1/responses", {
+          method: "POST",
+          headers: { "Authorization": "Bearer " + env.OPENAI_API_KEY, "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: env.OPENAI_MODEL || "gpt-5-mini",
+            instructions: instructions + "\n\nСводка данных LIFEOS (может быть неполной):\n" + context,
+            input: history.concat([{ role: "user", content: message }]),
+            max_output_tokens: 650
+          })
+        });
+      }
     } catch (_) { return json({ error: "UPSTREAM_UNAVAILABLE", message: "Не удалось связаться с AI-сервисом." }, 502, headers); }
-    const data = await upstream.json().catch(function () { return {}; });
-    if (!upstream.ok) return json({ error: "AI_PROVIDER_ERROR", message: data.error && data.error.message ? data.error.message.slice(0, 300) : "AI-сервис вернул ошибку." }, 502, headers);
-    let answer = String(data.output_text || "").trim();
-    if (!answer && Array.isArray(data.output)) data.output.forEach(function (item) {
-      (item.content || []).forEach(function (part) { if (part.type === "output_text" && part.text) answer += part.text; });
-    });
-    if (!answer) return json({ error: "EMPTY_AI_RESPONSE" }, 502, headers);
-    return json({ reply: answer.slice(0, 5000) }, 200, headers);
+    data = await upstream.json().catch(function () { return {}; });
+    if (!upstream.ok) {
+      const messageText = data.error && data.error.message || data.error && data.error.status || "AI-сервис вернул ошибку.";
+      return json({ error: "AI_PROVIDER_ERROR", message: String(messageText).slice(0, 300) }, 502, headers);
+    }
+    if (provider === "gemini") {
+      const candidates = data.candidates || [];
+      answer = candidates.map(function (c) { return (c.content && c.content.parts || []).map(function (p) { return p.text || ""; }).join(""); }).join("\n").trim();
+    } else {
+      answer = String(data.output_text || "").trim();
+      if (!answer && Array.isArray(data.output)) data.output.forEach(function (item) {
+        (item.content || []).forEach(function (part) { if (part.type === "output_text" && part.text) answer += part.text; });
+      });
+    }
+    if (!answer) return json({ error: "EMPTY_AI_RESPONSE", message: "Модель не вернула текст. Попробуй ещё раз." }, 502, headers);
+    return json({ reply: answer.slice(0, 5000), provider: provider }, 200, headers);
   }
 };
