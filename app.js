@@ -3909,6 +3909,7 @@ function renderObsidian(){ renderStub('📓 Obsidian'); }
 function renderProjectEditor(){ renderStub('✏️ Редактор проекта'); }
 function renderModuleDetail(){ renderStub('📖 Модуль курса'); }
 function renderAI(){ renderJarvis(); }
+function renderFocus(){ renderJarvis(); }
 function getJarvisState(){
   if(!state.jarvis)state.jarvis={messages:[],checkins:[],focus:null};
   if(!Array.isArray(state.jarvis.messages))state.jarvis.messages=[];
@@ -4024,7 +4025,7 @@ function renderJarvisMethods(){
   html+='<button class="btn btn-ghost btn-block" onclick="navigate(\'ai\')">← К Джарвису</button></div>';document.getElementById('app').innerHTML=html;
 }
 
-function renderMethods(){ renderStub('🎯 Методики'); }
+function renderMethods(){ renderJarvisMethods(); }
 function renderRecovery(){ renderStub('🌿 Восстановление'); }
 function renderMedical(){ renderStub('🏥 Медицина'); }
 function renderEntertainment(){ renderStub('🎬 Досуг'); }
