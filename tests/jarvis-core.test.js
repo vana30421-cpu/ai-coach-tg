@@ -1,0 +1,14 @@
+'use strict';
+const test=require('node:test');
+const assert=require('node:assert/strict');
+const core=require('../jarvis-core.js');
+test('normalizes Russian text, including ё',()=>assert.equal(core.normalize('  Ёлка   ДОМОЙ '),'елка домой'));
+test('parses task creation',()=>assert.deepEqual(core.parseCommand('Добавь задачу: Прочитать 10 страниц'),{type:'add_task',title:'прочитать 10 страниц'}));
+test('parses task list',()=>assert.equal(core.parseCommand('покажи мои задачи').type,'list_tasks'));
+test('parses daily summary',()=>assert.equal(core.parseCommand('сводка').type,'summary'));
+test('bounds focus duration',()=>assert.equal(core.parseCommand('фокус 999').minutes,90));
+test('uses default focus duration',()=>assert.equal(core.parseCommand('помодоро').minutes,25));
+test('routes section navigation',()=>assert.deepEqual(core.parseCommand('открой память'),{type:'navigate',page:'memory'}));
+test('recognizes self-check',()=>assert.equal(core.parseCommand('запусти самооценку').type,'checkin'));
+test('unknown text remains chat',()=>assert.deepEqual(core.parseCommand('Привет, Джарвис'),{type:'chat',text:'Привет, Джарвис'}));
+test('empty input is safe',()=>assert.equal(core.parseCommand('   ').type,'empty'));
