@@ -18,6 +18,7 @@ test('Jarvis command core is included in offline shell cache',()=>assert.match(s
 test('PWA cache is versioned and activates the fresh worker without a stale waiting worker',()=>{assert.match(sw,/const CACHE='life-os-v\d+'/);assert.match(sw,/await self\.skipWaiting\(\)/);assert.match(sw,/ignoreSearch:true/);});
 test('app scripts use a cache-busting version',()=>{for(const name of ['content.js','content2.js','content3.js','jarvis-core.js','app.js','lifeos-workspaces.js','lifeos-systems.js'])assert.match(index,new RegExp('src="'+name.replace('.','[.]')+'[?]v=[0-9]+(?:-[0-9]+)?"'));});
 
+test('initial navigation waits until all deferred extension scripts have executed',()=>assert.match(app,/if\(document\.readyState === 'complete'\)[\s\S]*document\.addEventListener\('DOMContentLoaded', init, \{once:true\}\)/));
 test('extension-backed routes are used instead of stale legacy renderers',()=>{
   assert.match(app,/schedule: window\.renderSchedule \|\| renderSchedule/);
   assert.match(app,/calendar: window\.renderCalendar \|\| renderCalendar/);
