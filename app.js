@@ -923,6 +923,17 @@ window.openThemePicker = openThemePicker;
 window.setTheme = setTheme;
 window.openStatsQuick = openStatsQuick;
 window.installPWA = installPWA;
+window.jarvisQuick = jarvisQuick;
+window.sendJarvisMessage = sendJarvisMessage;
+window.startJarvisVoice = startJarvisVoice;
+window.speakJarvisLast = speakJarvisLast;
+window.startJarvisFocus = startJarvisFocus;
+window.stopJarvisFocus = stopJarvisFocus;
+window.saveJarvisCheckin = saveJarvisCheckin;
+window.setJarvisMode = setJarvisMode;
+window.setJarvisFocusDefault = setJarvisFocusDefault;
+window.clearJarvisChat = clearJarvisChat;
+window.renderJarvisAIProviders = renderJarvisAIProviders;
 window.toast = toast;
 window.haptic = haptic;
 window.esc = esc;
@@ -3934,7 +3945,7 @@ function renderJarvis(){
   if(!data.messages.length)html+='<div class="jarvis-message bot"><b>Джарвис</b><p>Готов помогать с задачами, планом, фокусом и обучением. Выбери режим, напиши команду или используй быстрые действия. В офлайн-режиме доступны локальные функции; генеративный ИИ требует отдельного подключения.</p></div>';
   data.messages.slice(-60).forEach(function(m){html+='<div class="jarvis-message '+(m.role==='user'?'user':'bot')+'"><b>'+(m.role==='user'?'Ты':'Джарвис')+'</b><p>'+esc(m.text).replace(/\n/g,'<br>')+'</p></div>';});
   html+='</div><div class="jarvis-compose"><input id="jarvisInput" type="text" maxlength="1000" autocomplete="off" placeholder="Например: добавь задачу — подготовить план" onkeydown="if(event.key===\'Enter\'){event.preventDefault();sendJarvisMessage();}"><button class="btn btn-primary" onclick="sendJarvisMessage()" aria-label="Отправить">➤</button><button class="btn btn-ghost" onclick="startJarvisVoice()" title="Голосовой ввод">🎙</button></div></div>';
-  html+='<div class="section-title mt-3">Инструменты</div><div class="grid-2"><button class="card jarvis-tool" onclick="jarvisQuick(\'самооценка\')">📋 Самооценка<br><small>Дневной срез состояния</small></button><button class="card jarvis-tool" onclick="jarvisQuick(\'методики\')">🧪 Методики<br><small>Практики с источниками</small></button><button class="card jarvis-tool" onclick="navigate(\'fsrs\')">🧠 Повторение<br><small>Карточки и FSRS</small></button><button class="card jarvis-tool" onclick="navigate(\'diagnostic\')">🛠 Диагностика<br><small>Проверка приложения</small></button></div>';
+  html+='<div class="section-title mt-3">Инструменты</div><div class="grid-2"><button class="card jarvis-tool" onclick="jarvisQuick(\'самооценка\')">📋 Самооценка<br><small>Дневной срез состояния</small></button><button class="card jarvis-tool" onclick="jarvisQuick(\'методики\')">🧪 Методики<br><small>Практики с источниками</small></button><button class="card jarvis-tool" onclick="navigate(\'fsrs\')">🧠 Повторение<br><small>Карточки и FSRS</small></button><button class="card jarvis-tool" onclick="navigate(\'diagnostic\')">🛠 Диагностика<br><small>Проверка приложения</small></button></button><button class="card jarvis-tool" onclick="renderJarvisAIProviders()">🤖 Каталог ИИ<br><small>Популярные помощники</small></button></div>';
   if(data.checkins.length){var recent=data.checkins.slice(-7);var avg=function(k){return (recent.reduce(function(n,x){return n+(Number(x[k])||0);},0)/recent.length).toFixed(1);};html+='<div class="card mt-3"><div class="card-title">Самооценка · последние '+recent.length+' записей</div><div class="grid-2"><div class="footnote">Энергия <b>'+avg('energy')+'/5</b></div><div class="footnote">Фокус <b>'+avg('focus')+'/5</b></div><div class="footnote">Сон <b>'+avg('sleep')+'/5</b></div><div class="footnote">Стресс <b>'+avg('stress')+'/5</b></div></div><div class="footnote mt-2">Личный трекер, не клинический тест.</div></div>';}
   html+='<div class="card mt-3"><div class="card-title">Возможности и ограничения</div><p class="footnote">Офлайн: задачи, переходы, таймер, история и самооценка. Голос зависит от браузера и разрешений. Для свободных ответов уровня ChatGPT нужен подключённый ИИ-сервис и безопасное хранение ключа на сервере.</p></div></div>';
   document.getElementById('app').innerHTML=html;
@@ -4031,6 +4042,24 @@ function saveJarvisCheckin(){
   var d=getJarvisState(),row={date:today(),at:nowISO()};['energy','focus','sleep','stress'].forEach(function(k){row[k]=Number((document.getElementById('jarvis-'+k)||{}).value)||3;});
   d.checkins.push(row);if(d.checkins.length>365)d.checkins=d.checkins.slice(-365);save();toast('Самооценка сохранена','success');navigate('ai');
 }
+function renderJarvisAIProviders(){
+  var providers=[
+    {name:'ChatGPT',kind:'Универсальный помощник',desc:'Диалог, работа с файлами, проекты, голос, поиск, создание материалов и выполнение многошаговых задач.',best:'Универсальные задачи и работа с контекстом',url:'https://chatgpt.com/overview',emoji:'✳️'},
+    {name:'Claude',kind:'Анализ и длинные документы',desc:'Работа с большими материалами, проектным контекстом и памятью; сильные сценарии письма, анализа и программирования.',best:'Документы, анализ и код',url:'https://claude.com/product/overview',emoji:'◈'},
+    {name:'Gemini',kind:'Экосистема Google',desc:'Мультимодальный помощник и интеграции с сервисами Google. Может работать с подключёнными приложениями и сложными задачами.',best:'Google Workspace и мультимодальные задачи',url:'https://gemini.google/overview/personal-intelligence/',emoji:'✦'},
+    {name:'Perplexity',kind:'Поиск и исследования',desc:'Поиск по интернету с источниками, углублённое исследование, сравнение материалов и исследовательские процессы.',best:'Проверка фактов и поиск источников',url:'https://www.perplexity.ai/hub',emoji:'⌕'},
+    {name:'Microsoft Copilot',kind:'Работа и Microsoft 365',desc:'Помощь в Word, Excel, PowerPoint, Outlook и Teams; доступность зависит от приложения, лицензии и настроек организации.',best:'Документы и офисные процессы',url:'https://learn.microsoft.com/copilot/overview',emoji:'▦'},
+    {name:'Grok',kind:'Диалог и мультимедиа',desc:'Чат, голос, загрузка файлов, генерация изображений и видео, подключаемые инструменты. Доступность функций зависит от тарифа.',best:'Мультимедиа и быстрый диалог',url:'https://docs.x.ai/grok/overview',emoji:'𝕏'},
+    {name:'DeepSeek',kind:'Рассуждение и разработка',desc:'Модели с режимами рассуждения, API и поддержкой инструментов. Подходит для анализа и программирования.',best:'Логика, код и API-интеграции',url:'https://deepseek.com/en/',emoji:'⌘'},
+    {name:'Mistral Vibe',kind:'Рабочие и кодовые агенты',desc:'Режимы чата, продуктивности и разработки; ориентирован на многошаговую работу с инструментами и кодом.',best:'Агентные процессы и разработка',url:'https://chat.mistral.ai/',emoji:'✺'}
+  ];
+  var html='<div class="page jarvis-page jarvis-ai-directory"><div class="row-between"><div><div class="title-xl">Каталог ИИ</div><div class="subtitle">Основные современные помощники и для чего они полезны</div></div><button class="btn btn-ghost btn-sm" onclick="navigate(\\'ai\\')">← Назад</button></div>';
+  html+='<div class="card mb-3"><div class="card-title">Джарвис внутри LIFE OS</div><p class="footnote mt-2">Джарвис — локальный управляющий слой приложения: задачи, таймеры, переходы, настройки и личные записи работают на устройстве. Он не является отдельной большой языковой моделью. Внешние модели можно подключать через защищённый серверный шлюз — без хранения секретных API-ключей в браузере.</p></div>';
+  providers.forEach(function(p){html+='<article class="card jarvis-provider mb-2"><div class="row-between"><div class="row"><span class="jarvis-provider-icon">'+p.emoji+'</span><div><div class="card-title">'+p.name+'</div><div class="footnote">'+p.kind+'</div></div></div><span class="badge">Справка</span></div><p class="footnote mt-2">'+p.desc+'</p><div class="jarvis-provider-best">Лучше всего: '+p.best+'</div><a class="btn btn-ghost btn-sm mt-2" href="'+p.url+'" target="_blank" rel="noopener noreferrer">Официальная страница ↗</a></article>';});
+  html+='<p class="footnote mt-3">Это обзор основных платформ, а не полный список всех моделей. Возможности, названия моделей, тарифы и доступность меняются; перед подключением проверяй официальную документацию и условия обработки данных.</p><button class="btn btn-primary btn-block mt-3" onclick="navigate(\\'ai\\')">Вернуться к Джарвису</button></div>';
+  document.getElementById('app').innerHTML=html;
+}
+
 function renderJarvisMethods(){
   var methods=[
     ['Активное вспоминание','Закрой материал и попробуй воспроизвести ответ по памяти. Затем проверь ошибки.','Высокая полезность для обучения','https://journals.sagepub.com/stoken/rbtfl/Z10jaVH/60XQM/full?cookieSet=1'],
