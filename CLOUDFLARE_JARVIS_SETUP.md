@@ -14,11 +14,13 @@ npx wrangler secret put JARVIS_ACCESS_CODE --config wrangler.jarvis.toml
 
 Либо создай Worker вручную в Cloudflare Dashboard из `workers/jarvis-worker.js`. Добавь Worker Secrets:
 
-- `OPENAI_API_KEY` — Secret, API-ключ OpenAI. Не вставлять его в HTML, JavaScript или GitHub.
+- `OPENAI_API_KEY` — Secret, API-ключ OpenAI (если используешь OpenAI).
+- `GEMINI_API_KEY` — Secret, ключ Google AI Studio (если используешь Gemini). Можно добавить оба и переключать провайдера в настройках Джарвиса. Ключи нельзя вставлять в HTML, JavaScript или GitHub.
 - `JARVIS_ACCESS_CODE` — Secret, придумай отдельный длинный код доступа. Его нужно будет ввести в настройках Джарвиса внутри LIFEOS.
 
 Переменные Worker:
-- `OPENAI_MODEL` — уже задана в `wrangler.jarvis.toml` (`gpt-5-mini`).
+- `OPENAI_MODEL` — `gpt-5-mini`.
+- `GEMINI_MODEL` — `gemini-2.5-flash`.
 - `ALLOWED_ORIGIN` — уже задана как `https://vana30421-cpu.github.io`; если у сайта другой домен, измени её.
 
 После деплоя скопируй URL Worker вида `https://lifeos-jarvis-api.<твой-subdomain>.workers.dev`.
