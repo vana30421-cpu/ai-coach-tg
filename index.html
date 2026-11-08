@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,viewport-fit=cover">
 <meta name="theme-color" content="#000">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -505,6 +505,25 @@ input[type="checkbox"]:checked::after{content:'✓';position:absolute;inset:0;di
 @media (prefers-reduced-motion: reduce){
 *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
+
+:root{color-scheme:dark;scroll-behavior:smooth}body{min-width:320px}
+button,input,select,textarea{font:inherit}button{touch-action:manipulation}
+.app-main{width:100%;max-width:1120px;margin:0 auto;padding:18px 22px calc(92px + var(--safe-bottom))}
+.app-header .header-inner{max-width:1120px;margin:0 auto;padding-left:22px;padding-right:22px}
+.tab-bar-wrap{padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right))}
+.card,.group-card,.insight-card{backface-visibility:hidden;transition:transform .22s var(--ease),border-color .22s var(--ease),box-shadow .22s var(--ease)}
+.btn,.tab-item,.icon-btn,.avatar-btn{transition:transform .18s var(--spring-soft),filter .18s var(--ease),background .18s var(--ease)}
+.btn:active,.tab-item:active,.icon-btn:active{transform:scale(.97)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--brand);outline-offset:3px}
+input,select,textarea{max-width:100%;min-width:0}.workspace-page{animation:pageEnter .28s var(--ease) both}
+@keyframes pageEnter{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+.update-banner{position:fixed;z-index:9999;left:50%;bottom:calc(86px + var(--safe-bottom));transform:translateX(-50%);width:min(520px,calc(100% - 24px));display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border:1px solid var(--glass-border-strong);border-radius:18px;background:var(--bg-2);color:var(--text);box-shadow:var(--shadow-lg);backdrop-filter:blur(20px)}
+.update-banner button{border:0;border-radius:12px;padding:10px 14px;background:var(--brand);color:#07111e;font-weight:800;white-space:nowrap;cursor:pointer}
+@media(min-width:760px){.app-main{padding-top:28px;padding-bottom:40px}.tab-bar-wrap{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);width:min(760px,calc(100% - 36px));border:1px solid var(--glass-border);border-radius:22px;background:color-mix(in srgb,var(--bg-2) 88%,transparent);box-shadow:var(--shadow-lg);backdrop-filter:blur(24px);padding:6px;z-index:300}.tab-bar{display:flex;justify-content:space-around}.tab-item{min-width:84px;border-radius:16px}.tab-item.active{background:var(--glass-3)}.app-header{padding-top:12px}.app-header .header-inner{min-height:64px}.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}.card:hover,.group-card:hover{transform:translateY(-2px);border-color:var(--glass-border-strong)}}
+@media(min-width:1100px){.app-main{padding-left:30px;padding-right:30px}.page{max-width:100%}}
+@media(max-width:759px){.app-main{padding-left:14px;padding-right:14px}.app-header{padding-top:calc(var(--safe-top) + 10px)}.tab-bar-wrap{padding-bottom:var(--safe-bottom)}}
+@media(hover:none){.card:hover,.group-card:hover{transform:none}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.workspace-page{animation:none}}
 </style>
 </head>
 <body class="theme-dark">
@@ -585,12 +604,25 @@ input[type="checkbox"]:checked::after{content:'✓';position:absolute;inset:0;di
   openFromUrl();
 })();
 (function(){
-  if('serviceWorker' in navigator){
-    window.addEventListener('load',function(){
-      navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(reg){if(reg.waiting)reg.waiting.postMessage({type:'SKIP_WAITING'});reg.update().catch(function(){});}).catch(function(error){console.warn('[PWA] Service Worker:',error);});
-    });
-  }
-})();
+ if(!('serviceWorker' in navigator))return;
+ var banner=null,reloading=false;
+ function offerUpdate(worker){
+  if(!worker||banner||!document.body)return;
+  banner=document.createElement('div');banner.className='update-banner';
+  var label=document.createElement('span');label.textContent='Доступно обновление Life OS';
+  var button=document.createElement('button');button.type='button';button.textContent='Обновить';
+  button.addEventListener('click',function(){button.disabled=true;button.textContent='Обновляем…';worker.postMessage({type:'SKIP_WAITING'});});
+  banner.append(label,button);document.body.appendChild(banner);
+ }
+ navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloading)return;reloading=true;if(banner)banner.remove();window.location.reload();});
+ window.addEventListener('load',function(){
+  navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'}).then(function(reg){
+   function inspect(){if(reg.waiting&&navigator.serviceWorker.controller)offerUpdate(reg.waiting);}
+   inspect();reg.addEventListener('updatefound',function(){var installing=reg.installing;if(!installing)return;installing.addEventListener('statechange',function(){if(installing.state==='installed')inspect();});});
+   reg.update().catch(function(){});document.addEventListener('visibilitychange',function(){if(!document.hidden)reg.update().catch(function(){});});
+  }).catch(function(error){console.warn('[PWA] Service Worker:',error);});
+ });
+})();;
 </script>
 </body>
 </html>
