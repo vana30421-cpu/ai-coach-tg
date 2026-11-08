@@ -106,3 +106,43 @@ test('Jarvis API sends context through Responses API and returns model text',asy
  assert.match(payload.instructions,/tasks/);
  assert.equal(payload.input.length,2);
 });
+
+test('schedule renders a selectable week and saves day-specific events with duration',()=>{
+ assert.match(app,/function renderSchedule\(\)/);
+ assert.match(app,/function addScheduleEvent\(date\)/);
+ assert.match(app,/function setLifeScheduleDate\(date\)/);
+ assert.match(app,/scheduleDuration/);
+ assert.match(app,/calendarEvents\.push\(\{id:uid\(\),source:'lifeos',title:title\.value\.trim\(\),date:date/);
+});
+test('journal stores one editable daily entry with reflection fields and preserves history',()=>{
+ for(const name of ['renderJournal','saveJournalEntry','deleteJournalEntry'])assert.match(app,new RegExp('function '+name+'\\('));
+ for(const id of ['journalText','journalMood','journalEnergy','journalWins','journalBlockers','journalGratitude','journalTomorrow'])assert.match(app,new RegExp('id="'+id+'"'));
+ assert.match(app,/state\.journalEntries\.findIndex\(function\(x\)\{return x\.date===today\(\);\}\)/);
+});
+test('second brain stores searchable knowledge and exports diary and knowledge to Markdown',()=>{
+ for(const name of ['renderObsidianIntegration','saveSecondBrainItem','filterSecondBrain','deleteSecondBrainItem','exportToObsidian','openObsidianDailyNote'])assert.match(app,new RegExp('function '+name+'\\('));
+ assert.match(app,/state\.secondBrainItems\.push/);
+ assert.match(app,/## Дневник/);
+ assert.match(app,/## Знания/);
+ assert.match(app,/obsidian:\/\/daily\?vault=/);
+});
+test('anti-stress fast actions use real content IDs and timed practices can be completed',()=>{
+ assert.match(content,/id:'as_ground_54321'/);
+ for(const name of ['renderAntistress','startAntistress','startAntistressTimer','finishAntistress'])assert.match(app,new RegExp('function '+name+'\\('));
+ assert.match(app,/id="antiTimer"/);
+ assert.match(app,/clearInterval\(antiTimerHandle\)/);
+});
+test('pet hunger changes with elapsed time and feeding updates the live value',()=>{
+ for(const name of ['getPetLiveState','renderPet','renamePet','feedPet'])assert.match(app,new RegExp('function '+name+'\\('));
+ assert.match(app,/elapsed\*3/);
+ assert.match(app,/getPetLiveState\(\)\.hunger \+ 20/);
+ assert.match(app,/feedHistory/);
+});
+test('Jarvis exposes the Gemini provider and the Worker uses a server-side Gemini secret',()=>{
+ assert.match(app,/function setJarvisProvider\(value\)/);
+ assert.match(app,/value="gemini"/);
+ assert.match(app,/provider:d\.provider\|\|'openai'/);
+ assert.match(worker,/env\.GEMINI_API_KEY/);
+ assert.match(worker,/generativelanguage\.googleapis\.com/);
+ assert.match(worker,/gemini-2\.5-flash/);
+});
