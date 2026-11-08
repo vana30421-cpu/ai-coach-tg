@@ -5423,7 +5423,7 @@ function renderLearningPractice(){
  due.forEach(function(x){html+='<div class="list-row"><div class="list-body"><div class="list-title">'+esc(x.topic)+'</div><div class="footnote">'+esc(x.prompt||'')+' · повторений '+(x.reviewCount||0)+'</div></div><button class="btn btn-ghost btn-xs" onclick="startLearningReview(\''+x.id+'\')">Проверить</button></div>';});
  html+='</div><button class="btn btn-ghost btn-block" onclick="navigate(\'learning\')">← К обучению</button></div>';document.getElementById('app').innerHTML=html;
 }
-function learningNextInterval(rating){return ({1:1,2:2,3:3,4:7,5:14})[Number(rating)]||2;}
+function learningNextInterval(rating,reviewCount){var base=({1:1,2:2,3:4,4:7,5:14})[Number(rating)]||2;var reps=Math.max(0,Math.min(6,Number(reviewCount)||0));if(Number(rating)<=2)return base;return Math.min(60,Math.round(base*Math.pow(1.35,reps)));}
 function saveLearningPractice(){
  var topic=(document.getElementById('learnTopic').value||'').trim(),prompt=(document.getElementById('learnPrompt').value||'').trim(),recall=(document.getElementById('learnRecall').value||'').trim(),confidence=Number(document.getElementById('learnConfidence').value),minutes=Number(document.getElementById('learnMinutes').value);
  if(!topic||!recall)return toast('Укажи тему и запиши, что вспомнил','warning');
@@ -5440,8 +5440,8 @@ function saveLearningReview(id){
  var x=getLearningSessions().find(function(r){return r.id===id;});if(!x)return;
  var recall=(document.getElementById('learnReviewRecall')||{}).value||'',rating=Number((document.getElementById('learnReviewRating')||{}).value)||3;
  if(!recall.trim())return toast('Сначала воспроизведи ответ по памяти','warning');
- var d=new Date();d.setDate(d.getDate()+learningNextInterval(rating));x.reviewCount=(x.reviewCount||0)+1;x.nextReviewAt=d.toISOString().slice(0,10);x.lastReviewedAt=nowISO();
- if(!Array.isArray(x.history))x.history=[];x.history.push({at:nowISO(),rating:rating,recall:recall.trim()});if(x.history.length>50)x.history=x.history.slice(-50);
+ var prior=Number(x.reviewCount)||0,interval=learningNextInterval(rating,prior),d=new Date();d.setDate(d.getDate()+interval);x.reviewCount=prior+1;x.nextReviewAt=d.toISOString().slice(0,10);x.lastReviewedAt=nowISO();x.lastRating=rating;x.lastIntervalDays=interval;x.lapses=(Number(x.lapses)||0)+(rating===1?1:0);
+ if(!Array.isArray(x.history))x.history=[];x.history.push({at:nowISO(),rating:rating,recall:recall.trim(),intervalDays:interval});if(x.history.length>50)x.history=x.history.slice(-50);
  save();closeSheet();toast('Следующее повторение: '+d.toLocaleDateString('ru-RU'),'success');renderLearningPractice();
 }
 
