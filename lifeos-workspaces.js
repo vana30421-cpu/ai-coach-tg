@@ -60,20 +60,32 @@ window.saveObsidianVaultName=function(v){if(!state.integrations)state.integratio
 function md(title,body,tags){return '---\ntitle: "'+String(title||'').replace(/"/g,'\\"')+'"\ncreated: '+today()+'\ntags: ['+(tags||[]).map(function(t){return '"'+String(t).replace(/"/g,'\\"')+'"';}).join(', ')+']\n---\n\n'+String(body||'')+'\n';}
 function download(name,content){var blob=new Blob([content],{type:'text/markdown;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(function(){URL.revokeObjectURL(url);},1500);}
 window.saveObsidianVault=async function(){
- var b=ensureBrain(),journal=Array.isArray(state.journalEntries)?state.journalEntries:[];
+ var b=ensureBrain(),journal=Array.isArray(state.journalEntries)?state.journalEntries:[],tasks=Array.isArray(state.tasks)?state.tasks:[],habits=Array.isArray(state.habits)?state.habits:[],events=Array.isArray(state.calendarEvents)?state.calendarEvents:[],finance=Array.isArray(state.financeEntries)?state.financeEntries:[],mood=Array.isArray(state.customMood)?state.customMood:[],water=Array.isArray(state.customWater)?state.customWater:[],stress=Array.isArray(state.antistressEntries)?state.antistressEntries:[];
+ if(!confirm('Экспортировать в выбранный Obsidian Vault заметки, дневник, задачи, привычки, календарь, финансовые записи, настроение, воду и антистресс? Файл будет сохранён в папку, которую ты выберешь.'))return;
+ var areas=[
+  {name:'Tasks.md',title:'Задачи',body:tasks.map(function(x){return '- ['+(x.status==='completed'?'x':' ')+'] '+(x.title||'Без названия')+(x.due_date?' · срок '+x.due_date:'');}).join('\n')},
+  {name:'Habits.md',title:'Привычки',body:habits.map(function(x){return '- '+(x.emoji||'')+' '+(x.title||x.name||'Привычка')+' · серия '+(x.streak||0);}).join('\n')},
+  {name:'Calendar.md',title:'Календарь',body:events.filter(function(x){return x.source!=='google';}).map(function(x){return '- '+(x.date||'')+' '+(x.time||'')+' '+(x.title||'Событие')+' · '+(x.done?'выполнено':'план')+' · '+(x.category||'');}).join('\n')},
+  {name:'Finance.md',title:'Финансы',body:finance.map(function(x){return '- '+(x.date||'')+' · '+(x.type==='income'?'Доход':'Расход')+' · '+(x.amount||0)+' · '+(x.category||'')+' · '+(x.note||'');}).join('\n')},
+  {name:'Mood-and-Water.md',title:'Настроение и вода',body:'# Настроение\n'+mood.map(function(x){return '- '+x.date+' · '+x.score+'/10';}).join('\n')+'\n\n# Вода\n'+water.map(function(x){return '- '+x.date+' · '+x.count+' стаканов';}).join('\n')},
+  {name:'Antistress.md',title:'Антистресс',body:stress.map(function(x){return '- '+(x.date||'')+' · '+(x.title||x.practiceId||'Практика')+' · '+(x.durationSeconds||0)+' сек · напряжение '+(x.beforeStress==null?'—':x.beforeStress)+' → '+(x.afterStress==null?'—':x.afterStress);}).join('\n')}
+ ];
  if(window.showDirectoryPicker){
-  try{var root=await window.showDirectoryPicker({mode:'readwrite'}),base=await root.getDirectoryHandle('LifeOS',{create:true}),notes=await base.getDirectoryHandle('Notes',{create:true}),daily=await base.getDirectoryHandle('Daily Notes',{create:true});
+  try{
+   var root=await window.showDirectoryPicker({mode:'readwrite'}),base=await root.getDirectoryHandle('LifeOS',{create:true}),notes=await base.getDirectoryHandle('Notes',{create:true}),daily=await base.getDirectoryHandle('Daily Notes',{create:true}),areaDir=await base.getDirectoryHandle('Areas',{create:true});
    var write=async function(dir,name,text){var f=await dir.getFileHandle(name,{create:true}),w=await f.createWritable();await w.write(text);await w.close();};
-   await write(base,'Index.md','# LifeOS\n\n- [[Notes/Index]]\n- [[Daily Notes/Index]]');
-   await write(notes,'Index.md','# Заметки\n\n'+b.notes.map(function(n){return '- [['+n.title+']]';}).join('\n'));
+   await write(base,'Index.md','# LifeOS\n\n- [[Notes/Index]]\n- [[Daily Notes/Index]]\n- [[Areas/Index]]');
+   await write(notes,'Index.md','# Заметки\n\n'+b.notes.map(function(n){return '- [['+slug(n.title)+']]';}).join('\n'));
    for(var i=0;i<b.notes.length;i++){var n=b.notes[i];await write(notes,slug(n.title)+'.md',md(n.title,n.body,n.tags));}
    await write(daily,'Index.md','# Дневник\n\n'+journal.map(function(x){return '- [['+x.date+' '+slug(x.title)+']]';}).join('\n'));
-   for(var j=0;j<journal.length;j++){var e=journal[j];await write(daily,String(e.date||'entry')+'-'+slug(e.title)+'.md',md(e.title||'Дневник',e.text||e.body||'',['daily-note']));}
-   toast('Экспортировано файлов: '+(b.notes.length+journal.length),'success');return;
-  }catch(err){if(err&&err.name==='AbortError')return;toast('Не удалось записать папку. Подготовлю общий файл.','warning');}
+   for(var j=0;j<journal.length;j++){var e=journal[j];await write(daily,String(e.date||'entry')+'-'+slug(e.title)+'.md',md(e.title||'Дневник',[e.text||e.body||'',e.wins?'## Получилось\n'+e.wins:'',e.blockers?'## Трудности\n'+e.blockers:'',e.insight?'## Вывод\n'+e.insight:'',e.gratitude?'## Благодарность\n'+e.gratitude:'',e.tomorrow?'## Завтра\n'+e.tomorrow:''].filter(Boolean).join('\n\n'),e.tags||['daily-note']));}
+   await write(areaDir,'Index.md','# Данные LIFE OS\n\n'+areas.map(function(x){return '- [['+x.name.replace(/\.md$/,'')+']]';}).join('\n'));
+   for(var k=0;k<areas.length;k++)await write(areaDir,areas[k].name,'# '+areas[k].title+'\n\nЭкспортировано: '+today()+'\n\n'+(areas[k].body||'Нет записей.')+'\n');
+   toast('Obsidian Vault обновлён: '+(b.notes.length+journal.length+areas.length)+' файлов','success');return;
+  }catch(err){if(err&&err.name==='AbortError')return;toast('Не удалось записать папку. Подготовлю общий Markdown-файл.','warning');}
  }
- var bundle='# LifeOS Obsidian Export\n\n'+b.notes.map(function(n){return '\n---\n# '+n.title+'\n\n'+md(n.title,n.body,n.tags);}).join('\n')+'\n\n# Дневник\n'+journal.map(function(e){return '\n## '+(e.date||'')+' '+(e.title||'')+'\n\n'+(e.text||e.body||'');}).join('\n');
- download('LifeOS-Obsidian-'+today()+'.md',bundle);toast('Markdown-файл подготовлен','success');
+ var bundle='# LifeOS — полный экспорт\n\nЭкспортировано: '+today()+'\n\n## Второй мозг\n'+b.notes.map(function(n){return '\n### '+n.title+'\n\n'+md(n.title,n.body,n.tags);}).join('\n')+'\n\n# Дневник\n'+journal.map(function(e){return '\n## '+(e.date||'')+' '+(e.title||'')+'\n\n'+(e.text||e.body||'')+'\n\nПолучилось: '+(e.wins||'—')+'\n\nТрудности: '+(e.blockers||'—')+'\n\nВывод: '+(e.insight||'—')+'\n\nБлагодарность: '+(e.gratitude||'—');}).join('\n')+'\n\n# Данные по областям\n'+areas.map(function(x){return '\n## '+x.title+'\n\n'+(x.body||'Нет записей.');}).join('\n');
+ download('LifeOS-Full-Obsidian-'+today()+'.md',bundle);toast('Полный Markdown-экспорт подготовлен','success');
 };
 window.importObsidianFiles=function(){
  var input=document.createElement('input');input.type='file';input.accept='.md,.markdown,.txt';input.multiple=true;input.setAttribute('webkitdirectory','');
