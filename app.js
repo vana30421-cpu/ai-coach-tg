@@ -10,7 +10,7 @@
 /* ============ КОНСТАНТЫ ============ */
 var STORAGE_KEY = 'life_os_v45';
 var STORAGE_BACKUP = 'life_os_backup_v45';
-var CURRENT_VERSION = '52';
+var CURRENT_VERSION = '53';
 var LEGACY_KEYS = ['life_os_v44','life_os_v43','life_os_v40'];
 
 /* ============ TELEGRAM ============ */
@@ -4174,13 +4174,169 @@ function addWalkEntry(){
 }
 function deleteWalkEntry(id){if(!confirm('Удалить эту прогулку?'))return;state.walks=getWalkEntries().filter(function(w){return w.id!==id;});save();renderWalks();}
 
-function renderWorkouts(){ renderStub('🏋️ Тренировки'); }
-function renderMeditation(){ renderStub('🧘 Медитации'); }
-function renderMeds(){ renderStub('💊 Лекарства'); }
-function renderGcal(){ renderStub('📅 Календарь'); }
-function renderCalendar(){ renderStub('📅 Календарь'); }
-function renderNotifications(){ renderStub('🔔 Уведомления'); }
-function renderIntegrations(){ renderStub('🔗 Интеграции'); }
+
+/* ============ ПОЛНОЦЕННЫЕ ЛИЧНЫЕ ТРЕКЕРЫ ============ */
+function ensureLifeOSLists(){
+  ['customWorkouts','customMeditation','screenEntries','calendarEvents'].forEach(function(k){if(!Array.isArray(state[k]))state[k]=[];});
+  if(!state.screenStats||typeof state.screenStats!=='object')state.screenStats={};
+}
+function formatLifeMinutes(value){
+  var n=Math.max(0,Math.round(Number(value)||0));
+  return Math.floor(n/60)+' ч '+(n%60)+' мин';
+}
+function renderWorkouts(){
+  ensureLifeOSLists();
+  var rows=state.customWorkouts.slice().sort(function(a,b){return String(b.date||'').localeCompare(String(a.date||''));});
+  var weekStart=new Date();weekStart.setDate(weekStart.getDate()-6);weekStart.setHours(0,0,0,0);
+  var week=rows.filter(function(x){return new Date((x.date||'')+'T00:00:00')>=weekStart;});
+  var minutes=week.reduce(function(n,x){return n+(Number(x.minutes)||0);},0);
+  var html='<div class="page"><div class="title-xl">🏋️ Тренировки</div><div class="subtitle">Журнал активности и динамика нагрузки</div>';
+  html+='<div class="grid-2 mb-3"><div class="card"><div class="stat-value">'+week.length+'</div><div class="stat-label">Тренировок за 7 дней</div></div><div class="card"><div class="stat-value">'+formatLifeMinutes(minutes)+'</div><div class="stat-label">Время за 7 дней</div></div></div>';
+  html+='<div class="card mb-3"><div class="card-title">＋ Записать тренировку</div><div class="field"><label class="field-label">Тип</label><select id="workoutType"><option value="strength">Силовая</option><option value="cardio">Кардио</option><option value="mobility">Мобильность / растяжка</option><option value="sport">Спорт</option><option value="other">Другое</option></select></div><div class="grid-2"><div class="field"><label class="field-label">Дата</label><input id="workoutDate" type="date" value="'+today()+'"></div><div class="field"><label class="field-label">Минуты</label><input id="workoutMinutes" type="number" min="1" max="1440" value="30"></div></div><div class="field"><label class="field-label">Нагрузка по ощущениям</label><select id="workoutEffort"><option value="1">1 · Очень легко</option><option value="2">2 · Легко</option><option value="3" selected>3 · Умеренно</option><option value="4">4 · Тяжело</option><option value="5">5 · Очень тяжело</option></select></div><div class="field"><label class="field-label">Упражнения / заметка</label><textarea id="workoutNote" maxlength="1000" placeholder="Что делал, подходы, самочувствие..."></textarea></div><button class="btn btn-primary btn-block" onclick="addWorkoutEntry()">Сохранить тренировку</button></div>';
+  html+='<div class="section-title">История</div>';
+  if(!rows.length)html+='<div class="card empty"><div class="empty-icon">🏋️</div><div class="empty-title">Пока нет тренировок</div><div class="empty-text">Добавь первую запись — здесь появятся история и статистика.</div></div>';
+  rows.slice(0,40).forEach(function(x){var names={strength:'Силовая',cardio:'Кардио',mobility:'Мобильность',sport:'Спорт',other:'Другое'};html+='<article class="card mb-2"><div class="row-between"><b>'+esc(names[x.type]||x.type||'Тренировка')+'</b><span class="footnote">'+esc(x.date||'')+'</span></div><div class="stat-value mt-2">'+Number(x.minutes||0)+' мин</div><div class="footnote">Нагрузка: '+Number(x.effort||3)+'/5</div>'+(x.note?'<p class="footnote mt-2">'+esc(x.note)+'</p>':'')+'<button class="btn btn-ghost btn-xs mt-2" onclick="deleteWorkoutEntry(\\''+x.id+'\\')">Удалить запись</button></article>';});
+  document.getElementById('app').innerHTML=html+'</div>';
+}
+function addWorkoutEntry(){
+  ensureLifeOSLists();
+  var date=document.getElementById('workoutDate'),minutes=document.getElementById('workoutMinutes'),type=document.getElementById('workoutType');
+  var n=Number(minutes&&minutes.value);
+  if(!date||!date.value||!Number.isFinite(n)||n<1||n>1440)return toast('Проверь дату и длительность (1–1440 минут)','warning');
+  state.customWorkouts.push({id:uid(),date:date.value,type:type.value,minutes:Math.round(n),effort:Number(document.getElementById('workoutEffort').value)||3,note:(document.getElementById('workoutNote').value||'').trim(),createdAt:nowISO()});
+  state.stats.totalWorkouts=(state.stats.totalWorkouts||0)+1;save();if(typeof addXP==='function')addXP(8,'workout');haptic('success');toast('Тренировка сохранена','success');renderWorkouts();
+}
+function deleteWorkoutEntry(id){
+  ensureLifeOSLists();var item=state.customWorkouts.find(function(x){return x.id===id;});if(!item)return;
+  if(!confirm('Удалить запись о тренировке?'))return;
+  state.customWorkouts=state.customWorkouts.filter(function(x){return x.id!==id;});state.stats.totalWorkouts=Math.max(0,(state.stats.totalWorkouts||1)-1);save();renderWorkouts();
+}
+function meditationRemaining(){
+  var t=state.meditationTimer;if(!t)return 0;
+  return t.active?Math.max(0,Math.ceil((Number(t.endsAt)||0)-Date.now())/1000):Math.max(0,Number(t.remainingSec)||0);
+}
+function formatClock(seconds){
+  var n=Math.max(0,Math.ceil(Number(seconds)||0));return pad(Math.floor(n/60))+':'+pad(n%60);
+}
+function stopMeditationTicker(){
+  if(window.__lifeMeditationInterval){clearInterval(window.__lifeMeditationInterval);window.__lifeMeditationInterval=null;}
+}
+function startMeditationTicker(){
+  stopMeditationTicker();
+  window.__lifeMeditationInterval=setInterval(function(){
+    var left=meditationRemaining(),el=document.getElementById('medTimerClock');
+    if(el)el.textContent=formatClock(left);
+    if(left<=0)finishMeditation(true);
+  },250);
+}
+function renderMeditation(){
+  ensureLifeOSLists();
+  var t=state.meditationTimer,active=!!(t&&t.active),left=meditationRemaining();
+  var total=state.customMeditation.reduce(function(n,x){return n+(Number(x.minutes)||0);},0);
+  var todayRows=state.customMeditation.filter(function(x){return x.date===today();});
+  var html='<div class="page"><div class="title-xl">🧘 Медитация</div><div class="subtitle">Таймер практики, журнал и спокойные короткие сессии</div>';
+  html+='<div class="grid-2 mb-3"><div class="card"><div class="stat-value">'+todayRows.length+'</div><div class="stat-label">Сессий сегодня</div></div><div class="card"><div class="stat-value">'+formatLifeMinutes(total)+'</div><div class="stat-label">Всего практики</div></div></div>';
+  html+='<div class="card mb-3"><div class="card-title">Таймер практики</div><div class="text-center" style="padding:20px 0"><div id="medTimerClock" style="font-size:52px;font-weight:850;font-variant-numeric:tabular-nums">'+formatClock(left||300)+'</div><div class="footnote">'+(active?'Идёт сессия':t?'Сессия приостановлена':'Выбери длительность и начни')+'</div></div>';
+  if(!t){html+='<div class="field"><label class="field-label">Длительность</label><select id="medDuration"><option value="3">3 минуты · пауза</option><option value="5" selected>5 минут · короткая практика</option><option value="10">10 минут</option><option value="15">15 минут</option><option value="20">20 минут</option><option value="30">30 минут</option></select></div><div class="field"><label class="field-label">Практика</label><select id="medKind"><option value="breathing">Осознанное дыхание</option><option value="mindfulness">Осознанность</option><option value="body">Сканирование тела</option><option value="relax">Расслабление</option><option value="other">Другое</option></select></div><button class="btn btn-primary btn-block" onclick="startMeditation()">Начать</button>';}
+  else{html+='<div class="btn-row"><button class="btn btn-primary" style="flex:1" onclick="'+(active?'pauseMeditation()':'resumeMeditation()')+'">'+(active?'Пауза':'Продолжить')+'</button><button class="btn btn-ghost" style="flex:1" onclick="finishMeditation(false)">Завершить</button></div><button class="btn btn-ghost btn-block mt-2" onclick="cancelMeditation()">Отменить сессию</button>';}
+  html+='</div><div class="section-title">История практики</div>';
+  var rows=state.customMeditation.slice().reverse();
+  if(!rows.length)html+='<div class="card empty"><div class="empty-icon">🧘</div><div class="empty-title">История пока пуста</div></div>';
+  rows.slice(0,30).forEach(function(x){html+='<div class="card mb-2"><div class="row-between"><b>'+esc(x.kindLabel||'Медитация')+'</b><span class="footnote">'+esc(x.date||'')+'</span></div><div class="stat-value mt-2">'+Number(x.minutes||0)+' мин</div>'+(x.note?'<div class="footnote mt-1">'+esc(x.note)+'</div>':'')+'<button class="btn btn-ghost btn-xs mt-2" onclick="deleteMeditationEntry(\\''+x.id+'\\')">Удалить</button></div>';});
+  html+='<div class="footnote mt-3">Таймер работает, пока приложение открыто; после сворачивания браузер может замедлять обновление экрана. Время пересчитывается по часам устройства.</div></div>';
+  document.getElementById('app').innerHTML=html;
+  if(active)startMeditationTicker();
+}
+function startMeditation(){
+  ensureLifeOSLists();if(state.meditationTimer)return toast('Сначала заверши текущую сессию','warning');
+  var mins=Number(document.getElementById('medDuration').value)||5;
+  var kinds={breathing:'Осознанное дыхание',mindfulness:'Осознанность',body:'Сканирование тела',relax:'Расслабление',other:'Другое'};
+  state.meditationTimer={id:uid(),durationSec:mins*60,remainingSec:mins*60,endsAt:Date.now()+mins*60000,active:true,kind:document.getElementById('medKind').value,kindLabel:kinds[document.getElementById('medKind').value]||'Медитация',startedAt:nowISO()};
+  save();startMeditationTicker();renderMeditation();
+}
+function pauseMeditation(){
+  var t=state.meditationTimer;if(!t||!t.active)return;
+  t.remainingSec=meditationRemaining();t.active=false;t.endsAt=null;stopMeditationTicker();save();renderMeditation();
+}
+function resumeMeditation(){
+  var t=state.meditationTimer;if(!t||t.active)return;
+  t.endsAt=Date.now()+Math.max(1,t.remainingSec)*1000;t.active=true;save();startMeditationTicker();renderMeditation();
+}
+function finishMeditation(completed){
+  var t=state.meditationTimer;if(!t)return;
+  var remaining=meditationRemaining(),elapsed=Math.max(0,Math.round((t.durationSec-remaining)/60));
+  if(completed)elapsed=Math.max(1,Math.round(t.durationSec/60));
+  stopMeditationTicker();state.meditationTimer=null;
+  if(elapsed>0){
+    ensureLifeOSLists();state.customMeditation.push({id:t.id,date:today(),minutes:elapsed,kind:t.kind,kindLabel:t.kindLabel,completed:!!completed,createdAt:nowISO()});
+    state.stats.totalMeditations=(state.stats.totalMeditations||0)+1;save();if(typeof addXP==='function')addXP(5,'meditation');toast(completed?'Сессия завершена — отлично':'Практика сохранена','success');
+  }else{save();toast('Сессия отменена без записи','info');}
+  if(currentPage==='meditation')renderMeditation();
+}
+function cancelMeditation(){if(!state.meditationTimer)return;if(!confirm('Отменить сессию без сохранения?'))return;stopMeditationTicker();state.meditationTimer=null;save();renderMeditation();}
+function deleteMeditationEntry(id){
+  ensureLifeOSLists();if(!state.customMeditation.some(function(x){return x.id===id;}))return;
+  if(!confirm('Удалить запись о медитации?'))return;
+  state.customMeditation=state.customMeditation.filter(function(x){return x.id!==id;});state.stats.totalMeditations=Math.max(0,(state.stats.totalMeditations||1)-1);save();renderMeditation();
+}
+function renderScreenTracker(){
+  ensureLifeOSLists();
+  var rows=state.screenEntries.filter(function(x){return x.date===today();});
+  var total=rows.reduce(function(n,x){return n+(Number(x.minutes)||0);},0);
+  var goal=Number(state.screenStats.dailyLimit)||0;
+  var by={};rows.forEach(function(x){by[x.category]=(by[x.category]||0)+(Number(x.minutes)||0);});
+  var html='<div class="page"><div class="title-xl">📱 Экранное время</div><div class="subtitle">Ручной учёт времени по занятиям и устройствам</div><div class="grid-2 mb-3"><div class="card"><div class="stat-value">'+formatLifeMinutes(total)+'</div><div class="stat-label">Записано сегодня</div></div><div class="card"><div class="stat-value">'+(goal?formatLifeMinutes(Math.max(0,goal-total)):'—')+'</div><div class="stat-label">'+(goal?'Остаток до лимита':'Лимит не задан')+'</div></div></div>';
+  html+='<div class="card mb-3"><div class="card-title">Цель на день</div><div class="grid-2"><div class="field"><label class="field-label">Минут в день</label><input id="screenDailyLimit" type="number" min="0" max="1440" value="'+(goal||'')+'" placeholder="Например, 240"></div><div class="field" style="justify-content:end"><button class="btn btn-ghost btn-block" onclick="saveScreenLimit()">Сохранить лимит</button></div></div></div>';
+  html+='<div class="card mb-3"><div class="card-title">＋ Добавить время</div><div class="field"><label class="field-label">Занятие</label><select id="screenCategory"><option>Работа</option><option>Учёба</option><option>Видео</option><option>Игры</option><option>Общение</option><option>Чтение</option><option>Другое</option></select></div><div class="grid-2"><div class="field"><label class="field-label">Минуты</label><input id="screenMinutes" type="number" min="1" max="1440" value="30"></div><div class="field"><label class="field-label">Дата</label><input id="screenDate" type="date" value="'+today()+'"></div></div><div class="field"><label class="field-label">Примечание</label><input id="screenNote" maxlength="200" placeholder="Необязательно"></div><button class="btn btn-primary btn-block" onclick="addScreenEntry()">Добавить запись</button></div>';
+  html+='<div class="section-title">Сегодня по категориям</div><div class="card">';
+  var cats=Object.keys(by);if(!cats.length)html+='<div class="footnote">Пока нет записей. Добавь время вручную.</div>';
+  cats.forEach(function(k){var pct=total?Math.round(by[k]/total*100):0;html+='<div class="mb-2"><div class="row-between"><b>'+esc(k)+'</b><span class="footnote">'+by[k]+' мин · '+pct+'%</span></div><div style="height:7px;background:var(--glass-2);border-radius:8px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:var(--brand);border-radius:8px"></div></div></div>';});
+  html+='</div><div class="section-title mt-3">Записи за сегодня</div>';
+  rows.slice().reverse().forEach(function(x){html+='<div class="card mb-2"><div class="row-between"><b>'+esc(x.category)+'</b><b>'+Number(x.minutes)+' мин</b></div>'+(x.note?'<div class="footnote mt-1">'+esc(x.note)+'</div>':'')+'<button class="btn btn-ghost btn-xs mt-2" onclick="deleteScreenEntry(\\''+x.id+'\\')">Удалить</button></div>';});
+  html+='<div class="footnote mt-3">Это ручной журнал, а не автоматическое считывание статистики Android или Windows. Для автоматического сбора потребуются отдельные разрешения и нативные интеграции.</div></div>';
+  document.getElementById('app').innerHTML=html;
+}
+function saveScreenLimit(){
+  ensureLifeOSLists();var el=document.getElementById('screenDailyLimit'),n=Number(el&&el.value);
+  if(!Number.isFinite(n)||n<0||n>1440)return toast('Лимит должен быть от 0 до 1440 минут','warning');
+  state.screenStats.dailyLimit=Math.round(n);save();toast('Дневной лимит сохранён','success');renderScreenTracker();
+}
+function addScreenEntry(){
+  ensureLifeOSLists();var n=Number(document.getElementById('screenMinutes').value),date=document.getElementById('screenDate').value;
+  if(!Number.isFinite(n)||n<1||n>1440||!date)return toast('Проверь дату и минуты','warning');
+  state.screenEntries.push({id:uid(),date:date,category:document.getElementById('screenCategory').value,minutes:Math.round(n),note:(document.getElementById('screenNote').value||'').trim(),createdAt:nowISO()});
+  save();toast('Время записано','success');renderScreenTracker();
+}
+function deleteScreenEntry(id){
+  ensureLifeOSLists();if(!state.screenEntries.some(function(x){return x.id===id;}))return;
+  if(!confirm('Удалить запись?'))return;state.screenEntries=state.screenEntries.filter(function(x){return x.id!==id;});save();renderScreenTracker();
+}
+function renderCalendar(){
+  ensureLifeOSLists();
+  var events=state.calendarEvents.filter(function(x){return x.source!=='google';}).slice().sort(function(a,b){return String(a.date||'').localeCompare(String(b.date||''))||String(a.time||'').localeCompare(String(b.time||''));});
+  var upcoming=events.filter(function(x){return !x.done&&String(x.date||'')>=today();});
+  var html='<div class="page"><div class="title-xl">📅 Календарь</div><div class="subtitle">Локальные события и планы · сохраняются на устройстве</div><div class="grid-2 mb-3"><div class="card"><div class="stat-value">'+upcoming.length+'</div><div class="stat-label">Предстоящих</div></div><div class="card"><div class="stat-value">'+events.filter(function(x){return x.done;}).length+'</div><div class="stat-label">Завершено</div></div></div>';
+  html+='<div class="card mb-3"><div class="card-title">＋ Новое событие</div><div class="field"><label class="field-label">Название</label><input id="calTitle" maxlength="120" placeholder="Например, тренировка"></div><div class="grid-2"><div class="field"><label class="field-label">Дата</label><input id="calDate" type="date" value="'+today()+'"></div><div class="field"><label class="field-label">Время</label><input id="calTime" type="time" value="09:00"></div></div><div class="field"><label class="field-label">Категория</label><select id="calCategory"><option>Личное</option><option>Работа</option><option>Учёба</option><option>Здоровье</option><option>Встреча</option><option>Другое</option></select></div><div class="field"><label class="field-label">Заметка</label><textarea id="calNote" maxlength="1000" placeholder="Детали события"></textarea></div><button class="btn btn-primary btn-block" onclick="addCalendarEvent()">Сохранить событие</button></div>';
+  html+='<div class="section-title">Предстоящие события</div>';
+  if(!events.length)html+='<div class="card empty"><div class="empty-icon">📅</div><div class="empty-title">Календарь пока пуст</div><div class="empty-text">Добавь событие или запланируй занятие.</div></div>';
+  events.forEach(function(x){html+='<article class="card mb-2"><div class="row-between"><div><b>'+esc(x.title||'Событие')+'</b><div class="footnote">'+esc(x.category||'')+'</div></div><span class="footnote">'+esc(x.date||'')+' · '+esc(x.time||'')+'</span></div>'+(x.note?'<div class="footnote mt-2">'+esc(x.note)+'</div>':'')+'<div class="btn-row mt-2"><button class="btn btn-ghost btn-xs" onclick="toggleCalendarEvent(\\''+x.id+'\\')">'+(x.done?'↩ Вернуть':'✓ Выполнено')+'</button><button class="btn btn-ghost btn-xs" onclick="deleteCalendarEvent(\\''+x.id+'\\')">Удалить</button></div></article>';});
+  html+='<div class="footnote mt-3">События хранятся локально. Синхронизация Google Calendar и фоновые push-напоминания здесь пока не подключены.</div></div>';
+  document.getElementById('app').innerHTML=html;
+}
+function addCalendarEvent(){
+  ensureLifeOSLists();var title=document.getElementById('calTitle'),date=document.getElementById('calDate');
+  if(!title||!title.value.trim()||!date||!date.value)return toast('Укажи название и дату','warning');
+  state.calendarEvents.push({id:uid(),source:'lifeos',title:title.value.trim(),date:date.value,time:document.getElementById('calTime').value||'09:00',category:document.getElementById('calCategory').value,note:document.getElementById('calNote').value.trim(),done:false,createdAt:nowISO()});
+  save();toast('Событие добавлено','success');renderCalendar();
+}
+function toggleCalendarEvent(id){
+  var x=state.calendarEvents.find(function(e){return e.id===id&&e.source==='lifeos';});if(!x)return;x.done=!x.done;x.completedAt=x.done?nowISO():null;save();renderCalendar();
+}
+function deleteCalendarEvent(id){
+  if(!state.calendarEvents.some(function(e){return e.id===id&&e.source==='lifeos';}))return;
+  if(!confirm('Удалить событие?'))return;state.calendarEvents=state.calendarEvents.filter(function(e){return !(e.id===id&&e.source==='lifeos');});save();renderCalendar();
+}
+
 function renderStorage(){
   var bytes=0;try{bytes=new Blob([JSON.stringify(state)]).size;}catch(e){}
   var kb=(bytes/1024).toFixed(1),html='<div class="page"><div class="title-xl">🗄 Хранилище</div><div class="subtitle">Расширенное локальное хранилище · автоматические копии · офлайн</div>';
@@ -4198,7 +4354,7 @@ function restoreStorageBackup(){
   if(!confirm('Восстановить предыдущую резервную копию? Текущие данные будут заменены.'))return;
   try{var raw=localStorage.getItem(STORAGE_BACKUP);if(!raw)throw new Error('backup missing');var parsed=JSON.parse(raw);if(!parsed||typeof parsed!=='object')throw new Error('invalid backup');localStorage.setItem(STORAGE_KEY,raw);toast('Копия восстановлена. Перезапускаю…','success');setTimeout(function(){location.reload();},700);}catch(e){toast('Резервная копия не найдена или повреждена','error');}
 }
-function renderScreenTracker(){ renderStub('📱 Экран'); }
+/* Экранный трекер реализован в блоке личных трекеров выше. */
 function renderDiagnostic(){
   var checks=[['Состояние данных',!!state&&typeof state==='object'],['Локальное хранилище',!!window.localStorage],['Service Worker','serviceWorker'in navigator],['Поддержка офлайн-кеша','caches'in window],['Экспорт данных',typeof exportDB==='function'],['Резервная копия',!!localStorage.getItem(STORAGE_BACKUP)]];
   var html='<div class="page"><div class="title-xl">🔍 Диагностика</div><div class="subtitle">Проверка возможностей устройства и сохранности данных</div><div class="card">';
@@ -4646,6 +4802,23 @@ window.renderMonthlyReview = renderMonthlyReview;
 window.renderTimer = renderTimer;
 window.renderDomains = renderDomains;
 window.renderWorkouts = renderWorkouts;
+window.addWorkoutEntry = addWorkoutEntry;
+window.deleteWorkoutEntry = deleteWorkoutEntry;
+window.renderMeditation = renderMeditation;
+window.startMeditation = startMeditation;
+window.pauseMeditation = pauseMeditation;
+window.resumeMeditation = resumeMeditation;
+window.finishMeditation = finishMeditation;
+window.cancelMeditation = cancelMeditation;
+window.deleteMeditationEntry = deleteMeditationEntry;
+window.renderScreenTracker = renderScreenTracker;
+window.saveScreenLimit = saveScreenLimit;
+window.addScreenEntry = addScreenEntry;
+window.deleteScreenEntry = deleteScreenEntry;
+window.renderCalendar = renderCalendar;
+window.addCalendarEvent = addCalendarEvent;
+window.toggleCalendarEvent = toggleCalendarEvent;
+window.deleteCalendarEvent = deleteCalendarEvent;
 window.renderMeditation = renderMeditation;
 window.renderMeds = renderMeds;
 window.renderGcal = renderGcal;
