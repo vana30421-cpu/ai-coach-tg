@@ -199,7 +199,7 @@ test('Jarvis context now includes diary calendar screen anti-stress pet second b
 });
 test('learning materials and game routes no longer point to empty placeholders',()=>{
  for(const name of ['renderLearningGames','renderGamePlay','renderMaterials','renderMaterialDetail','renderDailySurvey','renderSurvey','renderPersonalPlan','renderTimer','renderSnapshot','renderRecommendations','renderGcal','renderProjectEditor','renderModuleDetail','renderOnboarding'])assert.match(systems,new RegExp('window\\.'+name+'=function'));
- assert.match(systems,/renderGamesHub\(\)/);
+ assert.match(systems,/window\.renderGamesHub\(\)/);
  assert.match(systems,/window\.LEARNING_MATERIALS/);
 });
 
