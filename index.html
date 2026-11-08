@@ -637,6 +637,16 @@ input,select,textarea{background:color-mix(in srgb,var(--surface-2) 85%,transpar
 @media(hover:none){.card:hover,.group-card:hover,.method-card:hover{transform:none;box-shadow:var(--shadow-sm)}}
 @media(prefers-reduced-motion:reduce){.life-effect{display:none!important}}
 
+
+.life-effect-aurora{width:58vw;height:18vh;top:4%;border-radius:50%;background:linear-gradient(110deg,color-mix(in srgb,var(--brand) 45%,transparent),color-mix(in srgb,var(--brand-2) 35%,transparent),transparent);filter:blur(28px);opacity:.3;animation:lifeAurora 18s ease-in-out var(--delay) infinite alternate}
+.life-effect-waves{width:100vw;height:2px;top:35%;left:0;background:linear-gradient(90deg,transparent,var(--brand),var(--brand-2),transparent);opacity:.2;animation:lifeWave 10s ease-in-out var(--delay) infinite}
+.life-effect-lightning,.life-effect-storm{width:2px;height:55vh;top:0;border-radius:0;background:linear-gradient(transparent,var(--brand),transparent);opacity:.0;animation:lifeFlash 8s steps(1,end) var(--delay) infinite}
+.life-effect-spiderweb{width:34vw;height:34vw;top:0;border:1px solid color-mix(in srgb,var(--brand) 35%,transparent);border-radius:50%;background:repeating-conic-gradient(from 0deg,transparent 0deg 14deg,color-mix(in srgb,var(--brand) 16%,transparent) 15deg 15.5deg);opacity:.22}
+.life-effect-fog{width:68vw;height:22vh;top:35%;border-radius:50%;background:color-mix(in srgb,var(--brand) 17%,transparent);filter:blur(38px);opacity:.2;animation:lifeAurora 24s ease-in-out var(--delay) infinite alternate}
+@keyframes lifeAurora{from{transform:translate3d(-12vw,-3vh,0) scale(.85)}to{transform:translate3d(14vw,9vh,0) scale(1.2)}}
+@keyframes lifeWave{0%,100%{transform:translateY(-12vh) scaleX(.7)}50%{transform:translateY(20vh) scaleX(1.15)}}
+@keyframes lifeFlash{0%,92%,96%,100%{opacity:0}93%,95%{opacity:.5}}
+
 </style>
 </head>
 <body class="theme-dark">
