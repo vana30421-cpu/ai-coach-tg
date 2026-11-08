@@ -165,3 +165,20 @@ test('task editor can propose editable next actions without replacing existing c
   assert.match(app,/onclick="suggestTaskSteps\(\)"/);
   assert.match(app,/if\(_clBuffer\.length<20/);
 });
+
+
+test('statistics are available in the primary navigation and support personal date/category filters',()=>{
+  assert.match(content,/\{id:'stats',emoji:'📊',label:'Статистика'\}/);
+  assert.match(app,/function saveLifeStatsFilter\(key,value\)/);
+  assert.match(app,/id="statsFrom"/);
+  assert.match(app,/id="statsTo"/);
+  assert.match(app,/function buildComprehensiveStats\(days\)/);
+  assert.match(app,/screenDeviation/);
+  assert.match(app,/screenByCategory/);
+});
+test('Jarvis analytics compare recorded screen use with saved personal goals and distinguish missing data',()=>{
+  assert.match(app,/Экранное время выше личной цели/);
+  assert.match(app,/Не задана/);
+  assert.match(app,/Экранное время не считывается автоматически/);
+  assert.match(app,/function getJarvisAnalytics\(silent\)/);
+});
