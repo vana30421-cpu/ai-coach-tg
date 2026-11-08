@@ -95,6 +95,7 @@ window.lifePetAction=function(action){
  var xp=action==='feed'?2:4;p.careLog.push({id:uid(),action:action,date:today(),at:nowISO(),xp:xp});if(window.addPetXP)window.addPetXP(xp);save();toast('Забота учтена · +'+xp+' XP','success');window.renderPet();
 };
 window.feedPet=function(){window.lifePetAction('feed');};
+window.askJarvisAboutStats=function(){var period=typeof LIFE_STATS_PERIOD!=='undefined'?LIFE_STATS_PERIOD:30,label=period===0?'за всё время':period+' дней';navigate('ai');setTimeout(function(){if(window.jarvisQuick)window.jarvisQuick('Разбери мою статистику LIFE OS за '+label+'. Сравни продуктивность, привычки, сон, настроение, воду, экранное время, обучение и восстановление. Отдели факты от предположений и предложи три приоритетных действия.');},180);};
 window.renderIntegrations=function(){
  document.getElementById('app').innerHTML='<div class="page"><div class="title-xl">🔗 Интеграции</div><div class="subtitle">Подключения и перенос данных.</div><div class="card mb-2" onclick="navigate(\'obsidianIntegration\')"><b>📓 Obsidian и второй мозг</b><div class="footnote">Markdown Vault, связи, импорт и экспорт</div></div><div class="card mb-2" onclick="navigate(\'ai\')"><b>✦ Gemini / OpenAI</b><div class="footnote">Выбор провайдера Джарвиса через защищённый Worker</div></div><div class="card mb-2" onclick="navigate(\'telegramSetup\')"><b>📨 Telegram</b><div class="footnote">Настройка Telegram-коуча</div></div></div>';
 };
