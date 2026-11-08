@@ -119,3 +119,18 @@ test('Jarvis autopilot uses statistics and only changes safe focus settings',()=
   assert.match(app,/Задачи, финансы, здоровье и личные данные без подтверждения не меняет/);
   assert.match(app,/function applyJarvisRecommendation\(id\)/);
 });
+
+
+test('visual effects support an explicit reduced-motion override and completion bursts',()=>{
+  assert.match(app,/life-motion-override/);
+  assert.match(app,/function lifeOSCelebrate\(symbol\)/);
+  assert.match(app,/lifeOSCelebrate\('✦'\)/);
+  assert.match(app,/lifeOSCelebrate\('✓'\)/);
+  assert.match(index,/@keyframes lifeBurst/);
+  assert.match(index,/prefers-reduced-motion:reduce\).*life-motion-override/s);
+});
+test('all-time statistics and FSRS review history are counted correctly',()=>{
+  assert.match(app,/Number\(days\)===0\?0/);
+  assert.match(app,/var reviews=s\.fsrs&&Array\.isArray\(s\.fsrs\.reviews\)\?s\.fsrs\.reviews:\[\]/);
+  assert.match(app,/function setStatsPeriod\(days\)\{LIFE_STATS_PERIOD=Number\(days\)===0\?/);
+});
