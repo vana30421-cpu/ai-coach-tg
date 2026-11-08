@@ -754,7 +754,7 @@ function navigate(page, silent){
     vision: renderVision, visionex: renderVisionExercises,
     visiontrack: renderVisionTracker, visiontips: renderVisionTips,
     vision60: renderVision60, vision62: renderVision62,
-    ai: renderAI, health: renderHealth, water: renderWater, mood: renderMood,
+    ai: renderAI, jarvis: renderJarvis, health: renderHealth, water: renderWater, mood: renderMood,
     workouts: renderWorkouts, meditation: renderMeditation, meds: renderMeds,
     recovery: renderRecovery, medical: renderMedical,
     entertainment: renderEntertainment, resources: renderResources,
@@ -3613,6 +3613,7 @@ function renderMore(){
       {key:'dashboard',emoji:'🏠',label:'Главная'},
       {key:'spheres',emoji:'🎯',label:'Сферы'},
       {key:'projects',emoji:'📁',label:'Проекты'},
+      {key:'ai',emoji:'✧',label:'Джарвис'},
       {key:'coach',emoji:'💬',label:'AI-Коуч'},
       {key:'coachChat',emoji:'💭',label:'Чат с коучем'},
       {key:'schedule',emoji:'📅',label:'Расписание'},
@@ -3907,7 +3908,117 @@ function renderPlanMonth(){ navigate('monthlyReview'); }
 function renderObsidian(){ renderStub('📓 Obsidian'); }
 function renderProjectEditor(){ renderStub('✏️ Редактор проекта'); }
 function renderModuleDetail(){ renderStub('📖 Модуль курса'); }
-function renderAI(){ renderStub('🤖 ИИ-коуч'); }
+function renderAI(){ renderJarvis(); }
+function getJarvisState(){
+  if(!state.jarvis)state.jarvis={messages:[],checkins:[],focus:null};
+  if(!Array.isArray(state.jarvis.messages))state.jarvis.messages=[];
+  if(!Array.isArray(state.jarvis.checkins))state.jarvis.checkins=[];
+  return state.jarvis;
+}
+function renderJarvis(){
+  var data=getJarvisState(),tasks=state.tasks||[],pending=tasks.filter(function(t){return t.status!=='completed';});
+  var last=data.messages.length?data.messages[data.messages.length-1]:null;
+  var focus=data.focus,remaining=focus&&focus.active?Math.max(0,Math.ceil((focus.endsAt-Date.now())/1000)):0;
+  var html='<div class="page jarvis-page">';
+  html+='<div class="jarvis-hero"><div class="jarvis-orb"><span>J</span><i></i></div><div class="jarvis-hero-copy"><div class="jarvis-kicker">LIFE OS · PERSONAL ASSISTANT</div><div class="title-xl">Джарвис</div><div class="jarvis-status"><span class="jarvis-dot"></span> Локальный режим · данные на устройстве</div></div></div>';
+  html+='<div class="grid-2 mb-3"><div class="card"><div class="stat-value">'+pending.length+'</div><div class="stat-label">Активные задачи</div></div><div class="card"><div class="stat-value">'+(state.stats.streak||0)+'</div><div class="stat-label">Дней подряд</div></div></div>';
+  if(focus&&focus.active)html+='<div class="card jarvis-focus"><div class="row-between"><b>⏱ Фокус-сессия</b><span id="jarvisCountdown">'+Math.floor(remaining/60)+':'+String(remaining%60).padStart(2,'0')+'</span></div><div class="footnote mt-2">Сосредоточься на одной задаче. Перерыв после завершения.</div><button class="btn btn-ghost btn-sm mt-2" onclick="stopJarvisFocus()">Завершить</button></div>';
+  html+='<div class="jarvis-quick"><button class="jarvis-chip" onclick="jarvisQuick(\'сводка\')">◷ Мой день</button><button class="jarvis-chip" onclick="jarvisQuick(\'покажи мои задачи\')">▤ Задачи</button><button class="jarvis-chip" onclick="jarvisQuick(\'фокус 25\')">◎ Фокус 25</button><button class="jarvis-chip" onclick="jarvisQuick(\'открой память\')">⌘ Память</button></div>';
+  html+='<div class="card jarvis-chat-card"><div class="row-between mb-2"><div class="card-title">Диалог</div><button class="btn btn-ghost btn-xs" onclick="speakJarvisLast()">🔊 Озвучить</button></div><div class="jarvis-messages" id="jarvisMessages">';
+  if(!data.messages.length)html+='<div class="jarvis-message bot"><b>Джарвис</b><p>На связи. Могу управлять задачами, открывать разделы, запускать фокус-сессии, показывать прогресс и помогать применять проверенные методики. Напиши команду или нажми быстрый сценарий.</p></div>';
+  data.messages.slice(-40).forEach(function(m){html+='<div class="jarvis-message '+(m.role==='user'?'user':'bot')+'"><b>'+(m.role==='user'?'Ты':'Джарвис')+'</b><p>'+esc(m.text).replace(/\n/g,'<br>')+'</p></div>';});
+  html+='</div><div class="jarvis-compose"><input id="jarvisInput" type="text" maxlength="1000" placeholder="Напиши Джарвису…" onkeydown="if(event.key===\'Enter\'){event.preventDefault();sendJarvisMessage();}"><button class="btn btn-primary" onclick="sendJarvisMessage()">➤</button><button class="btn btn-ghost" onclick="startJarvisVoice()" title="Голосовой ввод">🎙</button></div></div>';
+  html+='<div class="section-title mt-3">Инструменты развития</div><div class="grid-2"><button class="card jarvis-tool" onclick="jarvisQuick(\'запусти самооценку\')">📋 Самооценка<br><small>Состояние за сегодня</small></button><button class="card jarvis-tool" onclick="jarvisQuick(\'методики\')">🧪 Методики<br><small>Практики с источниками</small></button><button class="card jarvis-tool" onclick="navigate(\'fsrs\')">🧠 Интервальное повторение<br><small>FSRS и активное вспоминание</small></button><button class="card jarvis-tool" onclick="navigate(\'diagnostic\')">🛠 Диагностика приложения<br><small>Проверка устройства</small></button></div>';
+  if(data.checkins.length){var recent=data.checkins.slice(-7);var avg=function(k){return (recent.reduce(function(n,x){return n+(Number(x[k])||0);},0)/recent.length).toFixed(1);};html+='<div class="card mt-3"><div class="card-title">Самооценка · последние '+recent.length+' записей</div><div class="grid-2"><div class="footnote">Энергия <b>'+avg('energy')+'/5</b></div><div class="footnote">Фокус <b>'+avg('focus')+'/5</b></div><div class="footnote">Сон <b>'+avg('sleep')+'/5</b></div><div class="footnote">Стресс <b>'+avg('stress')+'/5</b></div></div><div class="footnote mt-2">Это личный трекер, не клинический тест и не диагноз.</div></div>';}
+  html+='<div class="card mt-3"><div class="card-title">Как работает Джарвис</div><p class="footnote">Команды и сохранённая история работают офлайн. Голос зависит от поддержки браузера и разрешения микрофона. Генеративные ответы уровня ChatGPT требуют отдельного безопасного подключения ИИ-сервера — здесь оно не имитируется.</p></div></div>';
+  document.getElementById('app').innerHTML=html;
+  var box=document.getElementById('jarvisMessages');if(box)box.scrollTop=box.scrollHeight;
+  if(focus&&focus.active)startJarvisTicker();
+}
+function jarvisAddMessage(role,text){
+  var d=getJarvisState();d.messages.push({role:role,text:String(text||'').slice(0,3000),at:nowISO()});
+  if(d.messages.length>160)d.messages=d.messages.slice(-160);save();
+}
+function jarvisReply(text){
+  var core=window.LifeOSJarvisCore,cmd=core?core.parseCommand(text):{type:'chat',text:text};
+  if(cmd.type==='empty')return '';
+  if(cmd.type==='add_task'){
+    state.tasks.unshift({id:uid(),title:cmd.title,category:'Личное',planned_time:30,status:'pending',priority:'medium',difficulty:2,checklist:[],created_at:nowISO(),updated_at:nowISO(),description:'Создано через Джарвиса'});
+    save();return 'Добавил задачу «'+cmd.title+'». Она уже в списке задач.';
+  }
+  if(cmd.type==='list_tasks'){
+    var list=(state.tasks||[]).filter(function(t){return t.status!=='completed';}).slice(0,12);
+    return list.length?'Активные задачи:\n'+list.map(function(t,i){return (i+1)+'. '+t.title;}).join('\n'):'Активных задач нет. Хороший момент выбрать следующую цель.';
+  }
+  if(cmd.type==='summary'){
+    var all=state.tasks||[],done=all.filter(function(t){return t.status==='completed';}).length,open=all.length-done;
+    var walks=Array.isArray(state.walks)?state.walks.length:0;
+    return 'Сводка на сегодня:\n• Задач всего: '+all.length+'; завершено: '+done+'; осталось: '+open+'.\n• Серия активности: '+(state.stats.streak||0)+' дн.\n• Записей прогулок: '+walks+'.\nПредлагаю выбрать одну важную задачу и выделить на неё 25 минут.';
+  }
+  if(cmd.type==='navigate'){navigate(cmd.page);return 'Открываю раздел «'+cmd.page+'».';}
+  if(cmd.type==='focus'){startJarvisFocus(cmd.minutes);return 'Запустил фокус на '+cmd.minutes+' минут. Одна задача, уведомления по возможности отключи. Перерыв сделаем после сессии.';}
+  if(cmd.type==='checkin'){renderJarvisCheckin();return 'Открыл короткую самооценку. Оцени показатели по шкале от 1 до 5.';}
+  if(cmd.type==='methods'){renderJarvisMethods();return 'Открыл библиотеку методик с пояснениями и источниками.';}
+  if(cmd.type==='help')return 'Команды:\n• «Добавь задачу: …»\n• «Покажи мои задачи»\n• «Сводка»\n• «Фокус 25»\n• «Открой память / обучение / зрение / прогулки / сон»\n• «Самооценка»\n• «Методики».';
+  if(/привет|здравствуй|добрый день|доброе утро/i.test(text))return 'Привет. Готов помочь навести порядок в задачах и планах. Что сейчас важнее всего?';
+  if(/устал|нет сил|не могу начать|прокрастин/i.test(text))return 'Не будем пытаться решить всё сразу.\n1. Выбери действие на 2 минуты.\n2. Убери один очевидный отвлекающий фактор.\n3. Сформулируй план «Когда ___, я сделаю ___».\nКакое самое маленькое начало подходит прямо сейчас?';
+  if(/тревог|стресс|нервнича/i.test(text))return 'Попробуй короткое заземление: назови 5 предметов, которые видишь; 4 ощущения тела; 3 звука; 2 запаха; 1 вкус. Это упражнение для переключения внимания, не лечение. Если состояние тяжёлое или опасное — обратись за помощью к человеку рядом или специалисту.';
+  if(/учить|запомн|экзамен|обучен/i.test(text))return 'Для обучения используй две хорошо подтверждённые техники: активное вспоминание (сначала ответь без подсказки) и распределённое повторение (возвращайся к материалу с интервалами). Создай карточки в разделе FSRS и оцени, насколько легко вспомнил.';
+  return 'Я пока работаю локально и не буду притворяться большой языковой моделью. Могу выполнить команды, помочь разбить цель на шаги или применить конкретную методику. Напиши «помощь», чтобы увидеть команды.';
+}
+function sendJarvisMessage(){
+  var input=document.getElementById('jarvisInput');if(!input)return;
+  var text=input.value.trim();if(!text)return;input.value='';
+  jarvisAddMessage('user',text);
+  var reply=jarvisReply(text);
+  if(reply){jarvisAddMessage('assistant',reply);if(currentPage==='ai'||currentPage==='jarvis')renderJarvis();}
+}
+function jarvisQuick(text){var input=document.getElementById('jarvisInput');if(input)input.value=text;sendJarvisMessage();}
+function startJarvisVoice(){
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){toast('Голосовой ввод не поддерживается этим браузером','warning');return;}
+  try{var rec=new SR();rec.lang='ru-RU';rec.interimResults=false;rec.maxAlternatives=1;rec.onresult=function(e){var v=e.results&&e.results[0]&&e.results[0][0]?e.results[0][0].transcript:'';var input=document.getElementById('jarvisInput');if(input)input.value=v;if(v)sendJarvisMessage();};rec.onerror=function(){toast('Не удалось распознать речь. Проверь доступ к микрофону.','warning');};rec.start();}catch(e){toast('Не удалось запустить микрофон','error');}
+}
+function speakJarvisLast(){
+  var d=getJarvisState(),m=d.messages.slice().reverse().find(function(x){return x.role==='assistant';});
+  if(!m||!window.speechSynthesis){toast('Озвучивание недоступно','warning');return;}
+  try{window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(m.text);u.lang='ru-RU';u.rate=1;window.speechSynthesis.speak(u);}catch(e){toast('Не удалось озвучить ответ','warning');}
+}
+function startJarvisFocus(minutes){
+  var d=getJarvisState();d.focus={active:true,minutes:minutes,startedAt:Date.now(),endsAt:Date.now()+minutes*60000};save();renderJarvis();startJarvisTicker();
+}
+function startJarvisTicker(){
+  if(window.__jarvisTicker)return;
+  window.__jarvisTicker=setInterval(function(){
+    var d=getJarvisState(),f=d.focus,el=document.getElementById('jarvisCountdown');if(!f||!f.active){clearInterval(window.__jarvisTicker);window.__jarvisTicker=null;return;}
+    var left=Math.max(0,Math.ceil((f.endsAt-Date.now())/1000));if(el)el.textContent=Math.floor(left/60)+':'+String(left%60).padStart(2,'0');
+    if(left===0){f.active=false;f.completedAt=nowISO();save();clearInterval(window.__jarvisTicker);window.__jarvisTicker=null;toast('Фокус-сессия завершена. Сделай короткий перерыв.','success',4000);if(window.speechSynthesis){var u=new SpeechSynthesisUtterance('Фокус сессия завершена. Время отдохнуть.');u.lang='ru-RU';window.speechSynthesis.speak(u);}if(currentPage==='ai'||currentPage==='jarvis')renderJarvis();}
+  },1000);
+}
+function stopJarvisFocus(){var d=getJarvisState();if(d.focus)d.focus.active=false;save();if(window.__jarvisTicker){clearInterval(window.__jarvisTicker);window.__jarvisTicker=null;}renderJarvis();}
+function renderJarvisCheckin(){
+  var html='<div class="page"><div class="title-xl">📋 Самооценка состояния</div><div class="subtitle">Короткий дневной срез. Не медицинский тест и не диагностика.</div><div class="card">';
+  [['energy','Энергия'],['focus','Концентрация'],['sleep','Качество сна'],['stress','Стресс (5 — низкий)']].forEach(function(x){html+='<div class="field"><label class="field-label">'+x[1]+'</label><select id="jarvis-'+x[0]+'"><option value="1">1 — очень низко</option><option value="2">2</option><option value="3" selected>3 — средне</option><option value="4">4</option><option value="5">5 — очень хорошо</option></select></div>';});
+  html+='<button class="btn btn-primary btn-block" onclick="saveJarvisCheckin()">Сохранить самооценку</button></div><button class="btn btn-ghost btn-block" onclick="navigate(\'ai\')">← К Джарвису</button></div>';document.getElementById('app').innerHTML=html;
+}
+function saveJarvisCheckin(){
+  var d=getJarvisState(),row={date:today(),at:nowISO()};['energy','focus','sleep','stress'].forEach(function(k){row[k]=Number((document.getElementById('jarvis-'+k)||{}).value)||3;});
+  d.checkins.push(row);if(d.checkins.length>365)d.checkins=d.checkins.slice(-365);save();toast('Самооценка сохранена','success');navigate('ai');
+}
+function renderJarvisMethods(){
+  var methods=[
+    ['Активное вспоминание','Закрой материал и попробуй воспроизвести ответ по памяти. Затем проверь ошибки.','Высокая полезность для обучения','https://journals.sagepub.com/stoken/rbtfl/Z10jaVH/60XQM/full?cookieSet=1'],
+    ['Распределённая практика','Повторяй материал в несколько сессий с интервалами, а не одним длинным блоком.','Высокая полезность для долговременного запоминания','https://journals.sagepub.com/stoken/rbtfl/Z10jaVH/60XQM/full?cookieSet=1'],
+    ['План «если — то»','Заранее свяжи ситуацию с действием: «Если наступит 19:00, то я открою урок и позанимаюсь 10 минут».','Практика планирования поведения','https://www.nice.org.uk/Guidance/PH49/chapter/recommendations'],
+    ['Самонаблюдение и обратная связь','Записывай поведение и результат, затем корректируй цель по фактическим данным.','Рекомендации NICE по изменению поведения','https://www.nice.org.uk/Guidance/PH49/chapter/recommendations'],
+    ['Постепенная физическая активность','Начинай с доступного объёма и наращивай постепенно; рекомендации зависят от возраста и состояния здоровья.','Ориентир ВОЗ для взрослых: 150–300 минут умеренной активности в неделю','https://www.who.int/initiatives/behealthy/physical-activity/'],
+    ['Сон как базовая опора','Сохраняй регулярный режим и отслеживай длительность сна; потребность зависит от возраста.','CDC: взрослым 18–60 лет обычно требуется 7+ часов','https://www.cdc.gov/sleep/about/index.html']
+  ];
+  var html='<div class="page"><div class="title-xl">🧪 Библиотека методик</div><div class="subtitle">Краткие протоколы с источниками и границами применимости.</div>';
+  methods.forEach(function(m){html+='<div class="card mb-2"><div class="card-title">'+m[0]+'</div><p class="footnote mt-2">'+m[1]+'</p><div class="badge badge-success mt-2">'+m[2]+'</div><p class="footnote mt-2"><a href="'+m[3]+'" target="_blank" rel="noopener">Источник и подробности ↗</a></p></div>';});
+  html+='<button class="btn btn-ghost btn-block" onclick="navigate(\'ai\')">← К Джарвису</button></div>';document.getElementById('app').innerHTML=html;
+}
+
 function renderMethods(){ renderStub('🎯 Методики'); }
 function renderRecovery(){ renderStub('🌿 Восстановление'); }
 function renderMedical(){ renderStub('🏥 Медицина'); }
