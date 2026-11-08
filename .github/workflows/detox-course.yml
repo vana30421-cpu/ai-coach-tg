@@ -1,0 +1,27 @@
+name: Detox course verification
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app.js'
+      - 'content.js'
+      - 'tests/detox-course.test.js'
+      - '.github/workflows/detox-course.yml'
+  pull_request:
+    paths:
+      - 'app.js'
+      - 'content.js'
+      - 'tests/detox-course.test.js'
+      - '.github/workflows/detox-course.yml'
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node --check app.js
+      - run: node --check content.js
+      - run: node --test tests/detox-course.test.js
