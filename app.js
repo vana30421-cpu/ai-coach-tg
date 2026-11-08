@@ -93,6 +93,7 @@ function toast(msg, type, duration){
 /* ============ HAPTIC ============ */
 function haptic(type){
   try{
+    if(state&&state.settingsV2&&state.settingsV2.haptic===false)return;
     var h = tg && tg.HapticFeedback;
     if(!h) return;
     if(type === 'success') h.notificationOccurred('success');
@@ -605,6 +606,7 @@ function applyUserSettings(){
     var ts = scaleMap[s.textSize] || 1;
     var sc = parseFloat(s.scale || '100') / 100;
     document.documentElement.style.fontSize = (16 * ts * sc) + 'px';
+    document.body.classList.toggle('life-disable-motion',s.animations===false);
   }catch(e){}
 }
 
@@ -5173,7 +5175,9 @@ function finishLifePersonalization(){
 function updateLifePreference(group,key,value){
  var allow={settingsV2:['textSize','scale','sound','soundVolume','haptic','animations','animationsSpeed','language','firstDayOfWeek','timeFormat','dateFormat','darkMode','effectsEnabled','effectsIntensity','effectsMotionOverride']};
  if(!allow[group]||allow[group].indexOf(key)<0)return;if(!state[group])state[group]={};state[group][key]=value;
- if(key==='effectsEnabled'||key==='effectsIntensity'||key==='effectsMotionOverride')startEffects();save();if(currentPage==='settings')renderSettings();
+ if(key==='effectsEnabled'||key==='effectsIntensity'||key==='effectsMotionOverride'){state.settings[key]=value;startEffects();}
+ if(key==='animations'||key==='textSize'||key==='scale')applyUserSettings();
+ save();if(currentPage==='settings')renderSettings();
 }
 function renderSettings(){
  var s=state.settingsV2||defaultState().settingsV2,themes=window.THEMES||[],theme=themes.find(function(t){return t.id===state.settings.theme;})||{name:'Тёмная'};
@@ -5329,6 +5333,12 @@ function saveLearningReview(id){
  save();closeSheet();toast('Следующее повторение: '+d.toLocaleDateString('ru-RU'),'success');renderLearningPractice();
 }
 
+function applyJarvisRecommendation(id){
+ var analysis=getJarvisAnalytics(true),item=analysis.items.find(function(x){return x.id===id;});if(!item)return;
+ if(id==='energy'||id==='concentration'||id==='overload'){getJarvisState().focusDefault=15;save();toast('Фокус установлен на 15 минут','success');navigate('ai');return;}
+ if(item.target){navigate(item.target);return;}
+ navigate('stats');
+}
 /* Заглушки на window */
 window.renderMemory = renderMemory;
 window.startMemoryExercise = startMemoryExercise;
