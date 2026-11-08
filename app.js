@@ -3967,7 +3967,7 @@ function jarvisReply(text){
   if(cmd.type==='summary'){
     var all=state.tasks||[],done=all.filter(function(t){return t.status==='completed';}).length,open=all.length-done;
     var walks=Array.isArray(state.walks)?state.walks.filter(function(w){return w.date===today();}).length:0;
-    return 'Сводка:\n• Задач всего: '+all.length;\n• Завершено: '+done+'; осталось: '+open+'.\n• Серия активности: '+(state.stats.streak||0)+' дн.\n• Прогулок сегодня: '+walks+'.\nСледующий шаг — выбери одну важную задачу.';
+    return 'Сводка:\n• Задач всего: '+all.length+'\n• Завершено: '+done+'; осталось: '+open+'.\n• Серия активности: '+(state.stats.streak||0)+' дн.\n• Прогулок сегодня: '+walks+'.\nСледующий шаг — выбери одну важную задачу.';
   }
   if(cmd.type==='navigate'){navigate(cmd.page);return 'Открываю раздел «'+cmd.page+'».';}
   if(cmd.type==='focus'){startJarvisFocus(cmd.minutes||Number(d.focusDefault)||25);return 'Запустил фокус на '+(cmd.minutes||Number(d.focusDefault)||25)+' минут.';}
