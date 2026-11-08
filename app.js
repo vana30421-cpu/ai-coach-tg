@@ -788,6 +788,7 @@ function navigate(page, silent){
     dailyReport: renderDailyReport, weeklyReport: renderWeeklyReport,
     goals: renderGoals, notes: renderNotes, journal: renderJournal,
     more: renderMore, stats: renderStats, detailedStats: renderDetailedStats,
+    learningPractice: renderLearningPractice, detoxReview: renderDetoxReview, personalization: renderPersonalizationSurvey,
     timer: renderTimer, domains: renderDomains,
     profile: renderProfile, profileV2: renderProfileV2,
     settings: renderSettings, settingsV2: renderSettingsV2,
