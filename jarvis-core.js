@@ -1,6 +1,6 @@
 (function(root){
   'use strict';
-  function normalize(text){return String(text||'').toLowerCase().replace(/ё/g,'е').trim().replace(/\\s+/g,' ');}
+  function normalize(text){return String(text||'').toLowerCase().replace(/ё/g,'е').trim().replace(/\s+/g,' ');}
   var routes=[
     {id:'dashboard',keys:['главная','главную','домой','дашборд']},
     {id:'tasks',keys:['задачи','задачам','задач']},
@@ -20,11 +20,11 @@
   function parseCommand(input){
     var text=normalize(input);
     if(!text)return {type:'empty'};
-    var m=text.match(/^(?:добавь|создай|запиши|поставь)\\s+(?:задачу|дело)(?:\\s*[:—-]\\s*|\\s+)(.+)$/i);
+    var m=text.match(/^(?:добавь|создай|запиши|поставь)\s+(?:задачу|дело)(?:\s*[:—-]\s*|\s+)(.+)$/i);
     if(m&&m[1])return {type:'add_task',title:m[1].trim().slice(0,160)};
-    if(/^(?:покажи|список|мои)\\s*(?:задачи|дела)?$/.test(text)||/покажи мои задачи|список задач/.test(text))return {type:'list_tasks'};
+    if(/^(?:покажи|список|мои)\s*(?:задачи|дела)?$/.test(text)||/покажи мои задачи|список задач/.test(text))return {type:'list_tasks'};
     if(/^(?:сводка|мой день|как дела|статус|итоги дня)$/.test(text))return {type:'summary'};
-    m=text.match(/^(?:фокус|помодоро|таймер)(?:\\s+(\\d{1,3}))?$/);
+    m=text.match(/^(?:фокус|помодоро|таймер)(?:\s+(\d{1,3}))?$/);
     if(m)return {type:'focus',minutes:Math.max(5,Math.min(90,Number(m[1])||25))};
     if(/^(?:помощь|что умеешь|команды)$/.test(text))return {type:'help'};
     for(var i=0;i<routes.length;i++){
@@ -33,7 +33,7 @@
         if(text==='открой '+key||text==='перейди в '+key||text==='открой раздел '+key||text==='покажи '+key)return {type:'navigate',page:routes[i].id};
       }
     }
-    if(/тест|самооценка|проверка состояния/.test(text))return {type:'checkin'};
+    if(/тест|самооцен\w*|проверка состояния/.test(text))return {type:'checkin'};
     if(/методик|научн|техник/.test(text))return {type:'methods'};
     return {type:'chat',text:String(input).trim().slice(0,1000)};
   }
