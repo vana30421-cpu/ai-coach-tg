@@ -1,5 +1,6 @@
 const CACHE = 'life-os-v50';
 const CORE_ASSETS = ['./','./index.html','./content.js','./content2.js','./content3.js','./app.js','./manifest.json','./icon.svg'];
+self.addEventListener('message', event => { if(event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting(); });
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE);
