@@ -3728,6 +3728,8 @@ function getJarvisAnalytics(silent){
   if(a.health.sleepAvgHours!==null&&a.health.sleepAvgHours<6.5)items.push({id:'sleep',level:'high',title:'Недостаточно данных о сне',detail:'Среднее по записанным сессиям: '+a.health.sleepAvgHours+' ч. Это ориентир по журналу, не медицинская оценка.',action:'Зафиксируй сон и оставь запас времени на восстановление.'});
   if(a.coverage.percent<35)items.push({id:'coverage',level:'info',title:'Недостаточно данных для точного управления',detail:'Заполнено '+a.coverage.activeSections+' из '+a.coverage.totalTracked+' основных трекеров.',action:'Добавь записи в важные для тебя разделы. Неактивные трекеры не считаются нулевыми результатами.'});
   if(!items.length)items.push({id:'steady',level:'good',title:'Критичных сигналов не найдено',detail:'Продолжай текущий ритм. Джарвис проверяет только реально сохранённые записи.',action:'Сохрани регулярность и проведи вечерний обзор.'});
+  var selected=getLifeStatsFilter().category||'all';
+  if(selected!=='all'){var allowed={productivity:['overdue','overload','habits'],screen:['screen','screen-target','screen-data','screen-trend'],health:['sleep','sleep-data','energy','concentration','vision-fatigue','vision-headache'],learning:['reviews','study-due'],life:['detox-feedback','coverage']};var ids=allowed[selected]||[];items=items.filter(function(x){return ids.indexOf(x.id)>=0||x.id.indexOf('screen-')===0;});if(!items.length)items.push({id:'filtered-empty',level:'good',title:'Отклонений в выбранном направлении не найдено',detail:'Для выбранного фильтра нет сигналов, требующих вмешательства.',action:'Продолжай наблюдение и проверь динамику позже.',target:'stats',confidence:'Текущие фильтры'});}
   return {at:nowISO(),period:a.label,analytics:a,items:items,focusSuggestion:focus};
 }
 function runJarvisAutopilot(silent){
@@ -4981,8 +4983,10 @@ function buildComprehensiveStats(days){
   var screenDates=screen.map(function(x){return String(dateOf(x)||'').slice(0,10);}).filter(Boolean);
   var daysInPeriod=period||0;
   if(f.from||f.to){
-    var ds=f.from?new Date(f.from+'T00:00:00'):new Date(Math.min.apply(null,screen.map(function(x){var d=lifeStatsDateV2(dateOf(x));return d?d.getTime():Date.now();})));
+    var ds=f.from?new Date(f.from+'T00:00:00'):(f.to?new Date(f.to+'T00:00:00'):new Date());
     var de=f.to?new Date(f.to+'T00:00:00'):new Date();
+    if(!f.from&&f.to)ds.setDate(ds.getDate()-(period||29));
+    if(!f.from&&!f.to)ds.setDate(ds.getDate()-(period||29));
     daysInPeriod=Math.max(1,Math.floor((de-ds)/86400000)+1);
   }else if(!period){
     var valid=screenDates.slice().sort();var first=valid[0]?new Date(valid[0]+'T00:00:00'):new Date();
@@ -5008,7 +5012,7 @@ function buildComprehensiveStats(days){
   var breaks=vision.breakTracker||{},breakHistory=breaks.history||{},breakDone=Object.keys(breakHistory).filter(function(day){return within(day);}).reduce(function(n,day){return n+(Number(breakHistory[day].done)||0);},0);
   var eyeExercises=arr('eyeExercises').filter(function(x){return within(dateOf(x));});
   var detox=s.detox||{},detoxHistory=Array.isArray(detox.history)?detox.history.filter(function(x){return within(dateOf(x));}):[];
-  var detoxCourse=Object.keys(s.detoxCourseProgress||{}).filter(function(day){var x=s.detoxCourseProgress[day];return x&&within(x.completedAt||x.date||x);}).length;
+  var detoxCourse=Object.keys(s.detoxCourseProgress||{}).filter(function(day){return !!s.detoxCourseProgress[day];}).length;
   var detoxReviews=detoxHistory.filter(function(x){return x.kind==='review'||x.type==='review'||x.screenMinutes!==undefined;});
   var projects=arr('projects'),projectDone=projects.filter(function(x){return x.status==='completed'||x.done;});
   var calendar=arr('calendarEvents').filter(function(x){return within(x.date||x.createdAt);});
@@ -5025,6 +5029,8 @@ function buildComprehensiveStats(days){
   var inventory=Object.keys(s).map(function(k){var v=s[k],n=Array.isArray(v)?v.length:(v&&typeof v==='object'?Object.keys(v).length:((v!==null&&v!==undefined&&v!=='')?1:0));return {key:k,count:n,type:Array.isArray(v)?'список':(v&&typeof v==='object'?'объект':'значение')};}).sort(function(a,b){return b.count-a.count;});
   var daily=[];for(var off=29;off>=0;off--){var d=new Date();d.setDate(d.getDate()-off);var key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');daily.push({date:key,tasks:completed.filter(function(x){return String(x.completedAt||x.completed_at||x.updated_at||'').slice(0,10)===key;}).length,screen:screen.filter(function(x){return String(dateOf(x)||'').slice(0,10)===key;}).reduce(function(n,x){return n+(Number(x.minutes)||0);},0),habits:habitDays[key]||0});}
   var profile=s.profile||{},survey=profile.surveyAnswers||{},sleepTarget=Number(survey.sleepHours)||7.5;
+  var recent7=daily.slice(-7),prior7=daily.slice(-14,-7),mean=function(rows,key){return rows.length?Math.round(rows.reduce(function(n,x){return n+(Number(x[key])||0);},0)/rows.length):0;};
+  var screenRecent=mean(recent7,'screen'),screenPrevious=mean(prior7,'screen'),taskRecent=mean(recent7,'tasks'),taskPrevious=mean(prior7,'tasks');
   return {
     period:period,label:f.from||f.to?'Выбранный диапазон':(period===0?'За всё время':'За '+period+' дн.'),
     filters:{category:f.category||'all',from:f.from||'',to:f.to||''},daysInPeriod:daysInPeriod,
@@ -5033,7 +5039,7 @@ function buildComprehensiveStats(days){
     focus:{screenEntries:screen.length,screenMinutes:screenMinutes,screenDailyAvg:screenDailyAvg,screenLimit:screenGoal,screenDeviation:screenGoal&&screenDailyAvg!==null?Math.round((screenDailyAvg-screenGoal)/screenGoal*100):null,screenByCategory:screenCategoryStats,screenDays:screenDates.length,focusSessions:focusHistory.length,focusMinutes:focusHistory.reduce(function(n,x){return n+(Number(x.minutes)||Number(x.duration)||0);},0),checkins:checkins.length,energyAvg:avg(checkins,'energy'),concentrationAvg:avg(checkins,'focus'),sleepQualityAvg:avg(checkins,'sleep'),stressAvg:avg(checkins,'stress')},
     learning:{progressItems:learningCount,brainPlays:brain.length,brainAvgScore:avg(brain,'score'),fsrsCards:count(cards),fsrsReviews:fsrsReviews.length,fsrsDue:fsrsDue,eyeExercises:eyeExercises.length,studySessions:(Array.isArray(s.learningSessions)?s.learningSessions:[]).filter(function(x){return within(dateOf(x));}).length,studyMinutes:(Array.isArray(s.learningSessions)?s.learningSessions:[]).filter(function(x){return within(dateOf(x));}).reduce(function(n,x){return n+(Number(x.minutes)||0);},0),studyDue:(Array.isArray(s.learningSessions)?s.learningSessions:[]).filter(function(x){return x.nextReviewAt&&String(x.nextReviewAt).slice(0,10)<=today();}).length},
     life:{projects:projects.length,projectsDone:projectDone.length,calendarEvents:calendar.length,calendarDone:calendar.filter(function(x){return x.done;}).length,sphereScores:sphereValues.length,sphereAverage:sphereValues.length?Math.round(sphereValues.reduce(function(a,b){return a+b;},0)/sphereValues.length*10)/10:null,financeEntries:finance.length,financeNet:finance.reduce(function(n,x){return n+(Number(x.amount)||0);},0),visionLogs:visionDays.length,eyeFatigueAvg:fatigue.length?Math.round(fatigue.reduce(function(a,b){return a+b;},0)/fatigue.length*10)/10:null,headaches:headaches,eyeBreaks:breakDone,detoxEntries:detoxHistory.length+detoxCourse,memoryItems:count(s.memoryProgress)+count(cards),detoxReviews:detoxReviews.length},
-    coverage:{activeSections:active,totalTracked:tracked.length,percent:Math.round(active/tracked.length*100),inventory:inventory},daily:daily
+    coverage:{activeSections:active,totalTracked:tracked.length,percent:Math.round(active/tracked.length*100),inventory:inventory},comparison:{screenRecentDaily:screenRecent,screenPreviousDaily:screenPrevious,screenChangePercent:screenPrevious?Math.round((screenRecent-screenPrevious)/screenPrevious*100):null,tasksRecentDaily:taskRecent,tasksPreviousDaily:taskPrevious,tasksChangePercent:taskPrevious?Math.round((taskRecent-taskPrevious)/taskPrevious*100):null},daily:daily
   };
 }
 function getJarvisAnalytics(silent){
@@ -5042,6 +5048,7 @@ function getJarvisAnalytics(silent){
   if(a.overview.overdue)push('overdue','high','Просроченные задачи',a.overview.overdue+' задач требуют пересмотра.','Разобрать сроки и оставить реалистичный план.','tasks',a.overview.overdue+' задач');
   if(a.overview.tasksPending>8)push('overload','medium','Слишком длинный список задач','Активных задач: '+a.overview.tasksPending+'.','Выбрать до трёх главных результатов и разбить следующий шаг.','tasks');
   if(a.focus.screenDailyAvg!==null){
+    if(a.comparison.screenChangePercent!==null&&a.comparison.screenChangePercent>20)push('screen-trend','medium','Экранное время заметно выросло','Среднее за последние 7 дней выше предыдущих 7 дней на '+a.comparison.screenChangePercent+'%.','Проверь, какая категория выросла, и выбери одно небольшое ограничение на следующую неделю.','screentracker','Сравнение двух недель');
     if(a.focus.screenLimit&&a.focus.screenDailyAvg>a.focus.screenLimit)push('screen','high','Экранное время выше личной цели','Среднее '+a.focus.screenDailyAvg+' мин/день при цели '+a.focus.screenLimit+' мин/день ('+Math.abs(a.focus.screenDeviation)+'% выше).','Сократить наиболее затратную категорию, добавить запланированные офлайн-паузы и проверить результат через 7 дней.','screentracker',a.focus.screenEntries+' записей');
     else if(!a.focus.screenLimit)push('screen-target','info','Не задана личная цель экранного времени','Есть '+a.focus.screenMinutes+' минут записей за выбранный период, но нет сохранённого целевого лимита.','Заполни короткую анкету или задай лимит в трекере, чтобы сравнение было персональным.','personalization');
     a.focus.screenByCategory.forEach(function(x){if(x.target&&x.dailyAvg>x.target)push('screen-'+x.category,'medium','Перерасход: '+x.category,x.dailyAvg+' мин/день при бюджете '+x.target+' мин ('+x.deviation+'% выше).','Уменьшить эту категорию небольшим шагом и повторно оценить среднее через неделю.','screentracker',x.total+' минут записано');});
