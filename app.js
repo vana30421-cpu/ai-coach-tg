@@ -4194,7 +4194,7 @@ async function sendJarvisCloudMessage(text){
  var d=getJarvisState(),placeholder={role:'assistant',text:'Думаю над ответом…',at:nowISO(),pending:true};
  d.messages.push(placeholder);if(d.messages.length>160)d.messages=d.messages.slice(-160);save();renderJarvis();
  try{
-  var history=d.messages.slice(-13,-2).map(function(m){return {role:m.role==='assistant'?'assistant':'user',content:m.text};});
+  var history=d.messages.slice(-13,-1).map(function(m){return {role:m.role==='assistant'?'assistant':'user',content:m.text};});
   var response=await fetch('/api/jarvis',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:text,history:history,context:buildJarvisAppContext()})});
   var data=await response.json().catch(function(){return {};});
   if(!response.ok){
@@ -4224,7 +4224,6 @@ function buildJarvisLocalReply(text){
  if(/сон|спал/.test(q))return c.sleep?'Последняя запись сна — '+c.sleep.hours+' ч, качество '+c.sleep.quality+'/10 ('+c.sleep.date+'). Если хочешь улучшить режим, сначала сравним время отхода ко сну и подъёма за 7 дней.':'Пока нет записи сна. Добавь хотя бы несколько ночей — тогда я смогу сравнивать тенденции, а не гадать.';
  if(/учеб|учить|запомин|курс/.test(q))return 'В обучении лучше проверить не количество прочитанных уроков, а воспроизведение без подсказок и практическое применение. Могу помочь составить короткую проверку по теме, которую сейчас изучаешь.';
  if(/игр|играть/.test(q))return 'Игры должны запускаться как интерактивные задания, а не просить вручную вводить очки. Я обновляю игровой раздел, чтобы результат считался по реальным действиям.';
- var last=dummy= getJarvisState().messages.slice(-3).filter(function(m){return m.role==='user';}).map(function(m){return m.text;});
  return 'Я на связи в локальном режиме и вижу твои сохранённые показатели LIFEOS. Могу разобрать задачи, привычки, сон, воду, настроение, экранное время, зрение и обучение. Сейчас по данным: '+c.tasks.active+' активных задач, '+c.habits.completed+'/'+c.habits.today.length+' привычек сегодня. Для свободного диалога уровня языковой модели включи «Разговорный ИИ» и настрой серверный ключ. Что именно хочешь решить?';
 }
 function jarvisReply(text){
