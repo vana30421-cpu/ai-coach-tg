@@ -1007,7 +1007,7 @@ function renderDashboard(){
   var xpPrev = getXPForLevel(lvl);
   var pct = xpNext > xpPrev ? Math.round((xp - xpPrev) / (xpNext - xpPrev) * 100) : 0;
   var pet = state.pet || {};
-  var petStage = PET_STAGES ? (PET_STAGES.find(function(s){return s.id === (pet.stage||1);}) || PET_STAGES[0]) : {emoji:'🥚',name:'Яйцо'};
+  var petStage = (window.PET_STAGES || []).find(function(s){return s.id === (pet.stage||1);}) || {emoji:'🥚',name:'Яйцо'};
 
   html += '<div class="card" onclick="navigate(\'stats\')" style="cursor:pointer;">';
   html += '<div class="row-between mb-2">';
