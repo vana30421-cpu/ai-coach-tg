@@ -3829,8 +3829,38 @@ function resetAllWithConfirm(){
 
 /* ============ ЗАГЛУШКИ ============ */
 function renderStub(title){
-  var app = document.getElementById('app');
-  if(app) app.innerHTML = '<div class="page"><div class="title-xl">' + title + '</div><div class="card"><div class="empty"><div class="empty-icon">🚧</div><div class="empty-title">Раздел в разработке</div></div></div></div>';
+  var id=currentPage||'workspace';
+  if(!state.workspaces)state.workspaces={};
+  if(!Array.isArray(state.workspaces[id]))state.workspaces[id]=[];
+  var rows=state.workspaces[id],finance=id==='finance',q=(window.__wsQuery||'').toLowerCase();
+  var visible=rows.filter(function(r){return (r.title+' '+(r.note||'')+' '+(r.category||'')).toLowerCase().indexOf(q)>=0;});
+  var sum=rows.reduce(function(n,r){return n+(Number(r.amount)||0);},0);
+  var html='<div class="page workspace-page"><div class="row-between"><div><div class="title-xl">'+esc(title)+'</div><div class="subtitle">Рабочее пространство · данные сохраняются на устройстве</div></div><button class="btn btn-ghost btn-sm" onclick="navigate(\'more\')">Разделы</button></div>';
+  html+='<div class="grid-2 mb-3"><div class="card"><div class="stat-value">'+rows.length+'</div><div class="stat-label">Записей</div></div><div class="card"><div class="stat-value">'+(finance?sum.toLocaleString('ru-RU'):rows.filter(function(r){return r.done;}).length)+'</div><div class="stat-label">'+(finance?'Баланс':'Выполнено')+'</div></div></div>';
+  if(finance)html+='<div class="card mb-3"><div class="footnote">Доходы указывай положительным числом, расходы — отрицательным. Это локальный учёт, не банковская интеграция.</div></div>';
+  html+='<div class="card mb-3"><div class="card-title">＋ Новая запись</div><div class="field"><label class="field-label">Название</label><input id="wsTitle" maxlength="160" placeholder="Добавить запись..."></div><div class="field"><label class="field-label">Категория</label><select id="wsCategory"><option>Личное</option><option>Работа</option><option>Обучение</option><option>Здоровье</option><option>Идея</option><option>Важно</option></select></div><div class="field"><label class="field-label">Подробности</label><textarea id="wsNote" maxlength="2000" placeholder="Описание, вывод или следующий шаг"></textarea></div>';
+  if(finance)html+='<div class="field"><label class="field-label">Сумма (+ доход / − расход)</label><input id="wsAmount" type="number" step="0.01" placeholder="0"></div>';
+  html+='<button class="btn btn-primary btn-block" onclick="addWorkspaceEntry()">Сохранить</button></div>';
+  html+='<div class="row-between mb-2"><div class="section-title" style="margin:0">Мои записи</div><input type="search" style="max-width:48%" placeholder="Поиск" value="'+esc(window.__wsQuery||'')+'" oninput="window.__wsQuery=this.value;renderStub(\'Раздел\')"></div>';
+  if(!visible.length)html+='<div class="card empty"><div class="empty-icon">📌</div><div class="empty-title">'+(rows.length?'Ничего не найдено':'Пока нет записей')+'</div><div class="empty-text">Добавь первую запись — она появится здесь.</div></div>';
+  visible.slice().reverse().forEach(function(r){html+='<div class="card workspace-entry"><div class="row-between"><b>'+esc(r.title)+'</b><span class="footnote">'+esc(r.category||'')+'</span></div>'+(r.note?'<div class="footnote mt-2">'+esc(r.note)+'</div>':'')+(finance?'<div class="stat-value mt-2">'+Number(r.amount||0).toLocaleString('ru-RU')+'</div>':'')+'<div class="btn-row mt-2"><button class="btn btn-ghost btn-xs" onclick="toggleWorkspaceEntry(\''+r.id+'\')">'+(r.done?'↩ Вернуть':'✓ Выполнено')+'</button><button class="btn btn-ghost btn-xs" onclick="deleteWorkspaceEntry(\''+r.id+'\')">Удалить</button></div></div>';});
+  html+='<div class="footnote text-tertiary text-center mt-3">Записи входят в резервную копию Life OS.</div></div>';
+  document.getElementById('app').innerHTML=html;
+}
+function addWorkspaceEntry(){
+  var t=document.getElementById('wsTitle'),n=document.getElementById('wsNote'),c=document.getElementById('wsCategory');
+  if(!t||!t.value.trim())return toast('Укажи название записи','warning');
+  if(!state.workspaces)state.workspaces={};if(!Array.isArray(state.workspaces[currentPage]))state.workspaces[currentPage]=[];
+  state.workspaces[currentPage].push({id:uid(),title:t.value.trim(),note:n?n.value.trim():'',category:c?c.value:'',amount:Number((document.getElementById('wsAmount')||{}).value)||0,done:false,createdAt:nowISO()});
+  save();haptic('success');window.__wsQuery='';renderStub('Раздел');toast('Запись сохранена','success');
+}
+function toggleWorkspaceEntry(id){
+  var r=(state.workspaces&&state.workspaces[currentPage]||[]).find(function(x){return x.id===id;});if(!r)return;r.done=!r.done;save();renderStub('Раздел');
+}
+function deleteWorkspaceEntry(id){
+  if(!confirm('Удалить запись?'))return;
+  if(state.workspaces&&Array.isArray(state.workspaces[currentPage]))state.workspaces[currentPage]=state.workspaces[currentPage].filter(function(x){return x.id!==id;});
+  save();renderStub('Раздел');toast('Запись удалена','success');
 }
 function getMemoryTrainingData(){
   if(!state.memoryTraining) state.memoryTraining={sessions:[],bestSpan:0};
