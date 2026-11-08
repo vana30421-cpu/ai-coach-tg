@@ -60,3 +60,14 @@ test('Jarvis chat and page can scroll on mobile and desktop',()=>{
   assert.match(index,/max-height:min\(54vh,560px\)/);
   assert.match(index,/overflow:visible!important/);
 });
+
+test('all Jarvis inline controls are exported to the browser window',()=>{
+  for(const name of ['jarvisQuick','sendJarvisMessage','startJarvisVoice','speakJarvisLast','startJarvisFocus','stopJarvisFocus','saveJarvisCheckin','setJarvisMode','setJarvisFocusDefault','clearJarvisChat','renderJarvisAIProviders']){
+    assert.ok(app.includes('window.'+name+' ='),name+' is exported');
+  }
+});
+test('AI directory documents major assistants and safe integration boundaries',()=>{
+  for(const name of ['ChatGPT','Claude','Gemini','Perplexity','Microsoft Copilot','Grok','DeepSeek','Mistral Vibe'])assert.ok(app.includes(name),name+' is documented');
+  assert.match(app,/function renderJarvisAIProviders/);
+  assert.match(app,/без хранения секретных API-ключей в браузере/);
+});
