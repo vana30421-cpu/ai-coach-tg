@@ -2166,7 +2166,7 @@ function getLevelProgress(levelId){
   });
   return {done:done, total:total, pct:total>0 ? Math.round(done/total*100) : 0};
 }
-function renderLearning(){
+function renderLearningLegacy(){
   var totalDone = 0, totalLessons = 0;
   (window.LEARNING_LEVELS||[]).forEach(function(level){
     var p = getLevelProgress(level.id);
@@ -3760,6 +3760,7 @@ function applyJarvisRecommendation(id){
   if(id==='energy'||id==='concentration'||id==='overload'){getJarvisState().focusDefault=15;save();toast('Фокус установлен на 15 минут','success');renderJarvis();return;}
   if(id==='overdue'){navigate('tasks');return;}
   if(id==='reviews'){navigate('fsrs');return;}
+  if(id==='study-due'){navigate('learningPractice');return;}
   if(id==='screen'){navigate('screentracker');return;}
   if(id==='sleep'){navigate('sleep');return;}
   if(id==='coverage'){navigate('more');return;}
@@ -5030,7 +5031,7 @@ function buildComprehensiveStats(days){
     overview:{tasksTotal:tasks.length,tasksDone:done.length,tasksPending:pending.length,tasksDonePeriod:completed.length,overdue:overdue.length,habitTotal:habits.length,habitsToday:habits.filter(function(x){return x.lastCompletedDate===today();}).length,habitEvents:habitEvents,streak:Number(s.stats&&s.stats.streak)||0,bestStreak:Number(s.stats&&s.stats.bestStreak)||0,xp:Number(s.gamification&&s.gamification.xp)||Number(s.xp)||0,xpPeriod:xpPeriod,level:Number(s.gamification&&s.gamification.level)||Number(s.level)||1},
     health:{sleepEntries:sleep.length,sleepAvgHours:sleep.length?Math.round(sleepMinutes/sleep.length/60*10)/10:null,sleepTarget:sleepTarget,moodEntries:mood.length,moodAvg:avg(mood,'score'),waterEntries:water.length,waterTotal:water.reduce(function(n,x){return n+(Number(x.count)||Number(x.amount)||0);},0),workouts:workouts.length,meditation:meditation.length,walks:walks.length,walkMinutes:walks.reduce(function(n,x){return n+(Number(x.minutes)||0);},0),antistress:arr('antistressEntries').filter(function(x){return within(dateOf(x));}).length},
     focus:{screenEntries:screen.length,screenMinutes:screenMinutes,screenDailyAvg:screenDailyAvg,screenLimit:screenGoal,screenDeviation:screenGoal&&screenDailyAvg!==null?Math.round((screenDailyAvg-screenGoal)/screenGoal*100):null,screenByCategory:screenCategoryStats,screenDays:screenDates.length,focusSessions:focusHistory.length,focusMinutes:focusHistory.reduce(function(n,x){return n+(Number(x.minutes)||Number(x.duration)||0);},0),checkins:checkins.length,energyAvg:avg(checkins,'energy'),concentrationAvg:avg(checkins,'focus'),sleepQualityAvg:avg(checkins,'sleep'),stressAvg:avg(checkins,'stress')},
-    learning:{progressItems:learningCount,brainPlays:brain.length,brainAvgScore:avg(brain,'score'),fsrsCards:count(cards),fsrsReviews:fsrsReviews.length,fsrsDue:fsrsDue,eyeExercises:eyeExercises.length},
+    learning:{progressItems:learningCount,brainPlays:brain.length,brainAvgScore:avg(brain,'score'),fsrsCards:count(cards),fsrsReviews:fsrsReviews.length,fsrsDue:fsrsDue,eyeExercises:eyeExercises.length,studySessions:(Array.isArray(s.learningSessions)?s.learningSessions:[]).filter(function(x){return within(dateOf(x));}).length,studyMinutes:(Array.isArray(s.learningSessions)?s.learningSessions:[]).filter(function(x){return within(dateOf(x));}).reduce(function(n,x){return n+(Number(x.minutes)||0);},0),studyDue:(Array.isArray(s.learningSessions)?s.learningSessions:[]).filter(function(x){return x.nextReviewAt&&String(x.nextReviewAt).slice(0,10)<=today();}).length},
     life:{projects:projects.length,projectsDone:projectDone.length,calendarEvents:calendar.length,calendarDone:calendar.filter(function(x){return x.done;}).length,sphereScores:sphereValues.length,sphereAverage:sphereValues.length?Math.round(sphereValues.reduce(function(a,b){return a+b;},0)/sphereValues.length*10)/10:null,financeEntries:finance.length,financeNet:finance.reduce(function(n,x){return n+(Number(x.amount)||0);},0),visionLogs:visionDays.length,eyeFatigueAvg:fatigue.length?Math.round(fatigue.reduce(function(a,b){return a+b;},0)/fatigue.length*10)/10:null,headaches:headaches,eyeBreaks:breakDone,detoxEntries:detoxHistory.length+detoxCourse,memoryItems:count(s.memoryProgress)+count(cards),detoxReviews:detoxReviews.length},
     coverage:{activeSections:active,totalTracked:tracked.length,percent:Math.round(active/tracked.length*100),inventory:inventory},daily:daily
   };
@@ -5050,6 +5051,7 @@ function getJarvisAnalytics(silent){
   if(a.focus.energyAvg!==null&&a.focus.energyAvg<2.8){focus=15;push('energy','high','Низкая энергия','Средняя самооценка '+a.focus.energyAvg+'/5.','Снизить длительность фокуса до 15 минут, выбрать одну небольшую задачу и оценить состояние позже.','ai',a.focus.checkins+' самооценок');}
   if(a.focus.concentrationAvg!==null&&a.focus.concentrationAvg<2.8){focus=Math.min(focus,15);push('concentration','medium','Снижение концентрации','Средняя оценка '+a.focus.concentrationAvg+'/5.','Убрать переключения, разбить работу на короткие блоки и сделать паузу.','focus');}
   if(a.overview.habitTotal&&a.overview.habitsToday<a.overview.habitTotal)push('habits','info','Не все привычки отмечены сегодня',a.overview.habitsToday+' из '+a.overview.habitTotal+' отмечены на сегодня.','Проверь, реалистична ли нагрузка; используй минимальную версию привычки.','habitList');
+  if(a.learning.studyDue)push('study-due','medium','Пора проверить изученное',a.learning.studyDue+' тем ждут активного воспроизведения.','Вспомни материал без подсказки, затем проверь себя.','learningPractice');
   if(a.learning.fsrsDue)push('reviews','medium','Накопились повторения',a.learning.fsrsDue+' карточек ожидают повторения.','Сделай короткую сессию активного воспроизведения.','fsrs');
   if(a.life.eyeFatigueAvg!==null&&a.life.eyeFatigueAvg>=7)push('vision-fatigue','medium','Повышенная усталость глаз','Средняя оценка усталости '+a.life.eyeFatigueAvg+'/10.','Сделай перерыв от экрана, проверь освещение и дистанцию. При стойкой боли, ухудшении или внезапных симптомах обратись к специалисту.','vision');
   if(a.life.headaches>=3)push('vision-headache','high','Повторяющиеся записи о головной боли','За период отмечено '+a.life.headaches+' дней с головной болью.','Не продолжай упражнения через боль; обратись за медицинской оценкой, если симптом повторяется или усиливается.','vision');
@@ -5277,6 +5279,47 @@ function renderVisionTracker(){
  if(!keys.length)html+='<div class="empty-title">Пока нет наблюдений</div>';
  keys.reverse().forEach(function(k){var x=m[k];html+='<div class="list-row"><div class="list-body"><div class="list-title">'+esc(k)+'</div><div class="footnote">Усталость '+(x.eyeFatigue??'—')+'/10 · сухость '+(x.dryness??'—')+'/10 · экран '+(x.screenHours??'—')+' ч · головная боль '+(x.headaches?'да':'нет')+'</div></div></div>';});
  html+='</div><button class="btn btn-primary btn-block mt-3" onclick="navigate(\'vision\')">← К разделу зрения</button></div>';document.getElementById('app').innerHTML=html;
+}
+
+
+/* LEARNING PRACTICE: active recall and measured review */
+function getLearningSessions(){if(!Array.isArray(state.learningSessions))state.learningSessions=[];return state.learningSessions;}
+function renderLearning(){
+ renderLearningLegacy();
+ var rows=getLearningSessions(),due=rows.filter(function(x){return x.nextReviewAt&&String(x.nextReviewAt).slice(0,10)<=today();}),minutes=rows.reduce(function(n,x){return n+(Number(x.minutes)||0);},0);
+ var root=document.querySelector('#app .page');if(!root)return;
+ var html='<div class="card mb-3"><h2>🧠 Практика активного воспроизведения</h2><div class="grid-2"><div><b>'+rows.length+'</b><div class="footnote">Учебных сессий</div></div><div><b>'+minutes+' мин</b><div class="footnote">Время практики</div></div><div><b>'+due.length+'</b><div class="footnote">Повторить сейчас</div></div><div><b>'+((state.profile&&state.profile.surveyAnswers&&state.profile.surveyAnswers.learningMinutes)||25)+'</b><div class="footnote">Цель блока, минут</div></div></div><button class="btn btn-primary btn-block mt-2" onclick="navigate(\'learningPractice\')">Начать практику и проверить память</button>';
+ if(due.length){html+='<div class="section-title mt-3">Материал к повторению</div>';due.slice(0,5).forEach(function(x){html+='<div class="list-row"><div class="list-body"><div class="list-title">'+esc(x.topic)+'</div><div class="footnote">Повторений: '+(x.reviewCount||0)+' · срок '+esc(String(x.nextReviewAt).slice(0,10))+'</div></div><button class="btn btn-ghost btn-xs" onclick="startLearningReview(\''+x.id+'\')">Повторить</button></div>';});}
+ html+='</div>';root.insertAdjacentHTML('afterbegin',html);
+}
+function renderLearningPractice(){
+ var rows=getLearningSessions(),due=rows.filter(function(x){return x.nextReviewAt&&String(x.nextReviewAt).slice(0,10)<=today();});
+ var html='<div class="page"><div class="title-xl">🧠 Активное воспроизведение</div><div class="subtitle">Сначала вспомни ответ без подсказок, затем сравни с заметками и оцени уверенность.</div><div class="card"><h2>Новая тема</h2><div class="field"><label class="field-label">Тема / навык</label><input id="learnTopic" maxlength="120" placeholder="Например: основы JavaScript"></div><div class="field"><label class="field-label">Вопрос для самопроверки</label><input id="learnPrompt" maxlength="240" placeholder="Что я должен вспомнить?"></div><div class="field"><label class="field-label">Что удалось вспомнить без подсказки?</label><textarea id="learnRecall" rows="4" placeholder="Запиши своими словами"></textarea></div><div class="field"><label class="field-label">Уверенность в воспроизведении</label><select id="learnConfidence"><option value="1">1 — почти ничего не вспомнил</option><option value="2">2 — вспомнил мало</option><option value="3" selected>3 — частично</option><option value="4">4 — почти всё</option><option value="5">5 — уверенно и точно</option></select></div><div class="field"><label class="field-label">Минут практики</label><input id="learnMinutes" type="number" min="1" max="240" value="15"></div><button class="btn btn-primary btn-block" onclick="saveLearningPractice()">Сохранить результат и запланировать повторение</button></div>';
+ html+='<div class="card"><h2>⏰ К повторению</h2>';
+ if(!due.length)html+='<div class="footnote">Нет просроченных повторений. Новые темы появятся здесь после первой практики.</div>';
+ due.forEach(function(x){html+='<div class="list-row"><div class="list-body"><div class="list-title">'+esc(x.topic)+'</div><div class="footnote">'+esc(x.prompt||'')+' · повторений '+(x.reviewCount||0)+'</div></div><button class="btn btn-ghost btn-xs" onclick="startLearningReview(\''+x.id+'\')">Проверить</button></div>';});
+ html+='</div><button class="btn btn-ghost btn-block" onclick="navigate(\'learning\')">← К обучению</button></div>';document.getElementById('app').innerHTML=html;
+}
+function learningNextInterval(rating){return ({1:1,2:2,3:3,4:7,5:14})[Number(rating)]||2;}
+function saveLearningPractice(){
+ var topic=(document.getElementById('learnTopic').value||'').trim(),prompt=(document.getElementById('learnPrompt').value||'').trim(),recall=(document.getElementById('learnRecall').value||'').trim(),confidence=Number(document.getElementById('learnConfidence').value),minutes=Number(document.getElementById('learnMinutes').value);
+ if(!topic||!recall)return toast('Укажи тему и запиши, что вспомнил','warning');
+ if(!Number.isFinite(minutes)||minutes<1||minutes>240)return toast('Время должно быть от 1 до 240 минут','warning');
+ var d=new Date();d.setDate(d.getDate()+learningNextInterval(confidence));
+ getLearningSessions().push({id:uid(),topic:topic,prompt:prompt,recall:recall,confidence:confidence,minutes:minutes,date:today(),createdAt:nowISO(),reviewCount:0,nextReviewAt:d.toISOString().slice(0,10),history:[]});
+ save();toast('Сессия сохранена. Повторение назначено на '+d.toLocaleDateString('ru-RU'),'success');renderLearningPractice();
+}
+function startLearningReview(id){
+ var x=getLearningSessions().find(function(r){return r.id===id;});if(!x)return;
+ openSheet('Повторение: '+x.topic,'<div class="footnote mb-2">'+esc(x.prompt||'Вспомни главное по теме без подсказок.')+'</div><div class="field"><label class="field-label">Что вспомнил сейчас?</label><textarea id="learnReviewRecall" rows="4"></textarea></div><div class="field"><label class="field-label">Насколько хорошо вспомнил?</label><select id="learnReviewRating"><option value="1">Забыл</option><option value="2">Трудно</option><option value="3" selected>Нормально</option><option value="4">Хорошо</option><option value="5">Легко</option></select></div><button class="btn btn-primary btn-block" onclick="saveLearningReview(\''+id+'\')">Сохранить повторение</button>');
+}
+function saveLearningReview(id){
+ var x=getLearningSessions().find(function(r){return r.id===id;});if(!x)return;
+ var recall=(document.getElementById('learnReviewRecall')||{}).value||'',rating=Number((document.getElementById('learnReviewRating')||{}).value)||3;
+ if(!recall.trim())return toast('Сначала воспроизведи ответ по памяти','warning');
+ var d=new Date();d.setDate(d.getDate()+learningNextInterval(rating));x.reviewCount=(x.reviewCount||0)+1;x.nextReviewAt=d.toISOString().slice(0,10);x.lastReviewedAt=nowISO();
+ if(!Array.isArray(x.history))x.history=[];x.history.push({at:nowISO(),rating:rating,recall:recall.trim()});if(x.history.length>50)x.history=x.history.slice(-50);
+ save();closeSheet();toast('Следующее повторение: '+d.toLocaleDateString('ru-RU'),'success');renderLearningPractice();
 }
 
 /* Заглушки на window */
