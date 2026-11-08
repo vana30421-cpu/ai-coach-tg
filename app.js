@@ -5796,10 +5796,10 @@ window.renderDiagnostic = renderDiagnostic;
 window.renderOnboarding = renderOnboarding;
 
 /* ============ СТАРТ ============ */
-if(document.readyState === 'loading'){
-  document.addEventListener('DOMContentLoaded', init);
-} else {
+if(document.readyState === 'complete'){
   init();
+} else {
+  document.addEventListener('DOMContentLoaded', init, {once:true});
 }
 
 console.log('[APP v48 ✅] ФИНАЛ загружен. Все части: 1/4 + 2/4 + 3/4 + 4/4');
