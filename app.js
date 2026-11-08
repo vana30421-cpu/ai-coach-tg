@@ -230,7 +230,7 @@ function defaultState(){
       textSize:'medium',scale:'100',sound:true,soundVolume:0.5,haptic:true,
       animations:true,animationsSpeed:'normal',language:'ru',firstDayOfWeek:'monday',
       timeFormat:'24h',dateFormat:'DD.MM.YYYY',darkMode:'auto',effectsEnabled:true,
-      effectsIntensity:1,reducedMotion:false,updatedAt:null
+      effectsIntensity:1,effectsMotionOverride:false,reducedMotion:false,updatedAt:null
     },
     snapshot:null,snapshotHistory:[],recommendations:[],lastSnapshotAt:null,
 
@@ -252,7 +252,7 @@ function defaultState(){
     settings:{
       version:CURRENT_VERSION,theme:'dark',provider:'gemini',apiKey:'',
       activePersona:'coach',waterGoal:8,onboardingDone:false,
-      effectsEnabled:true,effectsIntensity:1,animationSpeed:1,
+      effectsEnabled:true,effectsIntensity:1,effectsMotionOverride:false,
       lastDailySurveyDay:null,dailyLearnTarget:150,
       pwa:{installed:false,installedAt:null},
       notifications:{enabled:false,lastCheck:null},
@@ -615,6 +615,8 @@ function startEffects(){
   overlay.replaceChildren();
   try{
     var settings=state&&state.settings?state.settings:{};
+    document.body.classList.toggle('life-motion-override',settings.effectsMotionOverride===true);
+    overlay.setAttribute('aria-hidden','true');
     if(document.hidden||settings.effectsEnabled===false)return;
     var theme=(window.THEMES||[]).find(function(t){return t.id===settings.theme;})||{effect:'stars'};
     var effect=theme.effect||'stars';
@@ -638,6 +640,18 @@ function startEffects(){
     overlay.dataset.effect=effect;
     overlay.dataset.active='true';
   }catch(e){console.warn('[Effects]',e);overlay.replaceChildren();}
+}
+function lifeOSCelebrate(symbol){
+  try{
+    var overlay=document.getElementById('themeEffect');if(!overlay||!state.settings||state.settings.effectsEnabled===false)return;
+    var rect=document.getElementById('app')?.getBoundingClientRect();if(!rect)return;
+    var x=Math.round(rect.width/2),y=Math.round(Math.min(window.innerHeight*.48,rect.top+window.innerHeight*.28));
+    for(var i=0;i<14;i++){
+      var p=document.createElement('i');p.className='life-burst-particle';p.textContent=symbol||'✦';
+      p.style.left=x+'px';p.style.top=y+'px';p.style.setProperty('--dx',((Math.random()-.5)*180)+'px');p.style.setProperty('--dy',(-30-Math.random()*130)+'px');
+      overlay.appendChild(p);p.addEventListener('animationend',function(){this.remove();},{once:true});
+    }
+  }catch(e){console.warn('[Effects burst]',e);}
 }
 if(!window.__lifeEffectsVisibilityBound){
   window.__lifeEffectsVisibilityBound=true;
@@ -845,7 +859,7 @@ function openThemePicker(){
     var active=state.settings.theme===t.id;
     html+='<button class="theme-tile '+(active?'active':'')+'" onclick="setTheme(\''+t.id+'\')" style="--theme-a:'+t.bg+';--theme-b:'+(t.bg2||t.bg)+';--theme-accent:'+t.brand+';color:'+t.text+'"><span class="theme-tile-glow"></span><span class="theme-tile-emoji">'+t.emoji+'</span><span class="theme-tile-name">'+t.name+'</span><span class="theme-tile-check">'+(active?'✓':'')+'</span></button>';
   });
-  html+='</div><div class="card theme-effects-card"><div class="row-between"><div><div class="list-title">Анимация фона</div><div class="footnote">Лёгкие эффекты без перегрузки устройства</div></div><button class="btn btn-ghost btn-xs" onclick="state.settings.effectsEnabled=!state.settings.effectsEnabled;save();startEffects();openThemePicker()">'+(state.settings.effectsEnabled?'Включены':'Выключены')+'</button></div><div class="row-between mt-3"><div class="list-title">Интенсивность</div><div class="row" style="gap:5px">';
+  html+='</div><div class="card theme-effects-card"><div class="row-between"><div><div class="list-title">Анимация фона</div><div class="footnote">Частицы, атмосфера и эффекты интерфейса</div></div><button class="btn btn-ghost btn-xs" onclick="state.settings.effectsEnabled=!state.settings.effectsEnabled;save();startEffects();openThemePicker()">'+(state.settings.effectsEnabled?'Включены':'Выключены')+'</button></div><div class="row-between mt-2"><div><div class="list-title">Разрешить анимацию при системном ограничении</div><div class="footnote">Принудительно включать эффекты, даже если устройство ограничивает движение</div></div><button class="btn btn-ghost btn-xs" onclick="state.settings.effectsMotionOverride=!state.settings.effectsMotionOverride;save();startEffects();openThemePicker()">'+(state.settings.effectsMotionOverride?'Да':'Нет')+'</button></div><div class="row-between mt-3"><div class="list-title">Интенсивность</div><div class="row" style="gap:5px">';
   [0.5,1,1.5].forEach(function(v){var active=(state.settings.effectsIntensity||1)===v;html+='<button class="btn '+(active?'btn-primary':'btn-ghost')+' btn-xs" onclick="state.settings.effectsIntensity='+v+';save();startEffects();openThemePicker()">'+v+'×</button>';});
   html+='</div></div></div>';
   openSheet('Темы и оформление',html);
@@ -1310,6 +1324,7 @@ function toggleHabitToday(id){
     if(h.streak === 7) addXP(25, 'habit_streak_7');
     if(h.streak === 30) addXP(100, 'habit_streak_30');
     haptic('success');
+    lifeOSCelebrate('✦');
   }
   if(!state.habitHistory[h.id]) state.habitHistory[h.id] = {};
   state.habitHistory[h.id][t] = {completed: h.lastCompletedDate === t};
@@ -1987,6 +2002,7 @@ function toggleTask(id){
     state.stats.totalTasksDone = (state.stats.totalTasksDone||0) + 1;
     addXP(10, 'task');
     addPetXP(5);
+    lifeOSCelebrate('✓');
   }
   save();
   haptic('success');
@@ -3621,7 +3637,7 @@ function lifeStatsCountMap(value){
   return Object.keys(value).length;
 }
 function buildComprehensiveStats(days){
-  var s=state||{},period=Number(days)||30;
+  var s=state||{},period=Number(days)===0?0:(Number(days)||30);
   var arr=function(k){return Array.isArray(s[k])?s[k]:[];};
   var within=function(x){return lifeStatsInPeriod(x,period);};
   var byDate=function(x){return x&& (x.date||x.completedAt||x.completed_at||x.createdAt||x.created_at||x.at||x.timestamp);};
@@ -3639,7 +3655,7 @@ function buildComprehensiveStats(days){
   var meditation=arr('customMeditation').filter(function(x){return within(byDate(x));});
   var walks=arr('walks').filter(function(x){return within(byDate(x));});
   var brain=arr('brainPlays').filter(function(x){return within(byDate(x));});
-  var reviews=arr('fsrs').length?((s.fsrs&&Array.isArray(s.fsrs.reviews))?s.fsrs.reviews:[]):[];
+  var reviews=s.fsrs&&Array.isArray(s.fsrs.reviews)?s.fsrs.reviews:[];
   var fsrsReviews=reviews.filter(function(x){return within(byDate(x));});
   var calendar=arr('calendarEvents'),calendarPeriod=calendar.filter(function(x){return within(x.date||x.createdAt);});
   var projects=arr('projects'),projectDone=projects.filter(function(x){return x.status==='completed'||x.done;});
@@ -3722,7 +3738,7 @@ function statsBar(label,value,max,unit){
   var n=Math.max(0,Number(value)||0),m=Math.max(1,Number(max)||1),pct=Math.min(100,Math.round(n/m*100));
   return '<div class="mb-2"><div class="row-between"><span class="footnote">'+esc(label)+'</span><b>'+esc(String(value===null?'—':value))+esc(unit||'')+'</b></div><div style="height:7px;background:var(--glass-2);border-radius:9px;overflow:hidden;margin-top:5px"><div style="height:100%;width:'+pct+'%;background:var(--brand);border-radius:9px"></div></div></div>';
 }
-function setStatsPeriod(days){LIFE_STATS_PERIOD=Number(days)||30;renderStats();}
+function setStatsPeriod(days){LIFE_STATS_PERIOD=Number(days)===0?0:(Number(days)||30);renderStats();}
 function renderStats(){
   var a=buildComprehensiveStats(LIFE_STATS_PERIOD),o=a.overview,h=a.health,f=a.focus,l=a.learning,v=a.life,c=a.coverage,g=state.gamification||defaultState().gamification;
   var html='<div class="page"><div class="title-xl">📊 Полная статистика LIFE OS</div><div class="subtitle">Все основные направления · фактические записи · динамика и качество данных</div>';
