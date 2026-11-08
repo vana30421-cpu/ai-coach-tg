@@ -2085,7 +2085,7 @@ function openTaskEditorV2(id){
   html += '<div style="flex:1;"><label class="field-label">Старт</label><input type="datetime-local" id="ent-start" value="' + (t.start_date?t.start_date.slice(0,16):'') + '"/></div>';
   html += '<div style="flex:1;"><label class="field-label">Дедлайн</label><input type="datetime-local" id="ent-due" value="' + (t.due_date?t.due_date.slice(0,16):'') + '"/></div></div>';
   html += '<div class="field"><label class="field-label">Чек-лист</label><div id="cl-list"></div>';
-  html += '<button type="button" class="btn btn-ghost btn-sm mt-2" onclick="addChecklistItem()">+ Подзадача</button></div>';
+  html += '<div class="row" style="gap:8px;flex-wrap:wrap"><button type="button" class="btn btn-ghost btn-sm mt-2" onclick="addChecklistItem()">+ Подзадача</button><button type="button" class="btn btn-ghost btn-sm mt-2" onclick="suggestTaskSteps()">✧ Разбить на шаги</button></div></div>';
   html += '<button class="btn btn-primary btn-block mt-3" onclick="saveTaskV2(' + (id?"'"+id+"'":'null') + ')">' + (isNew?'➕ Создать':'💾 Сохранить') + '</button>';
   if(!isNew) html += '<button class="btn btn-danger btn-block mt-2" onclick="deleteTaskV2(\'' + id + '\')">🗑 Удалить</button>';
   openSheet(isNew?'Новая задача':'Задача', html);
@@ -2105,6 +2105,19 @@ function rerenderChecklist(){
   box.innerHTML = html;
 }
 function addChecklistItem(){ _clBuffer.push({title:'', done:false}); rerenderChecklist(); }
+function suggestTaskSteps(){
+  var title=(document.getElementById('ent-title')||{}).value||'';
+  var text=title.toLowerCase();
+  var steps;
+  if(/разработ|исправ|код|сайт|приложен|программ/.test(text))steps=['Воспроизвести и точно описать результат/ошибку','Найти причину и проверить связанные части','Составить короткий план безопасных изменений','Внести изменения небольшими шагами','Проверить сценарии, ошибки и побочные эффекты','Зафиксировать результат и обновить проект'];
+  else if(/изуч|выуч|обуч|прочита|запомн|экзамен/.test(text))steps=['Определить конкретный результат обучения','Разделить материал на небольшие блоки','Изучить первый блок и закрыть источник','Воспроизвести главное по памяти','Проверить ошибки и создать карточки повторения','Запланировать интервальные повторения'];
+  else if(/напис|созда|подготов|состав|оформ/.test(text))steps=['Уточнить цель и критерии готового результата','Собрать необходимые материалы и вводные','Сделать первый черновой вариант','Проверить полноту и исправить недочёты','Завершить и сохранить результат'];
+  else steps=['Сформулировать, что будет считаться готовым результатом','Подготовить материалы и убрать главное препятствие','Сделать самый маленький первый шаг','Выполнить основную часть','Проверить результат и закрыть задачу'];
+  var added=0;
+  steps.forEach(function(step){if(_clBuffer.length<20&&!_clBuffer.some(function(x){return String(x.title||'').toLowerCase()===step.toLowerCase();})){_clBuffer.push({title:step,done:false});added++;}});
+  rerenderChecklist();
+  toast(added?'Добавлено шагов: '+added:'Чек-лист уже заполнен','success');
+}
 function removeChecklistItem(i){ _clBuffer.splice(i,1); rerenderChecklist(); }
 function toggleChecklistItem(i){ if(!_clBuffer[i]) return; _clBuffer[i].done = !_clBuffer[i].done; rerenderChecklist(); }
 function updateChecklistItem(i, v){ if(!_clBuffer[i]) return; _clBuffer[i].title = v; }
