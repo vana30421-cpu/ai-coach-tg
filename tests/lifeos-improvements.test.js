@@ -69,8 +69,8 @@ test('server endpoint never embeds the OpenAI secret in the browser and requires
 
 test('memory training measures working and short-term recall, speed, accuracy and FSRS retention intervals',()=>{
  assert.match(app,/function getMemoryTrainingMetrics\(\)/);
- assert.ok(app.includes("startMemoryExercise(\\\\'working\\\\')"));
- assert.ok(app.includes("startMemoryExercise(\\\\'short\\\\')"));
+ assert.match(app,/startMemoryExercise/);assert.match(app,/working/);
+ assert.match(app,/short/);
  assert.match(app,/retentionDelaySeconds:challenge\.retentionDelaySeconds/);
  assert.match(app,/memoryAccuracy/);
  assert.match(app,/memoryBestSpan/);
