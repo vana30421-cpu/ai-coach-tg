@@ -9,8 +9,10 @@ on:
       - 'sw.js'
       - 'jarvis-core.js'
       - 'functions/api/jarvis.js'
+      - 'workers/jarvis-worker.js'
       - 'tests/lifeos-improvements.test.js'
       - 'functions/api/jarvis.js'
+      - 'workers/jarvis-worker.js'
       - 'CLOUDFLARE_JARVIS_SETUP.md'
       - 'tests/**'
       - '.github/workflows/jarvis-tests.yml'
@@ -22,6 +24,7 @@ on:
       - 'sw.js'
       - 'jarvis-core.js'
       - 'functions/api/jarvis.js'
+      - 'workers/jarvis-worker.js'
       - 'tests/lifeos-improvements.test.js'
       - 'tests/**'
       - '.github/workflows/jarvis-tests.yml'
@@ -43,5 +46,6 @@ jobs:
           node --check sw.js
           node --check jarvis-core.js
           node --input-type=module --check < functions/api/jarvis.js
+          node --input-type=module --check < workers/jarvis-worker.js
       - name: Run Jarvis unit and integration tests
         run: node --test tests/*.test.js
