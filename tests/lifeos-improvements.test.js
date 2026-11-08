@@ -271,3 +271,15 @@ test('statistics show a dash instead of the word null when screen-time data is m
  assert.match(app,/f\.screenDailyAvg===null\?'—':f\.screenDailyAvg\+' мин'/);
  assert.match(app,/stats\.focus\.screenDailyAvg===null\?'—':stats\.focus\.screenDailyAvg\+' мин'/);
 });
+
+test('FSRS stores a persistent review history with rating and interval for long-term retention metrics',()=>{
+ assert.match(app,/state\.fsrs\.reviews\.push\(/);
+ assert.match(app,/longTermAccuracy/);
+ assert.match(app,/longTermReviews/);
+ assert.match(app,/fsrsRetention:fsrsRetention/);
+ assert.match(app,/Успешное долговременное воспроизведение/);
+});
+test('daily learning plan exposes measured long-term recall retention',()=>{
+ assert.match(app,/memoryMetrics\.longTermAccuracy===null\?'нет замеров':memoryMetrics.longTermAccuracy\+'%'/);
+ assert.match(app,/Интервал удержания перед ответом/);
+});
