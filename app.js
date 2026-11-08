@@ -1309,32 +1309,16 @@ function getHabitsForToday(){
   });
 }
 function toggleHabitToday(id){
-  var h = getUserHabit(id);
-  if(!h) return;
-  var t = today();
-  if(h.lastCompletedDate === t){
-    h.lastCompletedDate = null;
-    h.streak = Math.max(0, (h.streak||1) - 1);
-  } else {
-    if(h.lastCompletedDate === yesterday()) h.streak = (h.streak||0) + 1;
-    else h.streak = 1;
-    h.lastCompletedDate = t;
-    if((h.streak||0) > (h.bestStreak||0)) h.bestStreak = h.streak;
-    addXP(5, 'habit');
-    /* Питомец получает XP */
-    addPetXP(3);
-    /* Достижение за streak */
-    if(h.streak === 7) addXP(25, 'habit_streak_7');
-    if(h.streak === 30) addXP(100, 'habit_streak_30');
-    haptic('success');
-    lifeOSCelebrate('✦');
-  }
-  if(!state.habitHistory[h.id]) state.habitHistory[h.id] = {};
-  state.habitHistory[h.id][t] = {completed: h.lastCompletedDate === t};
-  save();
-  if(currentPage === 'habitList') renderHabitList();
-  else if(currentPage === 'habitDetail') renderHabitDetail();
-  else if(currentPage === 'dashboard') renderDashboard();
+ var h=getUserHabit(id);if(!h)return;var t=today(),wasDone=h.lastCompletedDate===t;
+ if(wasDone){h.lastCompletedDate=null;h.streak=Math.max(0,(h.streak||1)-1);}
+ else{h.streak=h.lastCompletedDate===yesterday()?(h.streak||0)+1:1;h.lastCompletedDate=t;if(h.streak>(h.bestStreak||0))h.bestStreak=h.streak;addXP(5,'habit');addPetXP(3);if(h.streak===7)addXP(25,'habit_streak_7');if(h.streak===30)addXP(100,'habit_streak_30');haptic('success');lifeOSCelebrate('✦');}
+ if(!state.habitHistory[h.id])state.habitHistory[h.id]={};var old=state.habitHistory[h.id][t]||{};state.habitHistory[h.id][t]=Object.assign({},old,{completed:!wasDone,updatedAt:nowISO()});
+ save();if(currentPage==='habitList')renderHabitList();else if(currentPage==='habitDetail')renderHabitDetail();else if(currentPage==='dashboard')renderDashboard();
+}
+function saveHabitCheckin(id){
+ var h=getUserHabit(id);if(!h)return;if(!state.habitHistory[id])state.habitHistory[id]={};var old=state.habitHistory[id][today()]||{};
+ state.habitHistory[id][today()]=Object.assign({},old,{quality:(document.getElementById('habitQuality')||{}).value||'full',note:((document.getElementById('habitNote')||{}).value||'').trim().slice(0,500),updatedAt:nowISO()});
+ save();toast('Наблюдение сохранено','success');renderHabitDetail();
 }
 function getHabit66Progress(h){
   if(!h.startDate) return {pct:0,done:0,total:h.duration||22};
@@ -1516,6 +1500,11 @@ function renderHabitDetail(){
   }
   html += '<div class="footnote mb-2">Регулярность важнее идеальной серии. Пропуск не стирает накопленный прогресс — просто возвращайся к следующему удобному сигналу.</div>';
   if(h.science) html += '<div class="insight-card"><div class="insight-title">🔬 Наука</div><div class="insight-text">' + esc(h.science) + '</div></div>';
+  var hist=state.habitHistory&&state.habitHistory[h.id]||{},days=Object.keys(hist).filter(function(k){return hist[k]&&hist[k].completed;}),elapsed=Math.max(1,Math.floor((new Date(today())-new Date(h.startDate||today()))/86400000)+1),rate=Math.round(Math.min(1,days.length/elapsed)*100),last7=[];
+  for(var z=6;z>=0;z--){var dt=new Date();dt.setDate(dt.getDate()-z);var ds=dt.toISOString().slice(0,10);last7.push({date:ds,done:!!(hist[ds]&&hist[ds].completed)});}
+  html+='<div class="card"><h2>📊 Анализ привычки</h2><div class="grid-2"><div><b>'+rate+'%</b><div class="footnote">Выполнение с начала</div></div><div><b>'+days.length+'</b><div class="footnote">Успешных дней</div></div></div><div class="row mt-2" style="gap:5px">'+last7.map(function(x){return '<div title="'+x.date+'" style="flex:1;height:9px;border-radius:6px;background:'+(x.done?'var(--success)':'var(--surface-3)')+'"></div>';}).join('')+'</div><div class="footnote mt-2">Регулярность важнее серии. Пропуск не обнуляет накопленный результат.</div></div>';
+  var todayLog=hist[today()]||{};
+  html+='<div class="card"><h2>📝 Качество выполнения сегодня</h2><div class="field"><label class="field-label">Какой вариант сделал?</label><select id="habitQuality"><option value="full" '+(todayLog.quality==='full'?'selected':'')+'>Полная версия</option><option value="minimum" '+(todayLog.quality==='minimum'?'selected':'')+'>Минимальная версия</option><option value="adapted" '+(todayLog.quality==='adapted'?'selected':'')+'>Адаптированная версия</option></select></div><div class="field"><label class="field-label">Что помогло или помешало?</label><textarea id="habitNote" rows="2" maxlength="500" placeholder="Короткое наблюдение…">'+esc(todayLog.note||'')+'</textarea></div><button class="btn btn-ghost btn-block" onclick="saveHabitCheckin(\''+h.id+'\')">Сохранить наблюдение</button></div>';
   html += '<button class="btn btn-ghost btn-block mb-2" onclick="openHabitEditor(\'' + h.id + '\')">✏️ Редактировать</button>';
   html += '<button class="btn btn-danger btn-block" onclick="deleteHabit(\'' + h.id + '\')">🗑 Удалить</button>';
   html += '</div>';
@@ -1923,6 +1912,7 @@ window.renderHabitCatalog = renderHabitCatalog;
 window.addHabitFromWhy = addHabitFromWhy;
 window.addHabitFromTemplate = addHabitFromTemplate;
 window.openHabitDetail = openHabitDetail;
+window.saveHabitCheckin = saveHabitCheckin;
 window.openHabitEditor = openHabitEditor;
 window.saveHabit = saveHabit;
 window.deleteHabit = deleteHabit;
@@ -2365,43 +2355,26 @@ function renderCourseGeneric(course, progressKey){
   html += '</div>';
   document.getElementById('app').innerHTML = html;
 }
-function openCourseLesson(courseId, moduleId, idx){
-  var course = getCourseById(courseId);
-  if(!course) return;
-  var mod = null;
-  (course.modules||[]).forEach(function(m){ if(m.id === moduleId) mod = m; });
-  if(!mod) return;
-  var lesson = mod.lessons[idx];
-  if(!lesson) return;
-  currentCourseId = courseId;
-  currentCourseModuleId = moduleId;
-  currentCourseLessonIdx = idx;
-  var html = '<div style="font-size:20px;font-weight:800;margin-bottom:12px;">' + esc(lesson.title) + '</div>';
-  if(lesson.theory) html += '<div class="card"><div class="lesson-section"><div class="lesson-section-title">📚 Теория</div><div class="lesson-content">' + formatLesson(lesson.theory) + '</div></div></div>';
-  if(lesson.practice) html += '<div class="card"><div class="lesson-section practice"><div class="lesson-section-title">🎯 Практика</div><div class="lesson-content">' + esc(lesson.practice) + '</div></div></div>';
-  var key = courseId + '_' + moduleId + '_' + idx;
-  var isDone = state[courseId + 'Progress'] && state[courseId + 'Progress'][key];
-  if(!isDone){
-    html += '<button class="btn btn-primary btn-block mt-3" onclick="completeCourseLesson(\'' + courseId + '\',\'' + moduleId + '\',' + idx + ')">✓ Изучено</button>';
-  } else {
-    html += '<div class="insight-card"><div class="insight-title">✓ Урок пройден</div></div>';
-  }
-  openSheet(lesson.title, html);
+function openCourseLesson(courseId,moduleId,idx){
+ var course=getCourseById(courseId);if(!course)return;var mod=null;(course.modules||[]).forEach(function(m){if(m.id===moduleId)mod=m;});if(!mod)return;var lesson=mod.lessons[idx];if(!lesson)return;
+ currentCourseId=courseId;currentCourseModuleId=moduleId;currentCourseLessonIdx=idx;
+ var key=courseId+'_'+moduleId+'_'+idx,pKey=courseId+'Progress',saved=(state[pKey]||{})[key],record=saved&&typeof saved==='object'?saved:{};
+ var html='<div style="font-size:20px;font-weight:800;margin-bottom:12px;">'+esc(lesson.title)+'</div>';
+ if(lesson.theory)html+='<div class="card"><div class="lesson-section"><div class="lesson-section-title">📚 Теория</div><div class="lesson-content">'+formatLesson(lesson.theory)+'</div></div></div>';
+ if(lesson.practice)html+='<div class="card"><div class="lesson-section practice"><div class="lesson-section-title">🎯 Практика</div><div class="lesson-content">'+esc(lesson.practice)+'</div></div></div>';
+ html+='<div class="card"><h3>🧠 Проверка усвоения</h3><div class="footnote mb-2">Вспомни главное без подсказок и объясни, как применишь это на практике.</div><label class="field-label">Что ты понял своими словами?</label><textarea id="courseMasteryRecall" rows="4" maxlength="1800" placeholder="Напиши 2–4 предложения или пример…">'+esc(record.recall||'')+'</textarea><label class="field-label">Насколько уверенно применишь?</label><select id="courseMasteryRating">'+[1,2,3,4,5].map(function(n){return '<option value="'+n+'" '+(Number(record.rating||3)===n?'selected':'')+'>'+n+' / 5</option>';}).join('')+'</select><label class="field-label">Практический результат / пример</label><textarea id="courseMasteryExample" rows="2" maxlength="1000" placeholder="Что сделал, решил или где применил?">'+esc(record.example||'')+'</textarea></div>';
+ if(saved)html+='<div class="insight-card"><div class="insight-title">✓ Ранее отмечен как изученный</div><div class="insight-text">Следующая проверка: '+esc(record.nextReviewAt||'не назначена')+'</div></div>';
+ html+='<button class="btn btn-primary btn-block mt-3" onclick="completeCourseLesson(\''+courseId+'\',\''+moduleId+'\','+idx+')">'+(saved?'Сохранить результат проверки':'✓ Подтвердить усвоение')+'</button>';
+ openSheet(lesson.title,html);
 }
-function completeCourseLesson(courseId, moduleId, idx){
-  var key = courseId + '_' + moduleId + '_' + idx;
-  var pKey = courseId + 'Progress';
-  if(!state[pKey]) state[pKey] = {};
-  state[pKey][key] = true;
-  addXP(10, 'lesson');
-  addPetXP(3);
-  save();
-  haptic('success');
-  toast('✓ +10 XP','success');
-  closeSheet();
-  renderCourseGeneric(getCourseById(courseId), pKey);
+function completeCourseLesson(courseId,moduleId,idx){
+ var key=courseId+'_'+moduleId+'_'+idx,pKey=courseId+'Progress',recall=((document.getElementById('courseMasteryRecall')||{}).value||'').trim(),example=((document.getElementById('courseMasteryExample')||{}).value||'').trim(),rating=Number((document.getElementById('courseMasteryRating')||{}).value)||3;
+ if(recall.length<25)return toast('Напиши хотя бы 25 символов своими словами','warning');
+ if(!state[pKey])state[pKey]={};var old=state[pKey][key],wasDone=!!old,d=new Date();d.setDate(d.getDate()+({1:1,2:2,3:4,4:8,5:14}[rating]||4));
+ var history=old&&typeof old==='object'&&Array.isArray(old.history)?old.history:[];history.push({at:nowISO(),rating:rating,recall:recall,example:example});
+ state[pKey][key]={completed:true,completedAt:old&&old.completedAt||nowISO(),updatedAt:nowISO(),recall:recall,example:example,rating:rating,nextReviewAt:d.toISOString().slice(0,10),reviewCount:history.length-1,history:history.slice(-30)};
+ if(!wasDone){addXP(10,'lesson');addPetXP(3);}save();haptic('success');toast(wasDone?'Результат проверки обновлён':'Усвоение подтверждено · +10 XP','success');closeSheet();renderCourseGeneric(getCourseById(courseId),pKey);
 }
-
 /* ============ ЗРЕНИЕ ============ */
 function renderVision(){
   var ex = window.VISION_EXERCISES || [];
