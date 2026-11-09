@@ -122,5 +122,6 @@ window.saveJournalEntry=function(){
 window.editJournalEntry=function(id){if(!(state.journalEntries||[]).some(function(x){return x.id===id;}))return;state.journalEditingId=id;window.renderJournal();window.scrollTo(0,0);};
 window.cancelJournalEdit=function(){state.journalEditingId=null;window.renderJournal();};
 
+window.openBrainQuickCapture=function(){if(!window.navigate||!window.renderObsidian)return toast('Второй мозг ещё загружается','warning');window.navigate('obsidian');setTimeout(function(){var title=document.getElementById('brainTitle');if(title){title.focus();title.scrollIntoView({block:'center',behavior:'auto'});}},180);};
 window.ensureLifeOSBrain=ensureBrain;
 })();
