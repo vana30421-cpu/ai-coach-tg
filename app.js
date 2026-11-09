@@ -4931,6 +4931,10 @@ function addXP(amount, source){
     toast('🎉 Уровень ' + newLevel + '!','success',3000);
     haptic('success');
   }
+  /* Питомец получает небольшой опыт за реальные полезные действия LIFEOS. */
+  if(state.pet&&state.pet.enabled!==false&&typeof addPetXP==='function'){
+    addPetXP(Math.max(1,Math.floor(Number(amount)/5)));
+  }
   /* Обновляем лигу */
   if(!state.leagues) state.leagues = defaultState().leagues;
   state.leagues.weeklyXp = (state.leagues.weeklyXp||0) + amount;
