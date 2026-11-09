@@ -10,6 +10,7 @@ function state(){
 }
 function save(){if(root.save)root.save();}
 function uid(){return root.uid?root.uid():'mem_'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+function safeId(value){var id=clean(value,100);return /^[a-zA-Z0-9_-]{1,100}$/.test(id)?id:uid();}
 function clean(value,max){return String(value==null?'':value).replace(/\s+/g,' ').trim().slice(0,max||500);}
 function list(){var m=state();return m?m.items.slice().sort(function(a,b){return String(b.updatedAt||b.createdAt||'').localeCompare(String(a.updatedAt||a.createdAt||''));}):[];}
 function add(text,category){
@@ -49,7 +50,7 @@ function render(){
  return html;
 }
 function row(x){
- return '<div class="list-row jarvis-memory-row" data-memory-search="'+clean(x.text+' '+x.category,600).toLowerCase().replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'"><div style="min-width:0;flex:1"><b>'+ (root.esc?root.esc(x.category):x.category)+'</b><div>'+ (root.esc?root.esc(x.text):x.text)+'</div><div class="footnote">'+(root.esc?root.esc(String(x.updatedAt||'').slice(0,10)):'')+'</div></div><button class="btn btn-ghost btn-xs" onclick="removeJarvisMemory(\''+x.id+'\')" aria-label="Удалить факт">✕</button></div>';
+ return '<div class="list-row jarvis-memory-row" data-memory-search="'+(root.esc?root.esc(clean(x.text+' '+x.category,600).toLowerCase()):clean(x.text+' '+x.category,600).toLowerCase())+'"><div style="min-width:0;flex:1"><b>'+ (root.esc?root.esc(x.category):x.category)+'</b><div>'+ (root.esc?root.esc(x.text):x.text)+'</div><div class="footnote">'+(root.esc?root.esc(String(x.updatedAt||'').slice(0,10)):'')+'</div></div><button class="btn btn-ghost btn-xs" onclick="removeJarvisMemory(\''+x.id+'\')" aria-label="Удалить факт">✕</button></div>';
 }
 
 function customSkills(){
@@ -75,9 +76,9 @@ function importData(input){
   try{
    var data=JSON.parse(String(reader.result||'{}'));if(!data||data.version!==1)throw new Error('Неподдерживаемый формат резервной копии');
    var m=state(),existing={};m.items.forEach(function(x){existing[x.id]=true;});
-   (Array.isArray(data.memory)?data.memory:[]).slice(0,500).forEach(function(x){if(x&&typeof x.text==='string'&&!existing[x.id]){m.items.push({id:clean(x.id,100)||uid(),text:clean(x.text,500),category:clean(x.category,40)||'Факт',createdAt:x.createdAt||new Date().toISOString(),updatedAt:x.updatedAt||new Date().toISOString()});}});
+   (Array.isArray(data.memory)?data.memory:[]).slice(0,500).forEach(function(x){if(x&&typeof x.text==='string'&&!existing[x.id]){m.items.push({id:safeId(x.id),text:clean(x.text,500),category:clean(x.category,40)||'Факт',createdAt:x.createdAt||new Date().toISOString(),updatedAt:x.updatedAt||new Date().toISOString()});}});
    var skills=customSkills(),skillIds={};skills.forEach(function(x){skillIds[x.id]=true;});
-   (Array.isArray(data.customSkills)?data.customSkills:[]).slice(0,30).forEach(function(x){if(x&&typeof x.name==='string'&&typeof x.prompt==='string'&&!skillIds[x.id])skills.push({id:clean(x.id,100)||uid(),name:clean(x.name,60),prompt:clean(x.prompt,1200),createdAt:x.createdAt||new Date().toISOString()});});
+   (Array.isArray(data.customSkills)?data.customSkills:[]).slice(0,30).forEach(function(x){if(x&&typeof x.name==='string'&&typeof x.prompt==='string'&&!skillIds[x.id])skills.push({id:safeId(x.id),name:clean(x.name,60),prompt:clean(x.prompt,1200),createdAt:x.createdAt||new Date().toISOString()});});
    var remindersList=reminders(),reminderIds={};remindersList.forEach(function(x){reminderIds[x.id]=true;});
    (Array.isArray(data.reminders)?data.reminders:[]).slice(0,100).forEach(function(x){if(x&&typeof x.text==='string'&&x.at&&!reminderIds[x.id])remindersList.push({id:clean(x.id,100)||uid(),text:clean(x.text,160),at:x.at,done:!!x.done,createdAt:x.createdAt||new Date().toISOString()});});
    if(m.items.length>500)m.items=m.items.slice(-500);if(skills.length>30)skills.splice(30);if(remindersList.length>100)remindersList.splice(0,remindersList.length-100);
