@@ -65,7 +65,7 @@ function syncSecret(){
 }
 function renderMemorySync(){
  var sync=state().sync,secret=syncSecret();
- return '<div class="card mt-2"><b>🔐 Синхронизация между устройствами</b><div class="footnote mt-1">Данные шифруются в браузере AES‑GCM. Worker хранит только зашифрованный файл; ключ шифрования ему не отправляется. Секретный ключ сохрани отдельно — восстановить его нельзя.</div><div class="field mt-2"><input id="jarvisMemorySyncKey" type="text" autocomplete="off" spellcheck="false" maxlength="100" value="'+(root.esc?root.esc(secret):secret)+'" placeholder="Вставь ключ синхронизации с другого устройства"></div><div class="grid-2"><button class="btn btn-ghost" onclick="createJarvisMemorySyncKey()">Создать ключ</button><button class="btn btn-ghost" onclick="applyJarvisMemorySyncKey()">Применить ключ</button></div><button class="btn btn-primary btn-block mt-2" onclick="syncJarvisMemory()">Синхронизировать память</button><div class="footnote mt-2">'+(sync.lastSyncAt?'Последняя синхронизация: '+(root.esc?root.esc(new Date(sync.lastSyncAt).toLocaleString()):sync.lastSyncAt):'Пока не синхронизировалась')+'</div></div>';
+ return '<div class="card mt-2"><b>🔐 Синхронизация между устройствами</b><div class="footnote mt-1">Данные шифруются в браузере AES‑GCM. Worker хранит только зашифрованный файл; ключ шифрования ему не отправляется. Секретный ключ сохрани отдельно — восстановить его нельзя.</div><div class="field mt-2"><input id="jarvisMemorySyncKey" type="text" autocomplete="off" spellcheck="false" maxlength="100" value="'+(root.esc?root.esc(secret):secret)+'" placeholder="Вставь ключ синхронизации с другого устройства"></div><div class="grid-2"><button class="btn btn-ghost" onclick="createJarvisMemorySyncKey()">Создать ключ</button><button class="btn btn-ghost" onclick="applyJarvisMemorySyncKey()">Применить ключ</button></div><div class="grid-2 mt-2"><button class="btn btn-ghost" onclick="copyJarvisMemorySyncKey()">Скопировать ключ</button><button class="btn btn-primary" onclick="syncJarvisMemory()">Синхронизировать</button></div><div class="footnote mt-2">'+(sync.lastSyncAt?'Последняя синхронизация: '+(root.esc?root.esc(new Date(sync.lastSyncAt).toLocaleString()):sync.lastSyncAt):'Пока не синхронизировалась')+'</div></div>';
 }
 function createSyncKey(){
  var m=state();if(!root.crypto||!root.crypto.getRandomValues){if(root.toast)root.toast('Браузер не поддерживает защищённую генерацию ключей','error');return;}
@@ -76,7 +76,13 @@ function createSyncKey(){
 function applySyncKey(){
  var input=root.document&&root.document.getElementById('jarvisMemorySyncKey'),value=clean(input&&input.value,100),parts=value.split('.');
  if(parts.length!==2||!/^[A-Za-z0-9_-]{20,64}$/.test(parts[0])||!/^[A-Za-z0-9_-]{40,50}$/.test(parts[1])){if(root.toast)root.toast('Неверный ключ. Формат: ID.КЛЮЧ','warning');return;}
+ try{if(unb64url(parts[0]).length!==18||unb64url(parts[1]).length!==32)throw new Error('invalid key');}catch(e){if(root.toast)root.toast('Ключ повреждён. Проверь скопированный текст.','warning');return;}
  var m=state();m.sync={id:parts[0],key:parts[1],lastSyncAt:null};save();if(root.renderJarvis)root.renderJarvis();if(root.toast)root.toast('Ключ синхронизации применён','success');
+}
+async function copySyncKey(){
+ var secret=syncSecret();if(!secret){if(root.toast)root.toast('Сначала создай ключ синхронизации','warning');return;}
+ try{await root.navigator.clipboard.writeText(secret);if(root.toast)root.toast('Секретный ключ скопирован. Сохрани его отдельно.','success');}
+ catch(e){var input=root.document&&root.document.getElementById('jarvisMemorySyncKey');if(input){input.focus();input.select();if(root.toast)root.toast('Выделил ключ — скопируй его вручную','info');}else if(root.toast)root.toast('Не удалось скопировать ключ','error');}
 }
 function mergeById(local,remote,stamp){
  var map={};(Array.isArray(local)?local:[]).concat(Array.isArray(remote)?remote:[]).forEach(function(item){
@@ -147,11 +153,11 @@ function importData(input){
   try{
    var data=JSON.parse(String(reader.result||'{}'));if(!data||data.version!==1)throw new Error('Неподдерживаемый формат резервной копии');
    var m=state(),existing={};m.items.forEach(function(x){existing[x.id]=true;});
-   (Array.isArray(data.memory)?data.memory:[]).slice(0,500).forEach(function(x){if(x&&typeof x.text==='string'&&!existing[x.id]){m.items.push({id:safeId(x.id),text:clean(x.text,500),category:clean(x.category,40)||'Факт',createdAt:x.createdAt||new Date().toISOString(),updatedAt:x.updatedAt||new Date().toISOString()});}});
+   (Array.isArray(data.memory)?data.memory:[]).slice(0,500).forEach(function(x){if(x&&typeof x.text==='string'&&clean(x.text,500)){var id=safeId(x.id);if(!existing[id]){m.items.push({id:id,text:clean(x.text,500),category:clean(x.category,40)||'Факт',createdAt:x.createdAt||new Date().toISOString(),updatedAt:x.updatedAt||new Date().toISOString()});existing[id]=true;}}});
    var skills=customSkills(),skillIds={};skills.forEach(function(x){skillIds[x.id]=true;});
-   (Array.isArray(data.customSkills)?data.customSkills:[]).slice(0,30).forEach(function(x){if(x&&typeof x.name==='string'&&typeof x.prompt==='string'&&!skillIds[x.id])skills.push({id:safeId(x.id),name:clean(x.name,60),prompt:clean(x.prompt,1200),createdAt:x.createdAt||new Date().toISOString()});});
+   (Array.isArray(data.customSkills)?data.customSkills:[]).slice(0,30).forEach(function(x){if(x&&typeof x.name==='string'&&typeof x.prompt==='string'&&clean(x.name,60)&&clean(x.prompt,1200)){var id=safeId(x.id);if(!skillIds[id]){skills.push({id:id,name:clean(x.name,60),prompt:clean(x.prompt,1200),createdAt:x.createdAt||new Date().toISOString()});skillIds[id]=true;}}});
    var remindersList=reminders(),reminderIds={};remindersList.forEach(function(x){reminderIds[x.id]=true;});
-   (Array.isArray(data.reminders)?data.reminders:[]).slice(0,100).forEach(function(x){if(x&&typeof x.text==='string'&&x.at&&!reminderIds[x.id])remindersList.push({id:clean(x.id,100)||uid(),text:clean(x.text,160),at:x.at,done:!!x.done,createdAt:x.createdAt||new Date().toISOString()});});
+   (Array.isArray(data.reminders)?data.reminders:[]).slice(0,100).forEach(function(x){if(x&&typeof x.text==='string'&&clean(x.text,160)&&Number.isFinite(Date.parse(x.at))){var id=safeId(x.id);if(!reminderIds[id]){remindersList.push({id:id,text:clean(x.text,160),at:new Date(x.at).toISOString(),done:!!x.done,createdAt:x.createdAt||new Date().toISOString()});reminderIds[id]=true;}}});
    if(m.items.length>500)m.items=m.items.slice(-500);if(skills.length>30)skills.splice(30);if(remindersList.length>100)remindersList.splice(0,remindersList.length-100);
    save();if(root.toast)root.toast('Импорт завершён: память, навыки и напоминания объединены','success');if(root.renderJarvis)root.renderJarvis();
   }catch(e){if(root.toast)root.toast('Ошибка импорта: '+String(e.message||e),'error');}
@@ -204,6 +210,7 @@ function saveFromUI(){
 function removeFromUI(id){if(!remove(id))return;if(root.toast)root.toast('Запись удалена','success');if(root.renderJarvis)root.renderJarvis();}
 root.LIFEOS_JARVIS_MEMORY={list:list,add:add,remove:remove,clear:clear,search:search,context:context,render:render};
 root.createJarvisMemorySyncKey=createSyncKey;
+root.copyJarvisMemorySyncKey=copySyncKey;
 root.applyJarvisMemorySyncKey=applySyncKey;
 root.syncJarvisMemory=syncFromUI;
 root.saveJarvisMemoryFromUI=saveFromUI;
