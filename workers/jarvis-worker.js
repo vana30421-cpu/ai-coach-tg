@@ -52,7 +52,7 @@ export default {
     const bodyBytes = new TextEncoder().encode(rawBody).byteLength;
     if (bodyBytes > 750000) return json({ error: "REQUEST_TOO_LARGE" }, 413, headers);
     let body;
-    try { body = JSON.parse(rawBody); } catch (_) { return json({ error: "INVALID_JSON" }, 400, headers); }
+    try { body = JSON.parse(rawBody); } catch (_) { return bodyBytes > 24000 ? json({ error: "REQUEST_TOO_LARGE" }, 413, headers) : json({ error: "INVALID_JSON" }, 400, headers); }
     if (!body || typeof body !== "object" || Array.isArray(body)) return json({ error: "INVALID_BODY" }, 400, headers);
     if (body.action !== "memory:save" && bodyBytes > 24000) return json({ error: "REQUEST_TOO_LARGE" }, 413, headers);
     if (body.action === "memory:save") {
