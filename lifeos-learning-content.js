@@ -105,8 +105,24 @@ function openEnglish(id){
  var l=(root.ENGLISH_125||[]).find(function(x){return x.id===id;});if(!l)return;
  var st=s(),saved=st.englishProgress&&st.englishProgress[id],record=saved&&typeof saved==='object'?saved:{},done=!!saved;
  var d=root.LIFEOS_CURRICULUM&&l.objective?{objective:l.objective,theory:l.theory,examples:l.example,practice:l.practice,check:l.checkQuestion,metric:l.metric,review:l.review,steps:l.steps}:topicLesson(l),steps=d.steps;
- var html='<div class="title-xl">🇬🇧 '+esc(l.level)+' · '+esc(l.title)+'</div><div class="card"><b>🎯 Результат урока</b><p>'+esc(d.objective)+'</p><div class="footnote">'+esc(levelGuide(l.level))+'</div></div><div class="card"><h3>📚 Объяснение</h3><p>'+esc(d.theory)+'</p><h3>💬 Примеры</h3><p>'+esc(d.examples)+'</p></div><div class="card"><h3>✍️ Практика</h3><p>'+esc(d.practice)+'</p><label class="field-label">Твои ответы и собственные примеры</label><textarea id="englishAnswer" rows="5" maxlength="3000" placeholder="Напиши свои предложения или ответ…">'+esc(record.answer||'')+'</textarea><label class="field-label">Самопроверка</label><p>'+esc(d.check)+'</p><select id="englishRating"><option value="1">1 · Пока сложно</option><option value="2">2 · Нужна подсказка</option><option value="3" selected>3 · В основном понял</option><option value="4">4 · Могу применить</option><option value="5">5 · Уверенно использую</option></select></div>'+renderChecklist(steps,record.steps||[false,false,false])+'<button class="btn btn-primary btn-block mt-3" onclick="completeRealEnglishLesson(\''+id+'\')">'+(done?'Сохранить результат':'✓ Завершить урок')+'</button>';
+ var html='<div class="title-xl">🇬🇧 '+esc(l.level)+' · '+esc(l.title)+'</div><div class="card"><b>🎯 Результат урока</b><p>'+esc(d.objective)+'</p><div class="footnote">'+esc(levelGuide(l.level))+'</div></div><div class="card"><h3>📚 Объяснение</h3><p>'+esc(d.theory)+'</p><h3>💬 Примеры</h3><p>'+esc(d.examples)+'</p></div><div class="card"><h3>✍️ Практика</h3><p>'+esc(Array.isArray(d.practice)?d.practice.join('\\n'):d.practice)+'</p><p class="footnote">Критерий: '+esc(d.metric||'Выполни задание и проверь результат')+'</p>'+(d.review?'<p class="footnote">Повторение: '+esc(d.review)+'</p>':'')+'<label class="field-label">Твои ответы и собственные примеры</label><textarea id="englishAnswer" rows="5" maxlength="3000" placeholder="Напиши свои предложения или ответ…">'+esc(record.answer||'')+'</textarea><label class="field-label">Самопроверка</label><p>'+esc(d.check)+'</p><select id="englishRating"><option value="1">1 · Пока сложно</option><option value="2">2 · Нужна подсказка</option><option value="3" selected>3 · В основном понял</option><option value="4">4 · Могу применить</option><option value="5">5 · Уверенно использую</option></select></div>'+renderChecklist(steps,record.steps||[false,false,false])+'<button class="btn btn-primary btn-block mt-3" onclick="completeRealEnglishLesson(\''+id+'\')">'+(done?'Сохранить результат':'✓ Завершить урок')+'</button>';
  root.openSheet(l.title,html);
+}
+function openCourseLessonGuided(courseId,moduleId,idx){
+ var course=(root.ALL_NEW_COURSES||[]).find(function(x){return x.id===courseId;});if(!course)return;
+ var mod=(course.modules||[]).find(function(x){return x.id===moduleId;});if(!mod||!mod.lessons[idx])return;
+ var lesson=mod.lessons[idx],st=s(),key=courseId+'_'+moduleId+'_'+idx,pKey=courseId+'Progress',saved=st[pKey]&&st[pKey][key],record=saved&&typeof saved==='object'?saved:{},steps=Array.isArray(record.steps)?record.steps:[false,false,false];
+ var html='<div class="title-xl">'+esc(lesson.title)+'</div>';
+ if(lesson.objective)html+='<div class="card"><b>🎯 Результат урока</b><p>'+esc(lesson.objective)+'</p></div>';
+ if(lesson.theory)html+='<div class="card"><h3>📚 Теория</h3><div class="lesson-content">'+(root.formatLesson?root.formatLesson(lesson.theory):esc(lesson.theory))+'</div></div>';
+ if(lesson.practice)html+='<div class="card"><h3>🧪 Практика</h3><p>'+esc(lesson.practice)+'</p></div>';
+ var checklist=lesson.steps||['Разобрал теорию и выписал главную мысль','Выполнил практическое задание','Проверил результат и отметил, что улучшить'];
+ html+='<div class="card"><h3>🧭 Чек-лист</h3>'+checklist.slice(0,3).map(function(step,i){return '<label class="list-row"><input type="checkbox" id="courseStep'+(i+1)+'" '+(steps[i]?'checked':'')+'><span>'+esc(step)+'</span></label>';}).join('')+'</div>';
+ if(lesson.metric)html+='<div class="card"><b>📏 Критерий усвоения</b><p>'+esc(lesson.metric)+'</p></div>';
+ if(lesson.checkQuestion)html+='<div class="card"><b>🧠 Проверка понимания</b><p>'+esc(lesson.checkQuestion)+'</p></div>';
+ html+='<div class="card"><label class="field-label">Объясни своими словами (минимум 25 символов)</label><textarea id="courseMasteryRecall" rows="4" maxlength="1800">'+esc(record.recall||'')+'</textarea><label class="field-label">Пример практического применения</label><textarea id="courseMasteryExample" rows="3" maxlength="1000">'+esc(record.example||'')+'</textarea><label class="field-label">Уверенность</label><select id="courseMasteryRating">'+[1,2,3,4,5].map(function(n){return '<option value="'+n+'" '+(Number(record.rating||3)===n?'selected':'')+'>'+n+'/5</option>';}).join('')+'</select></div>';
+ html+='<button class="btn btn-primary btn-block mt-3" onclick="completeCourseLesson(\''+courseId+'\',\''+moduleId+'\','+idx+')">'+(saved?'Сохранить результат':'✓ Подтвердить усвоение')+'</button>';
+ root.openSheet(lesson.title,html);
 }
 function completeEnglish(id){
  var l=(root.ENGLISH_125||[]).find(function(x){return x.id===id;});if(!l)return;
@@ -132,6 +148,6 @@ function completeSkill(id){
 }
 if(!root.LIFEOS_CURRICULUM)enrichEnglish();
 root.openEnglishLesson=openEnglish;root.completeEnglish=completeEnglish;root.completeRealEnglishLesson=completeEnglish;
-root.openSkill=openSkill;root.completeSkill=completeSkill;root.completeRealSkill=completeSkill;
+root.openSkill=openSkill;root.completeSkill=completeSkill;root.completeRealSkill=completeSkill;root.openCourseLesson=openCourseLessonGuided;
 root.LIFEOSLearningContent={enrichEnglish:enrichEnglish,skillInfo:skillInfo,topicLesson:topicLesson,version:1};
 })();
