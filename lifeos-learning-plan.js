@@ -136,6 +136,10 @@ function build(start,ids,mins,opts){
  var dayCount=Math.max(30,Math.ceil(Math.max(1,lessons.length)/6)*7);
  for(var i=0;i<dayCount;i++){
   var no=i+1,review=no%7===0||no===dayCount,tasks=[];
+  if(!review&&cursor>=lessons.length&&lessons.length){
+   var applyCourse=courses().find(function(x){return x.id===ids[(no-1)%Math.max(1,ids.length)];})||courses()[0];
+   tasks.push({id:'apply-'+no,type:'practice',courseId:applyCourse.id,courseTitle:applyCourse.title,emoji:applyCourse.emoji,title:'Практика: применить знания курса «'+applyCourse.title+'»',minutes:m-15});
+  }
   if(!review&&cursor<lessons.length){
    var l=lessons[cursor++];
    tasks.push({id:'lesson-'+l.courseId+'-'+(l.moduleId||'')+'-'+(l.index===undefined?l.id:l.index),type:l.type||'lesson',idRef:l.id||null,courseId:l.courseId,courseTitle:l.courseTitle,emoji:l.emoji,moduleId:l.moduleId||null,index:l.index===undefined?null:l.index,title:l.title,minutes:m-15});
