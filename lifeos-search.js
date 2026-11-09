@@ -2,8 +2,8 @@
 (function(){
 'use strict';
 function esc(value){return window.esc?window.esc(value):String(value==null?'':value).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
-function text(value){return String(value==null?'':value).replace(/<[^>]*>/g,' ').replace(/\\s+/g,' ').trim();}
-function arg(value){return "'"+String(value==null?'':value).replace(/\\/g,'\\\\').replace(/'/g,"\\'")+"';}
+function text(value){return String(value==null?'':value).replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();}
+function arg(value){return "'"+String(value==null?'':value).replace(/\\/g,'\\\\').replace(/'/g,"\\'")+"'";}
 function collect(){
  var rows=[];
  function add(list,type,label,titleOf,bodyOf,dateOf){
@@ -27,7 +27,7 @@ function render(query){
  var target=document.getElementById('lifeosGlobalSearchResults');if(!target)return;
  var q=String(query||'').trim().toLowerCase();
  if(q.length<2){target.innerHTML='<div class="footnote">Введи минимум 2 символа. Поиск охватывает задачи, проекты, привычки, дневник, второй мозг и календарь.</div>';return;}
- var terms=q.split(/\\s+/).filter(Boolean),found=collect().filter(function(row){var hay=(row.title+' '+row.body+' '+row.label+' '+row.date).toLowerCase();return terms.every(function(term){return hay.indexOf(term)>=0;});}).slice(0,40);
+ var terms=q.split(/\s+/).filter(Boolean),found=collect().filter(function(row){var hay=(row.title+' '+row.body+' '+row.label+' '+row.date).toLowerCase();return terms.every(function(term){return hay.indexOf(term)>=0;});}).slice(0,40);
  if(!found.length){target.innerHTML='<div class="card empty"><div class="empty-title">Ничего не найдено</div><div class="footnote">Попробуй другое слово или часть фразы.</div></div>';return;}
  target.innerHTML='<div class="footnote mb-2">Найдено: '+found.length+(found.length===40?' · показаны первые 40':'')+'</div>'+found.map(function(row){
   return '<button class="list-row" type="button" style="width:100%;text-align:left" onclick="openLifeOSSearchResult('+esc(arg(row.type))+','+esc(arg(row.id))+','+esc(arg(row.date))+')"><span class="list-icon">🔎</span><span class="list-body"><span class="list-title">'+esc(row.title)+'</span><span class="list-subtitle">'+esc(row.label)+(row.date?' · '+esc(row.date):'')+(row.body?' · '+esc(row.body):'')+'</span></span><span class="list-chevron">›</span></button>';
