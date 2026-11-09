@@ -268,5 +268,5 @@ test('final layout normalization keeps Telegram WebView and desktop content with
   assert.match(index,/max-width:1200px/);
   assert.match(index,/grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
   assert.match(index,/env\(safe-area-inset-bottom,0px\)/);
-  assert.match(sw,/life-os-v107/);
+  assert.match(sw,/life-os-v108/);
 });
