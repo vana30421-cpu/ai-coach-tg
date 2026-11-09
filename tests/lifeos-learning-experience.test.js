@@ -18,7 +18,7 @@ test('English and skill lessons require practice, self-explanation and a knowled
  assert.ok(academy.includes('минимум 20 символов'));
  assert.ok(academy.includes('choice!==(x[8]||[]).indexOf(x[7])'));
  assert.match(academy,/function englishCourseRecord/);
- assert.match(academy,/var pKey=courseId\+'Progress'/);
+ assert.ok(academy.includes("storeKey=courseId+'Progress'"));
  assert.ok(academy.includes('12 треков'));
  assert.ok(academy.includes('completeSkillAcademyLesson'));
  assert.ok(academy.includes('минимум 10 символов'));
