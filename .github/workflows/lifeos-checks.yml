@@ -26,6 +26,8 @@ jobs:
           node --check content2.js
           node --check content3.js
           node --check jarvis-core.js
+          node --check lifeos-jarvis-memory.js
+          node --check lifeos-mira-skills.js
           node --check lifeos-systems.js
           node --check lifeos-workspaces.js
           node --check lifeos-learning-plan.js
