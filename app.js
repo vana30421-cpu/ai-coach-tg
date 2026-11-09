@@ -4361,7 +4361,7 @@ async function testJarvisConnection(){
  }catch(e){d.lastConnectionCheck={at:nowISO(),ok:false,error:String(e.message||e).slice(0,240)};save();toast('Джарвис: '+String(e.message||e).slice(0,180),'error');}
  finally{if(button){button.disabled=false;button.textContent='Проверить подключение';}}
 }
-function sendJarvisCloudMessage(text){
+async function sendJarvisCloudMessage(text){
  var d=getJarvisState(),placeholder={role:'assistant',text:'Думаю над ответом…',at:nowISO(),pending:true};
  d.messages.push(placeholder);if(d.messages.length>160)d.messages=d.messages.slice(-160);save();renderJarvis();
  try{
