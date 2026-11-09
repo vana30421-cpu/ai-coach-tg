@@ -16,7 +16,9 @@ test('English academy contains five CEFR levels with real topic-specific lessons
 test('English and skill lessons require practice, self-explanation and a knowledge check',()=>{
  assert.ok(academy.includes('completeEnglishAcademyLesson'));
  assert.ok(academy.includes('минимум 20 символов'));
- assert.ok(academy.includes('correct=choice===(x[8]||[]).indexOf(x[7])'));
+ assert.ok(academy.includes('choice!==(x[8]||[]).indexOf(x[7])'));
+ assert.match(academy,/function englishCourseRecord/);
+ assert.match(academy,/var pKey=courseId\+'Progress'/);
  assert.ok(academy.includes('12 треков'));
  assert.ok(academy.includes('completeSkillAcademyLesson'));
  assert.ok(academy.includes('минимум 10 символов'));
