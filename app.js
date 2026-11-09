@@ -4375,7 +4375,7 @@ async function sendJarvisCloudMessage(text){
   var response=await fetch(apiUrl,{method:'POST',headers:{'Content-Type':'application/json','X-Jarvis-Access-Code':String(d.accessCode||'')},body:JSON.stringify({message:text,history:history,provider:d.provider||'openai',context:buildJarvisAppContext()})});
   var data=await response.json().catch(function(){return {};});
   if(!response.ok){
-   if(data.error==='AI_NOT_CONFIGURED')throw new Error('Серверный ИИ пока не настроен: добавь OPENAI_API_KEY и JARVIS_ACCESS_CODE в секреты Cloudflare Worker.');
+   if(data.error==='AI_NOT_CONFIGURED')throw new Error('На сервере не настроен выбранный провайдер: добавь '+(d.provider==='gemini'?'GEMINI_API_KEY':'OPENAI_API_KEY')+' и JARVIS_ACCESS_CODE в секреты Cloudflare Pages.');
    if(data.error==='UNAUTHORIZED')throw new Error('Код доступа не совпадает с JARVIS_ACCESS_CODE в Cloudflare Worker.');
    throw new Error(data.message||'ИИ временно недоступен ('+response.status+').');
   }
