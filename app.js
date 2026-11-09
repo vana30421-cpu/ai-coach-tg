@@ -867,7 +867,7 @@ function navigate(page, silent){
     console.error('Render [' + page + ']:', e);
     main.innerHTML = '<div class="page"><div class="card"><div class="empty"><div class="empty-icon">⚠️</div><div class="empty-title">Ошибка</div><div class="empty-text">' + esc(e.message || '') + '</div></div></div></div>';
   }
-  window.scrollTo({top:0});
+  if(window.lifeosScrollToTop)window.lifeosScrollToTop();else{var scrollRoot=document.getElementById('app');if(scrollRoot)scrollRoot.scrollTop=0;}
   if(page === 'dashboard' || page === 'snapshot' || page === 'dailyReport' || page === 'weeklyReport' || page === 'spheres'){
     try{ refreshSnapshot(); }catch(e){}
   }

@@ -48,7 +48,7 @@ window.saveBrainNote=function(){
  else b.notes.push({id:uid(),title:title,body:body,type:v('brainType')||'fleeting',tags:tags,links:links,createdAt:nowISO(),updatedAt:nowISO(),source:'lifeos'});
  b.editingId=null;clearWorkspaceDraft('brain');save();toast('Заметка сохранена','success');window.renderObsidian();
 };
-window.editBrainNote=function(id){var b=ensureBrain();if(!b.notes.some(function(n){return n.id===id;}))return;b.editingId=id;window.renderObsidian();window.scrollTo(0,0);};
+window.editBrainNote=function(id){var b=ensureBrain();if(!b.notes.some(function(n){return n.id===id;}))return;b.editingId=id;window.renderObsidian();if(window.lifeosScrollToTop)window.lifeosScrollToTop();};
 window.cancelBrainEdit=function(){ensureBrain().editingId=null;window.renderObsidian();};
 window.openBrainNote=function(id){
  var b=ensureBrain(),n=b.notes.find(function(x){return x.id===id;});if(!n)return;
@@ -119,7 +119,7 @@ window.saveJournalEntry=function(){
  if(!Array.isArray(state.journalEntries))state.journalEntries=[];var i=state.journalEntries.findIndex(function(x){return x.id===row.id;});if(i>=0){row.createdAt=state.journalEntries[i].createdAt||row.createdAt;state.journalEntries[i]=row;}else state.journalEntries.push(row);
  syncJournalToBrain(row);state.journalEditingId=null;clearWorkspaceDraft('journal');save();toast('Запись сохранена и добавлена во второй мозг','success');window.renderJournal();
 };
-window.editJournalEntry=function(id){if(!(state.journalEntries||[]).some(function(x){return x.id===id;}))return;state.journalEditingId=id;window.renderJournal();window.scrollTo(0,0);};
+window.editJournalEntry=function(id){if(!(state.journalEntries||[]).some(function(x){return x.id===id;}))return;state.journalEditingId=id;window.renderJournal();if(window.lifeosScrollToTop)window.lifeosScrollToTop();};
 window.cancelJournalEdit=function(){state.journalEditingId=null;window.renderJournal();};
 
 window.openBrainQuickCapture=function(){if(!window.navigate||!window.renderObsidian)return toast('Второй мозг ещё загружается','warning');window.navigate('obsidian');setTimeout(function(){var title=document.getElementById('brainTitle');if(title){title.focus();title.scrollIntoView({block:'center',behavior:'auto'});}},180);};
