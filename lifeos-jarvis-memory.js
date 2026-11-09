@@ -121,8 +121,9 @@ function checkReminders(){
 }
 
 function filter(query){
- var nodes=document.querySelectorAll('.jarvis-memory-row'),q=clean(query,300).toLowerCase();
- for(var i=0;i<nodes.length;i++)nodes[i].style.display=(!q||nodes[i].getAttribute('data-memory-search').indexOf(q)>=0)?'':'none';
+ var container=root.document&&root.document.getElementById('jarvisMemoryItems');if(!container)return;
+ var matches=search(query,100);
+ container.innerHTML=matches.length?matches.map(row).join(''):'<div class="footnote">Ничего не найдено.</div>';
 }
 function saveFromUI(){
  var input=document.getElementById('jarvisMemoryText'),category=document.getElementById('jarvisMemoryCategory');
@@ -141,5 +142,5 @@ root.runJarvisCustomSkill=runSkill;
 root.deleteJarvisCustomSkill=deleteSkill;
 root.saveJarvisReminder=saveReminderFromUI;
 root.deleteJarvisReminder=deleteReminder;
-if(root.document){checkReminders();root.setInterval(checkReminders,30000);root.addEventListener('focus',checkReminders);}
+if(root.document){checkReminders();root.setInterval(checkReminders,30000);root.addEventListener('focus',checkReminders);root.document.addEventListener('visibilitychange',function(){if(!root.document.hidden)checkReminders();});}
 })(typeof window!=='undefined'?window:globalThis);
