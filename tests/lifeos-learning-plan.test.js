@@ -19,10 +19,12 @@ function loadPlanner() {
   return window;
 }
 
-test('adds four structured courses with lessons, theory and practice', () => {
+test('adds twelve structured courses with lessons, theory and practice', () => {
   const w = loadPlanner();
   const added = w.ALL_NEW_COURSES;
-  assert.equal(added.length, 4);
+  assert.equal(added.length, 12);
+  assert.equal(added.reduce((sum, course) => sum + course.modules.reduce((n, module) => n + module.lessons.length, 0), 0), 52);
+  assert.equal(new Set(added.map(course => course.id)).size, 12);
   for (const course of added) {
     assert.ok(course.modules.length > 0, course.id);
     const lessons = course.modules.flatMap(module => module.lessons);
