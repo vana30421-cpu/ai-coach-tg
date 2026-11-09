@@ -1366,8 +1366,16 @@ function toggleHabitToday(id){
  var h=getUserHabit(id);if(!h)return;var t=today(),wasDone=h.lastCompletedDate===t;
  if(wasDone){h.lastCompletedDate=null;h.streak=Math.max(0,(h.streak||1)-1);}
  else{h.streak=h.lastCompletedDate===yesterday()?(h.streak||0)+1:1;h.lastCompletedDate=t;if(h.streak>(h.bestStreak||0))h.bestStreak=h.streak;addXP(5,'habit');addPetXP(3);if(h.streak===7)addXP(25,'habit_streak_7');if(h.streak===30)addXP(100,'habit_streak_30');haptic('success');lifeOSCelebrate('✦');}
- if(!state.habitHistory[h.id])state.habitHistory[h.id]={};var old=state.habitHistory[h.id][t]||{};state.habitHistory[h.id][t]=Object.assign({},old,{completed:!wasDone,updatedAt:nowISO()});
+ if(!state.habitHistory[h.id])state.habitHistory[h.id]={};var old=state.habitHistory[h.id][t]||{};state.habitHistory[h.id][t]=Object.assign({},old,{completed:!wasDone,status:wasDone?'pending':'completed',updatedAt:nowISO()});
  save();if(currentPage==='habitList')renderHabitList();else if(currentPage==='habitDetail')renderHabitDetail();else if(currentPage==='dashboard')renderDashboard();
+}
+function setHabitSwipeStatus(id,status){
+ var h=getUserHabit(id);if(!h)return;var t=today(),hist=state.habitHistory[h.id]||(state.habitHistory[h.id]={}),old=hist[t]||{};
+ if(status==='completed'){if(h.lastCompletedDate!==t)toggleHabitToday(id);else toast('Привычка уже отмечена','info');return;}
+ if(old.status==='missed')return toast('Пропуск уже записан','info');
+ if(h.lastCompletedDate===t)h.lastCompletedDate=null;
+ h.streak=0;hist[t]=Object.assign({},old,{completed:false,status:'missed',updatedAt:nowISO()});save();haptic('light');toast('Сегодня отмечено как пропуск','info');
+ if(currentPage==='habitList')renderHabitList();else if(currentPage==='habitDetail')renderHabitDetail();else if(currentPage==='dashboard')renderDashboard();
 }
 function saveHabitCheckin(id){
  var h=getUserHabit(id);if(!h)return;if(!state.habitHistory[id])state.habitHistory[id]={};var old=state.habitHistory[id][today()]||{};
@@ -1393,7 +1401,7 @@ function getHabit66Progress(h){
 function bindHabitSwipe(){
  var root=document.getElementById('app');if(!root||root.__lifeosHabitSwipeBound)return;root.__lifeosHabitSwipeBound=true;var start=null,suppressUntil=0;
  root.addEventListener('touchstart',function(e){var card=e.target.closest&&e.target.closest('[data-habit-swipe]');if(!card)return;var t=e.touches&&e.touches[0];if(!t)return;start={id:card.getAttribute('data-habit-swipe'),x:t.clientX,y:t.clientY};},{passive:true});
- root.addEventListener('touchend',function(e){if(!start)return;var t=e.changedTouches&&e.changedTouches[0],item=start;start=null;if(!t)return;var dx=t.clientX-item.x,dy=t.clientY-item.y;if(Math.abs(dx)>58&&Math.abs(dx)>Math.abs(dy)*1.3){e.preventDefault();e.stopPropagation();suppressUntil=Date.now()+450;toggleHabitToday(item.id);}},{passive:false});
+ root.addEventListener('touchend',function(e){if(!start)return;var t=e.changedTouches&&e.changedTouches[0],item=start;start=null;if(!t)return;var dx=t.clientX-item.x,dy=t.clientY-item.y;if(Math.abs(dx)>58&&Math.abs(dx)>Math.abs(dy)*1.3){e.preventDefault();e.stopPropagation();suppressUntil=Date.now()+450;setHabitSwipeStatus(item.id,dx>0?'completed':'missed');}},{passive:false});
  root.addEventListener('click',function(e){if(Date.now()>suppressUntil)return;var card=e.target.closest&&e.target.closest('[data-habit-swipe]');if(card){e.preventDefault();e.stopPropagation();}},true);
 }
 function renderHabitList(){
@@ -1408,7 +1416,7 @@ function renderHabitList(){
   html += '</div></div>';
   if(habits.length){
     html += '<div class="card card-gradient"><div style="font-size:12px;opacity:.9;">Сегодня</div><div style="font-size:36px;font-weight:800;">' + doneToday + ' / ' + todayHabits.length + '</div></div>';
-    html += '<div class="footnote mb-2">Свайпни карточку влево или вправо, чтобы отметить или снять выполнение. Вертикальная прокрутка остаётся доступной.</div>';
+    html += '<div class="footnote mb-2">Свайп вправо — выполнено, влево — пропуск. Вертикальная прокрутка остаётся доступной.</div>';
     var cats = window.HABIT_CATEGORIES || [];
     html += '<div class="quick-tabs"><button class="quick-tab ' + (habitCatFilter==='all'?'active':'') + '" onclick="habitCatFilter=\'all\';renderHabitList()">Все (' + habits.length + ')</button>';
     cats.forEach(function(c){
@@ -1529,8 +1537,8 @@ function addHabitFromTemplate(tplId){
 function openHabitDetail(id){ currentHabitId = id; navigate('habitDetail'); }
 function renderHabitHeatmap(h){
  var hist=state.habitHistory&&state.habitHistory[h.id]||{},todayKey=today(),end=new Date(todayKey+'T12:00:00'),dow=(end.getDay()+6)%7;end.setDate(end.getDate()+(6-dow));var start=new Date(end);start.setDate(start.getDate()-55);var cells=[],completed=0,tracked=0,elapsed=0;
- for(var i=0;i<56;i++){var d=new Date(start);d.setDate(start.getDate()+i);var key=d.toISOString().slice(0,10),record=hist[key],isFuture=key>todayKey,isDone=!!(record&&record.completed);if(!isFuture)elapsed++;if(record&&!isFuture)tracked++;if(isDone)completed++;cells.push('<div title="'+key+(isFuture?' · будущий день':isDone?' · выполнено':record?' · есть запись':' · нет отметки')+'" aria-label="'+key+(isFuture?' будущий день':isDone?' выполнено':record?' есть запись':' нет отметки')+'" style="aspect-ratio:1;border-radius:4px;background:'+(isFuture?'transparent':isDone?'var(--success)':record?'var(--warning)':'var(--surface-3)')+';opacity:'+(isFuture?'.12':isDone?'.95':record?'.65':'.55')+'"></div>');}
- return '<div class="card"><div class="row-between"><h2>🗓 История за 8 недель</h2><b>'+completed+'/'+elapsed+'</b></div><div class="footnote mb-2">Каждая ячейка — один день. Будущие даты не входят в расчёт; цвет показывает сохранённое выполнение, а не оценку дисциплины.</div><div style="display:grid;grid-template-rows:repeat(7,10px);grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:4px;overflow:hidden">'+cells.join('')+'</div><div class="row mt-2" style="gap:12px;flex-wrap:wrap"><span class="footnote">🟩 Выполнено</span><span class="footnote">🟨 Есть запись</span><span class="footnote">⬛ Нет отметки</span><span class="footnote">'+tracked+' дней с записями</span></div></div>';
+ for(var i=0;i<56;i++){var d=new Date(start);d.setDate(start.getDate()+i);var key=d.toISOString().slice(0,10),record=hist[key],isFuture=key>todayKey,isDone=!!(record&&record.completed),isMissed=!!(record&&record.status==='missed');if(!isFuture)elapsed++;if(record&&!isFuture)tracked++;if(isDone)completed++;cells.push('<div title="'+key+(isFuture?' · будущий день':isDone?' · выполнено':isMissed?' · пропуск':record?' · есть запись':' · нет отметки')+'" aria-label="'+key+(isFuture?' будущий день':isDone?' выполнено':isMissed?' пропуск':record?' есть запись':' нет отметки')+'" style="aspect-ratio:1;border-radius:4px;background:'+(isFuture?'transparent':isDone?'var(--success)':isMissed?'var(--danger)':record?'var(--warning)':'var(--surface-3)')+';opacity:'+(isFuture?'.12':isDone?'.95':isMissed?'.9':record?'.65':'.55')+'"></div>');}
+ return '<div class="card"><div class="row-between"><h2>🗓 История за 8 недель</h2><b>'+completed+'/'+elapsed+'</b></div><div class="footnote mb-2">Каждая ячейка — один день. Будущие даты не входят в расчёт; цвет показывает сохранённое выполнение, а не оценку дисциплины.</div><div style="display:grid;grid-template-rows:repeat(7,10px);grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:4px;overflow:hidden">'+cells.join('')+'</div><div class="row mt-2" style="gap:12px;flex-wrap:wrap"><span class="footnote">🟩 Выполнено</span><span class="footnote">🟥 Пропуск</span><span class="footnote">🟨 Есть запись</span><span class="footnote">⬛ Нет отметки</span><span class="footnote">'+tracked+' дней с записями</span></div></div>';
 }
 function renderHabitDetail(){
   var h = getUserHabit(currentHabitId);
