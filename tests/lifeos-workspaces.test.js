@@ -198,3 +198,11 @@ test('journal entries can be sent to Jarvis for contextual reflection without mo
  assert.match(workspaces,/row\.mood==null\?'не указано'/);
  assert.match(workspaces,/row\.energy==null\?'не указана'/);
 });
+
+test('second-brain quick capture is available from the global app header',()=>{
+ assert.match(index,/openBrainQuickCapture\\(\\)/);
+ assert.match(workspaces,/window\\.openBrainQuickCapture=function/);
+ assert.match(workspaces,/window\\.navigate\\('obsidian'\\)/);
+ assert.match(index,/lifeos-workspaces\\.js\\?v=20261109-1/);
+ assert.match(sw,/const CACHE='life-os-v95'/);
+});
