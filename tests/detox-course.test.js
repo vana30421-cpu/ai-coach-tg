@@ -137,5 +137,5 @@ test('detox task enrichment loads after source content and is cached offline',()
  assert.match(indexSource,/lifeos-detox-details\.js/);
  assert.match(swSource,/lifeos-detox-enhancements\.js/);
  assert.match(swSource,/lifeos-detox-details\.js/);
- assert.match(swSource,/life-os-v118/);
+ assert.match(swSource,/life-os-v119/);
 });
