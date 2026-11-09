@@ -131,7 +131,7 @@ test('navigation routes and offline cache include the learning planner', () => {
   assert.match(app, /learning:\s*window\.renderLearning\s*\|\|\s*renderLearning/);
   assert.match(app, /plan:\s*window\.renderPersonalPlan\s*\|\|\s*renderPersonalPlan/);
   assert.match(html, /lifeos-learning-plan\.js/);
-  assert.match(sw, /life-os-v122/);
+  assert.match(sw, /life-os-v123/);
   assert.match(sw, /lifeos-learning-plan\.js/);
   const planner = fs.readFileSync('lifeos-learning-plan.js', 'utf8');
   assert.doesNotMatch(planner, /JSON\.stringify\(/, 'inline HTML handlers must not embed double-quoted JSON arguments');
@@ -169,4 +169,22 @@ test('English and skill lessons are enriched with practical instructions and mas
  assert.ok(window.ENGLISH_125[0].practice.length>30);
  assert.equal(window.ENGLISH_125[0].steps.length,3);
  assert.ok(window.LIFEOSLearningContent.skillInfo(window.SKILLS_LIBRARY[0]).practice.length>30);
+});
+
+test('unified plan removes course cap and expands to schedule every selected lesson',()=>{
+ const w=loadPlanner(),ids=w.ALL_NEW_COURSES.map(course=>course.id);
+ const p=w.LIFEOS_LEARNING_PLAN_TESTS.buildSchedule('2026-11-09',ids,35,{english:true,skills:true});
+ const lessons=p.days.flatMap(day=>day.tasks).filter(task=>['lesson','english','skill'].includes(task.type));
+ assert.ok(p.days.length>30,'plan duration expands to fit selected curriculum');
+ assert.equal(lessons.length,54,'all 52 course lessons plus English and skills are scheduled');
+ assert.equal(new Set(lessons.map(task=>task.id)).size,lessons.length,'no lesson is duplicated');
+ assert.ok(p.days.some(day=>day.tasks.some(task=>task.type==='practice')),'application practice follows the lessons');
+ assert.match(source,/Math\\.ceil\\(Math\\.max\\(1,lessons\\.length\\)\\/6\\)\\*7/);
+ assert.doesNotMatch(source,/ids\\.length>5/);
+});
+test('learning plan UI supports bulk course selection and dynamic duration',()=>{
+ assert.match(source,/Выбрать все курсы/);
+ assert.match(source,/Снять выбор/);
+ assert.match(source,/p\\.days\\.length/);
+ assert.match(source,/lifeos-learning-hub/);
 });
