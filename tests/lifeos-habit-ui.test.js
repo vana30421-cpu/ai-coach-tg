@@ -11,7 +11,7 @@ test('habit detail renders an eight-week completion heatmap from saved history',
  assert.match(app,/for\(var i=0;i<56;i\+\+\)/);
  assert.match(app,/grid-template-rows:repeat\(7,10px\);grid-auto-flow:column/);
  assert.match(app,/renderHabitHeatmap\(h\)/);
- assert.match(app,/completed\\+'\\/\\'+elapsed/);
+ assert.match(app,/completed\+'\/'\+elapsed/);
 });
 
 test('habit cards support horizontal swipe without blocking vertical scrolling',()=>{
