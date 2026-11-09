@@ -835,7 +835,7 @@ function navigate(page, silent){
     screentracker: renderScreenTracker, detoxcourse: renderDetoxCourse,
     detox60: renderDetox60, obsidian: window.renderObsidian || renderObsidian, obsidianIntegration: window.renderObsidianIntegration || renderObsidianIntegration,
     telegramSetup: renderTelegramSetup,
-    gamesHub: renderGamesHub,
+    gamesHub: window.renderGamesHub || renderGamesHub,
     leagues: renderLeagues,
     pet: window.renderPet || renderPet,
     fsrs: renderFSRS,
