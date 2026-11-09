@@ -5193,6 +5193,7 @@ function checkCooldownAndSleep(){
 }
 
 /* ============ ПОДКЛЮЧЕНИЕ К WINDOW ============ */
+window.renderLearningBase = renderLearning;
 window.state = state;
 window.save = save;
 window.manualSaveAll = manualSaveAll;
