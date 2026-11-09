@@ -101,6 +101,25 @@ test('missed learning tasks are moved forward without losing completed work',()=
  assert.equal(p.endDate,p.days[p.days.length-1].date);
 });
 
+test('Jarvis receives the live monthly, weekly and daily development-plan summary',()=>{
+ const w=loadPlanner(),p=w.LIFEOS_LEARNING_PLAN_TESTS.buildSchedule('2026-11-09',['ai_literacy_course','productivity_course'],35);
+ w.state.learningDevelopmentPlan=p;
+ const today=p.days[0],task=today.tasks.find(x=>x.type==='reflection');
+ p.completed={[today.date]:{[task.id]:true}};
+ const summary=w.getLifeOSLearningPlanSummary();
+ assert.equal(summary.startDate,'2026-11-09');
+ assert.equal(summary.currentDay.number,1);
+ assert.equal(summary.currentDay.done,1);
+ assert.ok(summary.overall.total>0);
+ assert.ok(summary.week.total>0);
+ assert.ok(summary.courses.includes('Грамотная работа с ИИ'));
+ assert.ok(summary.currentDay.tasks.some(x=>x.title===task.title&&x.done));
+ const app=fs.readFileSync('app.js','utf8');
+ assert.match(app,/developmentPlan=window\.getLifeOSLearningPlanSummary\?window\.getLifeOSLearningPlanSummary\(\):null/);
+ assert.match(app,/learningProgress:\{trackedTopics:[^}]*developmentPlan:developmentPlan/);
+ assert.match(app,/Твой план развития:/);
+});
+
 test('navigation routes and offline cache include the learning planner', () => {
   const app = fs.readFileSync('app.js', 'utf8');
   const html = fs.readFileSync('index.html', 'utf8');
