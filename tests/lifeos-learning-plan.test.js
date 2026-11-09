@@ -8,6 +8,8 @@ const source = fs.readFileSync('lifeos-learning-plan.js', 'utf8');
 function loadPlanner() {
   const window = {
     ALL_NEW_COURSES: [],
+    ENGLISH_125: [{id:'a1_01',level:'A1',title:'Present Simple'}],
+    SKILLS_LIBRARY: [{id:'sk_1',title:'Память'}],
     state: {},
     today: () => '2026-11-09',
     save: () => {},
@@ -129,9 +131,40 @@ test('navigation routes and offline cache include the learning planner', () => {
   assert.match(app, /learning:\s*window\.renderLearning\s*\|\|\s*renderLearning/);
   assert.match(app, /plan:\s*window\.renderPersonalPlan\s*\|\|\s*renderPersonalPlan/);
   assert.match(html, /lifeos-learning-plan\.js/);
-  assert.match(sw, /life-os-v114/);
+  assert.match(sw, /life-os-v115/);
   assert.match(sw, /lifeos-learning-plan\.js/);
   const planner = fs.readFileSync('lifeos-learning-plan.js', 'utf8');
   assert.doesNotMatch(planner, /JSON\.stringify\(/, 'inline HTML handlers must not embed double-quoted JSON arguments');
   assert.match(planner, /window\.openLearningPlanDay=specificDay/);
+});
+test('unified development plan includes English and practical skills with real completion state',()=>{
+ const w=loadPlanner();
+ const p=w.LIFEOS_LEARNING_PLAN_TESTS.buildSchedule('2026-11-09',['ai_literacy_course'],35,{english:true,skills:true});
+ assert.equal(p.tracks.english,true);assert.equal(p.tracks.skills,true);
+ const tasks=p.days.flatMap(d=>d.tasks);
+ assert.ok(tasks.some(t=>t.type==='english'&&t.idRef==='a1_01'));
+ assert.ok(tasks.some(t=>t.type==='skill'&&t.idRef==='sk_1'));
+ w.state.englishProgress={a1_01:{completed:true}};
+ w.state.skillsProgress={sk_1:{completed:true}};
+ const e=tasks.find(t=>t.type==='english'),k=tasks.find(t=>t.type==='skill');
+ const ed=p.days.find(d=>d.tasks.includes(e)),kd=p.days.find(d=>d.tasks.includes(k));
+ assert.equal(w.LIFEOS_LEARNING_PLAN_TESTS.isDone(ed,e),true);
+ assert.equal(w.LIFEOS_LEARNING_PLAN_TESTS.isDone(kd,k),true);
+});
+test('learning planner UI exposes English and skill tracks',()=>{
+ const planner=fs.readFileSync('lifeos-learning-plan.js','utf8');
+ assert.match(planner,/id="planEnglish"/);assert.match(planner,/id="planSkills"/);
+ assert.match(planner,/type==='english'/);assert.match(planner,/type==='skill'/);
+ assert.match(planner,/window\.openEnglishLesson\(t\.idRef\)/);
+ assert.match(planner,/window\.openSkill\(t\.idRef\)/);
+});
+test('English and skill lessons are enriched with practical instructions and mastery checks',()=>{
+ const source=fs.readFileSync('lifeos-learning-content.js','utf8');
+ const window={ENGLISH_125:[{id:'a1_01',level:'A1',title:'Present Simple'}],SKILLS_LIBRARY:[{id:'sk_1',title:'Память'}],state:{},esc:String};
+ vm.runInNewContext(source,{window,Date,Math});
+ assert.match(window.ENGLISH_125[0].theory,/habits|факт|привыч/i);
+ assert.ok(window.ENGLISH_125[0].examples.length>20);
+ assert.ok(window.ENGLISH_125[0].practice.length>80);
+ assert.equal(window.ENGLISH_125[0].steps.length,3);
+ assert.ok(window.LIFEOSLearningContent.skillInfo(window.SKILLS_LIBRARY[0]).practice.length>30);
 });
