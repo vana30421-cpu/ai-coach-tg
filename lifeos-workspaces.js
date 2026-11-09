@@ -1,6 +1,7 @@
 /* LIFEOS workspaces extension — additive, offline-first, legacy-data safe */
 (function(){
 'use strict';
+var activeBrainNoteId=null;
 function esc(v){return window.esc?window.esc(v):String(v||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function save(){if(window.save)window.save();}
 function uid(){return window.uid?window.uid():Date.now().toString(36)+Math.random().toString(36).slice(2,8);}
@@ -51,10 +52,39 @@ window.saveBrainNote=function(){
 window.editBrainNote=function(id){var b=ensureBrain();if(!b.notes.some(function(n){return n.id===id;}))return;b.editingId=id;window.renderObsidian();window.scrollTo(0,0);};
 window.cancelBrainEdit=function(){ensureBrain().editingId=null;window.renderObsidian();};
 window.openBrainNote=function(id){
- var b=ensureBrain(),n=b.notes.find(function(x){return x.id===id;});if(!n)return;
+ var b=ensureBrain(),n=b.notes.find(function(x){return x.id===id;});if(!n)return;activeBrainNoteId=n.id;
  var incoming=b.notes.filter(function(x){return (x.links||[]).some(function(l){return l.toLowerCase()===n.title.toLowerCase();});});
- var body='<div class="footnote">'+esc(n.type||'Заметка')+' · '+esc(n.updatedAt||n.createdAt||'')+'</div><div class="lesson-content mt-2" style="white-space:pre-wrap;line-height:1.65">'+esc(n.body)+'</div><div class="row wrap mt-2">'+(n.tags||[]).map(function(t){return '<span class="badge">#'+esc(t)+'</span>';}).join('')+'</div><div class="section-title mt-3">Связи</div>'+((n.links||[]).map(function(l){var target=b.notes.find(function(x){return x.title.toLowerCase()===l.toLowerCase();});return '<div class="footnote">↗ '+esc(l)+(target?' · есть в базе':' · ещё не создана')+'</div>';}).join('')||'<div class="footnote">Нет исходящих связей. Используй [[Название заметки]].</div>')+'<div class="section-title mt-3">Обратные ссылки ('+incoming.length+')</div>'+incoming.map(function(x){return '<div class="footnote">↙ '+esc(x.title)+'</div>';}).join('')+'<div class="btn-row mt-3"><button class="btn btn-primary" onclick="closeSheet();editBrainNote(\''+n.id+'\')">Изменить</button><button class="btn btn-ghost" onclick="deleteBrainNote(\''+n.id+'\')">Удалить</button></div>';
+ var body='<div class="footnote">'+esc(n.type||'Заметка')+' · '+esc(n.updatedAt||n.createdAt||'')+'</div><div class="lesson-content mt-2" style="white-space:pre-wrap;line-height:1.65">'+esc(n.body)+'</div><div class="row wrap mt-2">'+(n.tags||[]).map(function(t){return '<span class="badge">#'+esc(t)+'</span>';}).join('')+'</div><div class="section-title mt-3">Связи</div>'+((n.links||[]).map(function(l){var target=b.notes.find(function(x){return x.title.toLowerCase()===l.toLowerCase();});return '<div class="footnote">↗ '+esc(l)+(target?' · есть в базе':' · ещё не создана')+'</div>';}).join('')||'<div class="footnote">Нет исходящих связей. Используй [[Название заметки]].</div>')+'<div class="section-title mt-3">Обратные ссылки ('+incoming.length+')</div>'+incoming.map(function(x){return '<div class="footnote">↙ '+esc(x.title)+'</div>';}).join('')+'<div class="footnote mt-3">Карточки для повторения: используй в заметке формат <b>Вопрос == Ответ</b> или <b>Вопрос >> Ответ</b>.</div><div class="btn-row mt-3"><button class="btn btn-ghost" onclick="createFSRSCardsFromCurrentBrainNote()">🃏 Создать карточки FSRS</button><button class="btn btn-primary" onclick="closeSheet();editBrainNote(\''+n.id+'\')">Изменить</button><button class="btn btn-ghost" onclick="deleteBrainNote(\''+n.id+'\')">Удалить</button></div>';
  openSheet(n.title,body);
+};
+
+window.createFSRSCardsFromCurrentBrainNote=function(){
+ var id=activeBrainNoteId,b=ensureBrain(),note=b.notes.find(function(x){return x.id===id;});
+ if(!note)return toast('Сначала открой заметку','warning');
+ var lines=String(note.body||'').split(/\\r?\\n/),parsed=[],insideCode=false;
+ lines.forEach(function(line){
+  var trimmed=line.trim();if(/^\`\`\`/.test(trimmed)){insideCode=!insideCode;return;}if(insideCode)return;
+  var m=line.match(/^\\s*(?:[-*]\\s*)?(.+?)\\s*(?:==|>>)\\s*(.+?)\\s*$/);
+  if(!m)return;
+  var question=m[1].replace(/^#+\\s*/,'').trim(),answer=m[2].trim();
+  if(question&&answer&&question.length<=500&&answer.length<=2000)parsed.push({question:question,answer:answer});
+ });
+ if(!parsed.length)return toast('Не нашёл пар. Добавь строки «Вопрос == Ответ» или «Вопрос >> Ответ».','info');
+ if(!state.fsrs||typeof state.fsrs!=='object')state.fsrs={cards:{},stats:{totalCards:0}};
+ if(!state.fsrs.cards||typeof state.fsrs.cards!=='object')state.fsrs.cards={};
+ if(!state.fsrs.stats||typeof state.fsrs.stats!=='object')state.fsrs.stats={};
+ var norm=function(v){return String(v||'').toLowerCase().replace(/\\s+/g,' ').trim();},added=0,duplicates=0;
+ parsed.forEach(function(pair){
+  var duplicate=Object.keys(state.fsrs.cards).some(function(key){var card=state.fsrs.cards[key];return norm(card.question)===norm(pair.question)&&norm(card.answer)===norm(pair.answer);});
+  if(duplicate){duplicates++;return;}
+  var cardId='card_'+uid();
+  state.fsrs.cards[cardId]={id:cardId,question:pair.question,answer:pair.answer,createdAt:nowISO(),stability:0,difficulty:5,retrievability:0.5,lastReview:null,nextReview:nowISO(),reviews:0,lapses:0,state:'new',source:'second-brain',sourceNoteId:note.id};
+  added++;
+ });
+ state.fsrs.stats.totalCards=Object.keys(state.fsrs.cards).length;
+ if(!added){toast('Все карточки из этой заметки уже существуют','info');return {added:0,duplicates:duplicates};}
+ save();toast('Создано карточек: '+added+(duplicates?' · пропущено дублей: '+duplicates:''),'success');closeSheet();navigate('fsrs');
+ return {added:added,duplicates:duplicates};
 };
 window.deleteBrainNote=function(id){if(!confirm('Удалить заметку?'))return;var b=ensureBrain();b.notes=b.notes.filter(function(n){return n.id!==id;});save();closeSheet();window.renderObsidian();};
 window.queueWorkspaceDraft=queueWorkspaceDraft;
