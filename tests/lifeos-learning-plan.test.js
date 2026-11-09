@@ -19,10 +19,12 @@ function loadPlanner() {
   return window;
 }
 
-test('adds four structured courses with lessons, theory and practice', () => {
+test('adds twelve structured courses with lessons, theory and practice', () => {
   const w = loadPlanner();
   const added = w.ALL_NEW_COURSES;
-  assert.equal(added.length, 4);
+  assert.equal(added.length, 12);
+  assert.equal(added.reduce((sum, course) => sum + course.modules.reduce((n, module) => n + module.lessons.length, 0), 0), 52);
+  assert.equal(new Set(added.map(course => course.id)).size, 12);
   for (const course of added) {
     assert.ok(course.modules.length > 0, course.id);
     const lessons = course.modules.flatMap(module => module.lessons);
@@ -127,7 +129,7 @@ test('navigation routes and offline cache include the learning planner', () => {
   assert.match(app, /learning:\s*window\.renderLearning\s*\|\|\s*renderLearning/);
   assert.match(app, /plan:\s*window\.renderPersonalPlan\s*\|\|\s*renderPersonalPlan/);
   assert.match(html, /lifeos-learning-plan\.js/);
-  assert.match(sw, /life-os-v109/);
+  assert.match(sw, /life-os-v110/);
   assert.match(sw, /lifeos-learning-plan\.js/);
   const planner = fs.readFileSync('lifeos-learning-plan.js', 'utf8');
   assert.doesNotMatch(planner, /JSON\.stringify\(/, 'inline HTML handlers must not embed double-quoted JSON arguments');
