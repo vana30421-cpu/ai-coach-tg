@@ -92,7 +92,7 @@ function saveSkillFromUI(){
  var list=customSkills();if(list.length>=30){if(root.toast)root.toast('Максимум 30 собственных навыков','warning');return;}
  list.push({id:uid(),name:name,prompt:prompt,createdAt:new Date().toISOString()});save();if(root.toast)root.toast('Навык создан','success');if(root.renderJarvis)root.renderJarvis();
 }
-function runSkill(id){var x=customSkills().find(function(s){return s.id===id;});if(!x)return;if(root.jarvisQuick)root.jarvisQuick(x.prompt);}
+function runSkill(id){var x=customSkills().find(function(s){return s.id===id;});if(!x)return;var enabled=!!(root.state&&root.state.jarvis&&root.state.jarvis.cloudAIEnabled);if(!enabled){if(root.toast)root.toast('Для запуска навыка включи облачный ИИ в настройках Джарвиса','warning');if(root.navigate)root.navigate('ai');return;}if(root.jarvisQuick)root.jarvisQuick(x.prompt);}
 function deleteSkill(id){var app=root.state;if(!app||!app.jarvis)return;app.jarvis.customSkills=customSkills().filter(function(x){return x.id!==id;});save();if(root.renderJarvis)root.renderJarvis();}
 function reminders(){
  var app=root.state;if(!app)return [];
