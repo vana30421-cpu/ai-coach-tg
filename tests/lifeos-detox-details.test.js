@@ -31,5 +31,5 @@ test('detox detail data is loaded, rendered and available offline',()=>{
  assert.match(app,/Подробная методика/);
  assert.match(app,/Критерий выполнения/);
  assert.match(sw,/lifeos-detox-details\.js/);
- assert.match(sw,/const CACHE='life-os-v124'/);
+ assert.match(sw,/const CACHE='life-os-v125'/);
 });
