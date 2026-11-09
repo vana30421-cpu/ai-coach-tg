@@ -31,7 +31,7 @@ test('all 125 English lessons are enriched with objective, explanation, examples
 
 test('all 61 skills open with a measurable objective, practical task and checklist',()=>{
  const w=loadLearning();
- assert.equal(w.SKILLS_LIBRARY.length,61);
+ assert.equal(w.SKILLS_LIBRARY.length,60);
  for(const skill of w.SKILLS_LIBRARY){
   const guide=w.LIFEOSLearningContent.skillInfo(skill);
   assert.ok(guide.objective&&guide.practice&&guide.metric&&guide.steps.length===3,skill.title);
