@@ -3207,7 +3207,7 @@ function finishAntistressRecord(completed){
  var elapsed=Math.min(antiTimerDuration,Math.max(0,Math.floor((Date.now()-antiTimerStartedAt)/1000)));
  if(!Array.isArray(state.antistressEntries))state.antistressEntries=[];
  state.antistressEntries.push({id:uid(),practiceId:currentAntistressId,date:today(),time:nowISO(),duration:elapsed,plannedDuration:antiTimerDuration,durationCompleted:!!completed});
- if(completed){addXP(5,'antistress');addPetXP(2);}
+ if(completed)addXP(5,'antistress');
  save();haptic('success');toast(completed?'Практика завершена · +5 XP':'Досрочное завершение сохранено без бонуса XP',completed?'success':'info');closeSheet();currentAntistressId=null;renderAntistress();
 }
 function finishAntistress(){if(!antiTimerFinished){toast('Сначала закончи таймер или выбери досрочное завершение.','warning');return;}finishAntistressRecord(true);}
