@@ -83,7 +83,7 @@ function openSkillAcademyLesson(id,index){
 }
 function completeSkillAcademyLesson(id,index){
  var skill=SK.find(function(x){return x.id===id;}),l=skill&&skill.lessons[index];if(!l)return;var result=(document.getElementById('skillAcademyResult')||{}).value||'',reflection=(document.getElementById('skillAcademyReflection')||{}).value||'',steps=[0,1,2].map(function(i){return !!(document.getElementById('skillAcademyStep'+i)||{}).checked;});
- if(steps.some(function(x){return !x;}))return toast('Заверши все три пункта','warning');if(result.trim().length<20)return toast('Опиши реальный результат практики (минимум 20 символов)','warning');if(reflection.trim().length<10)return toast('Заполни короткую рефлексию','warning');
+ if(steps.some(function(x){return !x;}))return toast('Заверши все три пункта','warning');if(result.trim().length<20)return toast('Опиши реальный результат практики (минимум 20 символов)','warning');if(reflection.trim().length<10)return toast('Заполни короткую рефлексию (минимум 10 символов)','warning');
  var s=progress(),key=id+'_'+index,old=s.skillAcademyProgress[key]||{},was=!!old.completed;s.skillAcademyProgress[key]={completed:true,completedAt:old.completedAt||new Date().toISOString(),updatedAt:new Date().toISOString(),steps:steps,result:result.trim(),reflection:reflection.trim()};save();if(!was&&window.addXP)window.addXP(15,'lesson');if(!was&&window.addPetXP)window.addPetXP(2);toast('Практический этап сохранён','success');window.closeSheet();renderSkills();
 }
 function richOpenCourseLesson(courseId,moduleId,index){
