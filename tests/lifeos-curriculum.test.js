@@ -32,7 +32,9 @@ test('course lessons receive objective, practical steps and success criteria',()
 test('curriculum loads before app and is cached offline with the guided lesson renderer',()=>{
  const html=fs.readFileSync('index.html','utf8'),sw=fs.readFileSync('sw.js','utf8'),guided=fs.readFileSync('lifeos-learning-content.js','utf8');
  assert.ok(html.indexOf('src="lifeos-curriculum.js')<html.indexOf('src="app.js'));
- assert.match(sw,/life-os-v120/);assert.match(sw,/\.\/lifeos-curriculum\.js/);
+ assert.ok(html.includes('src="lifeos-learning-content.js'));
+ assert.ok(html.includes("'lifeos-learning-content.js','lifeos-search.js'"));
+ assert.match(sw,/life-os-v121/);assert.match(sw,/\.\/lifeos-curriculum\.js/);
  assert.match(guided,/root\.LIFEOS_CURRICULUM&&l\.objective/);
  assert.match(guided,/root\.openCourseLesson=openCourseLessonGuided/);
  assert.match(guided,/completeRealEnglishLesson/);assert.match(guided,/completeRealSkill/);
