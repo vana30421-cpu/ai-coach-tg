@@ -4345,7 +4345,7 @@ function setJarvisCloudAI(enabled){
  d.cloudAIEnabled=!!enabled;save();renderJarvis();
  toast(enabled?'Разговорный ИИ включён':'Используется локальный режим','success');
 }
-async async function testJarvisConnection(){
+async function testJarvisConnection(){
  var d=getJarvisState(),url=String(d.apiUrl||'').trim(),code=String(d.accessCode||'');
  if(!/^https:\/\//i.test(url))return toast('Укажи HTTPS URL AI-сервера','warning');
  if(!code)return toast('Введи код доступа Worker','warning');
