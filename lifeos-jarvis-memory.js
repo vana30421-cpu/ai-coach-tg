@@ -129,7 +129,8 @@ async function syncFromUI(){
  catch(e){if(root.toast)root.toast(String(e.message||e),'error');}
  finally{if(button){button.disabled=false;button.textContent='Синхронизировать память';}}
 }
-\nfunction row(x){
+
+function row(x){
  return '<div class="list-row jarvis-memory-row" data-memory-search="'+(root.esc?root.esc(clean(x.text+' '+x.category,600).toLowerCase()):clean(x.text+' '+x.category,600).toLowerCase())+'"><div style="min-width:0;flex:1"><b>'+ (root.esc?root.esc(x.category):x.category)+'</b><div>'+ (root.esc?root.esc(x.text):x.text)+'</div><div class="footnote">'+(root.esc?root.esc(String(x.updatedAt||'').slice(0,10)):'')+'</div></div><button class="btn btn-ghost btn-xs" onclick="removeJarvisMemory(\''+x.id+'\')" aria-label="Удалить факт">✕</button></div>';
 }
 
