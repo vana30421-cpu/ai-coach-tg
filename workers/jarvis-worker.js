@@ -49,7 +49,8 @@ export default {
     }
     let rawBody;
     try { rawBody = await request.text(); } catch (_) { return json({ error: "INVALID_JSON" }, 400, headers); }
-    const bodyBytes = new TextEncoder().encode(rawBody).byteLength;\n    if (bodyBytes > 750000) return json({ error: "REQUEST_TOO_LARGE" }, 413, headers);
+    const bodyBytes = new TextEncoder().encode(rawBody).byteLength;
+    if (bodyBytes > 750000) return json({ error: "REQUEST_TOO_LARGE" }, 413, headers);
     let body;
     try { body = JSON.parse(rawBody); } catch (_) { return json({ error: "INVALID_JSON" }, 400, headers); }
     if (!body || typeof body !== "object" || Array.isArray(body)) return json({ error: "INVALID_BODY" }, 400, headers);
