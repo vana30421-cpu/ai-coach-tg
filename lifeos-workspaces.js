@@ -60,18 +60,18 @@ window.openBrainNote=function(id){
 
 window.createFSRSCardsFromCurrentBrainNote=function(){
  var id=activeBrainNoteId,b=ensureBrain(),note=b.notes.find(function(x){return x.id===id;});
- if(!note)return toast('Сначала открой заметку','warning');
+ var lines=String(note.body||'').split(/\r?\n/),parsed=[],insideCode=false;
  var lines=String(note.body||'').split(/\\r?\\n/),parsed=[],insideCode=false;
- lines.forEach(function(line){
-  var trimmed=line.trim();if(/^\`\`\`/.test(trimmed)){insideCode=!insideCode;return;}if(insideCode)return;
+  var trimmed=line.trim();if(/^\x60{3}/.test(trimmed)){insideCode=!insideCode;return;}if(insideCode)return;
+  var m=line.match(/^\s*(?:[-*]\s*)?(.+?)\s*(?:==|>>)\s*(.+?)\s*$/);
   var m=line.match(/^\\s*(?:[-*]\\s*)?(.+?)\\s*(?:==|>>)\\s*(.+?)\\s*$/);
-  if(!m)return;
+  var question=m[1].replace(/^#\s*/,'').trim(),answer=m[2].trim();
   var question=m[1].replace(/^#+\\s*/,'').trim(),answer=m[2].trim();
   if(question&&answer&&question.length<=500&&answer.length<=2000)parsed.push({question:question,answer:answer});
  });
  if(!parsed.length)return toast('Не нашёл пар. Добавь строки «Вопрос == Ответ» или «Вопрос >> Ответ».','info');
  if(!state.fsrs||typeof state.fsrs!=='object')state.fsrs={cards:{},stats:{totalCards:0}};
- if(!state.fsrs.cards||typeof state.fsrs.cards!=='object')state.fsrs.cards={};
+ var norm=function(v){return String(v||'').toLowerCase().replace(/\s+/g,' ').trim();},added=0,duplicates=0;
  if(!state.fsrs.stats||typeof state.fsrs.stats!=='object')state.fsrs.stats={};
  var norm=function(v){return String(v||'').toLowerCase().replace(/\\s+/g,' ').trim();},added=0,duplicates=0;
  parsed.forEach(function(pair){
