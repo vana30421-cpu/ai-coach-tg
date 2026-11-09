@@ -43,7 +43,7 @@ test('the actual learning-content module is loaded and checked at startup and ca
  assert.match(index,/lifeos-learning-content\.js\?v=/);
  assert.match(index,/lifeos-learning-content\.js/);
  assert.match(sw,/lifeos-learning-content\.js/);
- assert.match(sw,/life-os-v118/);
+ assert.match(sw,/life-os-v119/);
 });
 
 test('Jarvis connection test is authenticated and does not expose provider secrets',()=>{
