@@ -984,15 +984,16 @@ body{
 <script defer src="content2.js?v=20261108-4"></script>
 <script defer src="content3.js?v=20261108-4"></script>
 <script defer src="jarvis-core.js?v=20261108-5"></script>
-<script defer src="app.js?v=20261109-12"></script>
+<script defer src="app.js?v=20261109-13"></script>
 <script defer src="lifeos-workspaces.js?v=20261109-1"></script>
 <script defer src="lifeos-systems.js?v=20261109-12"></script>
 <script defer src="lifeos-learning-plan.js?v=20261109-5"></script>
+<script defer src="lifeos-learning-experience.js?v=20261109-1"></script>
 <script defer src="lifeos-search.js?v=20261109-1"></script>
 <script>
 (function(){
   var failed=[];
-  ['content.js','lifeos-detox-details.js','content2.js','content3.js','jarvis-core.js','app.js','lifeos-workspaces.js','lifeos-systems.js','lifeos-learning-plan.js','lifeos-search.js'].forEach(function(name){
+  ['content.js','lifeos-detox-details.js','content2.js','content3.js','jarvis-core.js','app.js','lifeos-workspaces.js','lifeos-systems.js','lifeos-learning-plan.js','lifeos-learning-experience.js','lifeos-search.js'].forEach(function(name){
     var script=document.querySelector('script[src^="'+name+'?"]')||document.querySelector('script[src="'+name+'"]');
     if(script) script.addEventListener('error',function(){failed.push(name);show('Не загрузился файл: '+name+'. Проверьте публикацию и доступность файлов.');});
   });
