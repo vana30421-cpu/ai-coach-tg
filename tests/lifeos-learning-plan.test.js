@@ -64,6 +64,24 @@ test('respects time bounds and supports one selected course', () => {
   assert.equal(minimal.minutesPerDay, 20);
 });
 
+
+test('missed learning tasks are moved forward without losing completed work',()=>{
+ const w=loadPlanner(),p=w.LIFEOS_LEARNING_PLAN_TESTS.buildSchedule('2026-11-01',['ai_literacy_course','productivity_course'],35);
+ const completedDay=p.days[6],completedTask=completedDay.tasks.find(task=>task.type==='weekly-review');
+ p.completed={};p.completed[completedDay.date]={[completedTask.id]:true};
+ w.state.learningDevelopmentPlan=p;
+ const before=p.days.filter(day=>day.date<'2026-11-09').flatMap(day=>day.tasks).filter(task=>!w.LIFEOS_LEARNING_PLAN_TESTS.isDone||!w.LIFEOS_LEARNING_PLAN_TESTS.isDone(day,task)).length;
+ const moved=w.LIFEOS_LEARNING_PLAN_TESTS.rebalance();
+ assert.ok(moved>0);
+ assert.ok(p.days.find(day=>day.date===completedDay.date).tasks.some(task=>task.id===completedTask.id),'completed review stays on its original day');
+ const oldPending=p.days.filter(day=>day.date<'2026-11-09').flatMap(day=>day.tasks);
+ assert.ok(oldPending.every(task=>task.id===completedTask.id),'only completed work remains in the past');
+ const carried=p.days.filter(day=>day.date>='2026-11-09').flatMap(day=>day.tasks).filter(task=>task.rescheduledFrom);
+ assert.equal(carried.length,moved);
+ assert.ok(carried.every(task=>task.rescheduledFrom<'2026-11-09'));
+ assert.equal(p.endDate,p.days[p.days.length-1].date);
+});
+
 test('navigation routes and offline cache include the learning planner', () => {
   const app = fs.readFileSync('app.js', 'utf8');
   const html = fs.readFileSync('index.html', 'utf8');
@@ -71,7 +89,7 @@ test('navigation routes and offline cache include the learning planner', () => {
   assert.match(app, /learning:\s*window\.renderLearning\s*\|\|\s*renderLearning/);
   assert.match(app, /plan:\s*window\.renderPersonalPlan\s*\|\|\s*renderPersonalPlan/);
   assert.match(html, /lifeos-learning-plan\.js/);
-  assert.match(sw, /life-os-v98/);
+  assert.match(sw, /life-os-v100/);
   assert.match(sw, /lifeos-learning-plan\.js/);
   const planner = fs.readFileSync('lifeos-learning-plan.js', 'utf8');
   assert.doesNotMatch(planner, /JSON\.stringify\(/, 'inline HTML handlers must not embed double-quoted JSON arguments');
