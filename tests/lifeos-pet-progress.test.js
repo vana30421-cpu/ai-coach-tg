@@ -43,5 +43,5 @@ test('pet UI explains both care actions and progress from useful activity',()=>{
  assert.match(source,/addXP\(10, 'sphere_score'\);addPetXP\(2\)/);
  assert.match(source,/addXP\(20, 'lesson'\);\s*addPetXP\(3\)/);
  assert.match(source,/addXP\(8,'workout'\);addPetXP\(3\)/);
- assert.match(source,/addXP\(5,'antistress'\);addPetXP\(2\)/);
+ assert.match(systems,/if\(completed&&window\.addXP\)window\.addXP\(5,'antistress'\);if\(completed&&window\.addPetXP\)window\.addPetXP\(2\)/);
 });
