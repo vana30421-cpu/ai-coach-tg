@@ -26,7 +26,7 @@ function request(body, options) {
 const env = { ALLOWED_ORIGIN: 'https://lifeos.example', JARVIS_ACCESS_CODE: 'test-secret', GEMINI_API_KEY: 'gemini-secret', GEMINI_MODEL: 'gemini-test-model' };
 
 test('worker source parses as a JavaScript module after its default export wrapper', () => {
-  assert.match(executableSource, /globalThis\.__worker = \\{/);
+  assert.match(executableSource, /globalThis\.__worker = \{/);
   assert.doesNotThrow(() => new vm.Script(executableSource));
 });
 
