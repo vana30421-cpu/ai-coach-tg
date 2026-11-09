@@ -2692,8 +2692,9 @@ function openDetoxDay(day){
   var d=getDetoxDay(day);if(!d)return;
   var rec=getDetoxCourseRecord(day),isDone=!!rec.completed;
   var html='<div class="detox-day-detail"><div style="font-size:20px;font-weight:800;margin-bottom:6px">'+d.emoji+' День '+day+': '+esc(d.title)+'</div><div class="footnote mb-3">'+esc(d.phase)+' · '+esc(d.subtitle||'Практика дня')+'</div>';
-  var dayGuide=getDetoxTaskGuide(day,(d.do||[])[0]||d.title,0);
-  html+='<div class="card"><h2>🎯 Зачем этот день</h2><div class="lesson-content">'+esc(dayGuide.why)+'</div><div class="footnote mt-2">Цель: выполнить посильную практику и проверить личный результат по своим данным. Не нужно стремиться к идеальному выполнению — важны наблюдения и устойчивый план.</div></div>';
+  var dayGuide=getDetoxTaskGuide(day,(d.do||[])[0]||d.title,0),dayDetails=window.DETOX_DAY_DETAILS&&window.DETOX_DAY_DETAILS[day];
+  html+='<div class="card"><h2>🎯 Цель дня</h2><div class="lesson-content">'+esc(dayDetails?dayDetails.objective:dayGuide.why)+'</div><div class="footnote mt-2">'+esc(dayDetails?dayDetails.why:'Цель — выполнить посильную практику и проверить личный результат по своим данным.')+'</div></div>';
+  if(dayDetails){html+='<div class="card"><h2>🧭 Подробная методика</h2><ol style="padding-left:20px;margin:8px 0">'+dayDetails.steps.map(function(step){return '<li style="margin:8px 0;line-height:1.5">'+esc(step)+'</li>';}).join('')+'</ol><div class="footnote mt-2"><b>Критерий выполнения:</b> '+esc(dayDetails.check)+'</div><div class="footnote mt-2"><b>Если сложно:</b> '+esc(dayDetails.fallback)+'</div></div>';}
   html+='<div class="card"><h2>🔬 Что важно знать</h2><div class="lesson-content">Изменения экранных привычек индивидуальны. Мы не обещаем фиксированный процент улучшения и не используем неподтверждённые цифры как гарантированный результат. Проверяй эффект по своим записям: время, частота открытий, сон, концентрация и самочувствие.</div><div class="footnote mt-2">Совет дня: '+esc(d.tips||'Выбирай реалистичный шаг.')+'</div></div>';
   html+='<div class="card"><h2>🧭 План выполнения</h2><div class="footnote mb-2">Прочитай объяснение каждого пункта, затем отметь выполнение. Можно адаптировать задание под работу, учёбу, безопасность и состояние.</div>';
   (d.do||[]).forEach(function(task,i){var g=getDetoxTaskGuide(day,task,i),checked=!!rec.checks[i];
