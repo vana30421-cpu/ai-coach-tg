@@ -179,12 +179,12 @@ test('unified plan removes course cap and expands to schedule every selected les
  assert.equal(lessons.length,54,'all 52 course lessons plus English and skills are scheduled');
  assert.equal(new Set(lessons.map(task=>task.id)).size,lessons.length,'no lesson is duplicated');
  assert.ok(p.days.some(day=>day.tasks.some(task=>task.type==='practice')),'application practice follows the lessons');
- assert.match(source,/Math\\.ceil\\(Math\\.max\\(1,lessons\\.length\\)\\/6\\)\\*7/);
- assert.doesNotMatch(source,/ids\\.length>5/);
+ assert.match(source,/Math\.ceil\\(Math\.max\\(1,lessons\.length\\)\\/6\\)\\*7/);
+ assert.doesNotMatch(source,/ids\.length>5/);
 });
 test('learning plan UI supports bulk course selection and dynamic duration',()=>{
  assert.match(source,/Выбрать все курсы/);
  assert.match(source,/Снять выбор/);
- assert.match(source,/p\\.days\\.length/);
+ assert.match(source,/p\.days\.length/);
  assert.match(source,/lifeos-learning-hub/);
 });
