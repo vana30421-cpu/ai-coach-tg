@@ -20,6 +20,8 @@ test('English and skill lessons require practice, self-explanation and a knowled
  assert.match(academy,/function englishCourseRecord/);
  assert.ok(academy.includes("storeKey=courseId+'Progress'"));
  assert.ok(academy.includes('12 треков'));
+ assert.match(academy,/window\.LIFEOS_ENGLISH_LESSONS=EN/);
+ assert.match(academy,/window\.LIFEOS_SKILL_TRACKS=SK/);
  assert.ok(academy.includes('completeSkillAcademyLesson'));
  assert.ok(academy.includes('минимум 10 символов'));
  assert.ok(academy.includes('function completeRichCourseLesson'));
@@ -29,7 +31,7 @@ test('English and skill lessons require practice, self-explanation and a knowled
 test('navigation and offline cache load the academy',()=>{
  assert.ok(app.includes('skills: window.renderSkills || renderSkills'));
  assert.ok(app.includes('english: window.renderEnglish || renderEnglish'));
- assert.ok(index.includes('lifeos-learning-experience.js?v=20261109-1'));
+ assert.ok(index.includes('lifeos-learning-experience.js?v=20261109-2'));
  assert.ok(sw.includes('life-os-v123'));
  assert.ok(sw.includes('lifeos-learning-experience.js'));
 });
