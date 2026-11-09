@@ -131,7 +131,7 @@ test('navigation routes and offline cache include the learning planner', () => {
   assert.match(app, /learning:\s*window\.renderLearning\s*\|\|\s*renderLearning/);
   assert.match(app, /plan:\s*window\.renderPersonalPlan\s*\|\|\s*renderPersonalPlan/);
   assert.match(html, /lifeos-learning-plan\.js/);
-  assert.match(sw, /life-os-v117/);
+  assert.match(sw, /life-os-v118/);
   assert.match(sw, /lifeos-learning-plan\.js/);
   const planner = fs.readFileSync('lifeos-learning-plan.js', 'utf8');
   assert.doesNotMatch(planner, /JSON\.stringify\(/, 'inline HTML handlers must not embed double-quoted JSON arguments');
@@ -144,6 +144,8 @@ test('unified development plan includes English and practical skills with real c
  const tasks=p.days.flatMap(d=>d.tasks);
  assert.ok(tasks.some(t=>t.type==='english'&&t.idRef==='a1_01'));
  assert.ok(tasks.some(t=>t.type==='skill'&&t.idRef==='sk_1'));
+ assert.ok(tasks.filter(t=>t.type==='english').length>0,'English must be scheduled in the first month');
+ assert.ok(tasks.filter(t=>t.type==='skill').length>0,'skills must be scheduled in the first month');
  w.state.englishProgress={a1_01:{completed:true}};
  w.state.skillsProgress={sk_1:{completed:true}};
  const e=tasks.find(t=>t.type==='english'),k=tasks.find(t=>t.type==='skill');
