@@ -3839,8 +3839,23 @@ function buildComprehensiveStatsLegacy(days){
     daily:daily
   };
 }
+function getSafeLifeStats(period){
+  try{
+    var result=buildComprehensiveStats(period);
+    if(!result||!result.overview||!result.health||!result.focus||!result.learning||!result.life||!result.coverage)throw new Error('Аналитика вернула неполную структуру данных.');
+    return result;
+  }catch(error){
+    return {period:Number(period)||30,label:'Аналитика временно недоступна',error:String(error&&error.message||error||'Неизвестная ошибка').slice(0,240),
+      overview:{tasksTotal:0,tasksDone:0,tasksPending:0,tasksDonePeriod:0,overdue:0,habitTotal:0,habitsToday:0,habitEvents:0,streak:0,bestStreak:0,xp:0,xpPeriod:0,level:1},
+      health:{sleepEntries:0,sleepAvgHours:null,sleepTarget:null,moodEntries:0,moodAvg:null,waterEntries:0,waterTotal:0,workouts:0,meditation:0,walks:0,walkMinutes:0,antistress:0},
+      focus:{screenEntries:0,screenMinutes:0,screenDailyAvg:null,screenLimit:null,screenDeviation:null,screenByCategory:[],screenDays:0,screenCoveragePct:0,screenSampleSufficient:false,focusSessions:0,focusMinutes:0,checkins:0,energyAvg:null,concentrationAvg:null,sleepQualityAvg:null,stressAvg:null},
+      learning:{progressItems:0,brainPlays:0,brainAvgScore:null,fsrsCards:0,fsrsReviews:0,fsrsDue:0,fsrsRetention:null,memorySessions:0,memoryAccuracy:null,memoryBestSpan:0,eyeExercises:0,studySessions:0,studyMinutes:0,studyDue:0},
+      life:{projects:0,projectsDone:0,calendarEvents:0,calendarDone:0,sphereScores:0,sphereAverage:null,financeEntries:0,financeNet:0,visionLogs:0,eyeFatigueAvg:null,headaches:0,eyeBreaks:0,detoxEntries:0,memoryItems:0,detoxReviews:0},
+      coverage:{activeSections:0,totalTracked:0,percent:0,inventory:[]},comparison:{screenRecentDaily:0,screenPreviousDaily:0,screenChangePercent:null,tasksRecentDaily:0,tasksPreviousDaily:0,tasksChangePercent:null},daily:[]};
+  }
+}
 function getJarvisAnalytics(silent){
-  var a=buildComprehensiveStats(LIFE_STATS_PERIOD),d=getJarvisState(),items=[],focus=25;
+  var a=getSafeLifeStats(LIFE_STATS_PERIOD),d=getJarvisState(),items=[],focus=25;
   if(a.overview.overdue>0)items.push({id:'overdue',level:'high',title:'Разобрать просроченные задачи',detail:'Просрочено: '+a.overview.overdue+'. Сначала выбери одну важную и перенеси или выполни остальные.',action:'Открой задачи и пересмотри сроки.'});
   if(a.overview.tasksPending>8)items.push({id:'overload',level:'medium',title:'Снизить перегрузку задачами',detail:'Активных задач '+a.overview.tasksPending+'. Сузь список до 3 главных результатов на сегодня.',action:'Джарвис будет предлагать короткие фокус-сессии.'});
   if(a.focus.screenLimit&&a.focus.screenDailyAvg>a.focus.screenLimit)items.push({id:'screen',level:'high',title:'Экранное время выше лимита',detail:'Среднее за период '+a.focus.screenDailyAvg+' мин/день при лимите '+a.focus.screenLimit+' мин.',action:'Запланируй паузу и сократи следующий сеанс.'});
@@ -3898,10 +3913,10 @@ function statsBar(label,value,max,unit){
 }
 function setStatsPeriod(days){LIFE_STATS_PERIOD=Number(days)===0?0:(Number(days)||30);renderStats();}
 function renderStats(){
-  var a=buildComprehensiveStats(LIFE_STATS_PERIOD),o=a.overview,h=a.health,f=a.focus,l=a.learning,v=a.life,c=a.coverage,g=state.gamification||defaultState().gamification;
+  var a=getSafeLifeStats(LIFE_STATS_PERIOD),o=a.overview,h=a.health,f=a.focus,l=a.learning,v=a.life,c=a.coverage,g=state.gamification||defaultState().gamification;
   var html='<div class="page"><div class="title-xl">📊 Полная статистика LIFE OS</div><div class="subtitle">Все основные направления · фактические записи · динамика и качество данных</div>';
   html+='<div class="btn-row mb-3"><button class="btn '+(LIFE_STATS_PERIOD===7?'btn-primary':'btn-ghost')+' btn-sm" onclick="setStatsPeriod(7)">7 дней</button><button class="btn '+(LIFE_STATS_PERIOD===30?'btn-primary':'btn-ghost')+' btn-sm" onclick="setStatsPeriod(30)">30 дней</button><button class="btn '+(LIFE_STATS_PERIOD===90?'btn-primary':'btn-ghost')+' btn-sm" onclick="setStatsPeriod(90)">90 дней</button><button class="btn '+(LIFE_STATS_PERIOD===0?'btn-primary':'btn-ghost')+' btn-sm" onclick="setStatsPeriod(0)">Всё время</button></div>';
-  html+='<div class="card card-gradient"><div class="row-between"><span>Уровень '+o.level+'</span><span>'+o.streak+' 🔥 дней серии</span></div><div style="font-size:36px;font-weight:850;margin:8px 0">'+o.xp+' XP</div><div class="footnote">+'+o.xpPeriod+' XP за выбранный период · лучший streak '+o.bestStreak+'</div></div>';
+  if(a.error)html+='<div class="card" role="status"><b>⚠️ Аналитика не смогла прочитать часть данных</b><div class="footnote mt-1">'+esc(a.error)+'</div>Повторно открой статистику после сохранения изменений.</div>';\n  html+='<div class="card card-gradient"><div class="row-between"><span>Уровень '+o.level+'</span><span>'+o.streak+' 🔥 дней серии</span></div><div style="font-size:36px;font-weight:850;margin:8px 0">'+o.xp+' XP</div><div class="footnote">+'+o.xpPeriod+' XP за выбранный период · лучший streak '+o.bestStreak+'</div></div>';
   html+='<div class="grid-2 mb-3"><div class="card"><div class="stat-value">'+o.tasksDonePeriod+'</div><div class="stat-label">Задач завершено</div></div><div class="card"><div class="stat-value">'+o.tasksPending+'</div><div class="stat-label">Активные задачи</div></div><div class="card"><div class="stat-value">'+h.workouts+'</div><div class="stat-label">Тренировки</div></div><div class="card"><div class="stat-value">'+(f.screenDailyAvg===null?'—':f.screenDailyAvg+' мин')+'</div><div class="stat-label">Экран/день · среднее</div></div></div>';
   html+='<div class="card mb-3"><div class="card-title">🎯 Работа и продуктивность</div>'+statsBar('Выполнено задач за период',o.tasksDonePeriod,Math.max(1,o.tasksDonePeriod+o.tasksPending),'')+statsBar('Привычки выполнены сегодня',o.habitsToday,Math.max(1,o.habitTotal),'')+'<div class="grid-2"><div><b>'+o.overdue+'</b><div class="footnote">Просрочено</div></div><div><b>'+o.tasksTotal+'</b><div class="footnote">Всего задач</div></div></div></div>';
   html+='<div class="card mb-3"><div class="card-title">🧠 Обучение и память</div><div class="grid-2"><div><b>'+l.memorySessions+'</b><div class="footnote">Тренировок памяти за период</div></div><div><b>'+(l.memoryAccuracy===null?'—':l.memoryAccuracy+'%')+'</b><div class="footnote">Точность воспроизведения</div></div><div><b>'+l.memoryBestSpan+'</b><div class="footnote">Лучший объём памяти</div></div><div><b>'+l.progressItems+'</b><div class="footnote">Записей прогресса</div></div><div><b>'+l.brainPlays+'</b><div class="footnote">Игровых тренировок</div></div><div><b>'+l.fsrsCards+'</b><div class="footnote">Карточек FSRS</div></div><div><b>'+l.fsrsDue+'</b><div class="footnote">К повторению сейчас</div></div><div><b>'+l.fsrsReviews+'</b><div class="footnote">Повторений за период</div></div><div><b>'+(l.fsrsRetention===null?'—':l.fsrsRetention+'%')+'</b><div class="footnote">Успешное долговременное воспроизведение</div></div><div><b>'+(l.brainAvgScore===null?'—':l.brainAvgScore)+'</b><div class="footnote">Средний игровой балл</div></div></div></div>';
@@ -4248,13 +4263,13 @@ function getJarvisState(){
 }
 function renderJarvis(){
   var data=getJarvisState(),tasks=state.tasks||[],pending=tasks.filter(function(t){return t.status!=='completed';});
-  var analysis=getJarvisAnalytics(true),stats=analysis.analytics;
+  var analysis=getJarvisAnalytics(true),stats=analysis.analytics||getSafeLifeStats(LIFE_STATS_PERIOD);
   if(!data.dailyPlan||data.dailyPlan.date!==today()||(data.autopilotEnabled&&(!data.lastAutopilotAt||Date.now()-new Date(data.lastAutopilotAt).getTime()>3600000))){analysis=runJarvisAutopilot(true);stats=analysis.analytics;}
   var focus=data.focus,remaining=focus&&focus.active?Math.max(0,Math.ceil((focus.endsAt-Date.now())/1000)):0;
   var modes=[['balanced','Баланс'],['planner','Планировщик'],['coach','Коуч'],['strict','Строгий']];
   var html='<div class="page jarvis-page">';
   html+='<div class="jarvis-hero"><div class="jarvis-orb"><span>J</span><i></i></div><div class="jarvis-hero-copy"><div class="jarvis-kicker">LIFE OS · PERSONAL ASSISTANT</div><div class="title-xl">Джарвис</div><div class="jarvis-status"><span class="jarvis-dot"></span> '+(data.cloudAIEnabled?'ИИ включён · контекст LIFEOS':'Локальный режим · '+(window.LifeOSJarvisCore?'команды готовы':'базовый режим'))+'</div></div></div>';
-  html+='<div class="grid-2 mb-3"><div class="card"><div class="stat-value">'+pending.length+'</div><div class="stat-label">Активные задачи</div></div><div class="card"><div class="stat-value">'+(state.stats.streak||0)+'</div><div class="stat-label">Дней активности</div></div></div>';
+  html+='<div class="grid-2 mb-3"><div class="card"><div class="stat-value">'+pending.length+'</div><div class="stat-label">Активные задачи</div></div><div class="card"><div class="stat-value">'+((state.stats||{}).streak||0)+'</div><div class="stat-label">Дней активности</div></div></div>';
   html+='<div class="card jarvis-settings-card mb-3"><div class="row-between"><b>🧭 Автопилот по статистике</b><label class="row" style="gap:7px"><input type="checkbox" '+(data.autopilotEnabled?'checked':'')+' onchange="setJarvisAutopilot(this.checked)"> <span class="footnote">Включён</span></label></div><div class="footnote mt-2">Джарвис анализирует реальные записи всех разделов, формирует план и при включении автоматически адаптирует только длительность фокуса. Задачи, финансы, здоровье и личные данные без подтверждения не меняет.</div><div class="grid-2 mt-2"><div><b>'+stats.overview.tasksPending+'</b><div class="footnote">Активные задачи</div></div><div><b>'+(stats.focus.screenDailyAvg===null?'—':stats.focus.screenDailyAvg+' мин')+'</b><div class="footnote">Экран/день</div></div><div><b>'+stats.coverage.percent+'%</b><div class="footnote">Полнота данных</div></div><div><b>'+stats.learning.fsrsDue+'</b><div class="footnote">Повторений ждут</div></div></div><div class="row-between mt-2"><span class="footnote">Период анализа: '+esc(analysis.period)+'</span><button class="btn btn-ghost btn-xs" onclick="runJarvisAutopilot(false);renderJarvis()">↻ Пересчитать</button></div>'+(data.dailyPlan&&data.dailyPlan.tasks&&data.dailyPlan.tasks.length?'<div class="footnote mt-2"><b>Приоритеты на сегодня:</b><br>'+data.dailyPlan.tasks.map(function(t,i){return (i+1)+'. '+esc(t.title);}).join('<br>')+'</div>':'<div class="footnote mt-2">План на сегодня: выбери одну важную задачу и начни с короткого фокус-блока.</div>')+'</div>';
   html+='<div class="card jarvis-settings-card mb-3"><div class="field"><label class="field-label">AI-провайдер</label><select id="jarvisProvider" onchange="setJarvisProvider(this.value)"><option value="openai" '+((data.provider||'openai')==='openai'?'selected':'')+'>OpenAI</option><option value="gemini" '+(data.provider==='gemini'?'selected':'')+'>Google Gemini</option></select><div class="footnote">Для выбранной модели нужен соответствующий серверный ключ.</div></div><div class="field"><label class="field-label">URL AI-сервера</label><input type="url" id="jarvisApiUrl" autocomplete="off" value="'+esc(data.apiUrl||'')+'" placeholder="https://...workers.dev" onchange="setJarvisApiUrl(this.value)"></div><div class="field"><label class="field-label">Код доступа к AI-серверу</label><input type="password" id="jarvisAccessCode" autocomplete="off" value="'+esc(data.accessCode||'')+'" placeholder="Введи код, заданный в Cloudflare" onchange="setJarvisAccessCode(this.value)"></div><div class="footnote mt-2">Модель выбирается на защищённом Worker через OPENAI_MODEL или GEMINI_MODEL. Секреты не хранятся в браузере.</div><div class="row-between"><b>🤖 Разговорный ИИ</b><label class="row" style="gap:7px"><input type="checkbox" '+(data.cloudAIEnabled?'checked':'')+' onchange="setJarvisCloudAI(this.checked)"><span class="footnote">Подключён</span></label></div><div class="footnote mt-2">При включении сообщение, недавний диалог и сводка LIFEOS (задачи, привычки, сон, вода, настроение, зрение, дневник, календарь, экранное время, антистресс, питомец, второй мозг и месячные итоги финансов) отправляются выбранному AI-провайдеру. Ключ хранится только на сервере, не в браузере. Без настройки серверного ключа работает локальный помощник.</div></div>';
   html+='<div class="card jarvis-settings-card mb-3"><div class="row-between"><b>Режим помощника</b><span class="footnote">Меняется в любой момент</span></div><div class="jarvis-mode-row">';
@@ -4282,7 +4297,7 @@ function jarvisAddMessage(role,text){
 }
 function buildJarvisAppContext(){
  if(window.ensureLifeOSBrain){try{window.ensureLifeOSBrain();}catch(e){}}
- var a={};try{a=buildComprehensiveStats(30)||{};}catch(e){}
+ var a=getSafeLifeStats(30)||{};
  var date=today(),tasks=(state.tasks||[]).filter(function(t){return t.status!=='completed';}),habits=[];
  try{habits=getHabitsForToday().map(function(h){return {title:h.title||getHabitTemplate(h.templateId)&&getHabitTemplate(h.templateId).title||'Привычка',done:isHabitDoneToday(h.id)};});}catch(e){}
  var water=(state.customWater||[]).find(function(x){return x.date===date;}),mood=(state.customMood||[]).find(function(x){return x.date===date;}),sleep=(state.sleepEntries||[]).slice().sort(function(x,y){return String(y.date).localeCompare(String(x.date));})[0]||null,vm=state.vision&&state.vision.metrics&&state.vision.metrics[date]||{};
@@ -4395,7 +4410,7 @@ function jarvisReply(text){
     return list.length?'Активные задачи:\n'+list.map(function(t,i){return (i+1)+'. '+t.title;}).join('\n')+'\nЧтобы завершить задачу, напиши «выполни 1».':'Активных задач нет. Хороший момент выбрать следующую цель.';
   }
   if(cmd.type==='summary'){
-    var stats=buildComprehensiveStats(typeof LIFE_STATS_PERIOD!=='undefined'?LIFE_STATS_PERIOD:30);
+    var stats=getSafeLifeStats(typeof LIFE_STATS_PERIOD!=='undefined'?LIFE_STATS_PERIOD:30);
     var analysis=getJarvisAnalytics(true);
     return formatJarvisStatsSummary(stats,analysis);
   }
