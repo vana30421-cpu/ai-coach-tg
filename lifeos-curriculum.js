@@ -187,5 +187,19 @@ function enrichSkill(skill){
 }
 (window.ENGLISH_125||[]).forEach(function(lesson){var g=englishGuide(lesson);Object.keys(g).forEach(function(k){lesson[k]=g[k];});lesson.duration=15;lesson.checklist=g.steps;});
 (window.SKILLS_LIBRARY||[]).forEach(enrichSkill);
+(window.ALL_NEW_COURSES||[]).forEach(function(course){
+ (course.modules||[]).forEach(function(module){
+  (module.lessons||[]).forEach(function(lesson){
+   lesson.objective=lesson.objective||'После урока ты сможешь объяснить и применить «'+lesson.title+'» в контексте курса «'+course.title+'».';
+   lesson.steps=lesson.steps||[
+    'Разбери теорию и выпиши главную мысль своими словами.',
+    'Выполни задание: '+String(lesson.practice||'примени изученный метод').slice(0,220),
+    'Зафиксируй результат и проверь, можешь ли повторить действие без подсказки.'
+   ];
+   lesson.metric=lesson.metric||'Есть конкретный результат практики и объяснение, почему выбранный способ работает.';
+   lesson.checkQuestion=lesson.checkQuestion||'Объясни тему «'+lesson.title+'» без подсказки и приведи собственный пример применения.';
+  });
+ });
+});
 window.LIFEOS_CURRICULUM={englishCount:(window.ENGLISH_125||[]).length,skillCount:(window.SKILLS_LIBRARY||[]).length,englishGuide:englishGuide,enrichSkill:enrichSkill};
 })();
