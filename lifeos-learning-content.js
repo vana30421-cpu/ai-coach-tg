@@ -96,6 +96,7 @@ var skillData={
 'Накопления':['Формировать резерв через регулярные посильные взносы.','Определи первую цель накоплений и дату автоматического перевода посильной суммы.','Регулярность взносов и прогресс к цели.']
 };
 function skillInfo(skill){
+ if(root.LIFEOS_CURRICULUM&&skill.objective&&skill.metric)return {objective:skill.objective,theory:skill.theory,practice:Array.isArray(skill.practice)?skill.practice.join('\\n'):String(skill.practice||''),metric:skill.metric,steps:skill.steps||['Разобрал цель навыка','Выполнил практику','Записал результат']};
  var d=skillData[skill.title]||['Освоить навык «'+skill.title+'» через понятную цель, практику и обратную связь.','Выбери одну реальную ситуацию, примени навык в течение 10–15 минут и запиши, что получилось.','Число целевых практик и качество результата по самооценке.'];
  return {objective:d[0],practice:d[1],metric:d[2],theory:'Навык развивается через конкретные попытки, обратную связь и повторение в разных ситуациях. Не ограничивайся чтением: сначала выбери наблюдаемое поведение, затем попробуй его в реальной задаче и разберись, что сработало.',steps:['Разобрал цель и критерий навыка','Выполнил практическое действие','Записал результат и следующий шаг']};
 }
@@ -103,9 +104,25 @@ function renderChecklist(steps,checked){return '<div class="card"><h3>Чек-л�
 function openEnglish(id){
  var l=(root.ENGLISH_125||[]).find(function(x){return x.id===id;});if(!l)return;
  var st=s(),saved=st.englishProgress&&st.englishProgress[id],record=saved&&typeof saved==='object'?saved:{},done=!!saved;
- var d=topicLesson(l),steps=d.steps;
- var html='<div class="title-xl">🇬🇧 '+esc(l.level)+' · '+esc(l.title)+'</div><div class="card"><b>🎯 Результат урока</b><p>'+esc(d.objective)+'</p><div class="footnote">'+esc(levelGuide(l.level))+'</div></div><div class="card"><h3>📚 Объяснение</h3><p>'+esc(d.theory)+'</p><h3>💬 Примеры</h3><p>'+esc(d.examples)+'</p></div><div class="card"><h3>✍️ Практика</h3><p>'+esc(d.practice)+'</p><label class="field-label">Твои ответы и собственные примеры</label><textarea id="englishAnswer" rows="5" maxlength="3000" placeholder="Напиши свои предложения или ответ…">'+esc(record.answer||'')+'</textarea><label class="field-label">Самопроверка</label><p>'+esc(d.check)+'</p><select id="englishRating"><option value="1">1 · Пока сложно</option><option value="2">2 · Нужна подсказка</option><option value="3" selected>3 · В основном понял</option><option value="4">4 · Могу применить</option><option value="5">5 · Уверенно использую</option></select></div>'+renderChecklist(steps,record.steps||[false,false,false])+'<button class="btn btn-primary btn-block mt-3" onclick="completeRealEnglishLesson(\''+id+'\')">'+(done?'Сохранить результат':'✓ Завершить урок')+'</button>';
+ var d=root.LIFEOS_CURRICULUM&&l.objective?{objective:l.objective,theory:l.theory,examples:l.example,practice:l.practice,check:l.checkQuestion,metric:l.metric,review:l.review,steps:l.steps}:topicLesson(l),steps=d.steps;
+ var html='<div class="title-xl">🇬🇧 '+esc(l.level)+' · '+esc(l.title)+'</div><div class="card"><b>🎯 Результат урока</b><p>'+esc(d.objective)+'</p><div class="footnote">'+esc(levelGuide(l.level))+'</div></div><div class="card"><h3>📚 Объяснение</h3><p>'+esc(d.theory)+'</p><h3>💬 Примеры</h3><p>'+esc(d.examples)+'</p></div><div class="card"><h3>✍️ Практика</h3><p>'+esc(Array.isArray(d.practice)?d.practice.join('\\n'):d.practice)+'</p><p class="footnote">Критерий: '+esc(d.metric||'Выполни задание и проверь результат')+'</p>'+(d.review?'<p class="footnote">Повторение: '+esc(d.review)+'</p>':'')+'<label class="field-label">Твои ответы и собственные примеры</label><textarea id="englishAnswer" rows="5" maxlength="3000" placeholder="Напиши свои предложения или ответ…">'+esc(record.answer||'')+'</textarea><label class="field-label">Самопроверка</label><p>'+esc(d.check)+'</p><select id="englishRating"><option value="1">1 · Пока сложно</option><option value="2">2 · Нужна подсказка</option><option value="3" selected>3 · В основном понял</option><option value="4">4 · Могу применить</option><option value="5">5 · Уверенно использую</option></select></div>'+renderChecklist(steps,record.steps||[false,false,false])+'<button class="btn btn-primary btn-block mt-3" onclick="completeRealEnglishLesson(\''+id+'\')">'+(done?'Сохранить результат':'✓ Завершить урок')+'</button>';
  root.openSheet(l.title,html);
+}
+function openCourseLessonGuided(courseId,moduleId,idx){
+ var course=(root.ALL_NEW_COURSES||[]).find(function(x){return x.id===courseId;});if(!course)return;
+ var mod=(course.modules||[]).find(function(x){return x.id===moduleId;});if(!mod||!mod.lessons[idx])return;
+ var lesson=mod.lessons[idx],st=s(),key=courseId+'_'+moduleId+'_'+idx,pKey=courseId+'Progress',saved=st[pKey]&&st[pKey][key],record=saved&&typeof saved==='object'?saved:{},steps=Array.isArray(record.steps)?record.steps:[false,false,false];
+ var html='<div class="title-xl">'+esc(lesson.title)+'</div>';
+ if(lesson.objective)html+='<div class="card"><b>🎯 Результат урока</b><p>'+esc(lesson.objective)+'</p></div>';
+ if(lesson.theory)html+='<div class="card"><h3>📚 Теория</h3><div class="lesson-content">'+(root.formatLesson?root.formatLesson(lesson.theory):esc(lesson.theory))+'</div></div>';
+ if(lesson.practice)html+='<div class="card"><h3>🧪 Практика</h3><p>'+esc(lesson.practice)+'</p></div>';
+ var checklist=lesson.steps||['Разобрал теорию и выписал главную мысль','Выполнил практическое задание','Проверил результат и отметил, что улучшить'];
+ html+='<div class="card"><h3>🧭 Чек-лист</h3>'+checklist.slice(0,3).map(function(step,i){return '<label class="list-row"><input type="checkbox" id="courseStep'+(i+1)+'" '+(steps[i]?'checked':'')+'><span>'+esc(step)+'</span></label>';}).join('')+'</div>';
+ if(lesson.metric)html+='<div class="card"><b>📏 Критерий усвоения</b><p>'+esc(lesson.metric)+'</p></div>';
+ if(lesson.checkQuestion)html+='<div class="card"><b>🧠 Проверка понимания</b><p>'+esc(lesson.checkQuestion)+'</p></div>';
+ html+='<div class="card"><label class="field-label">Объясни своими словами (минимум 25 символов)</label><textarea id="courseMasteryRecall" rows="4" maxlength="1800">'+esc(record.recall||'')+'</textarea><label class="field-label">Пример практического применения</label><textarea id="courseMasteryExample" rows="3" maxlength="1000">'+esc(record.example||'')+'</textarea><label class="field-label">Уверенность</label><select id="courseMasteryRating">'+[1,2,3,4,5].map(function(n){return '<option value="'+n+'" '+(Number(record.rating||3)===n?'selected':'')+'>'+n+'/5</option>';}).join('')+'</select></div>';
+ html+='<button class="btn btn-primary btn-block mt-3" onclick="completeCourseLesson(\''+courseId+'\',\''+moduleId+'\','+idx+')">'+(saved?'Сохранить результат':'✓ Подтвердить усвоение')+'</button>';
+ root.openSheet(lesson.title,html);
 }
 function completeEnglish(id){
  var l=(root.ENGLISH_125||[]).find(function(x){return x.id===id;});if(!l)return;
@@ -129,8 +146,8 @@ function completeSkill(id){
  var st=s();if(!st.skillsProgress)st.skillsProgress={};var old=st.skillsProgress[id],history=old&&old.history||[];history.push({at:new Date().toISOString(),rating:rating,evidence:evidence});st.skillsProgress[id]={completed:true,completedAt:old&&old.completedAt||new Date().toISOString(),updatedAt:new Date().toISOString(),steps:steps,evidence:evidence,rating:rating,history:history.slice(-20),nextReviewAt:new Date(Date.now()+({1:86400000,2:2*86400000,3:4*86400000,4:7*86400000,5:14*86400000}[rating])).toISOString().slice(0,10)};
  if(root.addXP)root.addXP(old?0:20,'lesson');if(root.addPetXP&&!old)root.addPetXP(3);save();toast(old?'Прогресс навыка обновлён':'Практика навыка подтверждена · +20 XP','success');if(root.closeSheet)root.closeSheet();if(root.renderSkills)root.renderSkills();
 }
-enrichEnglish();
+if(!root.LIFEOS_CURRICULUM)enrichEnglish();
 root.openEnglishLesson=openEnglish;root.completeEnglish=completeEnglish;root.completeRealEnglishLesson=completeEnglish;
-root.openSkill=openSkill;root.completeSkill=completeSkill;root.completeRealSkill=completeSkill;
+root.openSkill=openSkill;root.completeSkill=completeSkill;root.completeRealSkill=completeSkill;root.openCourseLesson=openCourseLessonGuided;
 root.LIFEOSLearningContent={enrichEnglish:enrichEnglish,skillInfo:skillInfo,topicLesson:topicLesson,version:1};
 })();
