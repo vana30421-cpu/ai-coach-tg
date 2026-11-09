@@ -133,7 +133,7 @@ function build(start,ids,mins,opts){
  opts=opts||{};
  var lessons=flatten(ids,opts),cursor=0,days=[],m=Math.max(20,Math.min(120,Number(mins)||35)),week=1;
  // Six learning days plus a weekly review day. Expand until every selected lesson fits.
- var dayCount=Math.max(30,Math.ceil(Math.max(1,lessons.length)/6)*7);
+ var dayCount=Math.max(30,(Math.ceil(Math.max(1,lessons.length)/6)+1)*7);
  for(var i=0;i<dayCount;i++){
   var no=i+1,review=no%7===0||no===dayCount,tasks=[];
   if(!review&&cursor>=lessons.length&&lessons.length){
