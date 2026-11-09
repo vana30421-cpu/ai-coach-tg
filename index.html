@@ -993,7 +993,7 @@ body{
 <script>
 (function(){
   var failed=[];
-  ['content.js','lifeos-detox-details.js','content2.js','content3.js','jarvis-core.js','app.js','lifeos-workspaces.js','lifeos-systems.js','lifeos-learning-plan.js','lifeos-search.js'].forEach(function(name){
+  ['content.js','lifeos-detox-details.js','content2.js','content3.js','jarvis-core.js','app.js','lifeos-workspaces.js','lifeos-systems.js','lifeos-learning-plan.js','lifeos-learning-content.js','lifeos-search.js'].forEach(function(name){
     var script=document.querySelector('script[src^="'+name+'?"]')||document.querySelector('script[src="'+name+'"]');
     if(script) script.addEventListener('error',function(){failed.push(name);show('Не загрузился файл: '+name+'. Проверьте публикацию и доступность файлов.');});
   });
