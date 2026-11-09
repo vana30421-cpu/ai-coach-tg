@@ -44,11 +44,59 @@ function render(){
  if(!items.length)html+='<div class="footnote">Память пока пуста. Добавляй только то, что действительно нужно учитывать в будущих разговорах.</div>';
  items.slice(0,30).forEach(function(x){html+=row(x);});
  html+='</div><div class="footnote mt-2">Хранение локальное: очистка данных браузера может удалить память. Экспорт и синхронизация между устройствами пока не подключены.</div></section>';
+ html+=renderCustomSkills();
+ html+=renderReminders();
  return html;
 }
 function row(x){
  return '<div class="list-row jarvis-memory-row" data-memory-search="'+clean(x.text+' '+x.category,600).toLowerCase().replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'"><div style="min-width:0;flex:1"><b>'+ (root.esc?root.esc(x.category):x.category)+'</b><div>'+ (root.esc?root.esc(x.text):x.text)+'</div><div class="footnote">'+(root.esc?root.esc(String(x.updatedAt||'').slice(0,10)):'')+'</div></div><button class="btn btn-ghost btn-xs" onclick="removeJarvisMemory(\''+x.id+'\')" aria-label="Удалить факт">✕</button></div>';
 }
+
+function customSkills(){
+ var app=root.state;if(!app)return [];
+ if(!app.jarvis)app.jarvis={};
+ if(!Array.isArray(app.jarvis.customSkills))app.jarvis.customSkills=[];
+ return app.jarvis.customSkills;
+}
+function renderCustomSkills(){
+ var skills=customSkills(),html='<section class="card mt-3"><div class="card-title">🛠️ Конструктор навыков</div><div class="footnote">Создавай собственные сценарии Джарвиса. Навык отправляет сохранённую инструкцию в диалог ИИ.</div>';
+ html+='<div class="field mt-2"><label class="field-label" for="jarvisSkillName">Название</label><input id="jarvisSkillName" maxlength="60" placeholder="Например: Подготовка к экзамену"></div><div class="field"><label class="field-label" for="jarvisSkillPrompt">Инструкция навыка</label><textarea id="jarvisSkillPrompt" rows="3" maxlength="1200" placeholder="Опиши, что должен делать Джарвис"></textarea></div><button class="btn btn-primary btn-block" onclick="saveJarvisCustomSkill()">Создать навык</button>';
+ skills.slice(0,30).forEach(function(x){html+='<div class="list-row"><div style="min-width:0;flex:1"><b>'+ (root.esc?root.esc(x.name):x.name)+'</b><div class="footnote">'+(root.esc?root.esc(x.prompt):x.prompt)+'</div></div><button class="btn btn-primary btn-xs" onclick="runJarvisCustomSkill(\''+x.id+'\')">Запуск</button><button class="btn btn-ghost btn-xs" onclick="deleteJarvisCustomSkill(\''+x.id+'\')">✕</button></div>';});
+ html+='</section>';return html;
+}
+function saveSkillFromUI(){
+ var n=document.getElementById('jarvisSkillName'),p=document.getElementById('jarvisSkillPrompt'),name=clean(n&&n.value,60),prompt=clean(p&&p.value,1200);
+ if(!name||!prompt){if(root.toast)root.toast('Укажи название и инструкцию навыка','warning');return;}
+ var list=customSkills();if(list.length>=30){if(root.toast)root.toast('Максимум 30 собственных навыков','warning');return;}
+ list.push({id:uid(),name:name,prompt:prompt,createdAt:new Date().toISOString()});save();if(root.toast)root.toast('Навык создан','success');if(root.renderJarvis)root.renderJarvis();
+}
+function runSkill(id){var x=customSkills().find(function(s){return s.id===id;});if(!x)return;if(root.jarvisQuick)root.jarvisQuick(x.prompt);}
+function deleteSkill(id){var app=root.state;if(!app||!app.jarvis)return;app.jarvis.customSkills=customSkills().filter(function(x){return x.id!==id;});save();if(root.renderJarvis)root.renderJarvis();}
+function reminders(){
+ var app=root.state;if(!app)return [];
+ if(!app.jarvis)app.jarvis={};
+ if(!Array.isArray(app.jarvis.reminders))app.jarvis.reminders=[];
+ return app.jarvis.reminders;
+}
+function renderReminders(){
+ var rows=reminders(),html='<section class="card mt-3"><div class="card-title">⏰ Напоминания Джарвиса</div><div class="footnote">Уведомления срабатывают, пока LIFEOS открыт в браузере. Для надёжной доставки при закрытом приложении нужен серверный планировщик.</div><div class="field mt-2"><label class="field-label" for="jarvisReminderText">О чём напомнить</label><input id="jarvisReminderText" maxlength="160" placeholder="Например: повторить английские слова"></div><div class="field"><label class="field-label" for="jarvisReminderAt">Дата и время</label><input id="jarvisReminderAt" type="datetime-local"></div><button class="btn btn-primary btn-block" onclick="saveJarvisReminder()">Добавить напоминание</button>';
+ rows.filter(function(x){return !x.done;}).sort(function(a,b){return String(a.at).localeCompare(String(b.at));}).slice(0,20).forEach(function(x){html+='<div class="list-row"><div style="flex:1;min-width:0"><b>'+(root.esc?root.esc(x.text):x.text)+'</b><div class="footnote">'+(root.esc?root.esc(new Date(x.at).toLocaleString()):x.at)+'</div></div><button class="btn btn-ghost btn-xs" onclick="deleteJarvisReminder(\''+x.id+'\')">✕</button></div>';});
+ html+='</section>';return html;
+}
+function saveReminderFromUI(){
+ var t=document.getElementById('jarvisReminderText'),d=document.getElementById('jarvisReminderAt'),text=clean(t&&t.value,160),at=d&&d.value?new Date(d.value):null;
+ if(!text||!at||!Number.isFinite(at.getTime())||at.getTime()<=Date.now()){if(root.toast)root.toast('Укажи текст и время в будущем','warning');return;}
+ var list=reminders();list.push({id:uid(),text:text,at:at.toISOString(),done:false,createdAt:new Date().toISOString()});save();
+ if(root.Notification&&root.Notification.permission==='default')root.Notification.requestPermission().catch(function(){});
+ if(root.toast)root.toast('Напоминание сохранено','success');if(root.renderJarvis)root.renderJarvis();
+}
+function deleteReminder(id){var app=root.state;if(!app||!app.jarvis)return;app.jarvis.reminders=reminders().filter(function(x){return x.id!==id;});save();if(root.renderJarvis)root.renderJarvis();}
+function checkReminders(){
+ var due=reminders().filter(function(x){return !x.done&&new Date(x.at).getTime()<=Date.now();});
+ due.forEach(function(x){x.done=true;try{if(root.Notification&&root.Notification.permission==='granted')new root.Notification('LIFEOS · Джарвис',{body:x.text,tag:'lifeos-'+x.id});}catch(e){}if(root.toast)root.toast('⏰ '+x.text,'info',6000);});
+ if(due.length)save();
+}
+
 function filter(query){
  var nodes=document.querySelectorAll('.jarvis-memory-row'),q=clean(query,300).toLowerCase();
  for(var i=0;i<nodes.length;i++)nodes[i].style.display=(!q||nodes[i].getAttribute('data-memory-search').indexOf(q)>=0)?'':'none';
@@ -63,4 +111,10 @@ root.LIFEOS_JARVIS_MEMORY={list:list,add:add,remove:remove,clear:clear,search:se
 root.saveJarvisMemoryFromUI=saveFromUI;
 root.filterJarvisMemory=filter;
 root.removeJarvisMemory=removeFromUI;
+root.saveJarvisCustomSkill=saveSkillFromUI;
+root.runJarvisCustomSkill=runSkill;
+root.deleteJarvisCustomSkill=deleteSkill;
+root.saveJarvisReminder=saveReminderFromUI;
+root.deleteJarvisReminder=deleteReminder;
+if(root.document){checkReminders();root.setInterval(checkReminders,30000);root.addEventListener('focus',checkReminders);}
 })(typeof window!=='undefined'?window:globalThis);
