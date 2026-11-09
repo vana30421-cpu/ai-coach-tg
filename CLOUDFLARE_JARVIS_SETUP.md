@@ -25,7 +25,7 @@ npx wrangler secret put GEMINI_API_KEY --config wrangler.jarvis.toml
 - `GEMINI_MODEL` — `gemini-2.5-flash`.
 - `ALLOWED_ORIGIN` — уже задана как `https://vana30421-cpu.github.io`; если у сайта другой домен, измени её.
 
-После деплоя скопируй URL Worker вида `https://lifeos-jarvis-api.<твой-subdomain>.workers.dev`.
+После деплоя скопируй URL Worker вида `https://lifeos-jarvis-api.<твой-subdomain>.workers.dev`. В интерфейсе LIFEOS уже предзаполнен ожидаемый адрес `https://lifeos-jarvis-api.vana30421.workers.dev`; если Cloudflare выдал другой поддомен, замени его на фактический URL.
 
 В LIFEOS открой Джарвиса, вставь URL Worker в поле «URL AI-сервера», введи тот же `JARVIS_ACCESS_CODE`, включи «Разговорный ИИ» и подтверди передачу контекста.
 
