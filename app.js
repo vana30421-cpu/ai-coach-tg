@@ -4460,7 +4460,7 @@ function sendJarvisMessage(){
  var input=document.getElementById('jarvisInput');if(!input)return;
  var text=input.value.trim();if(!text)return;input.value='';
  var d=getJarvisState();jarvisAddMessage('user',text);
- var remember=text.match(/^(?:запомни|сохрани в память|добавь в память)\\s*[:—-]?\\s*(.+)$/i);
+ var remember=text.match(/^(?:запомни|сохрани в память|добавь в память)\s*[:—-]?\s*(.+)$/i);
  if(remember&&remember[1]){
   try{var saved=window.LIFEOS_JARVIS_MEMORY&&window.LIFEOS_JARVIS_MEMORY.add(remember[1]);jarvisAddMessage('assistant','Запомнил: '+(saved?saved.text:remember[1]));renderJarvis();}
   catch(e){jarvisAddMessage('assistant','Не удалось сохранить: '+String(e.message||e));renderJarvis();}
