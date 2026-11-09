@@ -85,3 +85,58 @@ test('disallowed browser origins are rejected', async () => {
   const res = await worker.fetch(req, env);
   assert.equal(res.status, 403);
 });
+
+test('encrypted memory is stored and read through the authenticated KV routes', async () => {
+  const records = new Map();
+  const memoryEnv = { ...env, JARVIS_MEMORY: {
+    get: async key => records.get(key) || null,
+    put: async (key, value) => { records.set(key, value); }
+  }};
+  const worker = createWorker(async () => { throw new Error('AI provider must not be called'); });
+  const id = 'abcdefghijklmnopqrstuvwx';
+  const payload = 'AAECAwQFBgcICQoLDA0ODw_ciphertext_only';
+  const saveReq = request({ action: 'memory:save', memoryId: id, payload });
+  saveReq.url = 'https://worker.test/';
+  const saved = await worker.fetch(saveReq, memoryEnv);
+  assert.equal(saved.status, 200);
+  assert.equal(records.get('jarvis-memory:v1:' + id), payload);
+  const getReq = request(undefined, { method: 'GET' });
+  getReq.url = 'https://worker.test/?action=memory:get&id=' + id;
+  const loaded = await worker.fetch(getReq, memoryEnv);
+  assert.equal(loaded.status, 200);
+  assert.equal((await loaded.json()).payload, payload);
+});
+test('memory endpoint validates opaque IDs and payload characters', async () => {
+  const worker = createWorker(async () => { throw new Error('AI provider must not be called'); });
+  const memoryEnv = { ...env, JARVIS_MEMORY: { get: async () => null, put: async () => {} } };
+  const badId = request({ action: 'memory:save', memoryId: 'short', payload: 'cipher' });
+  badId.url = 'https://worker.test/';
+  assert.equal((await worker.fetch(badId, memoryEnv)).status, 400);
+  const badPayload = request({ action: 'memory:save', memoryId: 'abcdefghijklmnopqrstuvwx', payload: 'invalid !' });
+  badPayload.url = 'https://worker.test/';
+  assert.equal((await worker.fetch(badPayload, memoryEnv)).status, 400);
+});
+test('memory sync reports missing KV binding instead of pretending to sync', async () => {
+  const worker = createWorker(async () => { throw new Error('AI provider must not be called'); });
+  const getReq = request(undefined, { method: 'GET' });
+  getReq.url = 'https://worker.test/?action=memory:get&id=abcdefghijklmnopqrstuvwx';
+  const response = await worker.fetch(getReq, env);
+  assert.equal(response.status, 503);
+  assert.equal((await response.json()).error, 'MEMORY_SYNC_NOT_CONFIGURED');
+});
+test('Gemini system prompt explicitly uses selected Jarvis memory', async () => {
+  let called = null;
+  const worker = createWorker(async (url, init) => {
+    called = { url: String(url), init };
+    return new Response(JSON.stringify({ candidates: [{ content: { parts: [{ text: 'Учту предпочтение.' }] } }] }), { status: 200 });
+  });
+  const res = await worker.fetch(request({
+    provider: 'gemini',
+    message: 'Ответь с учётом памяти',
+    context: { jarvisMemory: [{ category: 'Предпочтение', text: 'Предпочитает краткие ответы' }] }
+  }), env);
+  assert.equal(res.status, 200);
+  const payload = JSON.parse(called.init.body);
+  assert.match(payload.systemInstruction.parts[0].text, /явно сохранённую пользователем долговременную память/);
+  assert.match(payload.systemInstruction.parts[0].text, /Предпочитает краткие ответы/);
+});
