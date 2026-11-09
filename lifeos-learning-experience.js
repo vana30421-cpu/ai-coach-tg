@@ -63,12 +63,14 @@ function openEnglishAcademyLesson(level,index){
  window.openSheet('English '+level+' · '+x[1],h);
 }
 function completeEnglishAcademyLesson(level,index){
- var x=EN.filter(function(a){return a[0]===level;})[index];if(!x)return;var answer=(document.getElementById('englishAcademyAnswer')||{}).value||'',speaking=(document.getElementById('englishAcademySpeaking')||{}).value||'',choice=Number((document.getElementById('englishAcademyQuiz')||{}).value),steps=[0,1,2].map(function(i){return !!(document.getElementById('englishAcademyStep'+i)||{}).checked;});
+ var x=EN.filter(function(a){return a[0]===level;})[index];if(!x)return;
+ var answer=(document.getElementById('englishAcademyAnswer')||{}).value||'',speaking=(document.getElementById('englishAcademySpeaking')||{}).value||'',choice=Number((document.getElementById('englishAcademyQuiz')||{}).value),steps=[0,1,2].map(function(i){return !!(document.getElementById('englishAcademyStep'+i)||{}).checked;});
  if(steps.some(function(v){return !v;}))return toast('Отметь все три этапа урока','warning');
  if(answer.trim().length<20)return toast('Выполни практику и запиши ответ (минимум 20 символов)','warning');
  if(speaking.trim().length<8)return toast('Добавь свой пример для устной практики','warning');
- var correct=choice===(x[8]||[]).indexOf(x[7]);if(!correct)return toast('Проверь правило и попробуй ответить на вопрос ещё раз','warning');
- var s=progress(),key=level+'_'+x[1],old=s.englishAcademyProgress[key]||{},was=!!old.completed,d=new Date();d.setDate(d.getDate()+({A1:1,A2:2,B1:4,B2:7,C1:10}[level]||3));
+ if(choice!==(x[8]||[]).indexOf(x[7]))return toast('Проверь правило и попробуй ответить на вопрос ещё раз','warning');
+ var s=progress(),courseId='english_academy_'+level.toLowerCase(),pKey=courseId+'Progress',key=courseId+'_core_'+level.toLowerCase()+'_'+index;
+ if(!s[pKey])s[pKey]={};var old=s[pKey][key]||{},was=!!old.completed,d=new Date();d.setDate(d.getDate()+({A1:1,A2:2,B1:4,B2:7,C1:10}[level]||3));
  s[pKey][key]={completed:true,completedAt:old.completedAt||new Date().toISOString(),updatedAt:new Date().toISOString(),steps:steps,recall:answer.trim(),example:speaking.trim(),answer:answer.trim(),speaking:speaking.trim(),quizCorrect:true,nextReviewAt:d.toISOString().slice(0,10),reviewCount:(old.reviewCount||0)+1};
  save();if(!was&&window.addXP)window.addXP(15,'lesson');if(!was&&window.addPetXP)window.addPetXP(2);toast('Урок пройден · следующий повтор '+d.toLocaleDateString('ru-RU'),'success');window.closeSheet();renderEnglish();
 }
