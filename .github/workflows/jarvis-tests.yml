@@ -46,6 +46,7 @@ jobs:
           node --check app.js
           node --check lifeos-workspaces.js
           node --check lifeos-learning-plan.js
+          node --check lifeos-detox-enhancements.js
           node --check lifeos-systems.js
           node --check content.js
           node --check sw.js
