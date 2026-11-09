@@ -37,7 +37,7 @@ test('vision section has timed breaks, symptom logging, exam history and urgent-
 });
 
 test('Jarvis can send opt-in conversations with app analytics to a server-side API',()=>{
- assert.match(app,/function buildJarvisAppContext\(\)/);
+ assert.match(app,/function buildJarvisAppContext\(memoryQuery\)/);
  assert.match(app,/function sendJarvisCloudMessage\(text\)/);
  assert.match(app,/fetch\(apiUrl/);
  assert.match(app,/function setJarvisApiUrl\(value\)/);
@@ -45,7 +45,7 @@ test('Jarvis can send opt-in conversations with app analytics to a server-side A
  assert.match(app,/X-Jarvis-Access-Code/);
  assert.match(app,/cloudAIConsent/);
  assert.match(app,/setJarvisCloudAI/);
- assert.match(app,/buildJarvisAppContext\(\)/);
+ assert.match(app,/buildJarvisAppContext\(text\)/);
  assert.match(app,/Персональная подсказка Джарвиса на главном экране/);
 });
 
