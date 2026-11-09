@@ -85,9 +85,9 @@ test('misleading rigid challenges are replaced with safe, adaptable experiments'
 
 test('detox day screen renders lesson explanation, method and safety guidance', () => {
   assert.match(appSource, /Подробное объяснение/);
-  assert.match(appSource, /Метод выполнения/);
-  assert.match(appSource, /Критерий/);
-  assert.match(appSource, /Безопасность/);
+  assert.match(appSource, /Подробная методика/);
+  assert.match(appSource, /Критерий выполнения/);
+  assert.match(appSource, /Безопасность и адаптация/);
   assert.match(appSource, /Если сложно/);
 });
 
