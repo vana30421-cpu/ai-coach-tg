@@ -292,7 +292,7 @@ test('Gemini privacy documentation discloses second-brain excerpts sent with opt
 });
 
 test('Jarvis always has a configured default Worker endpoint and a useful offline conversational fallback',()=>{
- assert.match(app,/state\.jarvis\.apiUrl==='string'\)state\.jarvis\.apiUrl='https:\/\/lifeos-jarvis-api\.vana30421\.workers\.dev'/);
+ assert.match(app,/typeof state\.jarvis\.apiUrl!=='string'\)state\.jarvis\.apiUrl='https:\/\/lifeos-jarvis-api\.vana30421\.workers\.dev'/);
  assert.match(app,/return buildJarvisLocalReply\(text\);/);
  assert.match(app,/function buildJarvisLocalReply\(text\)/);
  assert.match(app,/Сервер не отвечает или недоступен из Telegram WebView/);
