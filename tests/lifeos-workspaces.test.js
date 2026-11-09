@@ -183,12 +183,18 @@ test('pet progress bar measures progress within the current evolution stage',()=
 });
 
 
-test('Telegram WebView keeps document-level vertical scrolling available on every route',()=>{
- assert.match(index,/<style id="lifeos-webview-scroll-fix">/);
- assert.match(index,/overflow-y:auto!important/);
- assert.match(index,/overflow-x:clip!important/);
- assert.match(index,/#app,.app-main,.page\{[\s\S]*?overflow:visible!important/);
- assert.match(sw,/const CACHE='life-os-v96'/);
+test('Telegram WebView uses a dedicated touch-scrollable app viewport',()=>{
+ const start=index.indexOf('<style id="lifeos-webview-scroll-fix">');
+ const end=index.indexOf('</style>',start);
+ assert.ok(start>=0&&end>start);
+ const css=index.slice(start,end);
+ assert.match(css,/html,body\{[\s\S]*?overflow:hidden!important/);
+ assert.match(css,/#app\.app-main\{[\s\S]*?overflow-y:auto!important/);
+ assert.match(css,/#app\.app-main\{[\s\S]*?touch-action:pan-y!important/);
+ assert.match(index,/tg\.viewportHeight/);
+ assert.match(index,/viewportChanged/);
+ assert.match(app,/lifeosScrollToTop/);
+ assert.match(sw,/const CACHE='life-os-v97'/);
 });
 
 test('journal entries can be sent to Jarvis for contextual reflection without modifying the original entry',()=>{
@@ -204,5 +210,5 @@ test('second-brain quick capture is available from the global app header',()=>{
  assert.match(workspaces,/window\.openBrainQuickCapture=function/);
  assert.match(workspaces,/window\.navigate\('obsidian'\)/);
  assert.match(index,/lifeos-workspaces\.js\?v=20261109-1/);
- assert.match(sw,/const CACHE='life-os-v96'/);
+ assert.match(sw,/const CACHE='life-os-v97'/);
 });
