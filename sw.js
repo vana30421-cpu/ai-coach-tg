@@ -1,4 +1,4 @@
-const CACHE='life-os-v110';
+const CACHE='life-os-v112';
 const CORE_ASSETS=['./','./index.html','./content.js','./lifeos-detox-details.js','./content2.js','./content3.js','./app.js','./lifeos-workspaces.js','./lifeos-systems.js','./lifeos-search.js','./lifeos-learning-plan.js','./jarvis-core.js','./manifest.json','./icon.svg'];
 self.addEventListener('message',event=>{if(event.data&&event.data.type==='SKIP_WAITING')self.skipWaiting();});
 self.addEventListener('install',event=>{event.waitUntil((async()=>{const cache=await caches.open(CACHE);const results=await Promise.allSettled(CORE_ASSETS.map(async asset=>{const response=await fetch(asset,{cache:'reload'});if(!response.ok)throw new Error('HTTP '+response.status+' '+asset);await cache.put(asset,response);}));const failed=results.filter(item=>item.status==='rejected');if(failed.length)console.warn('[SW] Не удалось предварительно сохранить часть файлов:',failed.length);await self.skipWaiting();})());});
