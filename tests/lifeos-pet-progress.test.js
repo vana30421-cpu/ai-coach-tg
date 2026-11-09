@@ -15,30 +15,33 @@ function runWithPet(enabled){
   getXPForLevel:level=>level*1000,today:()=> '2026-11-09',nowISO:()=> '2026-11-09T12:00:00.000Z',
   save:()=>{},toast:()=>{},haptic:()=>{}
  };
- const pet=systems.slice(systems.indexOf('function ensurePet()'),systems.indexOf('window.renderPet=function'));
  vm.createContext(sandbox);
- vm.runInContext(section('function addPetXP(amount){','/* ============ ДЕТОКС ХАБ ============ */')+'\n'+section('function addXP(amount, source){','/* ============ АГРЕГАТОР ============ */')+';this.run=addXP;',sandbox);
+ vm.runInContext(section('function addPetXP(amount){','/* ============ ДЕТОКС ХАБ ============ */')+'\n'+section('function addXP(amount, source){','/* ============ АГРЕГАТОР ============ */')+';this.run=addXP;this.petReward=addPetXP;',sandbox);
  return sandbox;
 }
 
-test('pet receives a small bounded share of XP from real LIFEOS progress',()=>{
+test('pet XP is not automatically duplicated by the generic XP ledger',()=>{
  const w=runWithPet(true);
  w.run(10,'learning');
  assert.equal(w.state.gamification.xp,10);
- assert.equal(w.state.pet.xp,2);
- w.run(25,'task');
- assert.equal(w.state.pet.xp,7);
- assert.equal(w.state.gamification.xp,35);
+ assert.equal(w.state.pet.xp,0);
+ w.petReward(3);
+ assert.equal(w.state.pet.xp,3);
 });
 
 test('pet growth can be disabled without affecting LIFEOS progress',()=>{
  const w=runWithPet(false);
- w.run(20,'task');
+ w.run(20,'task');w.petReward(3);
  assert.equal(w.state.gamification.xp,20);
  assert.equal(w.state.pet.xp,0);
 });
 
 test('pet UI explains both care actions and progress from useful activity',()=>{
  assert.match(systems,/Питомец растёт за полезные действия в LIFEOS и заботу о нём/);
- assert.match(source,/addPetXP\(Math\.max\(1,Math\.floor\(Number\(amount\)\/5\)\)\)/);
+ const addXp=section('function addXP(amount, source){','/* ============ АГРЕГАТОР ============ */');
+ assert.doesNotMatch(addXp,/addPetXP/,'generic XP ledger must not double-award pet progress');
+ assert.match(source,/addXP\(10, 'sphere_score'\);addPetXP\(2\)/);
+ assert.match(source,/addXP\(20, 'lesson'\);\s*addPetXP\(3\)/);
+ assert.match(source,/addXP\(8,'workout'\);addPetXP\(3\)/);
+ assert.match(source,/addXP\(5,'antistress'\);addPetXP\(2\)/);
 });
