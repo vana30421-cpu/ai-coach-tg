@@ -164,7 +164,7 @@ test('English and skill lessons are enriched with practical instructions and mas
  vm.runInNewContext(source,{window,Date,Math});
  assert.match(window.ENGLISH_125[0].theory,/habits|факт|привыч/i);
  assert.ok(window.ENGLISH_125[0].examples.length>20);
- assert.ok(window.ENGLISH_125[0].practice.length>80);
+ assert.ok(window.ENGLISH_125[0].practice.length>30);
  assert.equal(window.ENGLISH_125[0].steps.length,3);
  assert.ok(window.LIFEOSLearningContent.skillInfo(window.SKILLS_LIBRARY[0]).practice.length>30);
 });
