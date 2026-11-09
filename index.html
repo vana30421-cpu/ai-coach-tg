@@ -956,6 +956,26 @@ body{
     -webkit-backdrop-filter:none!important;
   }
 }
+
+/* LIFEOS learning hub — focused UltyMyLife-inspired mobile dashboard */
+.lifeos-learning-hub{max-width:760px;margin:0 auto;padding:12px 14px calc(112px + env(safe-area-inset-bottom));}
+.lifeos-learning-hub>.title-xl{font-size:clamp(25px,6vw,34px);font-weight:850;letter-spacing:-.045em;line-height:1.08;margin:8px 2px 7px;}
+.lifeos-learning-hub>.subtitle{font-size:13px;line-height:1.55;color:var(--text-3);margin:0 3px 18px;}
+.lifeos-learning-hub .card{border:1px solid rgba(255,255,255,.09);border-radius:23px;background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.025));box-shadow:0 12px 34px rgba(0,0,0,.18);padding:17px;margin:0 0 13px;overflow:hidden;}
+.lifeos-learning-hub .card-gradient{background:radial-gradient(ellipse at 100% 0,rgba(91,158,255,.20),transparent 58%),linear-gradient(145deg,rgba(91,158,255,.13),rgba(167,139,250,.08) 55%,rgba(255,255,255,.035));border-color:rgba(120,160,255,.22);}
+.lifeos-learning-hub .card h2{font-size:16px;font-weight:780;letter-spacing:-.02em;margin:0 0 12px;}
+.lifeos-learning-hub .list-row{min-height:54px;gap:11px;padding:10px 2px;border-bottom:1px solid rgba(255,255,255,.055);}
+.lifeos-learning-hub .list-row:last-child{border-bottom:0;}
+.lifeos-learning-hub .list-title{font-weight:680;line-height:1.35;}
+.lifeos-learning-hub .footnote{font-size:11px;line-height:1.45;color:var(--text-3);}
+.lifeos-learning-hub input[type=checkbox]{width:19px;height:19px;accent-color:var(--brand);flex:0 0 auto;}
+.lifeos-learning-hub .progress{height:8px;border-radius:99px;background:rgba(255,255,255,.09);overflow:hidden;}
+.lifeos-learning-hub .progress-fill{border-radius:99px;background:linear-gradient(90deg,var(--brand),var(--brand-2));}
+.lifeos-learning-hub .btn{border-radius:15px;font-weight:700;min-height:42px;}
+.lifeos-learning-hub .btn-primary{box-shadow:0 7px 22px rgba(91,158,255,.2);}
+.lifeos-learning-hub .grid-2{gap:10px;}
+@media(max-width:380px){.lifeos-learning-hub{padding-left:10px;padding-right:10px}.lifeos-learning-hub .card{padding:14px;border-radius:19px}.lifeos-learning-hub .list-row{gap:8px}}
+
 </style>
 </head>
 <body class="theme-dark">
@@ -989,7 +1009,7 @@ body{
 <script defer src="lifeos-workspaces.js?v=20261109-1"></script>
 <script defer src="lifeos-systems.js?v=20261109-12"></script>
 <script defer src="lifeos-learning-experience.js?v=20261109-1"></script>
-<script defer src="lifeos-learning-plan.js?v=20261109-8"></script>
+<script defer src="lifeos-learning-plan.js?v=20261109-9"></script>
 <script defer src="lifeos-learning-content.js?v=20261109-2"></script>
 <script defer src="lifeos-search.js?v=20261109-1"></script>
 <script>
