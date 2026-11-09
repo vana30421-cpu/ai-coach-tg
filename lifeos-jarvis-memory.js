@@ -62,7 +62,29 @@ function renderCustomSkills(){
  var skills=customSkills(),html='<section class="card mt-3"><div class="card-title">🛠️ Конструктор навыков</div><div class="footnote">Создавай собственные сценарии Джарвиса. Навык отправляет сохранённую инструкцию в диалог ИИ.</div>';
  html+='<div class="field mt-2"><label class="field-label" for="jarvisSkillName">Название</label><input id="jarvisSkillName" maxlength="60" placeholder="Например: Подготовка к экзамену"></div><div class="field"><label class="field-label" for="jarvisSkillPrompt">Инструкция навыка</label><textarea id="jarvisSkillPrompt" rows="3" maxlength="1200" placeholder="Опиши, что должен делать Джарвис"></textarea></div><button class="btn btn-primary btn-block" onclick="saveJarvisCustomSkill()">Создать навык</button>';
  skills.slice(0,30).forEach(function(x){html+='<div class="list-row"><div style="min-width:0;flex:1"><b>'+ (root.esc?root.esc(x.name):x.name)+'</b><div class="footnote">'+(root.esc?root.esc(x.prompt):x.prompt)+'</div></div><button class="btn btn-primary btn-xs" onclick="runJarvisCustomSkill(\''+x.id+'\')">Запуск</button><button class="btn btn-ghost btn-xs" onclick="deleteJarvisCustomSkill(\''+x.id+'\')">✕</button></div>';});
- html+='</section>';return html;
+ html+='<div class="grid-2 mt-2"><button class="btn btn-ghost" onclick="exportJarvisData()">Экспорт данных</button><label class="btn btn-ghost" style="text-align:center">Импорт JSON<input type="file" accept="application/json,.json" onchange="importJarvisData(this)" style="display:none"></label></div></section>';return html;
+}
+function exportData(){
+ var app=root.state||{},payload={version:1,exportedAt:new Date().toISOString(),memory:state()?state().items:[],customSkills:customSkills(),reminders:reminders()};
+ try{var blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='lifeos-jarvis-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(url);if(root.toast)root.toast('Резервная копия подготовлена','success');}catch(e){if(root.toast)root.toast('Не удалось экспортировать данные','error');}
+}
+function importData(input){
+ var file=input&&input.files&&input.files[0];if(!file)return;
+ if(file.size>1024*1024){if(root.toast)root.toast('Файл больше 1 МБ','warning');input.value='';return;}
+ var reader=new FileReader();reader.onload=function(){
+  try{
+   var data=JSON.parse(String(reader.result||'{}'));if(!data||data.version!==1)throw new Error('Неподдерживаемый формат резервной копии');
+   var m=state(),existing={};m.items.forEach(function(x){existing[x.id]=true;});
+   (Array.isArray(data.memory)?data.memory:[]).slice(0,500).forEach(function(x){if(x&&typeof x.text==='string'&&!existing[x.id]){m.items.push({id:clean(x.id,100)||uid(),text:clean(x.text,500),category:clean(x.category,40)||'Факт',createdAt:x.createdAt||new Date().toISOString(),updatedAt:x.updatedAt||new Date().toISOString()});}});
+   var skills=customSkills(),skillIds={};skills.forEach(function(x){skillIds[x.id]=true;});
+   (Array.isArray(data.customSkills)?data.customSkills:[]).slice(0,30).forEach(function(x){if(x&&typeof x.name==='string'&&typeof x.prompt==='string'&&!skillIds[x.id])skills.push({id:clean(x.id,100)||uid(),name:clean(x.name,60),prompt:clean(x.prompt,1200),createdAt:x.createdAt||new Date().toISOString()});});
+   var remindersList=reminders(),reminderIds={};remindersList.forEach(function(x){reminderIds[x.id]=true;});
+   (Array.isArray(data.reminders)?data.reminders:[]).slice(0,100).forEach(function(x){if(x&&typeof x.text==='string'&&x.at&&!reminderIds[x.id])remindersList.push({id:clean(x.id,100)||uid(),text:clean(x.text,160),at:x.at,done:!!x.done,createdAt:x.createdAt||new Date().toISOString()});});
+   if(m.items.length>500)m.items=m.items.slice(-500);if(skills.length>30)skills.splice(30);if(remindersList.length>100)remindersList.splice(0,remindersList.length-100);
+   save();if(root.toast)root.toast('Импорт завершён: память, навыки и напоминания объединены','success');if(root.renderJarvis)root.renderJarvis();
+  }catch(e){if(root.toast)root.toast('Ошибка импорта: '+String(e.message||e),'error');}
+  input.value='';
+ };reader.onerror=function(){if(root.toast)root.toast('Не удалось прочитать файл','error');input.value='';};reader.readAsText(file);
 }
 function saveSkillFromUI(){
  var n=document.getElementById('jarvisSkillName'),p=document.getElementById('jarvisSkillPrompt'),name=clean(n&&n.value,60),prompt=clean(p&&p.value,1200);
@@ -111,6 +133,8 @@ root.LIFEOS_JARVIS_MEMORY={list:list,add:add,remove:remove,clear:clear,search:se
 root.saveJarvisMemoryFromUI=saveFromUI;
 root.filterJarvisMemory=filter;
 root.removeJarvisMemory=removeFromUI;
+root.exportJarvisData=exportData;
+root.importJarvisData=importData;
 root.saveJarvisCustomSkill=saveSkillFromUI;
 root.runJarvisCustomSkill=runSkill;
 root.deleteJarvisCustomSkill=deleteSkill;
