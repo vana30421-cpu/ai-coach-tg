@@ -188,3 +188,17 @@ test('learning plan setup advertises unlimited courses and has no five-course ca
  assert.doesNotMatch(planner,/ids\.length>5|не больше пяти курсов/);
  assert.match(planner,/updateLearningPlanCourseCount/);
 });
+
+test('unified plan completion reads the actual guided academy progress records',()=>{
+ const w=loadPlanner();
+ w.LIFEOS_ENGLISH_LESSONS=[['A1','Present Simple'],['A2','Past Simple']];
+ w.LIFEOS_SKILL_TRACKS=[{id:'deep-work',title:'Фокус',lessons:[['Фокус-блок'],['Работа с сопротивлением']]}];
+ const p=w.LIFEOS_LEARNING_PLAN_TESTS.buildSchedule('2026-11-09',[],35,{english:true,skills:true});
+ const tasks=p.days.flatMap(day=>day.tasks);
+ const english=tasks.find(task=>task.type==='english'&&task.level==='A1');
+ const skill=tasks.find(task=>task.type==='skill'&&task.idRef==='deep-work'&&task.index===0);
+ w.state.english_academy_a1Progress={english_academy_a1_core_a1_0:{completed:true}};
+ w.state.skillAcademyProgress={'deep-work_0':{completed:true}};
+ assert.equal(w.LIFEOS_LEARNING_PLAN_TESTS.isDone(p.days.find(day=>day.tasks.includes(english)),english),true);
+ assert.equal(w.LIFEOS_LEARNING_PLAN_TESTS.isDone(p.days.find(day=>day.tasks.includes(skill)),skill),true);
+});
