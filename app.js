@@ -799,7 +799,7 @@ function navigate(page, silent){
     achievements: renderAchievements, achievementsCategory: renderAchievementsCategory,
     tasks: renderTasks, matrix: renderMatrix, learning: window.renderLearning || renderLearning,
     levels: renderLevels, levelDetail: renderLevelDetail, moduleDetail: window.renderModuleDetail || renderModuleDetail,
-    skills: renderSkills, methods: renderMethods, english: renderEnglish,
+    skills: window.renderSkills || renderSkills, methods: renderMethods, english: window.renderEnglish || renderEnglish,
     memory: renderMemory, iq: window.renderIQ || renderIQ, eq: window.renderEQ || renderEQ, finance: window.renderFinance || renderFinance,
     neuromodule: window.renderNeuro || renderNeuro, psychology: window.renderPsychology || renderPsychology, thinking: window.renderThinking || renderThinking,
     etiquette: window.renderEtiquette || renderEtiquette, hormones: window.renderHormones || renderHormones, wealth: window.renderWealth || renderWealth,
