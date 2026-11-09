@@ -1390,6 +1390,12 @@ function getHabit66Progress(h){
   end.setDate(end.getDate() + dur);
   return {pct:pct, done:done, total:total, startDate:h.startDate, endDate:end.toISOString().slice(0,10)};
 }
+function bindHabitSwipe(){
+ var root=document.getElementById('app');if(!root||root.__lifeosHabitSwipeBound)return;root.__lifeosHabitSwipeBound=true;var start=null,suppressUntil=0;
+ root.addEventListener('touchstart',function(e){var card=e.target.closest&&e.target.closest('[data-habit-swipe]');if(!card)return;var t=e.touches&&e.touches[0];if(!t)return;start={id:card.getAttribute('data-habit-swipe'),x:t.clientX,y:t.clientY};},{passive:true});
+ root.addEventListener('touchend',function(e){if(!start)return;var t=e.changedTouches&&e.changedTouches[0],item=start;start=null;if(!t)return;var dx=t.clientX-item.x,dy=t.clientY-item.y;if(Math.abs(dx)>58&&Math.abs(dx)>Math.abs(dy)*1.3){e.preventDefault();e.stopPropagation();suppressUntil=Date.now()+450;toggleHabitToday(item.id);}},{passive:false});
+ root.addEventListener('click',function(e){if(Date.now()>suppressUntil)return;var card=e.target.closest&&e.target.closest('[data-habit-swipe]');if(card){e.preventDefault();e.stopPropagation();}},true);
+}
 function renderHabitList(){
   var habits = state.habits || [];
   var todayHabits = getHabitsForToday();
@@ -1402,6 +1408,7 @@ function renderHabitList(){
   html += '</div></div>';
   if(habits.length){
     html += '<div class="card card-gradient"><div style="font-size:12px;opacity:.9;">Сегодня</div><div style="font-size:36px;font-weight:800;">' + doneToday + ' / ' + todayHabits.length + '</div></div>';
+    html += '<div class="footnote mb-2">Свайпни карточку влево или вправо, чтобы отметить или снять выполнение. Вертикальная прокрутка остаётся доступной.</div>';
     var cats = window.HABIT_CATEGORIES || [];
     html += '<div class="quick-tabs"><button class="quick-tab ' + (habitCatFilter==='all'?'active':'') + '" onclick="habitCatFilter=\'all\';renderHabitList()">Все (' + habits.length + ')</button>';
     cats.forEach(function(c){
@@ -1420,6 +1427,7 @@ function renderHabitList(){
   }
   html += '</div>';
   document.getElementById('app').innerHTML = html;
+  bindHabitSwipe();
 }
 function renderHabitRow(h){
   var tpl = getHabitTemplate(h.templateId);
@@ -1429,7 +1437,7 @@ function renderHabitRow(h){
   var prog = getHabit66Progress(h);
   var cat = (window.HABIT_CATEGORIES || []).find(function(c){ return c.id === h.category; });
   var catColor = cat ? cat.color : '#5b9eff';
-  return '<div class="method-card" onclick="openHabitDetail(\'' + h.id + '\')" style="border-left:3px solid ' + catColor + ';">' +
+  return '<div class="method-card" data-habit-swipe="' + esc(h.id) + '" aria-label="Привычка ' + esc(title) + '. Свайп влево или вправо отмечает выполнение" onclick="openHabitDetail(\'' + h.id + '\')" style="border-left:3px solid ' + catColor + ';touch-action:pan-y;">' +
     '<div class="method-header"><div class="method-emoji">' + emoji + '</div>' +
     '<div style="flex:1;min-width:0;"><div class="method-title">' + esc(title) + '</div>' +
     '<div class="method-cat">🔥 ' + (h.streak||0) + ' · Лучший ' + (h.bestStreak||0) + ' · ' + prog.done + '/' + prog.total + '</div></div>' +
@@ -1519,6 +1527,11 @@ function addHabitFromTemplate(tplId){
   navigate('habitDetail');
 }
 function openHabitDetail(id){ currentHabitId = id; navigate('habitDetail'); }
+function renderHabitHeatmap(h){
+ var hist=state.habitHistory&&state.habitHistory[h.id]||{},todayKey=today(),end=new Date(todayKey+'T12:00:00'),dow=(end.getDay()+6)%7;end.setDate(end.getDate()+(6-dow));var start=new Date(end);start.setDate(start.getDate()-55);var cells=[],completed=0,tracked=0,elapsed=0;
+ for(var i=0;i<56;i++){var d=new Date(start);d.setDate(start.getDate()+i);var key=d.toISOString().slice(0,10),record=hist[key],isFuture=key>todayKey,isDone=!!(record&&record.completed);if(!isFuture)elapsed++;if(record&&!isFuture)tracked++;if(isDone)completed++;cells.push('<div title="'+key+(isFuture?' · будущий день':isDone?' · выполнено':record?' · есть запись':' · нет отметки')+'" aria-label="'+key+(isFuture?' будущий день':isDone?' выполнено':record?' есть запись':' нет отметки')+'" style="aspect-ratio:1;border-radius:4px;background:'+(isFuture?'transparent':isDone?'var(--success)':record?'var(--warning)':'var(--surface-3)')+';opacity:'+(isFuture?'.12':isDone?'.95':record?'.65':'.55')+'"></div>');}
+ return '<div class="card"><div class="row-between"><h2>🗓 История за 8 недель</h2><b>'+completed+'/'+elapsed+'</b></div><div class="footnote mb-2">Каждая ячейка — один день. Будущие даты не входят в расчёт; цвет показывает сохранённое выполнение, а не оценку дисциплины.</div><div style="display:grid;grid-template-rows:repeat(7,10px);grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:4px;overflow:hidden">'+cells.join('')+'</div><div class="row mt-2" style="gap:12px;flex-wrap:wrap"><span class="footnote">🟩 Выполнено</span><span class="footnote">🟨 Есть запись</span><span class="footnote">⬛ Нет отметки</span><span class="footnote">'+tracked+' дней с записями</span></div></div>';
+}
 function renderHabitDetail(){
   var h = getUserHabit(currentHabitId);
   if(!h){ navigate('habitList'); return; }
@@ -1557,6 +1570,7 @@ function renderHabitDetail(){
   html += renderHabitProgram(h);
   var hist=state.habitHistory&&state.habitHistory[h.id]||{},days=Object.keys(hist).filter(function(k){return hist[k]&&hist[k].completed;}),elapsed=Math.max(1,Math.floor((new Date(today())-new Date(h.startDate||today()))/86400000)+1),rate=Math.round(Math.min(1,days.length/elapsed)*100),last7=[];
   for(var z=6;z>=0;z--){var dt=new Date();dt.setDate(dt.getDate()-z);var ds=dt.toISOString().slice(0,10);last7.push({date:ds,done:!!(hist[ds]&&hist[ds].completed)});}
+  html+=renderHabitHeatmap(h);
   html+='<div class="card"><h2>📊 Анализ привычки</h2><div class="grid-2"><div><b>'+rate+'%</b><div class="footnote">Выполнение с начала</div></div><div><b>'+days.length+'</b><div class="footnote">Успешных дней</div></div></div><div class="row mt-2" style="gap:5px">'+last7.map(function(x){return '<div title="'+x.date+'" style="flex:1;height:9px;border-radius:6px;background:'+(x.done?'var(--success)':'var(--surface-3)')+'"></div>';}).join('')+'</div><div class="footnote mt-2">Регулярность важнее серии. Пропуск не обнуляет накопленный результат.</div></div>';
   var todayLog=hist[today()]||{};
   html+='<div class="card"><h2>📝 Качество выполнения сегодня</h2><div class="field"><label class="field-label">Какой вариант сделал?</label><select id="habitQuality"><option value="full" '+(todayLog.quality==='full'?'selected':'')+'>Полная версия</option><option value="minimum" '+(todayLog.quality==='minimum'?'selected':'')+'>Минимальная версия</option><option value="adapted" '+(todayLog.quality==='adapted'?'selected':'')+'>Адаптированная версия</option></select></div><div class="field"><label class="field-label">Что помогло или помешало?</label><textarea id="habitNote" rows="2" maxlength="500" placeholder="Короткое наблюдение…">'+esc(todayLog.note||'')+'</textarea></div><button class="btn btn-ghost btn-block" onclick="saveHabitCheckin(\''+h.id+'\')">Сохранить наблюдение</button></div>';
