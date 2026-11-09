@@ -853,6 +853,36 @@ pre,code{max-width:100%;overflow-wrap:anywhere;word-break:break-word}
 }
 </style>
 
+
+<style id="lifeos-webview-scroll-fix">
+/* Keep the document itself as the vertical scroll container in Telegram WebView. */
+html{
+  height:auto!important;
+  min-height:100%;
+  overflow-x:clip!important;
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch;
+  scroll-behavior:auto;
+  touch-action:pan-y;
+}
+body{
+  height:auto!important;
+  min-height:100dvh;
+  overflow-x:clip!important;
+  overflow-y:visible!important;
+  overscroll-behavior-y:auto!important;
+  -webkit-overflow-scrolling:touch;
+}
+#app,.app-main,.page{
+  height:auto!important;
+  max-height:none!important;
+  overflow:visible!important;
+  overscroll-behavior:contain;
+}
+.overlay{overscroll-behavior:contain;touch-action:pan-y}
+.modal{overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y}
+</style>
+
 </head>
 <body class="theme-dark">
 <div class="theme-effect" id="themeEffect"></div>
