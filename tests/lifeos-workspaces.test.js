@@ -181,3 +181,12 @@ test('pet progress bar measures progress within the current evolution stage',()=
  sandbox.window.renderPet();
  assert.match(appRoot.innerHTML,/width:50%/);
 });
+
+
+test('Telegram WebView keeps document-level vertical scrolling available on every route',()=>{
+ assert.match(index,/<style id="lifeos-webview-scroll-fix">/);
+ assert.match(index,/overflow-y:auto!important/);
+ assert.match(index,/overflow-x:clip!important/);
+ assert.match(index,/#app,.app-main,.page\{[\s\S]*?overflow:visible!important/);
+ assert.match(sw,/const CACHE='life-os-v94'/);
+});
