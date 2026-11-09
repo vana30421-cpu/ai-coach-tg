@@ -70,7 +70,6 @@ test('missed learning tasks are moved forward without losing completed work',()=
  const completedDay=p.days[6],completedTask=completedDay.tasks.find(task=>task.type==='weekly-review');
  p.completed={};p.completed[completedDay.date]={[completedTask.id]:true};
  w.state.learningDevelopmentPlan=p;
- const before=p.days.filter(day=>day.date<'2026-11-09').flatMap(day=>day.tasks).filter(task=>!w.LIFEOS_LEARNING_PLAN_TESTS.isDone||!w.LIFEOS_LEARNING_PLAN_TESTS.isDone(day,task)).length;
  const moved=w.LIFEOS_LEARNING_PLAN_TESTS.rebalance();
  assert.ok(moved>0);
  assert.ok(p.days.find(day=>day.date===completedDay.date).tasks.some(task=>task.id===completedTask.id),'completed review stays on its original day');
