@@ -34,7 +34,7 @@ test('curriculum loads before app and is cached offline with the guided lesson r
  assert.ok(html.indexOf('src="lifeos-curriculum.js')<html.indexOf('src="app.js'));
  assert.ok(html.includes('src="lifeos-learning-content.js'));
  assert.ok(html.includes('lifeos-ulty-design.css?v=20261109-1'));
- assert.match(sw,/life-os-v135/);assert.match(sw,/\.\/lifeos-curriculum\.js/);assert.match(sw,/\.\/lifeos-ulty-design\.css/);
+ assert.match(sw,/life-os-v136/);assert.match(sw,/\.\/lifeos-curriculum\.js/);assert.match(sw,/\.\/lifeos-ulty-design\.css/);
  assert.match(guided,/root\.LIFEOS_CURRICULUM&&l\.objective/);
  assert.match(guided,/root\.openCourseLesson=openCourseLessonGuided/);
  assert.match(guided,/completeRealEnglishLesson/);assert.match(guided,/completeRealSkill/);
