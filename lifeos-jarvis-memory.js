@@ -155,11 +155,11 @@ function importData(input){
  var reader=new FileReader();reader.onload=function(){
   try{
    var data=JSON.parse(String(reader.result||'{}'));if(!data||data.version!==1)throw new Error('Неподдерживаемый формат резервной копии');
-   var m=state(),existing={};m.items.forEach(function(x){existing[x.id]=true;});
+   var m=state(),app=root.state||{},existing=Object.create(null);m.items.forEach(function(x){existing[x.id]=true;});
    (Array.isArray(data.memory)?data.memory:[]).slice(0,500).forEach(function(x){if(x&&typeof x.text==='string'&&clean(x.text,500)){var id=safeId(x.id);if(!existing[id]){m.items.push({id:id,text:clean(x.text,500),category:clean(x.category,40)||'Факт',createdAt:x.createdAt||new Date().toISOString(),updatedAt:x.updatedAt||new Date().toISOString()});existing[id]=true;}}});
-   var skills=customSkills(),skillIds={};skills.forEach(function(x){skillIds[x.id]=true;});
+   var skills=customSkills(),skillIds=Object.create(null);skills.forEach(function(x){skillIds[x.id]=true;});
    (Array.isArray(data.customSkills)?data.customSkills:[]).slice(0,30).forEach(function(x){if(x&&typeof x.name==='string'&&typeof x.prompt==='string'&&clean(x.name,60)&&clean(x.prompt,1200)){var id=safeId(x.id);if(!skillIds[id]){skills.push({id:id,name:clean(x.name,60),prompt:clean(x.prompt,1200),createdAt:x.createdAt||new Date().toISOString()});skillIds[id]=true;}}});
-   var remindersList=reminders(),reminderIds={};remindersList.forEach(function(x){reminderIds[x.id]=true;});
+   var remindersList=reminders(),reminderIds=Object.create(null);remindersList.forEach(function(x){reminderIds[x.id]=true;});
    (Array.isArray(data.reminders)?data.reminders:[]).slice(0,100).forEach(function(x){if(x&&typeof x.text==='string'&&clean(x.text,160)&&Number.isFinite(Date.parse(x.at))){var id=safeId(x.id);if(!reminderIds[id]){remindersList.push({id:id,text:clean(x.text,160),at:new Date(x.at).toISOString(),done:!!x.done,createdAt:x.createdAt||new Date().toISOString()});reminderIds[id]=true;}}});
    var importedDeleted=data.deleted||{};['memory','customSkills','reminders'].forEach(function(k){var incoming=Array.isArray(importedDeleted[k])?importedDeleted[k].filter(function(id){return typeof id==='string'&&/^[A-Za-z0-9_-]{1,100}$/.test(id);}):[];m.deleted[k]=Array.from(new Set(m.deleted[k].concat(incoming))).slice(-2000);});
    var deletedMemory=m.deleted.memory,deletedSkills=m.deleted.customSkills,deletedReminders=m.deleted.reminders;
