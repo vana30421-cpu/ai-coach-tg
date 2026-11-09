@@ -15,7 +15,7 @@ function loadPlanner() {
     esc: value => String(value)
   ,document: { getElementById: () => ({ innerHTML: '' }) }
   };
-  vm.runInNewContext(source, { window, document: {}, Date, Math });
+  vm.runInNewContext(source, { window, document: { getElementById: () => ({ innerHTML: '' }) }, Date, Math });
   return window;
 }
 
