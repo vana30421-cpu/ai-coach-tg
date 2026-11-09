@@ -1436,7 +1436,7 @@ function renderHabitRow(h){
   var prog = getHabit66Progress(h);
   var cat = (window.HABIT_CATEGORIES || []).find(function(c){ return c.id === h.category; });
   var catColor = cat ? cat.color : '#5b9eff';
-  return '<div class="method-card" onclick="openHabitDetail(\'' + h.id + '\')" style="border-left:3px solid ' + catColor + ';">' +
+  return '<div class="method-card" data-habit-swipe="' + esc(h.id) + '" aria-label="Привычка ' + esc(title) + '. Свайп влево или вправо отмечает выполнение" onclick="openHabitDetail(\'' + h.id + '\')" style="border-left:3px solid ' + catColor + ';touch-action:pan-y;">' +
     '<div class="method-header"><div class="method-emoji">' + emoji + '</div>' +
     '<div style="flex:1;min-width:0;"><div class="method-title">' + esc(title) + '</div>' +
     '<div class="method-cat">🔥 ' + (h.streak||0) + ' · Лучший ' + (h.bestStreak||0) + ' · ' + prog.done + '/' + prog.total + '</div></div>' +
