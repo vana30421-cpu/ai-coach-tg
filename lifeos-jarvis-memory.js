@@ -87,7 +87,7 @@ async function copySyncKey(){
  catch(e){var input=root.document&&root.document.getElementById('jarvisMemorySyncKey');if(input){input.focus();input.select();if(root.toast)root.toast('Выделил ключ — скопируй его вручную','info');}else if(root.toast)root.toast('Не удалось скопировать ключ','error');}
 }
 function mergeById(local,remote,stamp){
- var map={};(Array.isArray(local)?local:[]).concat(Array.isArray(remote)?remote:[]).forEach(function(item){
+ var map=Object.create(null);(Array.isArray(local)?local:[]).concat(Array.isArray(remote)?remote:[]).forEach(function(item){
   if(!item||typeof item!=='object'||!item.id)return;
   var old=map[item.id],a=Date.parse(item.updatedAt||item[stamp]||item.createdAt||0)||0,b=old?Date.parse(old.updatedAt||old[stamp]||old.createdAt||0)||0:0;
   if(!old||a>=b)map[item.id]=item;
@@ -161,7 +161,10 @@ function importData(input){
    (Array.isArray(data.customSkills)?data.customSkills:[]).slice(0,30).forEach(function(x){if(x&&typeof x.name==='string'&&typeof x.prompt==='string'&&clean(x.name,60)&&clean(x.prompt,1200)){var id=safeId(x.id);if(!skillIds[id]){skills.push({id:id,name:clean(x.name,60),prompt:clean(x.prompt,1200),createdAt:x.createdAt||new Date().toISOString()});skillIds[id]=true;}}});
    var remindersList=reminders(),reminderIds={};remindersList.forEach(function(x){reminderIds[x.id]=true;});
    (Array.isArray(data.reminders)?data.reminders:[]).slice(0,100).forEach(function(x){if(x&&typeof x.text==='string'&&clean(x.text,160)&&Number.isFinite(Date.parse(x.at))){var id=safeId(x.id);if(!reminderIds[id]){remindersList.push({id:id,text:clean(x.text,160),at:new Date(x.at).toISOString(),done:!!x.done,createdAt:x.createdAt||new Date().toISOString()});reminderIds[id]=true;}}});
-   if(m.items.length>500)m.items=m.items.slice(-500);if(skills.length>30)skills.splice(30);if(remindersList.length>100)remindersList.splice(0,remindersList.length-100);
+   var importedDeleted=data.deleted||{};['memory','customSkills','reminders'].forEach(function(k){var incoming=Array.isArray(importedDeleted[k])?importedDeleted[k].filter(function(id){return typeof id==='string'&&/^[A-Za-z0-9_-]{1,100}$/.test(id);}):[];m.deleted[k]=Array.from(new Set(m.deleted[k].concat(incoming))).slice(-2000);});
+   var deletedMemory=m.deleted.memory,deletedSkills=m.deleted.customSkills,deletedReminders=m.deleted.reminders;
+   m.items=m.items.filter(function(x){return deletedMemory.indexOf(x.id)<0;});app.jarvis.customSkills=skills.filter(function(x){return deletedSkills.indexOf(x.id)<0;});remindersList=remindersList.filter(function(x){return deletedReminders.indexOf(x.id)<0;});
+   if(m.items.length>500)m.items=m.items.slice(-500);if(app.jarvis.customSkills.length>30)app.jarvis.customSkills.splice(30);if(remindersList.length>100)remindersList.splice(0,remindersList.length-100);
    save();if(root.toast)root.toast('Импорт завершён: память, навыки и напоминания объединены','success');if(root.renderJarvis)root.renderJarvis();
   }catch(e){if(root.toast)root.toast('Ошибка импорта: '+String(e.message||e),'error');}
   input.value='';
