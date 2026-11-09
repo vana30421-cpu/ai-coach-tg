@@ -3869,6 +3869,7 @@ function getJarvisAnalytics(silent){
   if(!items.length)items.push({id:'steady',level:'good',title:'Критичных сигналов не найдено',detail:'Продолжай текущий ритм. Джарвис проверяет только реально сохранённые записи.',action:'Сохрани регулярность и проведи вечерний обзор.'});
   var selected=getLifeStatsFilter().category||'all';
   if(selected!=='all'){var allowed={productivity:['overdue','overload','habits'],screen:['screen','screen-target','screen-data','screen-trend','screen-coverage'],health:['sleep','sleep-data','energy','concentration','vision-fatigue','vision-headache'],learning:['reviews','study-due','memory-training'],life:['detox-feedback','coverage']};var ids=allowed[selected]||[];items=items.filter(function(x){return ids.indexOf(x.id)>=0||x.id.indexOf('screen-')===0;});if(!items.length)items.push({id:'filtered-empty',level:'good',title:'Отклонений в выбранном направлении не найдено',detail:'Для выбранного фильтра нет сигналов, требующих вмешательства.',action:'Продолжай наблюдение и проверь динамику позже.',target:'stats',confidence:'Текущие фильтры'});}
+  if(a.error)items.unshift({id:'analytics-error',level:'high',title:'Ошибка чтения аналитики',detail:a.error,action:'Открой подробную статистику и проверь сохранение данных.',target:'detailedStats'});
   return {at:nowISO(),period:a.label,analytics:a,items:items,focusSuggestion:focus};
 }
 function runJarvisAutopilot(silent){
