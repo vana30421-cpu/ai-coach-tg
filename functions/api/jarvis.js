@@ -57,3 +57,9 @@ export async function onRequestPost({ request, env }) {
   return json({ reply: answer.slice(0, 5000) });
 }
 export async function onRequestOptions() { return new Response(null, { status: 204, headers: headers }); }
+
+export async function onRequestGet({ request, env }) {
+  if (!env.JARVIS_ACCESS_CODE) return json({ error: "AI_NOT_CONFIGURED", message: "На сервере не настроен JARVIS_ACCESS_CODE." }, 503);
+  if (!safeEqual(request.headers.get("X-Jarvis-Access-Code"), env.JARVIS_ACCESS_CODE)) return json({ error: "UNAUTHORIZED", message: "Код доступа Джарвиса неверный." }, 401);
+  return json({ ok: true, service: "LIFEOS Jarvis", providers: { openai: !!env.OPENAI_API_KEY, gemini: false }, rateLimit: !!env.JARVIS_RATE_LIMITS });
+}
