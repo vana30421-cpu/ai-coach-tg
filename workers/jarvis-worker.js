@@ -16,12 +16,17 @@ export default {
       "Content-Type": "application/json; charset=utf-8",
       "Cache-Control": "no-store",
       "Access-Control-Allow-Origin": allowedOrigin,
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type, X-Jarvis-Access-Code",
       "Vary": "Origin"
     };
     if (origin && origin !== allowedOrigin) return json({ error: "ORIGIN_NOT_ALLOWED" }, 403, headers);
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: headers });
+    if (request.method === "GET") {
+      if (!env.JARVIS_ACCESS_CODE) return json({ error: "AI_NOT_CONFIGURED", message: "На Worker не настроен секрет JARVIS_ACCESS_CODE." }, 503, headers);
+      if (!safeEqual(request.headers.get("X-Jarvis-Access-Code"), env.JARVIS_ACCESS_CODE)) return json({ error: "UNAUTHORIZED", message: "Код доступа Джарвиса неверный." }, 401, headers);
+      return json({ ok: true, service: "LIFEOS Jarvis", providers: { openai: !!env.OPENAI_API_KEY, gemini: !!env.GEMINI_API_KEY }, rateLimit: !!env.JARVIS_RATE_LIMITS }, 200, headers);
+    }
     if (request.method !== "POST") return json({ error: "METHOD_NOT_ALLOWED" }, 405, headers);
     if (!env.JARVIS_ACCESS_CODE) return json({ error: "AI_NOT_CONFIGURED", message: "На Worker не настроен секрет JARVIS_ACCESS_CODE." }, 503, headers);
     if (!safeEqual(request.headers.get("X-Jarvis-Access-Code"), env.JARVIS_ACCESS_CODE)) return json({ error: "UNAUTHORIZED", message: "Код доступа Джарвиса неверный." }, 401, headers);
