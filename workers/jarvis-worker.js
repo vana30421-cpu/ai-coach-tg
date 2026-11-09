@@ -39,7 +39,7 @@ export default {
     if (!env.JARVIS_ACCESS_CODE) return json({ error: "AI_NOT_CONFIGURED", message: "На Worker не настроен секрет JARVIS_ACCESS_CODE." }, 503, headers);
     if (!safeEqual(request.headers.get("X-Jarvis-Access-Code"), env.JARVIS_ACCESS_CODE)) return json({ error: "UNAUTHORIZED", message: "Код доступа Джарвиса неверный." }, 401, headers);
     const length = Number(request.headers.get("content-length") || 0);
-    if (length > 24000) return json({ error: "REQUEST_TOO_LARGE" }, 413, headers);
+    if (length > 750000) return json({ error: "REQUEST_TOO_LARGE" }, 413, headers);
     if (env.JARVIS_RATE_LIMITS) {
       const ip = request.headers.get("CF-Connecting-IP") || "unknown";
       const key = "jarvis:" + ip + ":" + Math.floor(Date.now() / 60000);
@@ -49,10 +49,11 @@ export default {
     }
     let rawBody;
     try { rawBody = await request.text(); } catch (_) { return json({ error: "INVALID_JSON" }, 400, headers); }
-    if (new TextEncoder().encode(rawBody).byteLength > 24000) return json({ error: "REQUEST_TOO_LARGE" }, 413, headers);
+    const bodyBytes = new TextEncoder().encode(rawBody).byteLength;\n    if (bodyBytes > 750000) return json({ error: "REQUEST_TOO_LARGE" }, 413, headers);
     let body;
     try { body = JSON.parse(rawBody); } catch (_) { return json({ error: "INVALID_JSON" }, 400, headers); }
     if (!body || typeof body !== "object" || Array.isArray(body)) return json({ error: "INVALID_BODY" }, 400, headers);
+    if (body.action !== "memory:save" && bodyBytes > 24000) return json({ error: "REQUEST_TOO_LARGE" }, 413, headers);
     if (body.action === "memory:save") {
       if (!env.JARVIS_MEMORY) return json({ error: "MEMORY_SYNC_NOT_CONFIGURED", message: "Для синхронизации создай KV binding JARVIS_MEMORY." }, 503, headers);
       const id = typeof body.memoryId === "string" ? body.memoryId : "";
