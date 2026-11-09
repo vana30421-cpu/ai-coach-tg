@@ -6,6 +6,7 @@ const app=fs.readFileSync('app.js','utf8');
 const index=fs.readFileSync('index.html','utf8');
 const sw=fs.readFileSync('sw.js','utf8');
 const design=fs.readFileSync('lifeos-ulty-design.css','utf8');
+const design=fs.readFileSync('lifeos-ulty-design.css','utf8');
 
 test('habit detail renders an eight-week completion heatmap from saved history',()=>{
  assert.match(app,/function renderHabitHeatmap\(h\)/);
@@ -33,6 +34,10 @@ test('mobile glass effects keep critical surfaces while reducing blur on dense c
  assert.match(css,/backdrop-filter:none!important/);
  assert.doesNotMatch(css,/\.method-card|\.modal|\.tab-bar-wrap/);
  assert.match(sw,/const CACHE='life-os-v124'/);
+ assert.ok(index.includes('lifeos-ulty-design.css?v=20261109-1'));
+ assert.match(sw,/\\.\\/lifeos-ulty-design\\.css/);
+ assert.match(design,/Dark glass surfaces, tactile controls/);
+ assert.match(design,/prefers-reduced-motion:reduce/);
  assert.ok(index.includes('lifeos-ulty-design.css?v=20261109-1'));
  assert.match(sw,/\\.\\/lifeos-ulty-design\\.css/);
  assert.match(design,/Dark glass surfaces, tactile controls/);
