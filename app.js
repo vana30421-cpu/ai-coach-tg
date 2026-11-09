@@ -1306,7 +1306,7 @@ function saveSphereScore(id){
   var bal = getSpheresBalance(state.spheres.lastScores);
   state.spheres.history.push({date:t,avg:avg,balance:bal.balance,scores:JSON.parse(JSON.stringify(state.spheres.scores[t]))});
   if(state.spheres.history.length > 365) state.spheres.history = state.spheres.history.slice(-365);
-  addXP(10, 'sphere_score');
+  addXP(10, 'sphere_score');addPetXP(2);
   save();
   haptic('success');
   toast('✓ Оценено: ' + val + '/10','success');
@@ -1753,7 +1753,7 @@ function toggleProjectTask(i){
   var done = p.tasks.filter(function(t){ return t.done; }).length;
   p.progress = p.tasks.length ? Math.round(done/p.tasks.length*100) : 0;
   if(p.progress === 100 && p.status !== 'done') p.status = 'done';
-  addXP(5, 'task');
+  addXP(5, 'task');addPetXP(2);
   save();
   haptic('success');
   renderProjectDetail();
@@ -2346,7 +2346,7 @@ function openSkill(id){
 }
 function completeSkill(id){
   state.skillsProgress[id] = true;
-  addXP(20, 'lesson');
+  addXP(20, 'lesson');addPetXP(3);
   save();
   toast('✓ +20 XP','success');
   closeSheet();
@@ -2382,7 +2382,7 @@ function openEnglishLesson(id){
 }
 function completeEnglish(id){
   state.englishProgress[id] = true;
-  addXP(15, 'lesson');
+  addXP(15, 'lesson');addPetXP(2);
   save();
   toast('✓ +15 XP','success');
   closeSheet();
@@ -2597,7 +2597,7 @@ function completeEyeExercise(){
  var v=ensureVisionState(),ex=currentVisionExercise,seconds=Number(ex.seconds)||30,comfort=(document.getElementById('eyeExerciseComfort')||{}).value||'same';
  if(!v.routineLog)v.routineLog=[];v.routineLog.push({exerciseId:ex.id,title:ex.title,date:today(),at:nowISO(),seconds:seconds,comfort:comfort});
  if(v.routineLog.length>500)v.routineLog=v.routineLog.slice(-500);
- if(v.routineXpDate!==today()){v.routineXpDate=today();addXP(2,'vision_routine');}
+ if(v.routineXpDate!==today()){v.routineXpDate=today();addXP(2,'vision_routine');addPetXP(1);}
  save();closeSheet();haptic('success');toast('Результат сохранён','success');currentVisionExercise=null;renderVision();
 }
 
@@ -2756,7 +2756,7 @@ function completeDetoxDay(day){
   if(count<(d.do||[]).length&&!confirm('Отмечено '+count+' из '+(d.do||[]).length+' шагов. Завершить день с частичным выполнением? Можно вернуться и дополнить позже.'))return;
   if(!saveDetoxDayReflection(day))return;
   r.completed=true;r.completedAt=nowISO();r.updatedAt=nowISO();r.completedTasks=count;r.totalTasks=(d.do||[]).length;
-  addXP(10,'detox');save();haptic('success');toast('День '+day+' сохранён. '+count+'/'+r.totalTasks+' шагов','success');closeSheet();renderDetoxCourse();
+  addXP(10,'detox');addPetXP(2);save();haptic('success');toast('День '+day+' сохранён. '+count+'/'+r.totalTasks+' шагов','success');closeSheet();renderDetoxCourse();
 }
 
 /* ============ FSRS-5 (интервальное повторение) ============ */
@@ -2855,7 +2855,7 @@ function reviewFSRS(cardId, rating){
   if(!Array.isArray(state.fsrs.reviews))state.fsrs.reviews=[];
   state.fsrs.reviews.push({id:uid(),cardId:cardId,at:reviewedAt,rating:rating,recalled:rating>=2,intervalDays:days,scheduledDays:days,stability:card.stability,difficulty:card.difficulty,previousDue:previousDue,wasDue:!previousDue||new Date(previousDue)<=new Date(reviewedAt)});
   if(state.fsrs.reviews.length>5000)state.fsrs.reviews=state.fsrs.reviews.slice(-5000);
-  addXP(3, 'fsrs_review');
+  addXP(3, 'fsrs_review');addPetXP(1);
   save();
   toast(rating >= 3 ? '✓ Повторишь через ' + days + ' дн.' : '↺ Повторишь через ' + days + ' дн.','info');
   renderFSRSReview();
@@ -4690,7 +4690,7 @@ function addWalkEntry(){
   if(!duration||duration<1||duration>1440){toast('Укажи длительность от 1 до 1440 минут','error');return;}
   if(distance<0||distance>500||stepCount<0||stepCount>200000){toast('Проверь дистанцию и количество шагов','error');return;}
   getWalkEntries().push({id:uid(),date:date&&date.value||today(),minutes:duration,distance:Math.round(distance*10)/10,steps:stepCount,mood:mood&&mood.value||'good',note:(note&&note.value||'').trim(),createdAt:nowISO()});
-  save();if(typeof addXP==='function')addXP(5,'walk');toast('Прогулка сохранена','success');renderWalks();
+  save();if(typeof addXP==='function'){addXP(5,'walk');addPetXP(2);}toast('Прогулка сохранена','success');renderWalks();
 }
 function deleteWalkEntry(id){if(!confirm('Удалить эту прогулку?'))return;state.walks=getWalkEntries().filter(function(w){return w.id!==id;});save();renderWalks();}
 
@@ -4724,7 +4724,7 @@ function addWorkoutEntry(){
   var n=Number(minutes&&minutes.value);
   if(!date||!date.value||!Number.isFinite(n)||n<1||n>1440)return toast('Проверь дату и длительность (1–1440 минут)','warning');
   state.customWorkouts.push({id:uid(),date:date.value,type:type.value,minutes:Math.round(n),effort:Number(document.getElementById('workoutEffort').value)||3,note:(document.getElementById('workoutNote').value||'').trim(),createdAt:nowISO()});
-  state.stats.totalWorkouts=(state.stats.totalWorkouts||0)+1;save();if(typeof addXP==='function')addXP(8,'workout');haptic('success');toast('Тренировка сохранена','success');renderWorkouts();
+  state.stats.totalWorkouts=(state.stats.totalWorkouts||0)+1;save();if(typeof addXP==='function'){addXP(8,'workout');addPetXP(3);}haptic('success');toast('Тренировка сохранена','success');renderWorkouts();
 }
 function deleteWorkoutEntry(id){
   ensureLifeOSLists();var item=state.customWorkouts.find(function(x){return x.id===id;});if(!item)return;
@@ -4789,7 +4789,7 @@ function finishMeditation(completed){
   stopMeditationTicker();state.meditationTimer=null;
   if(elapsed>0){
     ensureLifeOSLists();state.customMeditation.push({id:t.id,date:today(),minutes:elapsed,kind:t.kind,kindLabel:t.kindLabel,completed:!!completed,createdAt:nowISO()});
-    state.stats.totalMeditations=(state.stats.totalMeditations||0)+1;save();if(typeof addXP==='function')addXP(5,'meditation');toast(completed?'Сессия завершена — отлично':'Практика сохранена','success');
+    state.stats.totalMeditations=(state.stats.totalMeditations||0)+1;save();if(typeof addXP==='function'){addXP(5,'meditation');if(completed)addPetXP(2);}toast(completed?'Сессия завершена — отлично':'Практика сохранена','success');
   }else{save();toast('Сессия отменена без записи','info');}
   if(currentPage==='meditation')renderMeditation();
 }
@@ -4930,10 +4930,6 @@ function addXP(amount, source){
     state.gamification.levelUpHistory.push({level:newLevel, at:nowISO(), xp:state.gamification.xp});
     toast('🎉 Уровень ' + newLevel + '!','success',3000);
     haptic('success');
-  }
-  /* Питомец получает небольшой опыт за реальные полезные действия LIFEOS. */
-  if(state.pet&&state.pet.enabled!==false&&typeof addPetXP==='function'){
-    addPetXP(Math.max(1,Math.floor(Number(amount)/5)));
   }
   /* Обновляем лигу */
   if(!state.leagues) state.leagues = defaultState().leagues;
@@ -5627,7 +5623,7 @@ function finishVisionBreak(){
  if(!v.breakTracker.history[t])v.breakTracker.history[t]={done:0,target:12};
  v.breakTracker.history[t].done++;v.breakTracker.history[t].lastBreakAt=nowISO();
  v.breakTracker.today={done:v.breakTracker.history[t].done,target:v.breakTracker.history[t].target||12,lastBreakAt:nowISO()};
- addXP(2,'vision');save();closeSheet();toast('Перерыв завершён и записан','success');if(currentPage==='vision')renderVision();
+ addXP(2,'vision');addPetXP(1);save();closeSheet();toast('Перерыв завершён и записан','success');if(currentPage==='vision')renderVision();
 }
 function cancelVisionBreak(){if(window.__visionBreakTicker){clearInterval(window.__visionBreakTicker);window.__visionBreakTicker=null;}closeSheet();}
 function saveVisionCheckin(){
