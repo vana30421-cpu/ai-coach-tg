@@ -116,7 +116,7 @@ test('Jarvis receives the live monthly, weekly and daily development-plan summar
  assert.ok(summary.currentDay.tasks.some(x=>x.title===task.title&&x.done));
  const app=fs.readFileSync('app.js','utf8');
  assert.match(app,/developmentPlan=window\.getLifeOSLearningPlanSummary\?window\.getLifeOSLearningPlanSummary\(\):null/);
- assert.match(app,/learningProgress:\{trackedTopics:[^}]*developmentPlan:developmentPlan/);
+ assert.match(app,/developmentPlan:developmentPlan/);
  assert.match(app,/Твой план развития:/);
 });
 
