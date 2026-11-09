@@ -34,8 +34,12 @@ export default {
       if (used >= 20) return json({ error: "RATE_LIMITED", message: "Слишком много запросов. Подожди минуту." }, 429, headers);
       await env.JARVIS_RATE_LIMITS.put(key, String(used + 1), { expirationTtl: 120 });
     }
+    let rawBody;
+    try { rawBody = await request.text(); } catch (_) { return json({ error: "INVALID_JSON" }, 400, headers); }
+    if (new TextEncoder().encode(rawBody).byteLength > 24000) return json({ error: "REQUEST_TOO_LARGE" }, 413, headers);
     let body;
-    try { body = await request.json(); } catch (_) { return json({ error: "INVALID_JSON" }, 400, headers); }
+    try { body = JSON.parse(rawBody); } catch (_) { return json({ error: "INVALID_JSON" }, 400, headers); }
+    if (!body || typeof body !== "object" || Array.isArray(body)) return json({ error: "INVALID_BODY" }, 400, headers);
     const message = typeof body.message === "string" ? body.message.trim().slice(0, 1600) : "";
     if (!message) return json({ error: "EMPTY_MESSAGE" }, 400, headers);
     const history = Array.isArray(body.history) ? body.history.slice(-12).map(function (m) {

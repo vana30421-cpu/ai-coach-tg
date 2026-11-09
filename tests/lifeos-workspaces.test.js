@@ -181,3 +181,28 @@ test('pet progress bar measures progress within the current evolution stage',()=
  sandbox.window.renderPet();
  assert.match(appRoot.innerHTML,/width:50%/);
 });
+
+
+test('Telegram WebView keeps document-level vertical scrolling available on every route',()=>{
+ assert.match(index,/<style id="lifeos-webview-scroll-fix">/);
+ assert.match(index,/overflow-y:auto!important/);
+ assert.match(index,/overflow-x:clip!important/);
+ assert.match(index,/#app,.app-main,.page\{[\s\S]*?overflow:visible!important/);
+ assert.match(sw,/const CACHE='life-os-v95'/);
+});
+
+test('journal entries can be sent to Jarvis for contextual reflection without modifying the original entry',()=>{
+ assert.match(workspaces,/window\.analyzeJournalEntry=function/);
+ assert.match(workspaces,/Разобрать с Джарвисом/);
+ assert.match(workspaces,/window\.jarvisQuick\(prompt\)/);
+ assert.match(workspaces,/row\.mood==null\?'не указано'/);
+ assert.match(workspaces,/row\.energy==null\?'не указана'/);
+});
+
+test('second-brain quick capture is available from the global app header',()=>{
+ assert.match(index,/openBrainQuickCapture\(\)/);
+ assert.match(workspaces,/window\.openBrainQuickCapture=function/);
+ assert.match(workspaces,/window\.navigate\('obsidian'\)/);
+ assert.match(index,/lifeos-workspaces\.js\?v=20261109-1/);
+ assert.match(sw,/const CACHE='life-os-v95'/);
+});

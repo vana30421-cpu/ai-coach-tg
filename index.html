@@ -853,6 +853,36 @@ pre,code{max-width:100%;overflow-wrap:anywhere;word-break:break-word}
 }
 </style>
 
+
+<style id="lifeos-webview-scroll-fix">
+/* Keep the document itself as the vertical scroll container in Telegram WebView. */
+html{
+  height:auto!important;
+  min-height:100%;
+  overflow-x:clip!important;
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch;
+  scroll-behavior:auto;
+  touch-action:pan-y;
+}
+body{
+  height:auto!important;
+  min-height:100dvh;
+  overflow-x:clip!important;
+  overflow-y:visible!important;
+  overscroll-behavior-y:auto!important;
+  -webkit-overflow-scrolling:touch;
+}
+#app,.app-main,.page{
+  height:auto!important;
+  max-height:none!important;
+  overflow:visible!important;
+  overscroll-behavior:contain;
+}
+.overlay{overscroll-behavior:contain;touch-action:pan-y}
+.modal{overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y}
+</style>
+
 </head>
 <body class="theme-dark">
 <div class="theme-effect" id="themeEffect"></div>
@@ -861,6 +891,7 @@ pre,code{max-width:100%;overflow-wrap:anywhere;word-break:break-word}
   <div class="header-inner">
     <button class="avatar-btn" id="headerAvatar" onclick="navigate('profile')" aria-label="Профиль">👤</button>
     <button class="icon-btn" onclick="openStatsQuick()" aria-label="Статистика">📊</button>
+  <button class="icon-btn" onclick="openBrainQuickCapture()" aria-label="Быстрая заметка во второй мозг">🧠</button>
     <button class="icon-btn" onclick="openThemePicker()" aria-label="Темы">🎨</button>
   </div>
 </header>
@@ -876,7 +907,7 @@ pre,code{max-width:100%;overflow-wrap:anywhere;word-break:break-word}
 <script defer src="content3.js?v=20261108-4"></script>
 <script defer src="jarvis-core.js?v=20261108-5"></script>
 <script defer src="app.js?v=20261108-25"></script>
-<script defer src="lifeos-workspaces.js?v=20261108-5"></script>
+<script defer src="lifeos-workspaces.js?v=20261109-1"></script>
 <script defer src="lifeos-systems.js?v=20261108-9"></script>
 <script>
 (function(){
