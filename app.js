@@ -4255,6 +4255,7 @@ function renderFocus(){ renderJarvis(); }
 function getJarvisState(){
   if(!state.jarvis)state.jarvis={messages:[],checkins:[],focus:null,mode:'balanced',focusDefault:25};
   if(!state.jarvis.memory||typeof state.jarvis.memory!=='object')state.jarvis.memory={items:[],updatedAt:null,sync:{id:'',key:'',lastSyncAt:null}};
+  if(typeof state.jarvis.apiUrl!=='string')state.jarvis.apiUrl='https://lifeos-jarvis-api.vana30421.workers.dev';
   if(!Array.isArray(state.jarvis.messages))state.jarvis.messages=[];
   if(!Array.isArray(state.jarvis.checkins))state.jarvis.checkins=[];
   if(!state.jarvis.memory||typeof state.jarvis.memory!=='object')state.jarvis.memory={items:[],updatedAt:null};
@@ -4386,7 +4387,9 @@ async function sendJarvisCloudMessage(text){
   }
   placeholder.text=String(data.reply||'Не получил текст ответа.');placeholder.pending=false;
  }catch(e){
-  placeholder.text='Не удалось получить ответ ИИ: '+String(e.message||e).slice(0,280)+'\nЛокальные функции LIFEOS продолжают работать.';
+  var reason=String(e&&e.message||e||'Неизвестная ошибка');
+  if(/failed to fetch|networkerror|load failed/i.test(reason))reason='Сервер не отвечает или недоступен из Telegram WebView. Проверь Worker, CORS и интернет.';
+  placeholder.text='Не удалось получить ответ ИИ: '+reason.slice(0,280)+'\nЛокальные команды и анализ LIFEOS доступны без облачного ИИ.';
   placeholder.pending=false;
  }
  save();if(currentPage==='ai'||currentPage==='jarvis')renderJarvis();
@@ -4455,7 +4458,7 @@ function jarvisReply(text){
   if(/тревог|стресс|нервнича/i.test(text))return 'Попробуй мягкое заземление: назови 5 предметов, которые видишь; 4 ощущения тела; 3 звука; 2 запаха; 1 вкус. Это упражнение для переключения внимания, не лечение.';
   if(/учить|запомн|экзамен|обучен/i.test(text))return 'Практика: сначала попробуй воспроизвести материал без подсказки, затем проверь себя и создай карточку для повторения через интервал. Не перечитывай подряд — проверяй, что действительно вспомнил.';
   if(/план|расписан|приоритет/i.test(text))return 'План на сейчас: 1) выпиши все дела; 2) выбери одно важное; 3) оцени длительность; 4) поставь его в календарь; 5) оставь буфер. Могу добавить задачу командой «Добавь задачу: …».';
-  return 'Эта версия работает как локальный помощник-командный центр, а не как подключённая языковая модель. Я могу управлять задачами, таймером, разделами и локальными записями. Напиши «помощь» для списка команд.';
+  return buildJarvisLocalReply(text);
 }
 function sendJarvisMessage(){
  var input=document.getElementById('jarvisInput');if(!input)return;
@@ -5768,6 +5771,8 @@ function applyJarvisRecommendation(id){
 }
 /* Expose new inline-action handlers from the IIFE */
 window.renderJarvis=renderJarvis;
+window.renderStats=renderStats;
+window.renderDetailedStats=renderDetailedStats;
 window.runJarvisAutopilot=runJarvisAutopilot;
 window.setJarvisAutopilot=setJarvisAutopilot;
 window.renderJarvisCheckin=renderJarvisCheckin;
