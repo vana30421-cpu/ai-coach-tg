@@ -5488,8 +5488,9 @@ function getJarvisAnalytics(silent){
 function setStatsPeriod(days){LIFE_STATS_PERIOD=Number(days)===0?0:(Number(days)||30);if(state.analyticsFilters){state.analyticsFilters.from='';state.analyticsFilters.to='';}LIFE_STATS_FILTER.from='';LIFE_STATS_FILTER.to='';save();renderStats();}
 function setStatsDateFilter(){var from=(document.getElementById('statsFrom')||{}).value||'',to=(document.getElementById('statsTo')||{}).value||'';if(from&&to&&from>to)return toast('Начало периода позже окончания','warning');saveLifeStatsFilter('from',from);saveLifeStatsFilter('to',to);}
 function renderStats(){
-  var a=buildComprehensiveStats(LIFE_STATS_PERIOD),o=a.overview,h=a.health,f=a.focus,l=a.learning,v=a.life,c=a.coverage,filter=getLifeStatsFilter(),analysis=getJarvisAnalytics(true);
+  var a=getSafeLifeStats(LIFE_STATS_PERIOD),o=a.overview,h=a.health,f=a.focus,l=a.learning,v=a.life,c=a.coverage,filter=getLifeStatsFilter(),analysis=getJarvisAnalytics(true);
   var cat=filter.category||'all',show=function(k){return cat==='all'||cat===k;},fmt=function(n){return n===null||n===undefined?'—':String(n);};
+  if(a.error)html+='<div class="card mb-3" role="status"><b>⚠️ Аналитика временно недоступна</b><div class="footnote mt-1">'+esc(a.error)+'</div>Данные не удалены. Проверь записи и повтори расчёт.</div>';
   var html='<div class="page"><div class="title-xl">📊 Полная аналитика LIFE OS</div><div class="subtitle">Показатели, личные цели, динамика и рекомендации Джарвиса. Только сохранённые данные.</div>';
   html+='<div class="card mb-3"><div class="card-title">Фильтры аналитики</div><div class="btn-row mb-2">';
   [[7,'7 дней'],[30,'30 дней'],[90,'90 дней'],[0,'Всё время']].forEach(function(x){html+='<button class="btn '+(LIFE_STATS_PERIOD===x[0]&&!filter.from&&!filter.to?'btn-primary':'btn-ghost')+' btn-xs" onclick="setStatsPeriod('+x[0]+')">'+x[1]+'</button>';});
