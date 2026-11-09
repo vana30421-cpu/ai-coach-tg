@@ -4256,6 +4256,8 @@ function getJarvisState(){
   if(!state.jarvis)state.jarvis={messages:[],checkins:[],focus:null,mode:'balanced',focusDefault:25};
   if(!Array.isArray(state.jarvis.messages))state.jarvis.messages=[];
   if(!Array.isArray(state.jarvis.checkins))state.jarvis.checkins=[];
+  if(!state.jarvis.memory||typeof state.jarvis.memory!=='object')state.jarvis.memory={items:[],updatedAt:null};
+  if(!Array.isArray(state.jarvis.memory.items))state.jarvis.memory.items=[];
   if(!state.jarvis.mode)state.jarvis.mode='balanced';
   if(!Number.isFinite(Number(state.jarvis.focusDefault)))state.jarvis.focusDefault=25;
   if(typeof state.jarvis.autopilotEnabled!=='boolean')state.jarvis.autopilotEnabled=false;
@@ -4289,6 +4291,7 @@ function renderJarvis(){
   html+='<div class="section-title mt-3">Инструменты</div><div class="grid-2"><button class="card jarvis-tool" onclick="jarvisQuick(\'самооценка\')">📋 Самооценка<br><small>Дневной срез состояния</small></button><button class="card jarvis-tool" onclick="jarvisQuick(\'методики\')">🧪 Методики<br><small>Практики с источниками</small></button><button class="card jarvis-tool" onclick="navigate(\'fsrs\')">🧠 Повторение<br><small>Карточки и FSRS</small></button><button class="card jarvis-tool" onclick="navigate(\'diagnostic\')">🛠 Диагностика<br><small>Проверка приложения</small></button><button class="card jarvis-tool" onclick="renderJarvisAIProviders()">🤖 Каталог ИИ<br><small>Популярные помощники</small></button></div>';
   if(data.checkins.length){var recent=data.checkins.slice(-7);var avg=function(k){return (recent.reduce(function(n,x){return n+(Number(x[k])||0);},0)/recent.length).toFixed(1);};html+='<div class="card mt-3"><div class="card-title">Самооценка · последние '+recent.length+' записей</div><div class="grid-2"><div class="footnote">Энергия <b>'+avg('energy')+'/5</b></div><div class="footnote">Фокус <b>'+avg('focus')+'/5</b></div><div class="footnote">Сон <b>'+avg('sleep')+'/5</b></div><div class="footnote">Стресс <b>'+avg('stress')+'/5</b></div></div><div class="footnote mt-2">Личный трекер, не клинический тест.</div></div>';}
   html+='<div class="card mt-3"><div class="card-title">Возможности и ограничения</div><p class="footnote">Офлайн: задачи, переходы, таймер, история и самооценка. Голос зависит от браузера и разрешений. Для свободных ответов уровня ChatGPT нужен подключённый ИИ-сервис и безопасное хранение ключа на сервере.</p></div></div>';
+  if(window.LIFEOS_JARVIS_MEMORY){html+=window.LIFEOS_JARVIS_MEMORY.render();}
   if(window.renderMiraSkillsPanel){html+=window.renderMiraSkillsPanel();}
   document.getElementById('app').innerHTML=html;
   var box=document.getElementById('jarvisMessages');if(box)box.scrollTop=box.scrollHeight;
@@ -4329,6 +4332,7 @@ function buildJarvisAppContext(){
   journalHistory:journalRecent,
   finance:{month:month,income:income,expense:expense,balance:income-expense,entries:finance.length},
   learningProgress:{trackedTopics:Object.keys(state.libraryProgress||{}).length,developmentPlan:developmentPlan},
+  jarvisMemory:window.LIFEOS_JARVIS_MEMORY?window.LIFEOS_JARVIS_MEMORY.context(''):[],
   analytics:{health:a.health||null,focus:a.focus||null,learning:a.learning||null,overview:a.overview||null,life:a.life||null}
  };
 }
@@ -4456,6 +4460,12 @@ function sendJarvisMessage(){
  var input=document.getElementById('jarvisInput');if(!input)return;
  var text=input.value.trim();if(!text)return;input.value='';
  var d=getJarvisState();jarvisAddMessage('user',text);
+ var remember=text.match(/^(?:запомни|сохрани в память|добавь в память)\\s*[:—-]?\\s*(.+)$/i);
+ if(remember&&remember[1]){
+  try{var saved=window.LIFEOS_JARVIS_MEMORY&&window.LIFEOS_JARVIS_MEMORY.add(remember[1]);jarvisAddMessage('assistant','Запомнил: '+(saved?saved.text:remember[1]));renderJarvis();}
+  catch(e){jarvisAddMessage('assistant','Не удалось сохранить: '+String(e.message||e));renderJarvis();}
+  return;
+ }
  var core=window.LifeOSJarvisCore,parsed=core?core.parseCommand(text):{type:'chat'};
  if(d.cloudAIEnabled&&(parsed.type==='chat'||parsed.type==='summary')){sendJarvisCloudMessage(text);return;}
  var reply=jarvisReply(text);if(reply)jarvisAddMessage('assistant',reply);
