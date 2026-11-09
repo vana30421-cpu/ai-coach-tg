@@ -797,14 +797,14 @@ function navigate(page, silent){
     focus: renderFocus, eveningReview: renderEveningReview,
     weeklyReview: renderWeeklyReview, monthlyReview: renderMonthlyReview,
     achievements: renderAchievements, achievementsCategory: renderAchievementsCategory,
-    tasks: renderTasks, matrix: renderMatrix, learning: renderLearning,
+    tasks: renderTasks, matrix: renderMatrix, learning: window.renderLearning || renderLearning,
     levels: renderLevels, levelDetail: renderLevelDetail, moduleDetail: renderModuleDetail,
     skills: renderSkills, methods: renderMethods, english: renderEnglish,
     memory: renderMemory, iq: renderIQ, eq: renderEQ, finance: renderFinance,
     neuromodule: renderNeuro, psychology: renderPsychology, thinking: renderThinking,
     etiquette: renderEtiquette, hormones: renderHormones, wealth: renderWealth,
-    planning: renderPlanning, plantoday: renderPlanToday, planweek: renderPlanWeek,
-    planmonth: renderPlanMonth, gcal: renderGcal,
+    planning: renderPlanning, plantoday: window.renderPlanToday || renderPlanToday, planweek: window.renderPlanWeek || renderPlanWeek,
+    planmonth: window.renderPlanMonth || renderPlanMonth, gcal: renderGcal,
     calendar: window.renderCalendar || renderCalendar,
     vision: renderVision, visionex: renderVisionExercises,
     visiontrack: renderVisionTracker, visiontips: renderVisionTips,
@@ -842,7 +842,7 @@ function navigate(page, silent){
     fsrsReview: renderFSRSReview,
     detox: renderDetoxHub,
     dailySurvey: renderDailySurvey, survey: renderSurvey,
-    plan: renderPersonalPlan,
+    plan: window.renderPersonalPlan || renderPersonalPlan,
     diagnostic: renderDiagnostic,
     onboarding: renderOnboarding
   };
@@ -3996,6 +3996,7 @@ function renderSettings(){
   html += '<div class="card"><h2>Профиль</h2><div class="field"><label class="field-label">Имя</label><input type="text" value="' + esc(state.profile.name||'') + '" onchange="saveProfileName(this.value)"/></div>';
   html += '<div class="list-row" onclick="openThemePicker()"><div class="list-icon">🎨</div><div class="list-body"><div class="list-title">Тема</div></div><div class="list-value">' + currentTheme.name + '</div></div></div>';
   html += renderPWAInstallBlock();
+  html += '<div class="card"><h2>🎓 Обучение и развитие</h2><div class="footnote mb-2">Единый план на 30 дней с недельными целями, ежедневными уроками и отслеживанием прогресса.</div><button class="btn btn-primary btn-block" onclick="navigate(\'plan\')">Открыть план обучения и развития</button></div>';
   html += '<div class="card"><h2>Сохранение данных</h2><div class="footnote mb-2">Автосохранение выполняется при изменении данных. Здесь можно принудительно сохранить всё и обновить локальную резервную копию.</div><button class="btn btn-primary btn-block mb-2" onclick="manualSaveAll()">💾 Сохранить всё сейчас</button><div class="footnote">Последнее сохранение: '+(window.__LIFE_OS_LAST_SAVED?new Date(window.__LIFE_OS_LAST_SAVED).toLocaleString('ru-RU'):'при запуске приложения')+'</div></div>';
   html += '<div class="card"><h2>Резервные копии</h2>';
   html += '<button class="btn btn-primary btn-block mb-2" onclick="manualSaveAll()">💾 Сохранить и создать копию</button>';
@@ -5192,6 +5193,7 @@ function checkCooldownAndSleep(){
 }
 
 /* ============ ПОДКЛЮЧЕНИЕ К WINDOW ============ */
+window.renderLearningBase = renderLearning;
 window.state = state;
 window.save = save;
 window.manualSaveAll = manualSaveAll;
