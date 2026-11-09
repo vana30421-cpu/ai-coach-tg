@@ -855,33 +855,99 @@ pre,code{max-width:100%;overflow-wrap:anywhere;word-break:break-word}
 
 
 <style id="lifeos-webview-scroll-fix">
-/* Keep the document itself as the vertical scroll container in Telegram WebView. */
-html{
-  height:auto!important;
-  min-height:100%;
-  overflow-x:clip!important;
-  overflow-y:auto!important;
-  -webkit-overflow-scrolling:touch;
-  scroll-behavior:auto;
-  touch-action:pan-y;
+/* Telegram WebView: use one explicit, touch-scrollable content viewport.
+   The document stays fixed; #app owns vertical scrolling on Android/iOS/desktop. */
+html,body{
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  max-height:100%!important;
+  overflow:hidden!important;
+  overscroll-behavior:none!important;
 }
 body{
-  height:auto!important;
-  min-height:100dvh;
-  overflow-x:clip!important;
-  overflow-y:visible!important;
-  overscroll-behavior-y:auto!important;
-  -webkit-overflow-scrolling:touch;
+  display:flex!important;
+  flex-direction:column!important;
+  position:relative!important;
+  min-width:320px;
 }
-#app,.app-main,.page{
+#app.app-main{
+  display:block!important;
+  position:relative!important;
+  flex:1 1 auto!important;
+  width:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  height:calc(var(--lifeos-viewport-height, 100dvh) - var(--lifeos-header-height, 86px))!important;
+  max-height:calc(var(--lifeos-viewport-height, 100dvh) - var(--lifeos-header-height, 86px))!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  overscroll-behavior-y:contain!important;
+  -webkit-overflow-scrolling:touch!important;
+  touch-action:pan-y!important;
+  scroll-behavior:auto!important;
+  padding-bottom:calc(132px + env(safe-area-inset-bottom,0px))!important;
+  scrollbar-width:thin;
+}
+.app-header{
+  position:relative!important;
+  top:auto!important;
+  flex:0 0 auto!important;
+  width:100%;
+}
+#app>.page,.page{
   height:auto!important;
+  min-height:0!important;
   max-height:none!important;
   overflow:visible!important;
-  overscroll-behavior:contain;
+  overscroll-behavior:unset!important;
 }
 .overlay{overscroll-behavior:contain;touch-action:pan-y}
-.modal{overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y}
+.modal{
+  max-height:calc(var(--lifeos-viewport-height, 100dvh) - 16px)!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+  touch-action:pan-y;
+}
 </style>
+<script>
+(function(){
+  function updateLifeOSViewport(){
+    var h=0;
+    try{
+      var tg=window.Telegram&&window.Telegram.WebApp;
+      if(tg&&Number(tg.viewportHeight)>0)h=Number(tg.viewportHeight);
+    }catch(e){}
+    if(!h&&window.visualViewport&&Number(window.visualViewport.height)>0)h=Number(window.visualViewport.height);
+    if(!h)h=window.innerHeight||document.documentElement.clientHeight||0;
+    if(h>0)document.documentElement.style.setProperty('--lifeos-viewport-height',Math.round(h)+'px');
+    var header=document.getElementById('appHeader');
+    if(header){
+      var hh=Math.ceil(header.getBoundingClientRect().height);
+      if(hh>0)document.documentElement.style.setProperty('--lifeos-header-height',hh+'px');
+    }
+  }
+  window.lifeosScrollToTop=function(){
+    var root=document.getElementById('app');
+    if(root)root.scrollTo({top:0,left:0,behavior:'auto'});
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',updateLifeOSViewport,{once:true});
+  else updateLifeOSViewport();
+  window.addEventListener('resize',updateLifeOSViewport,{passive:true});
+  if(window.visualViewport)window.visualViewport.addEventListener('resize',updateLifeOSViewport,{passive:true});
+  try{
+    var tg=window.Telegram&&window.Telegram.WebApp;
+    if(tg&&tg.onEvent)tg.onEvent('viewportChanged',updateLifeOSViewport);
+  }catch(e){}
+  if(window.ResizeObserver){
+    var header=document.getElementById('appHeader');
+    if(header)new ResizeObserver(updateLifeOSViewport).observe(header);
+  }
+  setTimeout(updateLifeOSViewport,100);
+  setTimeout(updateLifeOSViewport,500);
+})();
+</script>
 
 </head>
 <body class="theme-dark">
