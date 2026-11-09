@@ -190,3 +190,11 @@ test('Telegram WebView keeps document-level vertical scrolling available on ever
  assert.match(index,/#app,.app-main,.page\{[\s\S]*?overflow:visible!important/);
  assert.match(sw,/const CACHE='life-os-v94'/);
 });
+
+test('journal entries can be sent to Jarvis for contextual reflection without modifying the original entry',()=>{
+ assert.match(workspaces,/window\\.analyzeJournalEntry=function/);
+ assert.match(workspaces,/Разобрать с Джарвисом/);
+ assert.match(workspaces,/window\\.jarvisQuick\\(prompt\\)/);
+ assert.match(workspaces,/row\\.mood==null\\?'не указано'/);
+ assert.match(workspaces,/row\\.energy==null\\?'не указана'/);
+});
