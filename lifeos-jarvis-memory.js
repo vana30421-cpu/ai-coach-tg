@@ -6,6 +6,7 @@ function state(){
  if(!app.jarvis||typeof app.jarvis!=='object')app.jarvis={};
  if(!app.jarvis.memory||typeof app.jarvis.memory!=='object')app.jarvis.memory={items:[],updatedAt:null};
  if(!Array.isArray(app.jarvis.memory.items))app.jarvis.memory.items=[];
+ if(!app.jarvis.memory.sync||typeof app.jarvis.memory.sync!=='object')app.jarvis.memory.sync={id:'',key:'',lastSyncAt:null};
  return app.jarvis.memory;
 }
 function save(){if(root.save)root.save();}
@@ -44,12 +45,82 @@ function render(){
  html+='<div class="field mt-2"><input id="jarvisMemorySearch" type="search" placeholder="Поиск по памяти" oninput="filterJarvisMemory(this.value)"></div><div id="jarvisMemoryItems">';
  if(!items.length)html+='<div class="footnote">Память пока пуста. Добавляй только то, что действительно нужно учитывать в будущих разговорах.</div>';
  items.slice(0,30).forEach(function(x){html+=row(x);});
- html+='</div><div class="footnote mt-2">Хранение локальное: очистка данных браузера может удалить память. Экспорт и синхронизация между устройствами пока не подключены.</div></section>';
+ html+='</div><div class="footnote mt-2">Локальная память сохраняется на этом устройстве. Для синхронизации между устройствами создай секретный ключ и настрой KV на Worker.</div>';
+ html+=renderMemorySync();
+ html+='</section>';
  html+=renderCustomSkills();
  html+=renderReminders();
  return html;
 }
-function row(x){
+function b64url(bytes){
+ var binary='';for(var i=0;i<bytes.length;i++)binary+=String.fromCharCode(bytes[i]);
+ return root.btoa(binary).replace(/\\+/g,'-').replace(/\\//g,'_').replace(/=+$/,'');
+}
+function unb64url(value){
+ var text=String(value||'').replace(/-/g,'+').replace(/_/g,'/');while(text.length%4)text+='=';
+ var binary=root.atob(text),bytes=new Uint8Array(binary.length);for(var i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);return bytes;
+}
+function syncSecret(){
+ var sync=state()&&state().sync;return sync&&sync.id&&sync.key?sync.id+'.'+sync.key:'';
+}
+function renderMemorySync(){
+ var sync=state().sync,secret=syncSecret();
+ return '<div class="card mt-2"><b>🔐 Синхронизация между устройствами</b><div class="footnote mt-1">Данные шифруются в браузере AES‑GCM. Worker хранит только зашифрованный файл; ключ шифрования ему не отправляется. Секретный ключ сохрани отдельно — восстановить его нельзя.</div><div class="field mt-2"><input id="jarvisMemorySyncKey" type="text" autocomplete="off" spellcheck="false" maxlength="100" value="'+(root.esc?root.esc(secret):secret)+'" placeholder="Вставь ключ синхронизации с другого устройства"></div><div class="grid-2"><button class="btn btn-ghost" onclick="createJarvisMemorySyncKey()">Создать ключ</button><button class="btn btn-ghost" onclick="applyJarvisMemorySyncKey()">Применить ключ</button></div><button class="btn btn-primary btn-block mt-2" onclick="syncJarvisMemory()">Синхронизировать память</button><div class="footnote mt-2">'+(sync.lastSyncAt?'Последняя синхронизация: '+(root.esc?root.esc(new Date(sync.lastSyncAt).toLocaleString()):sync.lastSyncAt):'Пока не синхронизировалась')+'</div></div>';
+}
+function createSyncKey(){
+ var m=state();if(!root.crypto||!root.crypto.getRandomValues){if(root.toast)root.toast('Браузер не поддерживает защищённую генерацию ключей','error');return;}
+ m.sync={id:b64url(root.crypto.getRandomValues(new Uint8Array(18))),key:b64url(root.crypto.getRandomValues(new Uint8Array(32))),lastSyncAt:null};save();
+ if(root.renderJarvis)root.renderJarvis();
+ if(root.toast)root.toast('Ключ создан. Скопируй его и сохрани в надёжном месте.','success');
+}
+function applySyncKey(){
+ var input=root.document&&root.document.getElementById('jarvisMemorySyncKey'),value=clean(input&&input.value,100),parts=value.split('.');
+ if(parts.length!==2||!/^[A-Za-z0-9_-]{20,64}$/.test(parts[0])||!/^[A-Za-z0-9_-]{40,50}$/.test(parts[1])){if(root.toast)root.toast('Неверный ключ. Формат: ID.КЛЮЧ','warning');return;}
+ var m=state();m.sync={id:parts[0],key:parts[1],lastSyncAt:null};save();if(root.renderJarvis)root.renderJarvis();if(root.toast)root.toast('Ключ синхронизации применён','success');
+}
+function mergeById(local,remote,stamp){
+ var map={};(Array.isArray(local)?local:[]).concat(Array.isArray(remote)?remote:[]).forEach(function(item){
+  if(!item||typeof item!=='object'||!item.id)return;
+  var old=map[item.id],a=Date.parse(item[stamp]||item.updatedAt||item.createdAt||0)||0,b=old?Date.parse(old[stamp]||old.updatedAt||old.createdAt||0)||0:0;
+  if(!old||a>=b)map[item.id]=item;
+ });return Object.keys(map).map(function(id){return map[id];});
+}
+async function syncMemory(){
+ var m=state(),sync=m.sync,d=root.state&&root.state.jarvis||{};
+ if(!sync.id||!sync.key)throw new Error('Сначала создай или примени ключ синхронизации.');
+ if(!d.apiUrl||!d.accessCode)throw new Error('Сначала настрой URL Worker и код доступа Джарвиса.');
+ if(!root.crypto||!root.crypto.subtle)throw new Error('Нужен защищённый контекст HTTPS и поддержка Web Crypto.');
+ var key=await root.crypto.subtle.importKey('raw',unb64url(sync.key),{name:'AES-GCM'},false,['encrypt','decrypt']);
+ var url=new URL(d.apiUrl);url.searchParams.set('action','memory:get');url.searchParams.set('id',sync.id);
+ var headers={'X-Jarvis-Access-Code':String(d.accessCode)};
+ var response=await root.fetch(url.toString(),{method:'GET',headers:headers});
+ var result=await response.json().catch(function(){return {};});
+ if(!response.ok)throw new Error(result.message||'Не удалось прочитать облачную память ('+response.status+').');
+ var remote={memory:[],customSkills:[],reminders:[]};
+ if(result.payload){
+  var packed=unb64url(result.payload);if(packed.length<29)throw new Error('Облачная копия повреждена.');
+  var iv=packed.slice(0,12),cipher=packed.slice(12),plain=await root.crypto.subtle.decrypt({name:'AES-GCM',iv:iv},key,cipher);
+  remote=JSON.parse(new TextDecoder().decode(plain));
+  if(!remote||remote.version!==1)throw new Error('Формат облачной копии не поддерживается.');
+ }
+ var merged={version:1,memory:mergeById(m.items,remote.memory,'updatedAt').slice(-500),customSkills:mergeById(customSkills(),remote.customSkills,'createdAt').slice(-30),reminders:mergeById(reminders(),remote.reminders,'createdAt').slice(-100)};
+ var ivOut=root.crypto.getRandomValues(new Uint8Array(12)),plainOut=new TextEncoder().encode(JSON.stringify(merged)),cipherOut=await root.crypto.subtle.encrypt({name:'AES-GCM',iv:ivOut},key,plainOut),packedOut=new Uint8Array(ivOut.length+cipherOut.byteLength);packedOut.set(ivOut);packedOut.set(new Uint8Array(cipherOut),ivOut.length);
+ var payload=b64url(packedOut);if(payload.length>700000)throw new Error('Облачная копия слишком большая. Удали лишние записи или экспортируй архив локально.');
+ var saveResponse=await root.fetch(d.apiUrl,{method:'POST',headers:Object.assign({'Content-Type':'application/json'},headers),body:JSON.stringify({action:'memory:save',memoryId:sync.id,payload:payload})});
+ var saved=await saveResponse.json().catch(function(){return {};});
+ if(!saveResponse.ok)throw new Error(saved.message||'Не удалось записать облачную память ('+saveResponse.status+').');
+ m.items=merged.memory;m.updatedAt=new Date().toISOString();root.state.jarvis.customSkills=merged.customSkills;root.state.jarvis.reminders=merged.reminders;
+ sync.lastSyncAt=new Date().toISOString();save();if(root.renderJarvis)root.renderJarvis();
+ return merged;
+}
+async function syncFromUI(){
+ var button=root.document&&root.document.querySelector('#jarvisMemoryPanel button[onclick="syncJarvisMemory()"]');
+ if(button){button.disabled=true;button.textContent='Синхронизация…';}
+ try{await syncMemory();if(root.toast)root.toast('Память синхронизирована','success');}
+ catch(e){if(root.toast)root.toast(String(e.message||e),'error');}
+ finally{if(button){button.disabled=false;button.textContent='Синхронизировать память';}}
+}
+\nfunction row(x){
  return '<div class="list-row jarvis-memory-row" data-memory-search="'+(root.esc?root.esc(clean(x.text+' '+x.category,600).toLowerCase()):clean(x.text+' '+x.category,600).toLowerCase())+'"><div style="min-width:0;flex:1"><b>'+ (root.esc?root.esc(x.category):x.category)+'</b><div>'+ (root.esc?root.esc(x.text):x.text)+'</div><div class="footnote">'+(root.esc?root.esc(String(x.updatedAt||'').slice(0,10)):'')+'</div></div><button class="btn btn-ghost btn-xs" onclick="removeJarvisMemory(\''+x.id+'\')" aria-label="Удалить факт">✕</button></div>';
 }
 
@@ -132,6 +203,9 @@ function saveFromUI(){
 }
 function removeFromUI(id){if(!remove(id))return;if(root.toast)root.toast('Запись удалена','success');if(root.renderJarvis)root.renderJarvis();}
 root.LIFEOS_JARVIS_MEMORY={list:list,add:add,remove:remove,clear:clear,search:search,context:context,render:render};
+root.createJarvisMemorySyncKey=createSyncKey;
+root.applyJarvisMemorySyncKey=applySyncKey;
+root.syncJarvisMemory=syncFromUI;
 root.saveJarvisMemoryFromUI=saveFromUI;
 root.filterJarvisMemory=filter;
 root.removeJarvisMemory=removeFromUI;
