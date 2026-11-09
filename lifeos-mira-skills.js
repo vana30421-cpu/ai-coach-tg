@@ -23,7 +23,7 @@ var skills=[
 ];
 function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function render(){
- var groups={},html='<section class="card mt-3" id="miraSkills"><div class="row-between"><div><div class="card-title">✦ Навыки LIFEOS · Mira-inspired</div><div class="footnote">Готовые сценарии. Навык использует данные LIFEOS и доступные разделы.</div></div><span class="badge badge-brand">'+skills.length+' навыков</span></div>';
+ var groups={},html='<section class="card mt-3" id="miraSkills"><div class="row-between"><div><div class="card-title">✦ Навыки LIFEOS · Mira-inspired</div><div class="footnote">Готовые сценарии на данных LIFEOS. Для генеративных ответов подключи AI Worker в настройках Джарвиса.</div></div><span class="badge badge-brand">'+skills.length+' навыков</span></div>';
  skills.forEach(function(s){(groups[s.group]||(groups[s.group]=[])).push(s);});
  Object.keys(groups).forEach(function(group){
   html+='<div class="section-title mt-3">'+esc(group)+'</div><div class="grid-2">';
@@ -40,7 +40,7 @@ function run(id){
  try{
   var st=root.state;if(st){if(!st.miraSkills||typeof st.miraSkills!=='object')st.miraSkills={};if(!st.miraSkills.usage)st.miraSkills.usage={};var row=st.miraSkills.usage[id]||{count:0};row.count=(Number(row.count)||0)+1;row.lastUsedAt=root.nowISO?root.nowISO():new Date().toISOString();st.miraSkills.usage[id]=row;if(root.save)root.save();}
  }catch(e){}
- if(skill.page&&root.navigate)root.navigate(skill.page);
+ if(root.navigate)root.navigate('ai');
  if(root.jarvisQuick)root.jarvisQuick(skill.prompt);
 }
 root.LIFEOS_MIRA_SKILLS=skills;
