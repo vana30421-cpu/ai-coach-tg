@@ -4273,7 +4273,7 @@ function buildJarvisAppContext(){
  var events=(state.calendarEvents||[]).filter(function(x){return x.date===date&&!x.done;}).slice(0,8).map(function(x){return {title:x.title,time:x.time||null,category:x.category||null};});
  var screen=(state.screenEntries||[]).filter(function(x){return String(x.date||'').slice(0,10)===date;}).reduce(function(n,x){return n+(Number(x.minutes)||0);},0);
  var stress=(state.antistressEntries||[]).slice(-3).map(function(x){return {title:x.title||x.practiceId,date:x.date,before:x.beforeStress,after:x.afterStress,durationSeconds:x.durationSeconds||0};});
- var pet=state.pet||{},brain=state.secondBrain&&Array.isArray(state.secondBrain.notes)?state.secondBrain.notes:(Array.isArray(state.secondBrainItems)?state.secondBrainItems:[]),memorySessions=state.memoryTraining&&Array.isArray(state.memoryTraining.sessions)?state.memoryTraining.sessions:[],journalRecent=(state.journalEntries||[]).slice().sort(function(x,y){return String(y.date||'').localeCompare(String(x.date||''));}).slice(0,5).map(function(x){return {date:x.date,mood:x.mood,energy:x.energy,wins:String(x.wins||'').slice(0,180),blockers:String(x.blockers||'').slice(0,180)};});
+ var pet=state.pet||{},brain=state.secondBrain&&Array.isArray(state.secondBrain.notes)?state.secondBrain.notes:(Array.isArray(state.secondBrainItems)?state.secondBrainItems:[]),developmentPlan=window.getLifeOSLearningPlanSummary?window.getLifeOSLearningPlanSummary():null,memorySessions=state.memoryTraining&&Array.isArray(state.memoryTraining.sessions)?state.memoryTraining.sessions:[],journalRecent=(state.journalEntries||[]).slice().sort(function(x,y){return String(y.date||'').localeCompare(String(x.date||''));}).slice(0,5).map(function(x){return {date:x.date,mood:x.mood,energy:x.energy,wins:String(x.wins||'').slice(0,180),blockers:String(x.blockers||'').slice(0,180)};});
  var month=date.slice(0,7),finance=(state.financeEntries||[]).filter(function(x){return String(x.date||'').slice(0,7)===month;});
  var income=finance.filter(function(x){return x.type==='income';}).reduce(function(n,x){return n+(Number(x.amount)||0);},0),expense=finance.filter(function(x){return x.type==='expense';}).reduce(function(n,x){return n+(Number(x.amount)||0);},0);
  return {
@@ -4293,7 +4293,7 @@ function buildJarvisAppContext(){
   memoryTraining:{sessions:memorySessions.length,bestSpan:Number(state.memoryTraining&&state.memoryTraining.bestSpan)||0,recent:memorySessions.slice(-12).map(function(x){return {type:x.type,accuracy:Number(x.accuracy)||Math.round((Number(x.score)||0)/Math.max(1,Number(x.length)||1)*100),seconds:Number(x.seconds)||null,date:String(x.at||'').slice(0,10)};})},
   journalHistory:journalRecent,
   finance:{month:month,income:income,expense:expense,balance:income-expense,entries:finance.length},
-  learningProgress:{trackedTopics:Object.keys(state.libraryProgress||{}).length},
+  learningProgress:{trackedTopics:Object.keys(state.libraryProgress||{}).length,developmentPlan:developmentPlan},
   analytics:{health:a.health||null,focus:a.focus||null,learning:a.learning||null,overview:a.overview||null,life:a.life||null}
  };
 }
