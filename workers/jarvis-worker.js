@@ -25,7 +25,15 @@ export default {
     if (request.method === "GET") {
       if (!env.JARVIS_ACCESS_CODE) return json({ error: "AI_NOT_CONFIGURED", message: "На Worker не настроен секрет JARVIS_ACCESS_CODE." }, 503, headers);
       if (!safeEqual(request.headers.get("X-Jarvis-Access-Code"), env.JARVIS_ACCESS_CODE)) return json({ error: "UNAUTHORIZED", message: "Код доступа Джарвиса неверный." }, 401, headers);
-      return json({ ok: true, service: "LIFEOS Jarvis", providers: { openai: !!env.OPENAI_API_KEY, gemini: !!env.GEMINI_API_KEY }, rateLimit: !!env.JARVIS_RATE_LIMITS }, 200, headers);
+      const url = new URL(request.url);
+      if (url.searchParams.get("action") === "memory:get") {
+        if (!env.JARVIS_MEMORY) return json({ error: "MEMORY_SYNC_NOT_CONFIGURED", message: "Для синхронизации создай KV binding JARVIS_MEMORY." }, 503, headers);
+        const id = url.searchParams.get("id") || "";
+        if (!/^[A-Za-z0-9_-]{20,64}$/.test(id)) return json({ error: "INVALID_MEMORY_ID" }, 400, headers);
+        const payload = await env.JARVIS_MEMORY.get("jarvis-memory:v1:" + id);
+        return json({ ok: true, payload: payload || null }, 200, headers);
+      }
+      return json({ ok: true, service: "LIFEOS Jarvis", providers: { openai: !!env.OPENAI_API_KEY, gemini: !!env.GEMINI_API_KEY }, rateLimit: !!env.JARVIS_RATE_LIMITS, memorySync: !!env.JARVIS_MEMORY }, 200, headers);
     }
     if (request.method !== "POST") return json({ error: "METHOD_NOT_ALLOWED" }, 405, headers);
     if (!env.JARVIS_ACCESS_CODE) return json({ error: "AI_NOT_CONFIGURED", message: "На Worker не настроен секрет JARVIS_ACCESS_CODE." }, 503, headers);
@@ -45,6 +53,15 @@ export default {
     let body;
     try { body = JSON.parse(rawBody); } catch (_) { return json({ error: "INVALID_JSON" }, 400, headers); }
     if (!body || typeof body !== "object" || Array.isArray(body)) return json({ error: "INVALID_BODY" }, 400, headers);
+    if (body.action === "memory:save") {
+      if (!env.JARVIS_MEMORY) return json({ error: "MEMORY_SYNC_NOT_CONFIGURED", message: "Для синхронизации создай KV binding JARVIS_MEMORY." }, 503, headers);
+      const id = typeof body.memoryId === "string" ? body.memoryId : "";
+      const payload = typeof body.payload === "string" ? body.payload : "";
+      if (!/^[A-Za-z0-9_-]{20,64}$/.test(id)) return json({ error: "INVALID_MEMORY_ID" }, 400, headers);
+      if (!payload || payload.length > 700000 || !/^[A-Za-z0-9_-]+$/.test(payload)) return json({ error: "INVALID_MEMORY_PAYLOAD" }, 400, headers);
+      await env.JARVIS_MEMORY.put("jarvis-memory:v1:" + id, payload);
+      return json({ ok: true, saved: true }, 200, headers);
+    }
     const message = typeof body.message === "string" ? body.message.trim().slice(0, 1600) : "";
     if (!message) return json({ error: "EMPTY_MESSAGE" }, 400, headers);
     const history = Array.isArray(body.history) ? body.history.slice(-12).map(function (m) {
@@ -55,6 +72,7 @@ export default {
       "Ты — Джарвис, персональный помощник внутри LIFEOS. Общайся естественно на русском, как внимательный собеседник, а не как меню команд.",
       "Отвечай по делу и кратко, но давай конкретные шаги. Используй контекст приложения, различай нулевые значения и отсутствие данных. Не выдумывай метрики и не утверждай, что выполнил действие в приложении, если это не было сделано отдельной командой.",
       "Помогай анализировать привычки, задачи, сон, воду, настроение, экранное время, обучение и зрительные симптомы. Не ставь диагнозы и не назначай лечение. При внезапной потере зрения, сильной боли, новых вспышках или множественных новых мушках советуй срочную очную медицинскую помощь.",
+      "Используй раздел jarvisMemory как явно сохранённую пользователем долговременную память. Учитывай только релевантные факты и предпочтения; если записи противоречат друг другу, уточни актуальность. Не утверждай, что помнишь то, чего нет в переданном контексте.",
       "Если данных недостаточно, прямо скажи, каких именно данных не хватает, и предложи один простой следующий шаг."
     ].join("\n");
     const provider = body.provider === "gemini" ? "gemini" : "openai";
