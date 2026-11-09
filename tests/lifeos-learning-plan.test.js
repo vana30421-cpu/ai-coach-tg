@@ -170,3 +170,21 @@ test('English and skill lessons are enriched with practical instructions and mas
  assert.equal(window.ENGLISH_125[0].steps.length,3);
  assert.ok(window.LIFEOSLearningContent.skillInfo(window.SKILLS_LIBRARY[0]).practice.length>30);
 });
+
+test('unlimited course selection schedules every selected lesson and extends the plan',()=>{
+ const w=loadPlanner(),ids=w.ALL_NEW_COURSES.map(course=>course.id);
+ const expected=w.ALL_NEW_COURSES.reduce((n,course)=>n+course.modules.reduce((m,module)=>m+module.lessons.length,0),0)+w.ENGLISH_125.length+w.SKILLS_LIBRARY.length;
+ const p=w.LIFEOS_LEARNING_PLAN_TESTS.buildSchedule('2026-11-09',ids,35,{english:true,skills:true});
+ const scheduled=p.days.flatMap(day=>day.tasks).filter(task=>['lesson','english','skill'].includes(task.type));
+ assert.ok(p.days.length>30,'long curricula must extend beyond the first month');
+ assert.equal(scheduled.length,expected,'every selected course, English and skill lesson must be scheduled');
+ assert.equal(new Set(scheduled.map(task=>task.id)).size,scheduled.length,'scheduled lessons must be unique');
+ assert.equal(p.endDate,p.days[p.days.length-1].date);
+ assert.ok(p.days.some(day=>day.tasks.some(task=>task.type==='month-review' || task.type==='weekly-review')));
+});
+test('learning plan setup advertises unlimited courses and has no five-course cap',()=>{
+ const planner=fs.readFileSync('lifeos-learning-plan.js','utf8');
+ assert.match(planner,/Можно выбрать любое количество/);
+ assert.doesNotMatch(planner,/ids\.length>5|не больше пяти курсов/);
+ assert.match(planner,/updateLearningPlanCourseCount/);
+});
