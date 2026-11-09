@@ -13,6 +13,7 @@ function loadPlanner() {
     save: () => {},
     toast: () => {},
     esc: value => String(value)
+  ,document: { getElementById: () => ({ innerHTML: '' }) }
   };
   vm.runInNewContext(source, { window, document: {}, Date, Math });
   return window;
