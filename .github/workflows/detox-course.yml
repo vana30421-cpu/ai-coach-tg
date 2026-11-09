@@ -5,6 +5,7 @@ on:
     paths:
       - 'app.js'
       - 'content.js'
+      - 'lifeos-detox-details.js'
       - 'tests/detox-course.test.js'
       - '.github/workflows/detox-course.yml'
   pull_request:
@@ -24,4 +25,5 @@ jobs:
           node-version: 22
       - run: node --check app.js
       - run: node --check content.js
+      - run: node --check lifeos-detox-details.js
       - run: node --test tests/detox-course.test.js
