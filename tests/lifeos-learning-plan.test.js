@@ -38,6 +38,9 @@ test('builds a complete 30-day plan with weekly reviews and real course lesson r
   assert.equal(plan.startDate, '2026-11-09');
   assert.equal(plan.endDate, '2026-12-08');
   assert.deepEqual(Array.from(new Set(plan.days.map(day => day.week))), [1, 2, 3, 4, 5]);
+  const scheduledLessons = plan.days.flatMap(day => day.tasks.filter(task => task.type === 'lesson').map(task => task.id));
+  assert.equal(new Set(scheduledLessons).size, scheduledLessons.length, 'lesson references must not repeat');
+  assert.ok(plan.days.some(day => day.tasks.some(task => task.type === 'practice')), 'remaining days should contain application practice');
   for (const day of plan.days) {
     assert.ok(day.tasks.some(task => task.type === 'reflection'));
     for (const task of day.tasks.filter(task => task.type === 'lesson')) {
