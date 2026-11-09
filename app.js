@@ -2350,22 +2350,29 @@ function renderSkills(){
   document.getElementById('app').innerHTML = html;
 }
 function openSkill(id){
-  var s = (window.SKILLS_LIBRARY||[]).find(function(x){ return x.id === id; });
-  if(!s) return;
-  var isDone = state.skillsProgress[id];
-  var html = '<div style="font-size:20px;font-weight:800;margin-bottom:12px;">' + esc(s.title) + '</div>';
-  if(s.theory) html += '<div class="card"><div class="lesson-section"><div class="lesson-section-title">📚</div><div class="lesson-content">' + formatLesson(s.theory) + '</div></div></div>';
-  if(!isDone) html += '<button class="btn btn-primary btn-block mt-3" onclick="completeSkill(\'' + id + '\')">✓ Изучено</button>';
-  openSheet(s.title, html);
+  var s=(window.SKILLS_LIBRARY||[]).find(function(x){return x.id===id;});if(!s)return;
+  var saved=state.skillsProgress[id],record=saved&&typeof saved==='object'?saved:{},steps=record.steps||[];
+  var html='<div class="card card-gradient"><h2>'+esc(s.objective||('Освоить навык '+s.title))+'</h2><div class="footnote">'+esc(s.duration||'21 день')+' · '+esc(s.level||'Все уровни')+'</div></div>';
+  if(s.theory)html+='<div class="card"><h3>📚 Как это работает</h3><div class="lesson-content">'+formatLesson(s.theory)+'</div></div>';
+  if(s.practice)html+='<div class="card"><h3>🎯 Практика</h3><ol>'+(Array.isArray(s.practice)?s.practice:[s.practice]).map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ol></div>';
+  html+='<div class="card"><h3>☑️ Чек-лист освоения</h3>';
+  (s.steps||[]).forEach(function(step,i){html+='<label class="list-row"><input type="checkbox" id="skillStep'+i+'" '+(steps[i]?'checked':'')+'><span>'+esc(step)+'</span></label>';});
+  html+='</div><div class="card"><h3>📏 Проверка результата</h3><div class="footnote">'+esc(s.metric||s.effect||'Зафиксируй конкретный результат.')+'</div><label class="field-label">Что именно сделал и что получилось?</label><textarea id="skillEvidence" rows="3" maxlength="1200" placeholder="Опиши реальную попытку и результат...">'+esc(record.evidence||'')+'</textarea><div class="footnote mt-2">'+esc(s.reflection||'Что получилось и что улучшить?')+'</div></div>';
+  html+='<button class="btn btn-primary btn-block mt-3" onclick="completeSkill(\''+id+'\')">'+(saved?'Сохранить результат':'✓ Подтвердить практику')+'</button>';
+  openSheet(s.title,html);
 }
 function completeSkill(id){
-  state.skillsProgress[id] = true;
-  addXP(20, 'lesson');addPetXP(3);
-  save();
-  toast('✓ +20 XP','success');
-  closeSheet();
-  renderSkills();
+  var s=(window.SKILLS_LIBRARY||[]).find(function(x){return x.id===id;});if(!s)return;
+  var steps=(s.steps||[]).map(function(_,i){return !!((document.getElementById('skillStep'+i)||{}).checked);});
+  var evidence=String((document.getElementById('skillEvidence')||{}).value||'').trim();
+  if(steps.length&&steps.some(function(x){return !x;}))return toast('Отметь все этапы практики','warning');
+  if(evidence.length<20)return toast('Опиши конкретную попытку и результат (минимум 20 символов)','warning');
+  var wasDone=!!state.skillsProgress[id];
+  state.skillsProgress[id]={completed:true,steps:steps,evidence:evidence,completedAt:nowISO()};
+  if(!wasDone){addXP(20,'lesson');addPetXP(3);}
+  save();toast(wasDone?'Результат обновлён':'Навык подтверждён · +20 XP','success');closeSheet();renderSkills();
 }
+
 function renderEnglish(){
   var all = window.ENGLISH_125 || [];
   var done = Object.keys(state.englishProgress||{}).length;
@@ -2386,21 +2393,28 @@ function renderEnglish(){
   document.getElementById('app').innerHTML = html;
 }
 function openEnglishLesson(id){
-  var l = (window.ENGLISH_125||[]).find(function(x){ return x.id === id; });
-  if(!l) return;
-  var isDone = state.englishProgress[id];
-  var html = '<div style="font-size:20px;font-weight:800;margin-bottom:12px;">' + esc(l.title) + '</div>';
-  if(l.theory) html += '<div class="card"><div class="lesson-section"><div class="lesson-section-title">📚</div><div class="lesson-content">' + formatLesson(l.theory) + '</div></div></div>';
-  if(!isDone) html += '<button class="btn btn-primary btn-block mt-3" onclick="completeEnglish(\'' + id + '\')">✓ Изучено</button>';
-  openSheet(l.title, html);
+  var l=(window.ENGLISH_125||[]).find(function(x){return x.id===id;});if(!l)return;
+  var saved=state.englishProgress[id],record=saved&&typeof saved==='object'?saved:{},steps=record.steps||[];
+  var html='<div class="card card-gradient"><div class="footnote">'+esc(l.level)+' · '+(l.duration||15)+' минут</div><h2>'+esc(l.objective||('Освоить тему '+l.title))+'</h2></div>';
+  if(l.theory)html+='<div class="card"><h3>📚 Объяснение и примеры</h3><div class="lesson-content">'+formatLesson(l.theory)+'</div></div>';
+  if(l.example)html+='<div class="card"><h3>💬 Пример</h3><div class="lesson-content">'+formatLesson(l.example)+'</div></div>';
+  if(l.practice)html+='<div class="card"><h3>✍️ Практическое задание</h3><div class="lesson-content">'+formatLesson(l.practice)+'</div></div>';
+  html+='<div class="card"><h3>☑️ Маршрут урока</h3>';
+  (l.steps||[]).forEach(function(step,i){html+='<label class="list-row"><input type="checkbox" id="englishStep'+i+'" '+(steps[i]?'checked':'')+'><span>'+esc(step)+'</span></label>';});
+  html+='</div><div class="card"><h3>🧠 Проверка знаний</h3><div class="footnote">'+esc(l.checkQuestion||'Объясни правило своими словами и приведи два новых примера.')+'</div><textarea id="englishRecall" rows="4" maxlength="1800" placeholder="Ответь без подсказок, приведи собственные примеры...">'+esc(record.recall||'')+'</textarea><div class="footnote mt-2">Критерий: '+esc(l.metric||'Пять собственных корректных примеров.')+'</div></div>';
+  html+='<button class="btn btn-primary btn-block mt-3" onclick="completeEnglish(\''+id+'\')">'+(saved?'Сохранить результат':'✓ Подтвердить освоение')+'</button>';
+  openSheet(l.title,html);
 }
 function completeEnglish(id){
-  state.englishProgress[id] = true;
-  addXP(15, 'lesson');addPetXP(2);
-  save();
-  toast('✓ +15 XP','success');
-  closeSheet();
-  renderEnglish();
+  var l=(window.ENGLISH_125||[]).find(function(x){return x.id===id;});if(!l)return;
+  var steps=(l.steps||[]).map(function(_,i){return !!((document.getElementById('englishStep'+i)||{}).checked);});
+  var recall=String((document.getElementById('englishRecall')||{}).value||'').trim();
+  if(steps.length&&steps.some(function(x){return !x;}))return toast('Отметь все этапы урока','warning');
+  if(recall.length<25)return toast('Напиши ответ своими словами (минимум 25 символов)','warning');
+  var wasDone=!!state.englishProgress[id];
+  state.englishProgress[id]={completed:true,steps:steps,recall:recall,completedAt:nowISO(),level:l.level,topic:l.title};
+  if(!wasDone){addXP(15,'lesson');addPetXP(2);}
+  save();toast(wasDone?'Результат обновлён':'Урок освоен · +15 XP','success');closeSheet();renderEnglish();
 }
 
 /* ============ RENDERCOURSE (общий для 12 курсов) ============ */
@@ -2440,7 +2454,7 @@ function renderCourseGeneric(course, progressKey){
       var key = course.id + '_' + mod.id + '_' + idx;
       var isDone = !!progress[key];
       html += '<div class="lesson-row ' + (isDone?'done':'') + '" onclick="openCourseLesson(\'' + course.id + '\',\'' + mod.id + '\',' + idx + ')">';
-      html += '<div class="lesson-num">' + (isDone?'✓':(idx+1)) + '</div>';
+      html += '<div class="lesson-num"><input type="checkbox" aria-label="Урок ' + esc(l.title) + (isDone?' изучен':' не изучен') + '" disabled ' + (isDone?'checked':'') + '></div>';
       html += '<div class="lesson-title">' + esc(l.title) + '</div>';
       html += '</div>';
     });
@@ -2453,9 +2467,9 @@ function openCourseLesson(courseId,moduleId,idx){
  var course=getCourseById(courseId);if(!course)return;var mod=null;(course.modules||[]).forEach(function(m){if(m.id===moduleId)mod=m;});if(!mod)return;var lesson=mod.lessons[idx];if(!lesson)return;
  currentCourseId=courseId;currentCourseModuleId=moduleId;currentCourseLessonIdx=idx;
  var key=courseId+'_'+moduleId+'_'+idx,pKey=courseId+'Progress',saved=(state[pKey]||{})[key],record=saved&&typeof saved==='object'?saved:{};
- var html='<div style="font-size:20px;font-weight:800;margin-bottom:12px;">'+esc(lesson.title)+'</div>';
+ var html='<div class="card card-gradient"><div class="footnote">'+esc(course.title)+' · '+esc(mod.title)+'</div><h2>'+esc(lesson.title)+'</h2>'+(lesson.objective?'<div class="footnote mt-2">'+esc(lesson.objective)+'</div>':'')+'</div>';
  if(lesson.theory)html+='<div class="card"><div class="lesson-section"><div class="lesson-section-title">📚 Теория</div><div class="lesson-content">'+formatLesson(lesson.theory)+'</div></div></div>';
- if(lesson.practice)html+='<div class="card"><div class="lesson-section practice"><div class="lesson-section-title">🎯 Практика</div><div class="lesson-content">'+esc(lesson.practice)+'</div></div></div>';
+ if(lesson.example)html+='<div class="card"><h3>💡 Пример</h3><div class="lesson-content">'+formatLesson(lesson.example)+'</div></div>';\n if(lesson.practice)html+='<div class="card"><div class="lesson-section practice"><div class="lesson-section-title">🎯 Практика</div><div class="lesson-content">'+formatLesson(lesson.practice)+'</div></div></div>';\n if(lesson.metric)html+='<div class="card"><h3>📏 Критерий результата</h3><div class="footnote">'+esc(lesson.metric)+'</div></div>';
  var steps=saved&&typeof saved==='object'&&Array.isArray(saved.steps)?saved.steps:[];
  html+='<div class="card"><h3>🧭 Маршрут прохождения урока</h3><div class="footnote mb-2">Не только прочитай: выполни практику и проверь, что понял.</div><label class="list-row"><input type="checkbox" id="courseStep1" '+(steps[0]?'checked':'')+'><span>Разобрал теорию и выписал 2–3 главные идеи</span></label><label class="list-row"><input type="checkbox" id="courseStep2" '+(steps[1]?'checked':'')+'><span>Выполнил практическое задание</span></label><label class="list-row"><input type="checkbox" id="courseStep3" '+(steps[2]?'checked':'')+'><span>Проверил результат и отметил, что улучшить</span></label></div>';
  html+='<div class="card"><h3>🧠 Проверка усвоения</h3><div class="footnote mb-2">Вспомни главное без подсказок и объясни, как применишь это на практике.</div><label class="field-label">Что ты понял своими словами?</label><textarea id="courseMasteryRecall" rows="4" maxlength="1800" placeholder="Напиши 2–4 предложения или пример…">'+esc(record.recall||'')+'</textarea><label class="field-label">Насколько уверенно применишь?</label><select id="courseMasteryRating">'+[1,2,3,4,5].map(function(n){return '<option value="'+n+'" '+(Number(record.rating||3)===n?'selected':'')+'>'+n+' / 5</option>';}).join('')+'</select><label class="field-label">Практический результат / пример</label><textarea id="courseMasteryExample" rows="2" maxlength="1000" placeholder="Что сделал, решил или где применил?">'+esc(record.example||'')+'</textarea></div>';
