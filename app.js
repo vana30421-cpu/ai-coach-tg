@@ -4348,6 +4348,15 @@ function buildJarvisLocalReply(text){
  if(/игр|играть/.test(q))return 'Игры должны запускаться как интерактивные задания, а не просить вручную вводить очки. Я обновляю игровой раздел, чтобы результат считался по реальным действиям.';
  return 'Я на связи в локальном режиме и вижу твои сохранённые показатели LIFEOS. Могу разобрать задачи, привычки, сон, воду, настроение, экранное время, зрение и обучение. Сейчас по данным: '+c.tasks.active+' активных задач, '+c.habits.completed+'/'+c.habits.today.length+' привычек сегодня. Для свободного диалога уровня языковой модели включи «Разговорный ИИ» и настрой серверный ключ. Что именно хочешь решить?';
 }
+function formatJarvisStatsSummary(a,analysis){
+  a=a||{};analysis=analysis||{};var o=a.overview||{},h=a.health||{},f=a.focus||{},l=a.learning||{},life=a.life||{},coverage=a.coverage||{};
+  var fmt=function(v,suffix){return v===null||v===undefined||v===''?'нет данных':String(v)+(suffix||'');};
+  var lines=['Сводка LIFEOS · '+(a.label||'выбранный период'),'','ЗАДАЧИ И ПРИВЫЧКИ','• Выполнено задач: '+fmt(o.tasksDonePeriod)+'; активных: '+fmt(o.tasksPending)+'; просрочено: '+fmt(o.overdue)+'.','• Отметки привычек: '+fmt(o.habitEvents)+'; активных привычек: '+fmt(o.habitTotal)+'.','','СОСТОЯНИЕ И ФОКУС','• Сон: '+fmt(h.sleepAvgHours,' ч в среднем')+'; цель: '+fmt(h.sleepTarget,' ч')+'.','• Настроение: '+fmt(h.moodAvg,'/10')+'; записей: '+fmt(h.moodEntries)+'.','• Экран: '+fmt(f.screenDailyAvg,' мин/день')+'; записей: '+fmt(f.screenEntries)+'; покрытие периода: '+fmt(f.screenCoveragePct,'%')+'.','• Фокус-сессий: '+fmt(f.focusSessions)+'; самооценок: '+fmt(f.checkins)+'.','','ОБУЧЕНИЕ И ЖИЗНЬ','• Учебных сессий: '+fmt(l.studySessions)+' ('+fmt(l.studyMinutes,' мин')+'); повторений FSRS ожидают: '+fmt(l.fsrsDue)+'.','• Тренировок: '+fmt(h.workouts)+'; прогулок: '+fmt(h.walks)+'; антистресс-практик: '+fmt(h.antistress)+'.','• Проекты: '+fmt(life.projectsDone)+' завершено из '+fmt(life.projects)+'; полнота данных: '+fmt(coverage.percent,'%')+'.'];
+  var items=Array.isArray(analysis.items)?analysis.items.slice(0,3):[];
+  if(items.length){lines.push('','СИГНАЛЫ ДЖАРВИСА');items.forEach(function(x,i){lines.push((i+1)+'. '+x.title+': '+x.detail+' Следующий шаг: '+x.action);});}
+  lines.push('','Ограничения: учитываются только сохранённые записи. Пустые поля не означают нулевой результат; экранное время не считывается автоматически. Это обзор данных, а не медицинская или финансовая оценка.');
+  return lines.join('\n');
+}
 function jarvisReply(text){
   var core=window.LifeOSJarvisCore,cmd=core?core.parseCommand(text):{type:'chat',text:text};
   var d=getJarvisState();
@@ -4368,9 +4377,9 @@ function jarvisReply(text){
     return list.length?'Активные задачи:\n'+list.map(function(t,i){return (i+1)+'. '+t.title;}).join('\n')+'\nЧтобы завершить задачу, напиши «выполни 1».':'Активных задач нет. Хороший момент выбрать следующую цель.';
   }
   if(cmd.type==='summary'){
-    var all=state.tasks||[],done=all.filter(function(t){return t.status==='completed';}).length,open=all.length-done;
-    var walks=Array.isArray(state.walks)?state.walks.filter(function(w){return w.date===today();}).length:0;
-    return 'Сводка:\n• Задач всего: '+all.length+'\n• Завершено: '+done+'; осталось: '+open+'.\n• Серия активности: '+(state.stats.streak||0)+' дн.\n• Прогулок сегодня: '+walks+'.\nСледующий шаг — выбери одну важную задачу.';
+    var stats=buildComprehensiveStats(typeof LIFE_STATS_PERIOD!=='undefined'?LIFE_STATS_PERIOD:30);
+    var analysis=getJarvisAnalytics(true);
+    return formatJarvisStatsSummary(stats,analysis);
   }
   if(cmd.type==='navigate'){navigate(cmd.page);return 'Открываю раздел «'+cmd.page+'».';}
   if(cmd.type==='focus'){startJarvisFocus(cmd.minutes||Number(d.focusDefault)||25);return 'Запустил фокус на '+(cmd.minutes||Number(d.focusDefault)||25)+' минут.';}
@@ -4392,7 +4401,7 @@ function sendJarvisMessage(){
  var text=input.value.trim();if(!text)return;input.value='';
  var d=getJarvisState();jarvisAddMessage('user',text);
  var core=window.LifeOSJarvisCore,parsed=core?core.parseCommand(text):{type:'chat'};
- if(parsed.type==='chat'&&d.cloudAIEnabled){sendJarvisCloudMessage(text);return;}
+ if(d.cloudAIEnabled&&(parsed.type==='chat'||parsed.type==='summary')){sendJarvisCloudMessage(text);return;}
  var reply=jarvisReply(text);if(reply)jarvisAddMessage('assistant',reply);
  if(parsed.type==='checkin')renderJarvisCheckin();
  else if(parsed.type==='methods')renderJarvisMethods();
