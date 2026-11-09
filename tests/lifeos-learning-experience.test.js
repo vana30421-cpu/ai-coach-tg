@@ -8,30 +8,26 @@ const index=fs.readFileSync('index.html','utf8');
 const sw=fs.readFileSync('sw.js','utf8');
 
 test('English academy contains five CEFR levels with real topic-specific lessons',()=>{
- for(const level of ['A1','A2','B1','B2','C1'])assert.match(academy,new RegExp("\\['"+level+"',"));
- assert.ok(['A1','A2','B1','B2','C1'].reduce((n,l)=>n+academy.split("['"+l+"',").length-1,0)>=20);
- assert.match(academy,/Present Simple: привычки и факты/);
- assert.match(academy,/Conditionals: 0, 1 и 2/);
- assert.match(academy,/Hedging: аккуратные утверждения/);
- assert.match(academy,/Критическая дискуссия/);
+ for(const level of ['A1','A2','B1','B2','C1'])assert.ok(academy.includes("['"+level+"',"));
+ assert.equal((academy.match(/\n\['(?:A1|A2|B1|B2|C1)'/g)||[]).length,21);
+ for(const topic of ['Present Simple: привычки и факты','Conditionals: 0, 1 и 2','Hedging: аккуратные утверждения','Критическая дискуссия'])assert.ok(academy.includes(topic));
 });
 
 test('English and skill lessons require practice, self-explanation and a knowledge check',()=>{
- assert.match(academy,/completeEnglishAcademyLesson/);
- assert.match(academy,/минимум 20 символов/);
+ assert.ok(academy.includes('completeEnglishAcademyLesson'));
+ assert.ok(academy.includes('минимум 20 символов'));
  assert.ok(academy.includes('correct=choice===(x[8]||[]).indexOf(x[7])'));
- assert.match(academy,/12 треков/);
- assert.match(academy,/completeSkillAcademyLesson/);
- assert.match(academy,/минимум 20 символов/);
- assert.match(academy,/минимум 10 символов/);
- assert.match(academy,/function completeRichCourseLesson/);
- assert.match(academy,/l\.quiz\.correctIndex/);
+ assert.ok(academy.includes('12 треков'));
+ assert.ok(academy.includes('completeSkillAcademyLesson'));
+ assert.ok(academy.includes('минимум 10 символов'));
+ assert.ok(academy.includes('function completeRichCourseLesson'));
+ assert.ok(academy.includes('l.quiz.correctIndex'));
 });
 
 test('navigation and offline cache load the academy',()=>{
- assert.match(app,/skills: window\.renderSkills \|\| renderSkills/);
- assert.match(app,/english: window\.renderEnglish \|\| renderEnglish/);
- assert.match(index,/lifeos-learning-experience\.js\?v=20261109-1/);
- assert.match(sw,/life-os-v115/);
- assert.match(sw,/lifeos-learning-experience\.js/);
+ assert.ok(app.includes('skills: window.renderSkills || renderSkills'));
+ assert.ok(app.includes('english: window.renderEnglish || renderEnglish'));
+ assert.ok(index.includes('lifeos-learning-experience.js?v=20261109-1'));
+ assert.ok(sw.includes('life-os-v115'));
+ assert.ok(sw.includes('lifeos-learning-experience.js'));
 });
