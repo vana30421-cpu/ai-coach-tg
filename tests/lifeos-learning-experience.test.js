@@ -9,7 +9,7 @@ const sw=fs.readFileSync('sw.js','utf8');
 
 test('English academy contains five CEFR levels with real topic-specific lessons',()=>{
  for(const level of ['A1','A2','B1','B2','C1'])assert.match(academy,new RegExp("\\['"+level+"',"));
- assert.ok((academy.match(/\\['(?:A1|A2|B1|B2|C1)'/g)||[]).length>=20);
+ assert.ok(['A1','A2','B1','B2','C1'].reduce((n,l)=>n+academy.split("['"+l+"',").length-1,0)>=20);
  assert.match(academy,/Present Simple: привычки и факты/);
  assert.match(academy,/Conditionals: 0, 1 и 2/);
  assert.match(academy,/Hedging: аккуратные утверждения/);
