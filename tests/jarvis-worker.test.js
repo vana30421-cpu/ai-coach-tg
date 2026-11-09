@@ -106,6 +106,17 @@ test('encrypted memory is stored and read through the authenticated KV routes', 
   assert.equal(loaded.status, 200);
   assert.equal((await loaded.json()).payload, payload);
 });
+test('memory endpoint accepts encrypted backups larger than the chat request limit', async () => {
+  let stored = null;
+  const worker = createWorker(async () => { throw new Error('AI provider must not be called'); });
+  const memoryEnv = { ...env, JARVIS_MEMORY: { get: async () => stored, put: async (key, value) => { stored = value; } } };
+  const payload = 'A'.repeat(30000);
+  const req = request({ action: 'memory:save', memoryId: 'abcdefghijklmnopqrstuvwx', payload });
+  req.url = 'https://worker.test/';
+  const response = await worker.fetch(req, memoryEnv);
+  assert.equal(response.status, 200);
+  assert.equal(stored, payload);
+});
 test('memory endpoint validates opaque IDs and payload characters', async () => {
   const worker = createWorker(async () => { throw new Error('AI provider must not be called'); });
   const memoryEnv = { ...env, JARVIS_MEMORY: { get: async () => null, put: async () => {} } };
