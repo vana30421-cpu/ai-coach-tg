@@ -133,7 +133,7 @@ function build(start,ids,mins,opts){opts=opts||{};var lessons=flatten(ids,opts),
 function plan(){var p=state().learningDevelopmentPlan;return p&&Array.isArray(p.days)?p:null;}
 function done(day,task){
  var s=state(),p=plan(),manual=!!(p&&p.completed&&p.completed[day.date]&&p.completed[day.date][task.id]);
- if(task.type==='lesson'){var progress=s[task.courseId+'Progress']||{};return !!progress[task.courseId+'_'+task.moduleId+'_'+task.index];}if(task.type==='english'){var ep=s.englishProgress||{},er=ep[task.idRef];return !!(er&&(er.completed===true||typeof er==='object'));}if(task.type==='skill'){var sp=s.skillsProgress||{},sr=sp[task.idRef];return !!(sr&&(sr.completed===true||typeof sr==='object'));}
+ if(task.type==='lesson'){var progress=s[task.courseId+'Progress']||{};return !!progress[task.courseId+'_'+task.moduleId+'_'+task.index];}if(task.type==='english'){var ep=s.englishProgress||{},er=ep[task.idRef];return !!er;}if(task.type==='skill'){var sp=s.skillsProgress||{},sr=sp[task.idRef];return !!sr;}
  if(task.type==='life-habit')return manual||(Array.isArray(s.habits)&&s.habits.some(function(x){return x.lastCompletedDate===day.date;}));
  if(task.type==='life-movement')return manual||['customWorkouts','walks'].some(function(key){return Array.isArray(s[key])&&s[key].some(function(x){return String(x.date||x.createdAt||x.created_at||'').slice(0,10)===day.date;});});
  if(task.type==='life-sleep')return manual||(Array.isArray(s.sleepEntries)&&s.sleepEntries.some(function(x){return x.date===day.date;}));
