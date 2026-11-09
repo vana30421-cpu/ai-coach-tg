@@ -4365,7 +4365,7 @@ async function testJarvisConnection(){
   if(button){button.disabled=false;button.textContent='Проверить подключение';}
  }
 }
-async async function sendJarvisCloudMessage(text){
+async function sendJarvisCloudMessage(text){
  var d=getJarvisState(),placeholder={role:'assistant',text:'Думаю над ответом…',at:nowISO(),pending:true};
  d.messages.push(placeholder);if(d.messages.length>160)d.messages=d.messages.slice(-160);save();renderJarvis();
  try{
