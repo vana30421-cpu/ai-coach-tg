@@ -6,6 +6,8 @@ function state(){
  if(!app.jarvis||typeof app.jarvis!=='object')app.jarvis={};
  if(!app.jarvis.memory||typeof app.jarvis.memory!=='object')app.jarvis.memory={items:[],updatedAt:null};
  if(!Array.isArray(app.jarvis.memory.items))app.jarvis.memory.items=[];
+ if(!app.jarvis.memory.deleted||typeof app.jarvis.memory.deleted!=='object')app.jarvis.memory.deleted={memory:[],customSkills:[],reminders:[]};
+ ['memory','customSkills','reminders'].forEach(function(k){if(!Array.isArray(app.jarvis.memory.deleted[k]))app.jarvis.memory.deleted[k]=[];});
  if(!app.jarvis.memory.sync||typeof app.jarvis.memory.sync!=='object')app.jarvis.memory.sync={id:'',key:'',lastSyncAt:null};
  return app.jarvis.memory;
 }
@@ -24,8 +26,8 @@ function add(text,category){
  if(m.items.length>500)m.items=m.items.slice(-500);
  m.updatedAt=new Date().toISOString();save();return old||m.items[m.items.length-1];
 }
-function remove(id){var m=state();if(!m)return false;var n=m.items.length;m.items=m.items.filter(function(x){return x.id!==id;});if(m.items.length!==n){m.updatedAt=new Date().toISOString();save();return true;}return false;}
-function clear(){var m=state();if(!m)return;m.items=[];m.updatedAt=new Date().toISOString();save();}
+function remove(id){var m=state();if(!m)return false;var n=m.items.length;m.items=m.items.filter(function(x){return x.id!==id;});if(m.items.length!==n){m.deleted.memory=Array.from(new Set(m.deleted.memory.concat([id]))).slice(-2000);m.updatedAt=new Date().toISOString();save();return true;}return false;}
+function clear(){var m=state();if(!m)return;m.deleted.memory=Array.from(new Set(m.deleted.memory.concat(m.items.map(function(x){return x.id;})))).slice(-2000);m.items=[];m.updatedAt=new Date().toISOString();save();}
 function search(query,limit){
  var q=clean(query,300).toLowerCase().replace(/ё/g,'е'),terms=q.split(/[^a-zа-я0-9]+/i).filter(function(x){return x.length>1;});
  return list().map(function(item){
@@ -87,11 +89,11 @@ async function copySyncKey(){
 function mergeById(local,remote,stamp){
  var map={};(Array.isArray(local)?local:[]).concat(Array.isArray(remote)?remote:[]).forEach(function(item){
   if(!item||typeof item!=='object'||!item.id)return;
-  var old=map[item.id],a=Date.parse(item[stamp]||item.updatedAt||item.createdAt||0)||0,b=old?Date.parse(old[stamp]||old.updatedAt||old.createdAt||0)||0:0;
+  var old=map[item.id],a=Date.parse(item.updatedAt||item[stamp]||item.createdAt||0)||0,b=old?Date.parse(old.updatedAt||old[stamp]||old.createdAt||0)||0:0;
   if(!old||a>=b)map[item.id]=item;
  });return Object.keys(map).map(function(id){return map[id];});
 }
-async async function syncMemory(){
+async function syncMemory(){
  var m=state(),sync=m.sync,d=root.state&&root.state.jarvis||{};
  if(!sync.id||!sync.key)throw new Error('Сначала создай или примени ключ синхронизации.');
  if(!d.apiUrl||!d.accessCode)throw new Error('Сначала настрой URL Worker и код доступа Джарвиса.');
@@ -109,13 +111,14 @@ async async function syncMemory(){
   remote=JSON.parse(new TextDecoder().decode(plain));
   if(!remote||remote.version!==1)throw new Error('Формат облачной копии не поддерживается.');
  }
- var merged={version:1,memory:mergeById(m.items,remote.memory,'updatedAt').slice(-500),customSkills:mergeById(customSkills(),remote.customSkills,'createdAt').slice(-30),reminders:mergeById(reminders(),remote.reminders,'createdAt').slice(-100)};
+ var remoteDeleted=remote.deleted||{},deleted={memory:Array.from(new Set((m.deleted.memory||[]).concat(Array.isArray(remoteDeleted.memory)?remoteDeleted.memory:[]))).slice(-2000),customSkills:Array.from(new Set((m.deleted.customSkills||[]).concat(Array.isArray(remoteDeleted.customSkills)?remoteDeleted.customSkills:[]))).slice(-2000),reminders:Array.from(new Set((m.deleted.reminders||[]).concat(Array.isArray(remoteDeleted.reminders)?remoteDeleted.reminders:[]))).slice(-2000)};
+ var merged={version:1,deleted:deleted,memory:mergeById(m.items,remote.memory,'updatedAt').filter(function(x){return deleted.memory.indexOf(x.id)<0;}).slice(-500),customSkills:mergeById(customSkills(),remote.customSkills,'createdAt').filter(function(x){return deleted.customSkills.indexOf(x.id)<0;}).slice(-30),reminders:mergeById(reminders(),remote.reminders,'createdAt').filter(function(x){return deleted.reminders.indexOf(x.id)<0;}).slice(-100)};
  var ivOut=root.crypto.getRandomValues(new Uint8Array(12)),plainOut=new TextEncoder().encode(JSON.stringify(merged)),cipherOut=await root.crypto.subtle.encrypt({name:'AES-GCM',iv:ivOut},key,plainOut),packedOut=new Uint8Array(ivOut.length+cipherOut.byteLength);packedOut.set(ivOut);packedOut.set(new Uint8Array(cipherOut),ivOut.length);
  var payload=b64url(packedOut);if(payload.length>700000)throw new Error('Облачная копия слишком большая. Удали лишние записи или экспортируй архив локально.');
  var saveResponse=await root.fetch(d.apiUrl,{method:'POST',headers:Object.assign({'Content-Type':'application/json'},headers),body:JSON.stringify({action:'memory:save',memoryId:sync.id,payload:payload})});
  var saved=await saveResponse.json().catch(function(){return {};});
  if(!saveResponse.ok)throw new Error(saved.message||'Не удалось записать облачную память ('+saveResponse.status+').');
- m.items=merged.memory;m.updatedAt=new Date().toISOString();root.state.jarvis.customSkills=merged.customSkills;root.state.jarvis.reminders=merged.reminders;
+ m.items=merged.memory;m.deleted=merged.deleted;m.updatedAt=new Date().toISOString();root.state.jarvis.customSkills=merged.customSkills;root.state.jarvis.reminders=merged.reminders;
  sync.lastSyncAt=new Date().toISOString();save();if(root.renderJarvis)root.renderJarvis();
  return merged;
 }
@@ -143,7 +146,7 @@ function renderCustomSkills(){
  html+='<div class="grid-2 mt-2"><button class="btn btn-ghost" onclick="exportJarvisData()">Экспорт данных</button><label class="btn btn-ghost" style="text-align:center">Импорт JSON<input type="file" accept="application/json,.json" onchange="importJarvisData(this)" style="display:none"></label></div></section>';return html;
 }
 function exportData(){
- var app=root.state||{},payload={version:1,exportedAt:new Date().toISOString(),memory:state()?state().items:[],customSkills:customSkills(),reminders:reminders()};
+ var app=root.state||{},payload={version:1,exportedAt:new Date().toISOString(),memory:state()?state().items:[],customSkills:customSkills(),reminders:reminders(),deleted:state()?state().deleted:{memory:[],customSkills:[],reminders:[]}};
  try{var blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='lifeos-jarvis-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(url);if(root.toast)root.toast('Резервная копия подготовлена','success');}catch(e){if(root.toast)root.toast('Не удалось экспортировать данные','error');}
 }
 function importData(input){
@@ -171,7 +174,7 @@ function saveSkillFromUI(){
  list.push({id:uid(),name:name,prompt:prompt,createdAt:new Date().toISOString()});save();if(root.toast)root.toast('Навык создан','success');if(root.renderJarvis)root.renderJarvis();
 }
 function runSkill(id){var x=customSkills().find(function(s){return s.id===id;});if(!x)return;var enabled=!!(root.state&&root.state.jarvis&&root.state.jarvis.cloudAIEnabled);if(!enabled){if(root.toast)root.toast('Для запуска навыка включи облачный ИИ в настройках Джарвиса','warning');if(root.navigate)root.navigate('ai');return;}if(root.jarvisQuick)root.jarvisQuick(x.prompt);}
-function deleteSkill(id){var app=root.state;if(!app||!app.jarvis)return;app.jarvis.customSkills=customSkills().filter(function(x){return x.id!==id;});save();if(root.renderJarvis)root.renderJarvis();}
+function deleteSkill(id){var app=root.state;if(!app||!app.jarvis)return;var mem=state();app.jarvis.customSkills=customSkills().filter(function(x){return x.id!==id;});mem.deleted.customSkills=Array.from(new Set(mem.deleted.customSkills.concat([id]))).slice(-2000);save();if(root.renderJarvis)root.renderJarvis();}
 function reminders(){
  var app=root.state;if(!app)return [];
  if(!app.jarvis)app.jarvis={};
@@ -190,10 +193,10 @@ function saveReminderFromUI(){
  if(root.Notification&&root.Notification.permission==='default')root.Notification.requestPermission().catch(function(){});
  if(root.toast)root.toast('Напоминание сохранено','success');if(root.renderJarvis)root.renderJarvis();
 }
-function deleteReminder(id){var app=root.state;if(!app||!app.jarvis)return;app.jarvis.reminders=reminders().filter(function(x){return x.id!==id;});save();if(root.renderJarvis)root.renderJarvis();}
+function deleteReminder(id){var app=root.state;if(!app||!app.jarvis)return;var mem=state();app.jarvis.reminders=reminders().filter(function(x){return x.id!==id;});mem.deleted.reminders=Array.from(new Set(mem.deleted.reminders.concat([id]))).slice(-2000);save();if(root.renderJarvis)root.renderJarvis();}
 function checkReminders(){
  var due=reminders().filter(function(x){return !x.done&&new Date(x.at).getTime()<=Date.now();});
- due.forEach(function(x){x.done=true;try{if(root.Notification&&root.Notification.permission==='granted')new root.Notification('LIFEOS · Джарвис',{body:x.text,tag:'lifeos-'+x.id});}catch(e){}if(root.toast)root.toast('⏰ '+x.text,'info',6000);});
+ due.forEach(function(x){x.done=true;x.updatedAt=new Date().toISOString();try{if(root.Notification&&root.Notification.permission==='granted')new root.Notification('LIFEOS · Джарвис',{body:x.text,tag:'lifeos-'+x.id});}catch(e){}if(root.toast)root.toast('⏰ '+x.text,'info',6000);});
  if(due.length)save();
 }
 
