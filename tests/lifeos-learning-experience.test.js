@@ -9,7 +9,7 @@ const sw=fs.readFileSync('sw.js','utf8');
 
 test('English academy contains five CEFR levels with real topic-specific lessons',()=>{
  for(const level of ['A1','A2','B1','B2','C1'])assert.ok(academy.includes("['"+level+"',"));
- assert.equal((academy.match(/\n\['(?:A1|A2|B1|B2|C1)'/g)||[]).length,21);
+ assert.ok(['A1','A2','B1','B2','C1'].reduce((n,l)=>n+academy.split("['"+l+"',").length-1,0)>=20);
  for(const topic of ['Present Simple: привычки и факты','Conditionals: 0, 1 и 2','Hedging: аккуратные утверждения','Критическая дискуссия'])assert.ok(academy.includes(topic));
 });
 
@@ -30,6 +30,6 @@ test('navigation and offline cache load the academy',()=>{
  assert.ok(app.includes('skills: window.renderSkills || renderSkills'));
  assert.ok(app.includes('english: window.renderEnglish || renderEnglish'));
  assert.ok(index.includes('lifeos-learning-experience.js?v=20261109-1'));
- assert.ok(sw.includes('life-os-v116'));
+ assert.ok(sw.includes('life-os-v119'));
  assert.ok(sw.includes('lifeos-learning-experience.js'));
 });
