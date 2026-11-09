@@ -6,6 +6,8 @@ const vm = require('node:vm');
 
 const contentSource = fs.readFileSync('content.js', 'utf8');
 const appSource = fs.readFileSync('app.js', 'utf8');
+const indexSource = fs.readFileSync('index.html', 'utf8');
+const swSource = fs.readFileSync('sw.js', 'utf8');
 const enhancementSource = fs.readFileSync('lifeos-detox-enhancements.js', 'utf8');
 
 test('front-end scripts parse without syntax errors', () => {
@@ -128,4 +130,12 @@ test('detox day screen renders detailed explanation, method, criteria and safety
  assert.match(appSource,/Критерий выполнения/);
  assert.match(appSource,/Безопасность и адаптация/);
  assert.match(appSource,/Если сложно/);
+});
+
+test('detox task enrichment loads after source content and is cached offline',()=>{
+ assert.match(indexSource,/content\.js[^\n]*\n<script defer src="lifeos-detox-enhancements\.js/);
+ assert.match(indexSource,/lifeos-detox-details\.js/);
+ assert.match(swSource,/lifeos-detox-enhancements\.js/);
+ assert.match(swSource,/lifeos-detox-details\.js/);
+ assert.match(swSource,/life-os-v114/);
 });
