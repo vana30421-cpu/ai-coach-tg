@@ -290,3 +290,19 @@ test('Gemini privacy documentation discloses second-brain excerpts sent with opt
  assert.match(setupDoc,/до 240 символов на заметку/);
  assert.match(setupDoc,/Не включай функцию, если не согласен передавать эти данные/);
 });
+
+test('Jarvis always has a configured default Worker endpoint and a useful offline conversational fallback',()=>{
+ assert.match(app,/state\.jarvis\.apiUrl==='string'\)state\.jarvis\.apiUrl='https:\/\/lifeos-jarvis-api\.vana30421\.workers\.dev'/);
+ assert.match(app,/return buildJarvisLocalReply\(text\);/);
+ assert.match(app,/function buildJarvisLocalReply\(text\)/);
+ assert.match(app,/Сервер не отвечает или недоступен из Telegram WebView/);
+ assert.match(app,/window\.renderJarvis=renderJarvis/);
+ assert.match(app,/window\.renderStats=renderStats/);
+});
+test('statistics renderer is exposed for diagnostics and uses safe analytics data',()=>{
+ assert.match(app,/function renderStats\(\)\{/);
+ assert.match(app,/getSafeLifeStats\(LIFE_STATS_PERIOD\)/);
+ assert.match(app,/a\.daily\.forEach/);
+ assert.match(app,/window\.renderStats=renderStats/);
+ assert.match(app,/window\.renderDetailedStats=renderDetailedStats/);
+});
