@@ -214,7 +214,7 @@ function saveFromUI(){
  catch(e){if(root.toast)root.toast(e.message,'error');}
 }
 function removeFromUI(id){if(!remove(id))return;if(root.toast)root.toast('Запись удалена','success');if(root.renderJarvis)root.renderJarvis();}
-root.LIFEOS_JARVIS_MEMORY={list:list,add:add,remove:remove,clear:clear,search:search,context:context,render:render};
+root.LIFEOS_JARVIS_MEMORY={list:list,add:add,remove:remove,clear:clear,search:search,context:context,render:render,sync:syncMemory};
 root.createJarvisMemorySyncKey=createSyncKey;
 root.copyJarvisMemorySyncKey=copySyncKey;
 root.applyJarvisMemorySyncKey=applySyncKey;
