@@ -1408,6 +1408,7 @@ function renderHabitList(){
   html += '</div></div>';
   if(habits.length){
     html += '<div class="card card-gradient"><div style="font-size:12px;opacity:.9;">Сегодня</div><div style="font-size:36px;font-weight:800;">' + doneToday + ' / ' + todayHabits.length + '</div></div>';
+    html += '<div class="footnote mb-2">Свайпни карточку влево или вправо, чтобы отметить или снять выполнение. Вертикальная прокрутка остаётся доступной.</div>';
     var cats = window.HABIT_CATEGORIES || [];
     html += '<div class="quick-tabs"><button class="quick-tab ' + (habitCatFilter==='all'?'active':'') + '" onclick="habitCatFilter=\'all\';renderHabitList()">Все (' + habits.length + ')</button>';
     cats.forEach(function(c){
