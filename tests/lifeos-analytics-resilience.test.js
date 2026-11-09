@@ -29,6 +29,6 @@ test('Jarvis local analytics context and summary use guarded statistics',()=>{
 
 test('updated analytics assets are versioned and available offline',()=>{
  assert.match(index,/app\.js\?v=20261109-21/);
- assert.match(sw,/life-os-v135/);
+ assert.match(sw,/life-os-v136/);
  assert.match(sw,/\.\/app\.js/);
 });
