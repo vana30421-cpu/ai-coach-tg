@@ -19,7 +19,7 @@ test('English academy contains five CEFR levels with real topic-specific lessons
 test('English and skill lessons require practice, self-explanation and a knowledge check',()=>{
  assert.match(academy,/completeEnglishAcademyLesson/);
  assert.match(academy,/минимум 20 символов/);
- assert.match(academy,/choice===\\(x\\[8\\]\\|\\|\\[\\]\\)\\.indexOf\\(x\\[7\\]\\)/);
+ assert.match(academy,/correct=choice===\\(x\\[8\\]\\|\\|\\[\\]\\)\\.indexOf\\(x\\[7\\]\\)/);
  assert.match(academy,/12 треков/);
  assert.match(academy,/completeSkillAcademyLesson/);
  assert.match(academy,/минимум 20 символов/);
