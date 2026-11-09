@@ -54,7 +54,7 @@ function render(){
 }
 function b64url(bytes){
  var binary='';for(var i=0;i<bytes.length;i++)binary+=String.fromCharCode(bytes[i]);
- return root.btoa(binary).replace(/\\+/g,'-').replace(/\\//g,'_').replace(/=+$/,'');
+ return root.btoa(binary).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 }
 function unb64url(value){
  var text=String(value||'').replace(/-/g,'+').replace(/_/g,'/');while(text.length%4)text+='=';
@@ -85,7 +85,7 @@ function mergeById(local,remote,stamp){
   if(!old||a>=b)map[item.id]=item;
  });return Object.keys(map).map(function(id){return map[id];});
 }
-async function syncMemory(){
+async async function syncMemory(){
  var m=state(),sync=m.sync,d=root.state&&root.state.jarvis||{};
  if(!sync.id||!sync.key)throw new Error('Сначала создай или примени ключ синхронизации.');
  if(!d.apiUrl||!d.accessCode)throw new Error('Сначала настрой URL Worker и код доступа Джарвиса.');
