@@ -29,6 +29,7 @@ jobs:
           node --check lifeos-systems.js
           node --check lifeos-workspaces.js
           node --check lifeos-learning-plan.js
+          node --check lifeos-detox-details.js
           node --check sw.js
       - name: Check Worker module syntax
         run: |
