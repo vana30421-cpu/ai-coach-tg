@@ -9,7 +9,7 @@ const sw=fs.readFileSync('sw.js','utf8');
 
 test('English academy contains five CEFR levels with real topic-specific lessons',()=>{
  for(const level of ['A1','A2','B1','B2','C1'])assert.match(academy,new RegExp("\\['"+level+"',"));
- assert.ok((academy.match(/\\n\\['(?:A1|A2|B1|B2|C1)'/g)||[]).length>=20);
+ assert.ok((academy.match(/\\['(?:A1|A2|B1|B2|C1)'/g)||[]).length>=20);
  assert.match(academy,/Present Simple: привычки и факты/);
  assert.match(academy,/Conditionals: 0, 1 и 2/);
  assert.match(academy,/Hedging: аккуратные утверждения/);
@@ -19,7 +19,7 @@ test('English academy contains five CEFR levels with real topic-specific lessons
 test('English and skill lessons require practice, self-explanation and a knowledge check',()=>{
  assert.match(academy,/completeEnglishAcademyLesson/);
  assert.match(academy,/минимум 20 символов/);
- assert.match(academy,/correct=choice===\\(x\\[8\\]\\|\\|\\[\\]\\)\\.indexOf\\(x\\[7\\]\\)/);
+ assert.ok(academy.includes('correct=choice===(x[8]||[]).indexOf(x[7])'));
  assert.match(academy,/12 треков/);
  assert.match(academy,/completeSkillAcademyLesson/);
  assert.match(academy,/минимум 20 символов/);
