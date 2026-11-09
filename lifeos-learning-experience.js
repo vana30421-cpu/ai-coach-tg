@@ -104,7 +104,7 @@ function completeRichCourseLesson(courseId,moduleId,index){
  if(steps.some(function(x){return !x;}))return toast('Отметь все этапы урока','warning');if(recall.trim().length<25)return toast('Объясни материал своими словами (минимум 25 символов)','warning');if(example.trim().length<10)return toast('Добавь пример применения','warning');if(!quizOk)return toast('Ответ неверный — перечитай объяснение и попробуй ещё раз','warning');
  var s=st(),key=courseId+'_'+moduleId+'_'+index,pKey=courseId+'Progress';if(!s[pKey])s[pKey]={};var old=s[pKey][key],was=!!old,d=new Date();d.setDate(d.getDate()+4);s[pKey][key]={completed:true,completedAt:old&&old.completedAt||new Date().toISOString(),updatedAt:new Date().toISOString(),steps:steps,recall:recall.trim(),example:example.trim(),quizCorrect:true,nextReviewAt:d.toISOString().slice(0,10),reviewCount:(old&&old.reviewCount||0)+1};save();if(!was&&window.addXP)window.addXP(15,'lesson');if(!was&&window.addPetXP)window.addPetXP(2);toast('Урок усвоен · повтор через 4 дня','success');window.closeSheet();window.renderCourseGeneric(course,pKey);
 }
-window.renderEnglish=renderEnglish;window.openEnglishAcademyLesson=openEnglishAcademyLesson;window.completeEnglishAcademyLesson=completeEnglishAcademyLesson;
+window.LIFEOS_ENGLISH_LESSONS=EN;window.LIFEOS_SKILL_TRACKS=SK;window.renderEnglish=renderEnglish;window.openEnglishAcademyLesson=openEnglishAcademyLesson;window.completeEnglishAcademyLesson=completeEnglishAcademyLesson;
 window.renderSkills=renderSkills;window.openSkillAcademyLesson=openSkillAcademyLesson;window.completeSkillAcademyLesson=completeSkillAcademyLesson;
 window.openCourseLesson=richOpenCourseLesson;window.completeRichCourseLesson=completeRichCourseLesson;
 buildCourses();
