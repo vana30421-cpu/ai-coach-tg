@@ -4301,7 +4301,7 @@ function jarvisAddMessage(role,text){
   var d=getJarvisState();d.messages.push({role:role,text:String(text||'').slice(0,3000),at:nowISO()});
   if(d.messages.length>160)d.messages=d.messages.slice(-160);save();
 }
-function buildJarvisAppContext(){
+function buildJarvisAppContext(memoryQuery){
  if(window.ensureLifeOSBrain){try{window.ensureLifeOSBrain();}catch(e){}}
  var a=getSafeLifeStats(30)||{};
  var date=today(),tasks=(state.tasks||[]).filter(function(t){return t.status!=='completed';}),habits=[];
@@ -4332,7 +4332,7 @@ function buildJarvisAppContext(){
   journalHistory:journalRecent,
   finance:{month:month,income:income,expense:expense,balance:income-expense,entries:finance.length},
   learningProgress:{trackedTopics:Object.keys(state.libraryProgress||{}).length,developmentPlan:developmentPlan},
-  jarvisMemory:window.LIFEOS_JARVIS_MEMORY?window.LIFEOS_JARVIS_MEMORY.context(''):[],
+  jarvisMemory:window.LIFEOS_JARVIS_MEMORY?window.LIFEOS_JARVIS_MEMORY.context(memoryQuery||''):[],
   analytics:{health:a.health||null,focus:a.focus||null,learning:a.learning||null,overview:a.overview||null,life:a.life||null}
  };
 }
@@ -4376,7 +4376,7 @@ async function sendJarvisCloudMessage(text){
  try{
   var history=d.messages.slice(-14,-2).map(function(m){return {role:m.role==='assistant'?'assistant':'user',content:m.text};});
   var apiUrl=String(d.apiUrl||'').trim();if(!/^https:\/\//i.test(apiUrl))throw new Error('Укажи HTTPS URL своего Cloudflare Pages Function в настройках Джарвиса.');
-  var response=await fetch(apiUrl,{method:'POST',headers:{'Content-Type':'application/json','X-Jarvis-Access-Code':String(d.accessCode||'')},body:JSON.stringify({message:text,history:history,provider:d.provider||'openai',context:buildJarvisAppContext()})});
+  var response=await fetch(apiUrl,{method:'POST',headers:{'Content-Type':'application/json','X-Jarvis-Access-Code':String(d.accessCode||'')},body:JSON.stringify({message:text,history:history,provider:d.provider||'openai',context:buildJarvisAppContext(text)})});
   var data=await response.json().catch(function(){return {};});
   if(!response.ok){
    if(data.error==='AI_NOT_CONFIGURED')throw new Error('На сервере не настроен выбранный провайдер: добавь '+(d.provider==='gemini'?'GEMINI_API_KEY':'OPENAI_API_KEY')+' и JARVIS_ACCESS_CODE в секреты Cloudflare Pages.');
