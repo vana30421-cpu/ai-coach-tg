@@ -224,3 +224,13 @@ p,.subtitle,.page-subtitle,.list-title,.list-subtitle,.task-title,.task-meta,.fo
   backdrop-filter:blur(14px) saturate(150%)!important;
  }
 }
+
+/* Android WebView: override legacy inline declarations that disabled blur. */
+@media(max-width:759px){
+ .card,.group-card,.method-card,.insight-card,.level-hero,.profile-hero,.lesson-section,.detox-progress-hero,
+ .list-row,.task-item,.stat-item,.group-item,.compact-item,.search-bar,.msg,.progress-ring-hero{
+  -webkit-backdrop-filter:blur(15px) saturate(155%)!important;
+  backdrop-filter:blur(15px) saturate(155%)!important;
+ }
+ .theme-effect{display:block!important;opacity:.82!important}
+}
