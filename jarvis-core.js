@@ -3,6 +3,7 @@
   function normalize(text){return String(text||'').toLowerCase().replace(/ё/g,'е').trim().replace(/\s+/g,' ');}
   var routes=[
     {id:'dashboard',keys:['главная','главную','домой','дашборд']},
+    {id:'leisure',keys:['досуг','книги','фильмы','сериалы','моя коллекция']},
     {id:'tasks',keys:['задачи','задачам','задач']},
     {id:'learning',keys:['обучение','учеба','учиться','уроки']},
     {id:'memory',keys:['память','запоминание','мнемоника']},
