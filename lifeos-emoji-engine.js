@@ -34,9 +34,8 @@
  '🔒':['M5 10h14v11H5z','M8 10V7a4 4 0 0 1 8 0v3','M12 14v3'],
  '🌱':['M12 21v-9','M12 12C4 12 3 6 3 4c6-1 10 2 9 8','M12 15c0-6 5-9 9-9 0 5-2 9-9 9Z'],
  '🎮':['M6 8h12a4 4 0 0 1 4 4l-1 6a2 2 0 0 1-3 1l-3-3H9l-3 3a2 2 0 0 1-3-1l-1-6a4 4 0 0 1 4-4Z','M7 11v4m-2-2h4m7-1h.01m3 2h.01'],
- '🌈':['M3 18a9 9 0 0 1 18 0','M7 18a5 5 0 0 1 10 0','M10 18a2 2 0 0 1 4 0']
- };
- '🏃':["M4 17c3-1 5-4 6-7l2 2 4 1","M12 4a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z","M3 21h6l3-5"],
+ '🌈':['M3 18a9 9 0 0 1 18 0','M7 18a5 5 0 0 1 10 0','M10 18a2 2 0 0 1 4 0'],
+'🏃':["M4 17c3-1 5-4 6-7l2 2 4 1","M12 4a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z","M3 21h6l3-5"],
 '🏋️':["M3 8v8m3-10v12m12-12v12m3-10v8M6 12h12"],
 '🥗':["M3 13h18a9 9 0 0 1-18 0Z","M12 4c-2 2-2 4 0 6m4-8-2 5"],
 '🥇':["M7 3h10v5a5 5 0 0 1-10 0V3Z","M7 5H3v3a5 5 0 0 0 5 5M17 5h4v3a5 5 0 0 1-5 5M12 13v8m-4 0h8"],
@@ -55,7 +54,7 @@
 '🌟':["M12 2 14.5 9.5 22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5z"],
 '💤':["M4 6h7L4 14h7M13 14h7l-7 7h7"],
 '☕':["M4 8h13v8a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z","M17 10h2a3 3 0 0 1 0 6h-2","M7 3v3m5-3v3"],
- var skip='SCRIPT STYLE TEXTAREA INPUT SELECT OPTION CODE PRE SVG .emoji-native .emoji-picker .tab-icon .nav-glyph #headerAvatar';
+ }; var skip='SCRIPT STYLE TEXTAREA INPUT SELECT OPTION CODE PRE SVG .emoji-native .emoji-picker .tab-icon .nav-glyph #headerAvatar';
  function svgFor(char){
   var paths=icons[char];if(!paths)return null;
   return '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><defs><linearGradient id="lifeEmojiGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--brand,#9bbaff)"/><stop offset="1" stop-color="var(--brand-2,#b5a5ff)"/></linearGradient></defs>'+paths.map(function(d){return '<path d="'+d+'" />';}).join('')+'</svg>';
