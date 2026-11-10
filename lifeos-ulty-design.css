@@ -234,3 +234,12 @@ p,.subtitle,.page-subtitle,.list-title,.list-subtitle,.task-title,.task-meta,.fo
  }
  .theme-effect{display:block!important;opacity:.82!important}
 }
+
+/* Theme particles: ensure visible on mobile WebViews and above the page background. */
+#themeEffect{position:fixed!important;inset:0!important;z-index:0!important;display:block!important;opacity:1!important;pointer-events:none!important;overflow:hidden!important}
+#themeEffect .life-effect{display:block!important;visibility:visible!important;opacity:.72;mix-blend-mode:screen}
+#themeEffect .life-effect-stars,#themeEffect .life-effect-sparkles,#themeEffect .life-effect-spark{background:#fff!important;box-shadow:0 0 7px 2px var(--brand),0 0 18px var(--brand)!important}
+#themeEffect .life-effect-petals,#themeEffect .life-effect-leaves,#themeEffect .life-effect-snow,#themeEffect .life-effect-pumpkin,#themeEffect .life-effect-bats,#themeEffect .life-effect-ghosts,#themeEffect .life-effect-bones,#themeEffect .life-effect-candles,#themeEffect .life-effect-feathers{color:var(--brand)!important;text-shadow:0 0 12px var(--brand)!important}
+@media(max-width:759px){
+ #themeEffect .life-effect{opacity:.9!important;filter:drop-shadow(0 0 5px var(--brand))}
+}
