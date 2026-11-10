@@ -576,12 +576,7 @@ function queueJournalAutosave(){
     try{saveJournalEntry(true);}catch(e){console.warn('[JOURNAL AUTOSAVE]',e);}
   },900);
 }
-function updateGlobalSaveStatus(){ /* Автосохранение без плавающего индикатора. */ }
-function initGlobalSaveControls(){
- if(LIFEOS_SAVE_UI_READY)return;LIFEOS_SAVE_UI_READY=true;
- window.addEventListener('pagehide',function(){try{save();}catch(e){}});
- document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden'){try{save();}catch(e){}}});
-}
+function updateGlobalSaveStatus(){ /* autosave indicator hidden */ }
 function save(){
  updateGlobalSaveStatus('saving');
  try{
@@ -2546,11 +2541,11 @@ function renderVisionExercises(){ renderVision60(); }
 function renderVision60(){
  var ex=window.VISION_EXERCISES||[],levels=['Все','Лёгкие','Простые','Обычные','Средние','Высокие','Очень высокие','Максимальные'],selected=window.__lifeosVisionLevel||'Все';
  var visible=ex.filter(function(e){return selected==='Все'||e.level===selected;});
- var html='<div class="page"><div class="title-xl">👁 Практики зрительного комфорта</div><div class="subtitle">Фильтр по длительности. Это паузы для комфорта, не лечение и не тренировка диоптрий.</div><div class="glass-filter">';
+ var html='<div class="page"><div class="title-xl">👁 Практики зрительного комфорта</div><p class="subtitle">Фильтр по длительности и уровню нагрузки. Это паузы для комфорта, не лечение и не тренировка диоптрий.</p><div class="glass-filter">';
  levels.forEach(function(level){html+='<button class="btn btn-xs '+(selected===level?'btn-primary':'btn-ghost')+'" onclick="setVisionExerciseLevel(\''+level+'\')">'+level+'</button>';});
- html+='</div><div class="footnote mt-2">Показано: '+visible.length+' из '+ex.length+'. Дольше — не значит эффективнее.</div>';
- visible.forEach(function(e){html+='<article class="card method-card mb-2"><button class="vision-exercise-open" onclick="startEyeExercise(\''+e.id+'\')"><div class="method-header"><div class="method-emoji">'+e.emoji+'</div><div style="flex:1;min-width:0"><div class="method-title">'+esc(e.title)+'</div><div class="method-cat">'+esc(e.level)+' · '+esc(e.duration)+'</div><p class="footnote mt-1">'+esc(e.desc)+'</p></div><span class="list-chevron">›</span></div></button><details class="vision-details"><summary>Как выполнять точно</summary><p class="footnote">'+esc(e.how)+'</p><p class="footnote">Основание: '+esc(e.science||'')+'.</p></details></article>';});
- html+='<div class="card"><b>Безопасность</b><p class="footnote mt-1">Не дави на глаза, не делай круговых движений глазными яблоками и не смотри на солнце. При боли, внезапном ухудшении зрения, вспышках или множественных новых мушках прекрати практику и обратись за медицинской оценкой.</p></div></div>';
+ html+='</div><p class="footnote">Показано: '+visible.length+' из '+ex.length+'. Более долгий протокол не означает более сильный лечебный эффект.</p>';
+ visible.forEach(function(e){html+='<article class="card method-card mb-2"><div class="method-header"><div class="method-emoji">'+e.emoji+'</div><div style="flex:1;min-width:0"><div class="method-title">'+esc(e.title)+'</div><div class="method-cat">'+esc(e.level)+' · '+esc(e.duration)+'</div><p class="footnote">'+esc(e.desc)+'</p></div></div><details class="vision-details"><summary>Как выполнять точно</summary><p class="footnote">'+esc(e.how)+'</p><p class="footnote">Основание: '+esc(e.science||'')+'.</p></details></article>';});
+ html+='<div class="card"><b>Безопасность</b><p class="footnote">Не дави на глаза, не смотри на солнце. При боли, внезапном ухудшении зрения, вспышках или множественных новых мушках прекрати практику и обратись за медицинской оценкой.</p></div></div>';
  document.getElementById('app').innerHTML=html;
 }
 function setVisionExerciseLevel(level){
@@ -5763,6 +5758,10 @@ function applyJarvisRecommendation(id){
 /* Expose new inline-action handlers from the IIFE */
 window.renderJarvis=renderJarvis;
 window.renderStats=renderStats;
+window.getSafeLifeStats=getSafeLifeStats;
+window.buildComprehensiveStats=buildComprehensiveStats;
+window.getJarvisAnalytics=getJarvisAnalytics;
+window.setVisionExerciseLevel=setVisionExerciseLevel;
 window.getSafeLifeStats=getSafeLifeStats;
 window.buildComprehensiveStats=buildComprehensiveStats;
 window.getJarvisAnalytics=getJarvisAnalytics;
