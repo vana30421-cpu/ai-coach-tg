@@ -50,7 +50,30 @@ jobs:
           node --check content.js
           node --check sw.js
           node --check jarvis-core.js
+          node --check jarvis-mobile.js
           node --input-type=module --check < functions/api/jarvis.js
           node --input-type=module --check < workers/jarvis-worker.js
       - name: Run Jarvis unit and integration tests
         run: node --test tests/*.test.js
+  android-debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Build Android companion
+        run: gradle -p android :app:assembleDebug
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: lifeos-jarvis-android-debug
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error

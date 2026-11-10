@@ -801,7 +801,8 @@ body{background:radial-gradient(ellipse at 15% 0%,color-mix(in srgb,var(--brand)
 .jarvis-focus{border-color:rgba(67,217,154,.4);background:linear-gradient(130deg,rgba(67,217,154,.13),var(--glass-1))}
 .jarvis-focus #jarvisCountdown{font-size:23px;font-weight:850;font-variant-numeric:tabular-nums}
 @keyframes jarvisPulse{0%,100%{transform:scale(1);opacity:.55}50%{transform:scale(1.08);opacity:1}}
-@media(max-width:480px){.jarvis-page{padding-bottom:calc(150px + var(--safe-bottom))}.jarvis-hero{padding:15px 12px;gap:12px}.jarvis-orb{width:58px;height:58px;flex-basis:58px;border-radius:20px}.jarvis-compose .btn{min-width:42px;padding:0 10px}.jarvis-messages{max-height:48vh;min-height:180px}.jarvis-mode{flex-basis:calc(50% - 7px)}}\n#app{overflow:visible!important}.app-main{overflow:visible!important;scroll-padding-bottom:calc(150px + var(--safe-bottom))}
+@media(max-width:480px){.jarvis-page{padding-bottom:calc(150px + var(--safe-bottom))}.jarvis-hero{padding:15px 12px;gap:12px}.jarvis-orb{width:58px;height:58px;flex-basis:58px;border-radius:20px}.jarvis-compose .btn{min-width:42px;padding:0 10px}.jarvis-messages{max-height:48vh;min-height:180px}.jarvis-mode{flex-basis:calc(50% - 7px)}}
+#app{overflow:visible!important}.app-main{overflow:visible!important;scroll-padding-bottom:calc(150px + var(--safe-bottom))}
 @media(prefers-reduced-motion:reduce){.jarvis-orb i{animation:none}}
 
 
@@ -978,6 +979,7 @@ body{
 
 </style>
 <link rel="stylesheet" href="lifeos-ulty-design.css?v=20261110-1">
+<link rel="stylesheet" href="jarvis-mobile.css?v=20261110-1">
 </head>
 <body class="theme-dark">
 <div class="theme-effect" id="themeEffect"></div>
@@ -1015,10 +1017,11 @@ body{
 <script defer src="lifeos-learning-plan.js?v=20261110-1"></script>
 <script defer src="lifeos-learning-content.js?v=20261110-1"></script>
 <script defer src="lifeos-search.js?v=20261110-1"></script>
+<script defer src="jarvis-mobile.js?v=20261110-1"></script>
 <script>
 (function(){
   var failed=[];
-  ['content.js','lifeos-detox-details.js','content2.js','content3.js','lifeos-curriculum.js','jarvis-core.js','app.js','lifeos-workspaces.js','lifeos-systems.js','lifeos-learning-experience.js','lifeos-learning-plan.js','lifeos-learning-content.js','lifeos-search.js'].forEach(function(name){
+  ['content.js','lifeos-detox-details.js','content2.js','content3.js','lifeos-curriculum.js','jarvis-core.js','app.js','lifeos-workspaces.js','lifeos-systems.js','lifeos-learning-experience.js','lifeos-learning-plan.js','lifeos-learning-content.js','lifeos-search.js','jarvis-mobile.js'].forEach(function(name){
     var script=document.querySelector('script[src^="'+name+'?"]')||document.querySelector('script[src="'+name+'"]');
     if(script) script.addEventListener('error',function(){failed.push(name);show('Не загрузился файл: '+name+'. Проверьте публикацию и доступность файлов.');});
   });
@@ -1084,7 +1087,7 @@ body{
  }
  navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloading)return;reloading=true;if(banner)banner.remove();window.location.reload();});
  window.addEventListener('load',function(){
-  navigator.serviceWorker.register('./sw.js?v=20261110-138',{scope:'./',updateViaCache:'none'}).then(function(reg){
+  navigator.serviceWorker.register('./sw.js?v=20261110-139',{scope:'./',updateViaCache:'none'}).then(function(reg){
    function inspect(){if(reg.waiting&&navigator.serviceWorker.controller)offerUpdate(reg.waiting);}
    inspect();reg.addEventListener('updatefound',function(){var installing=reg.installing;if(!installing)return;installing.addEventListener('statechange',function(){if(installing.state==='installed')inspect();});});
    reg.update().catch(function(){});document.addEventListener('visibilitychange',function(){if(!document.hidden)reg.update().catch(function(){});});
