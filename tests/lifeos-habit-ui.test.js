@@ -35,6 +35,6 @@ test('mobile glass effects keep critical surfaces while reducing blur on dense c
  assert.ok(sw.includes('life-os-v166'));
  assert.ok(index.includes('lifeos-ulty-design.css?v=20261110-1'));
  assert.ok(sw.includes("'./lifeos-ulty-design.css'"));
- assert.match(design,/Dark glass surfaces, tactile controls/);
+ assert.match(design,/One UI 9 inspired glass design system/);
  assert.match(design,/prefers-reduced-motion:reduce/);
 });
