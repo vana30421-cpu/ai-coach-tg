@@ -5480,7 +5480,7 @@ function getJarvisAnalytics(silent){
   if(a.overview.tasksPending>8)push('overload','medium','Слишком длинный список задач','Активных задач: '+a.overview.tasksPending+'.','Выбрать до трёх главных результатов и разбить следующий шаг.','tasks');
   if(a.focus.screenDailyAvg!==null){
     if(!getLifeStatsFilter().from&&!getLifeStatsFilter().to&&a.comparison.screenChangePercent!==null&&a.comparison.screenChangePercent>20)push('screen-trend','medium','Экранное время заметно выросло','Среднее за последние 7 дней выше предыдущих 7 дней на '+a.comparison.screenChangePercent+'%.','Проверь, какая категория выросла, и выбери одно небольшое ограничение на следующую неделю.','screentracker','Сравнение двух недель');
-    if(a.focus.screenLimit&&!a.focus.screenSampleSufficient)push('screen-coverage','info','Пока мало записей для честного сравнения','Есть '+a.focus.screenDays+' дней с записями из '+a.analytics.daysInPeriod+' дней выбранного периода.','Записывай экранное время регулярно; пока не считаем пропущенные дни нулевыми.','screentracker',a.focus.screenCoveragePct+'% покрытия');
+    if(a.focus.screenLimit&&!a.focus.screenSampleSufficient)push('screen-coverage','info','Пока мало записей для честного сравнения','Есть '+a.focus.screenDays+' дней с записями из '+a.daysInPeriod+' дней выбранного периода.','Записывай экранное время регулярно; пока не считаем пропущенные дни нулевыми.','screentracker',a.focus.screenCoveragePct+'% покрытия');
     if(a.focus.screenLimit&&a.focus.screenSampleSufficient&&a.focus.screenDailyAvg>a.focus.screenLimit)push('screen','high','Экранное время выше личной цели','Среднее '+a.focus.screenDailyAvg+' мин/день при цели '+a.focus.screenLimit+' мин/день ('+Math.abs(a.focus.screenDeviation)+'% выше).','Сократить наиболее затратную категорию, добавить запланированные офлайн-паузы и проверить результат через 7 дней.','screentracker',a.focus.screenEntries+' записей');
     else if(!a.focus.screenLimit)push('screen-target','info','Не задана личная цель экранного времени','Есть '+a.focus.screenMinutes+' минут записей за выбранный период, но нет сохранённого целевого лимита.','Заполни короткую анкету или задай лимит в трекере, чтобы сравнение было персональным.','personalization');
     a.focus.screenByCategory.forEach(function(x){if(a.focus.screenSampleSufficient&&x.target&&x.dailyAvg>x.target)push('screen-'+x.category,'medium','Перерасход: '+x.category,x.dailyAvg+' мин/день при бюджете '+x.target+' мин ('+x.deviation+'% выше).','Уменьшить эту категорию небольшим шагом и повторно оценить среднее через неделю.','screentracker',x.total+' минут записано');});
@@ -5772,6 +5772,9 @@ function applyJarvisRecommendation(id){
 /* Expose new inline-action handlers from the IIFE */
 window.renderJarvis=renderJarvis;
 window.renderStats=renderStats;
+window.getSafeLifeStats=getSafeLifeStats;
+window.buildComprehensiveStats=buildComprehensiveStats;
+window.getJarvisAnalytics=getJarvisAnalytics;
 window.renderDetailedStats=renderDetailedStats;
 window.runJarvisAutopilot=runJarvisAutopilot;
 window.setJarvisAutopilot=setJarvisAutopilot;
