@@ -718,6 +718,19 @@ function toggleTabBar(){
     haptic('light');
   }catch(e){console.warn('[Navigation panel]',e);}
 }
+function lifeOSNavGlyph(id){
+  var paths={
+    dashboard:'<path d="M3 10.8 12 3l9 7.8"/><path d="M5.5 9.5V21h13V9.5M9 21v-7h6v7"/>',
+    tasks:'<path d="M8 5h12M8 12h12M8 19h12"/><path d="m3.5 5 1.2 1.2L6.8 4M3.5 12l1.2 1.2 2.1-2.2M3.5 19l1.2 1.2 2.1-2.2"/>',
+    learning:'<path d="M3 8.5 12 4l9 4.5-9 4.5-9-4.5Z"/><path d="M6 10v5.5c3.8 3 8.2 3 12 0V10M21 9v7"/>',
+    calendar:'<rect x="3.5" y="5.5" width="17" height="15" rx="3"/><path d="M7.5 3v5M16.5 3v5M4 10h16M8 14h3M8 17h2"/>',
+    stats:'<path d="M4 20V11h4v9M10 20V5h4v15M16 20V8h4v12"/><path d="M3 20.5h18"/>',
+    vision:'<path d="M2.5 12s3.3-6 9.5-6 9.5 6 9.5 6-3.3 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="3"/>',
+    ai:'<path d="M12 2.8 14.2 9.8 21.2 12l-7 2.2-2.2 7-2.2-7L2.8 12l7-2.2L12 2.8Z"/><path d="m19 2 .8 2.2L22 5l-2.2.8L19 8l-.8-2.2L16 5l2.2-.8L19 2Z"/>',
+    more:'<circle cx="5" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.2" fill="currentColor" stroke="none"/>'
+  };
+  return '<svg class="nav-glyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false">'+(paths[id]||paths.more)+'</svg>';
+}
 function renderTabBar(){
   try{
     var bar=document.getElementById('tabBar');
@@ -728,12 +741,12 @@ function renderTabBar(){
     var collapsed=!!(state.settings&&state.settings.navCollapsed);
     if(wrap)wrap.classList.toggle('is-collapsed',collapsed);
     if(toggle)toggle.setAttribute('aria-label',collapsed?'Развернуть панель':'Свернуть панель');
-    if(icon)icon.textContent=collapsed?'⌃':'⌄';
+    if(icon)icon.innerHTML=collapsed?'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 14 6-6 6 6"/></svg>':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 10 6 6 6-6"/></svg>';
     var tabs=window.TABS||[];
     var html='';
-    tabs.forEach(function(t){
-      html+='<button class="tab-item '+(t.id===currentPage?'active':'')+'" onclick="navigate(\''+t.id+'\')" aria-label="'+t.label+'">';
-      html+='<span class="tab-icon">'+t.emoji+'</span><span class="tab-label">'+t.label+'</span></button>';
+    tabs.forEach(function(t,index){
+      html+='<button type="button" class="tab-item '+(t.id===currentPage?'active':'')+'" onclick="navigate(\\''+t.id+'\\')" aria-label="'+t.label+'" title="'+t.label+'" style="--nav-index:'+index+'">';
+      html+='<span class="tab-icon">'+lifeOSNavGlyph(t.id)+'</span><span class="tab-label">'+t.label+'</span></button>';
     });
     bar.innerHTML=html;
   }catch(e){console.error('[TabBar]',e);}
