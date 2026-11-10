@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,viewport-fit=cover">
 <meta name="theme-color" content="#090d16">
-<meta name="lifeos-build" content="LIFEOS-20261110-2040">
+<meta name="lifeos-build" content="LIFEOS-20261110-2105">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Life OS">
@@ -961,7 +961,7 @@ body{
   }
 }
 </style>
-<link rel="stylesheet" href="lifeos-ulty-design.css?v=20261110-9">
+<link rel="stylesheet" href="lifeos-ulty-design.css?v=20261110-10">
 </head>
 <body class="theme-dark">
 <div class="theme-effect" id="themeEffect"></div>
@@ -992,7 +992,7 @@ body{
 <script defer src="jarvis-core.js?v=20261110-3"></script>
 <script defer src="lifeos-mira-skills.js?v=20261110-3"></script>
 <script defer src="lifeos-jarvis-memory.js?v=20261110-3"></script>
-<script defer src="app.js?v=20261110-8"></script>
+<script defer src="app.js?v=20261110-9"></script>
 <script defer src="lifeos-workspaces.js?v=20261110-3"></script>
 <script defer src="lifeos-systems.js?v=20261110-3"></script>
 <script defer src="lifeos-learning-experience.js?v=20261110-4"></script>
@@ -1001,24 +1001,37 @@ body{
 <script defer src="lifeos-search.js?v=20261110-3"></script>
 <script>
 (function(){
-  var failed=[];
-  ['content.js','lifeos-detox-details.js','content2.js','content3.js','lifeos-curriculum.js','jarvis-core.js','app.js','lifeos-workspaces.js','lifeos-systems.js','lifeos-learning-experience.js','lifeos-learning-plan.js','lifeos-learning-content.js','lifeos-search.js'].forEach(function(name){
-    var script=document.querySelector('script[src^="'+name+'?"]')||document.querySelector('script[src="'+name+'"]');
-    if(script) script.addEventListener('error',function(){failed.push(name);show('Не загрузился файл: '+name+'. Проверьте публикацию и доступность файлов.');});
-  });
+  var failures=[],lastError=null;
   function show(message){
     var app=document.getElementById('app');
-    if(app) app.innerHTML='<div style="margin:24px;padding:20px;border:1px solid #ff6b6b;border-radius:16px;color:#fff;background:#241014;font:14px/1.5 system-ui"><b>Life OS не запустился</b><br>'+message+'</div>';
+    var safe=String(message||'Неизвестная ошибка');
+    if(app)app.innerHTML='<div style="margin:24px;padding:20px;border:1px solid #ff6b6b;border-radius:18px;color:#fff;background:#241014;font:14px/1.55 system-ui"><b>Life OS не запустился</b><br>'+safe.replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]})+'</div>';
   }
   window.addEventListener('error',function(e){
-    if(e && e.message) show('JavaScript: '+e.message+(e.filename?' ('+e.filename.split('/').pop()+':'+e.lineno+')':''));
-  });
+    if(e&&e.target&&e.target.tagName==='SCRIPT'){
+      var src=e.target.src||e.target.getAttribute('src')||'inline script';
+      failures.push(src);show('Не загрузился скрипт: '+src.split('/').pop());
+      return;
+    }
+    if(e&&e.message){lastError=e.message+' | '+(e.filename||'')+':'+(e.lineno||0);show('JavaScript: '+lastError);}
+  },true);
   window.addEventListener('unhandledrejection',function(e){
-    var reason=e && e.reason;
-    show('Ошибка Promise: '+(reason && reason.message ? reason.message : String(reason||'неизвестно')));
+    var r=e&&e.reason;lastError='Promise: '+(r&&r.stack||r&&r.message||String(r));
+    show('Ошибка Promise: '+(r&&r.message||String(r||'неизвестно')));
   });
+  window.__LIFEOS_DIAG=function(){
+    return {build:document.querySelector('meta[name="lifeos-build"]')?.content,
+      scripts:Array.from(document.scripts).filter(function(s){return s.src}).map(function(s){return {file:s.src.split('/').pop(),ready:s.readyState||'loaded'};}),
+      failed:failures,lastError:lastError,booted:!!window.__LIFE_OS_BOOTED,
+      themeEffectCount:document.getElementById('themeEffect')?.children.length||0,
+      effectSetting:(function(){try{return JSON.parse(localStorage.getItem('life_os_v45')||'{}').settings?.effectsEnabled}catch(e){return 'unreadable'}})()
+    };
+  };
   setTimeout(function(){
-    if(!window.__LIFE_OS_BOOTED && !failed.length) show('Скрипты не завершили запуск. Вероятно, app.js не выполнился или остановился до init().');
+    if(!window.__LIFE_OS_BOOTED&&!lastError&&!failures.length){
+      var appScript=Array.from(document.scripts).find(function(s){return /app\.js\?/.test(s.src)});
+      show('Запуск не завершён. app.js: '+(appScript?'тег найден, загрузка/выполнение не подтверждены':'тег не найден')+'. Диагностика: '+JSON.stringify(window.__LIFEOS_DIAG()));
+    }
   },8000);
 })();
 </script>
@@ -1073,7 +1086,7 @@ body{
   window.location.reload();
  });
  window.addEventListener('load',function(){
-  navigator.serviceWorker.register('./sw.js?v=20261110-147',{scope:'./',updateViaCache:'none'}).then(function(reg){
+  navigator.serviceWorker.register('./sw.js?v=20261110-148',{scope:'./',updateViaCache:'none'}).then(function(reg){
    registration=reg;
    activateWaiting();
    reg.addEventListener('updatefound',function(){
