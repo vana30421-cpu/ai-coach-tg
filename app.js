@@ -45,11 +45,21 @@ function tgBackButtonHide(){
   try{ if(tg && tg.BackButton) tg.BackButton.hide(); }catch(e){}
 }
 function navigateBack(){
-  _backStack.pop();
-  var prev = _backStack.pop();
-  if(prev) navigate(prev, true);
-  else navigate('dashboard', true);
+  var prev = _backStack.length ? _backStack.pop() : 'dashboard';
+  if(prev === currentPage && _backStack.length) prev = _backStack.pop();
+  navigate(prev || 'dashboard', true);
 }
+window.navigateBack = navigateBack;
+window.toggleLifeOSHeader = function(hidden){
+  try{
+    var next = typeof hidden === 'boolean' ? hidden : !document.body.classList.contains('lifeos-header-hidden');
+    document.body.classList.toggle('lifeos-header-hidden', next);
+    try{localStorage.setItem('lifeos_header_hidden', next ? '1' : '0');}catch(e){}
+    var b=document.getElementById('headerRestoreBtn');
+    if(b) b.setAttribute('aria-expanded', next ? 'false' : 'true');
+  }catch(e){}
+};
+try{if(localStorage.getItem('lifeos_header_hidden')==='1')document.body.classList.add('lifeos-header-hidden');}catch(e){}
 
 /* ============ UTILS ============ */
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
