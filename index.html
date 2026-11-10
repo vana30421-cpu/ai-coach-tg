@@ -985,13 +985,32 @@ body.lifeos-header-hidden .app-main{padding-top:4px!important}
  html{scroll-behavior:auto}
 }
 </style>
+
+<style id="lifeos-back-button-refresh">
+/* Back navigation: clear, compact control that reads as an action, not a stray arrow. */
+.app-header .header-inner .header-back-btn{
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;
+  flex:0 0 auto!important;width:auto!important;min-width:82px!important;height:38px!important;min-height:38px!important;
+  padding:0 12px!important;border-radius:14px!important;border:1px solid color-mix(in srgb,var(--brand) 38%,var(--glass-border))!important;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--brand) 18%,var(--bg-2)),var(--glass-1))!important;
+  color:var(--text)!important;font-size:13px!important;font-weight:700!important;letter-spacing:.01em!important;
+  box-shadow:inset 0 1px 0 var(--glass-highlight),0 3px 10px rgba(0,0,0,.16)!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;overflow:visible!important;
+}
+.app-header .header-inner .header-back-btn::before{display:none!important}
+.header-back-arrow{display:grid;place-items:center;width:20px;height:20px;border-radius:7px;background:color-mix(in srgb,var(--brand) 20%,transparent);font-size:20px;line-height:1;font-weight:500}
+.header-back-label{font-size:12px;line-height:1;white-space:nowrap}
+.app-header .header-inner .header-back-btn:active{transform:scale(.96)!important;background:var(--glass-3)!important}
+@media(max-width:480px){.app-header .header-inner .header-back-btn{min-width:76px!important;height:36px!important;min-height:36px!important;padding:0 9px!important;gap:5px!important}.header-back-arrow{width:19px;height:19px}}
+@media(prefers-reduced-motion:reduce){.app-header .header-inner .header-back-btn{transition:none!important}}
+</style>
 </head>
 <body class="theme-dark">
 <div class="theme-effect" id="themeEffect"></div>
 
 <header class="app-header is-compact" id="appHeader">
   <div class="header-inner">
-    <button class="icon-btn header-back-btn" onclick="window.navigateBack &amp;&amp; window.navigateBack()" aria-label="Назад" title="Назад">←</button>
+    <button type="button" class="icon-btn header-back-btn" onclick="window.navigateBack &amp;&amp; window.navigateBack()" aria-label="Назад" title="Вернуться на предыдущий экран"><span class="header-back-arrow" aria-hidden="true">←</span><span class="header-back-label">Назад</span></button>
     <button class="avatar-btn" id="headerAvatar" onclick="window.navigate &amp;&amp; window.navigate('profile')" aria-label="Профиль">👤</button>
     <button class="icon-btn" onclick="window.openStatsQuick ? window.openStatsQuick() : (window.navigate &amp;&amp; window.navigate('stats'))" aria-label="Статистика">📊</button>
     <button class="icon-btn" onclick="window.openLifeOSGlobalSearch ? window.openLifeOSGlobalSearch() : (window.navigate &amp;&amp; window.navigate('search'))" aria-label="Поиск по LIFEOS">🔎</button>
