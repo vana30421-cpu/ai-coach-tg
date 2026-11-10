@@ -3999,17 +3999,33 @@ function renderMore(){
       {key:'storage',emoji:'🗄',label:'Хранилище'}
     ]}
   ];
-  var html = '<div class="page"><div class="title-xl">Все разделы</div>';
+  var html = '<div class="page more-hub"><div class="title-xl">Все разделы</div><div class="subtitle">Все возможности LIFEOS в одном месте. Найди нужный раздел через поиск.</div><div class="more-search"><span>⌕</span><input id="moreSearch" type="search" placeholder="Поиск по разделам и функциям…" oninput="filterMoreSections(this.value)" autocomplete="off"></div><div class="more-count" id="moreCount">Все '+groups.reduce(function(n,g){return n+g.items.length;},0)+' разделов</div>';
   groups.forEach(function(g){
-    html += '<div class="card"><h2>' + g.title + '</h2>';
+    html += '<section class="card more-group" data-more-group><h2 class="more-group-title">' + g.title + '</h2><div class="more-grid">';
     g.items.forEach(function(it){
       html += '<div class="list-row" onclick="navigate(\'' + it.key + '\')"><div class="list-icon">' + it.emoji + '</div><div class="list-body"><div class="list-title">' + it.label + '</div></div><div class="list-chevron">›</div></div>';
     });
-    html += '</div>';
+    html += '</div></section>';
   });
   html += '</div>';
   document.getElementById('app').innerHTML = html;
 }
+function filterMoreSections(value){
+  var q=String(value||'').trim().toLocaleLowerCase('ru');
+  var groups=document.querySelectorAll('[data-more-group]'),shown=0,total=0;
+  groups.forEach(function(group){
+    var items=group.querySelectorAll('[data-more-item]'),visible=0;
+    items.forEach(function(item){
+      var match=!q||(item.getAttribute('data-search')||item.textContent).toLocaleLowerCase('ru').indexOf(q)>=0;
+      item.hidden=!match;if(match){visible++;shown++;}total++;
+    });
+    group.hidden=visible===0;
+  });
+  var count=document.getElementById('moreCount');
+  if(count)count.textContent=q?'Найдено: '+shown+' из '+total:'Все '+total+' разделов';
+}
+window.filterMoreSections=filterMoreSections;
+
 function renderSettings(){
   var themes = window.THEMES || [];
   var currentTheme = themes.find(function(t){ return t.id === state.settings.theme; }) || {name:'dark'};
@@ -5196,6 +5212,8 @@ function finishOnboarding(){
 
 /* ============ INIT ============ */
 function init(){
+  if(window.__LIFE_OS_INIT_STARTED)return;
+  window.__LIFE_OS_INIT_STARTED=true;
   try{
     initGlobalSaveControls();
     applyTheme(state.settings.theme);
@@ -5887,11 +5905,18 @@ window.renderDiagnostic = renderDiagnostic;
 window.renderOnboarding = renderOnboarding;
 
 /* ============ СТАРТ ============ */
-if(document.readyState === 'complete'){
-  init();
-} else {
-  document.addEventListener('DOMContentLoaded', init, {once:true});
+window.__LIFE_OS_INIT=init;
+if(document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded',init,{once:true});
+}else{
+  setTimeout(init,0);
 }
+window.addEventListener('load',function(){
+  if(!window.__LIFE_OS_BOOTED&&!window.__LIFE_OS_INIT_STARTED){
+    window.__LIFE_OS_INIT_STARTED=false;
+    init();
+  }
+},{once:true});
 
 console.log('[APP v48 ✅] ФИНАЛ загружен. Все части: 1/4 + 2/4 + 3/4 + 4/4');
 
