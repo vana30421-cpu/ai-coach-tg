@@ -653,7 +653,7 @@ window.WEALTH_MODULES=WEALTH_MODULES;
 /* ============================================================
    LIFE OS — CONTENT.js v46 — ЧАСТЬ 3/6
    PSYCHOLOGY_TOPICS (100), THINKING_TOPICS (100),
-   VISION_EXERCISES (75), DETOX_COURSE (62 дня)
+   VISION_EXERCISES (7), DETOX_COURSE (62 дня)
    ============================================================ */
 
 /* ============ PSYCHOLOGY_TOPICS (100) ============ */
