@@ -1,4 +1,4 @@
-const CACHE='life-os-v140';
+const CACHE='life-os-v141';
 const CORE_ASSETS=['./','./index.html','./content.js','./lifeos-detox-enhancements.js','./lifeos-detox-details.js','./content2.js','./content3.js','./lifeos-curriculum.js','./app.js','./lifeos-workspaces.js','./lifeos-systems.js','./lifeos-search.js','./lifeos-learning-experience.js','./lifeos-learning-plan.js','./lifeos-learning-content.js','./lifeos-ulty-design.css','./jarvis-core.js','./lifeos-mira-skills.js','./lifeos-jarvis-memory.js','./manifest.json','./icon.svg'];
 self.addEventListener('message',event=>{if(event.data&&event.data.type==='SKIP_WAITING')self.skipWaiting();});
 self.addEventListener('install',event=>{event.waitUntil((async()=>{const cache=await caches.open(CACHE);await Promise.all(CORE_ASSETS.map(async asset=>{const response=await fetch(asset,{cache:'reload'});if(!response.ok)throw new Error('HTTP '+response.status+' '+asset);await cache.put(asset,response);}));await self.skipWaiting();})());});
