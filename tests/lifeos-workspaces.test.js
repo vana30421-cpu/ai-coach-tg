@@ -29,7 +29,7 @@ function sandboxFor(source){
 
 test('workspace and system extensions are syntactically valid and loaded by the PWA',()=>{
  for(const [name,src] of [['workspaces',workspaces],['systems',systems]])assert.doesNotThrow(()=>new vm.Script(src,{filename:name}));
- assert.ok(index.includes('lifeos-systems.js?v=20261110-1'));
+ assert.ok(index.includes('lifeos-systems.js?v=20261110-3'));
  assert.match(sw,/lifeos-workspaces\.js/);assert.match(sw,/lifeos-systems\.js/);
 });
 
@@ -209,6 +209,6 @@ test('second-brain quick capture is available from the global app header',()=>{
  assert.match(index,/openBrainQuickCapture\(\)/);
  assert.match(workspaces,/window\.openBrainQuickCapture=function/);
  assert.match(workspaces,/window\.navigate\('obsidian'\)/);
- assert.ok(index.includes('lifeos-workspaces.js?v=20261110-1'));
+ assert.ok(index.includes('lifeos-workspaces.js?v=20261110-3'));
  assert.ok(sw.includes('life-os-v165'));
 });
