@@ -81,7 +81,16 @@ var THEMES=[
 {id:'deep-sea',emoji:'🌊',name:'Глубокое море',bg:'#000514',bg2:'#000a28',text:'#d0e8ff',brand:'#00aaff',brand2:'#0055aa',effect:'bubbles'},
 {id:'neon-pink',emoji:'💗',name:'Неон-розовый',bg:'#14000a',bg2:'#280018',text:'#ffe0f0',brand:'#ff0088',brand2:'#cc0066',effect:'sparkles'},
 {id:'mint-fresh',emoji:'🌱',name:'Свежая мята',bg:'#08140f',bg2:'#0f2419',text:'#e0fff0',brand:'#3ddc97',brand2:'#4dd4ff',effect:'bubbles'}
-];
+,{id:'winter-midnight',emoji:'❄️',name:'Зимняя полночь',bg:'#071323',bg2:'#102943',text:'#e9f6ff',brand:'#7cc8ff',brand2:'#b5e6ff',effect:'snow'},
+{id:'winter-aurora',emoji:'🌌',name:'Северное сияние',bg:'#071528',bg2:'#102c42',text:'#e8faff',brand:'#62e6d0',brand2:'#9b9aff',effect:'aurora'},
+{id:'winter-frost',emoji:'🧊',name:'Хрустальный иней',bg:'#0b1b2b',bg2:'#17384d',text:'#effaff',brand:'#8bdcff',brand2:'#c5efff',effect:'sparkles'},
+{id:'winter-cabin',emoji:'🏔️',name:'Уютное шале',bg:'#1a1717',bg2:'#30251f',text:'#fff1df',brand:'#e4a96c',brand2:'#f2d4a8',effect:'spark'},
+{id:'winter-blue',emoji:'🌨️',name:'Снежный блюз',bg:'#071b36',bg2:'#10345a',text:'#edf7ff',brand:'#4e9fff',brand2:'#a5d9ff',effect:'snow'},
+{id:'winter-berry',emoji:'🫐',name:'Морозная ягода',bg:'#210d25',bg2:'#391638',text:'#ffebf5',brand:'#e67eb4',brand2:'#b9a1ff',effect:'sparkles'},
+{id:'winter-pine',emoji:'🌲',name:'Заснеженный лес',bg:'#091b18',bg2:'#15332a',text:'#eafff2',brand:'#6ec7a0',brand2:'#b4e7c8',effect:'leaves'},
+{id:'winter-silver',emoji:'✨',name:'Серебряный снег',bg:'#171b28',bg2:'#292f43',text:'#f5f7ff',brand:'#b8c8ee',brand2:'#e0e8ff',effect:'snow'},
+{id:'winter-candy',emoji:'🍬',name:'Зимняя карамель',bg:'#211326',bg2:'#392039',text:'#fff0f7',brand:'#ff9fcb',brand2:'#9ddcff',effect:'sparkles'},
+{id:'winter-arctic',emoji:'🐻‍❄️',name:'Арктика',bg:'#061923',bg2:'#0e3443',text:'#e9fbff',brand:'#58d7e8',brand2:'#a5f0f5',effect:'bubbles'}];
 
 /* ============ ДОМЕНЫ (10) ============ */
 var DOMAINS=[
