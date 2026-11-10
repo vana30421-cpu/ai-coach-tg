@@ -4003,7 +4003,7 @@ function renderMore(){
   groups.forEach(function(g){
     html += '<section class="card more-group" data-more-group><h2 class="more-group-title">' + g.title + '</h2><div class="more-grid">';
     g.items.forEach(function(it){
-      html += '<div class="list-row" onclick="navigate(\'' + it.key + '\')"><div class="list-icon">' + it.emoji + '</div><div class="list-body"><div class="list-title">' + it.label + '</div></div><div class="list-chevron">›</div></div>';
+      html += '<button type="button" class="more-tile" data-more-item data-search="'+(g.title+' '+it.label).toLowerCase().replace(/"/g,'&quot;')+'" onclick="navigate(\'' + it.key + '\')"><span class="more-tile-icon">' + it.emoji + '</span><span class="more-tile-label">' + it.label + '</span><span class="more-tile-arrow">›</span></button>';
     });
     html += '</div></section>';
   });
