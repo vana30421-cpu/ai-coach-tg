@@ -576,23 +576,9 @@ function queueJournalAutosave(){
     try{saveJournalEntry(true);}catch(e){console.warn('[JOURNAL AUTOSAVE]',e);}
   },900);
 }
-function updateGlobalSaveStatus(status,detail){
- try{
-  var root=document.getElementById('lifeosSaveDock');
-  if(!root&&document.body){
-   root=document.createElement('div');root.id='lifeosSaveDock';root.setAttribute('role','status');
-   root.style.cssText='position:fixed;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 86px);z-index:9998;display:flex;align-items:center;gap:8px;padding:7px 9px;border:1px solid var(--glass-border,rgba(255,255,255,.14));border-radius:999px;background:var(--card,rgba(20,25,38,.94));box-shadow:0 8px 28px rgba(0,0,0,.24);backdrop-filter:blur(14px);font:12px system-ui;color:var(--text,#fff)';
-   var label=document.createElement('span');label.id='lifeosSaveLabel';label.textContent='Автосохранение';
-   var button=document.createElement('button');button.type='button';button.textContent='💾';button.title='Сохранить все данные';button.setAttribute('aria-label','Сохранить все данные');button.style.cssText='border:0;border-radius:50%;width:32px;height:32px;background:var(--brand,#5b8cff);color:#fff;font-size:16px';button.addEventListener('click',function(){manualSaveAll();});
-   root.append(label,button);document.body.appendChild(root);
-  }
-  var node=document.getElementById('lifeosSaveLabel');if(node)node.textContent=status==='saving'?'Сохранение…':status==='error'?'Ошибка сохранения':(detail||'Сохранено');
- }catch(e){}
-}
+function updateGlobalSaveStatus(){ /* Автосохранение без плавающего индикатора. */ }
 function initGlobalSaveControls(){
  if(LIFEOS_SAVE_UI_READY)return;LIFEOS_SAVE_UI_READY=true;
- updateGlobalSaveStatus('saved',window.__LIFE_OS_LAST_SAVED?'Сохранено':'Автосохранение включено');
- window.addEventListener('lifeos:saved',function(){updateGlobalSaveStatus('saved','Сохранено '+new Date(window.__LIFE_OS_LAST_SAVED||Date.now()).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}));});
  window.addEventListener('pagehide',function(){try{save();}catch(e){}});
  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden'){try{save();}catch(e){}}});
 }
@@ -2558,13 +2544,18 @@ function resetVisionRedFlags(){
 }
 function renderVisionExercises(){ renderVision60(); }
 function renderVision60(){
-  var ex = window.VISION_EXERCISES || [];
-  var html = '<div class="page"><div class="title-xl">👁 Протоколы комфорта (' + ex.length + ')</div><div class="subtitle">Короткие действия для перерыва и уменьшения цифрового дискомфорта. Они не тренируют диоптрии и не заменяют лечение.</div>';
-  ex.forEach(function(e){
-    html += '<div class="method-card" onclick="startEyeExercise(\'' + e.id + '\')"><div class="method-header"><div class="method-emoji">' + e.emoji + '</div><div style="flex:1;"><div class="method-title">' + esc(e.title) + '</div><div class="method-cat">' + esc(e.desc||'') + ' · ' + (e.duration||'') + '</div></div><div class="list-chevron">▶</div></div></div>';
-  });
-  html += '</div>';
-  document.getElementById('app').innerHTML = html;
+ var ex=window.VISION_EXERCISES||[],levels=['Все','Лёгкие','Простые','Обычные','Средние','Высокие','Очень высокие','Максимальные'],selected=window.__lifeosVisionLevel||'Все';
+ var visible=ex.filter(function(e){return selected==='Все'||e.level===selected;});
+ var html='<div class="page"><div class="title-xl">👁 Практики зрительного комфорта</div><div class="subtitle">Фильтр по длительности. Это паузы для комфорта, не лечение и не тренировка диоптрий.</div><div class="glass-filter">';
+ levels.forEach(function(level){html+='<button class="btn btn-xs '+(selected===level?'btn-primary':'btn-ghost')+'" onclick="setVisionExerciseLevel(\''+level+'\')">'+level+'</button>';});
+ html+='</div><div class="footnote mt-2">Показано: '+visible.length+' из '+ex.length+'. Дольше — не значит эффективнее.</div>';
+ visible.forEach(function(e){html+='<article class="card method-card mb-2"><button class="vision-exercise-open" onclick="startEyeExercise(\''+e.id+'\')"><div class="method-header"><div class="method-emoji">'+e.emoji+'</div><div style="flex:1;min-width:0"><div class="method-title">'+esc(e.title)+'</div><div class="method-cat">'+esc(e.level)+' · '+esc(e.duration)+'</div><p class="footnote mt-1">'+esc(e.desc)+'</p></div><span class="list-chevron">›</span></div></button><details class="vision-details"><summary>Как выполнять точно</summary><p class="footnote">'+esc(e.how)+'</p><p class="footnote">Основание: '+esc(e.science||'')+'.</p></details></article>';});
+ html+='<div class="card"><b>Безопасность</b><p class="footnote mt-1">Не дави на глаза, не делай круговых движений глазными яблоками и не смотри на солнце. При боли, внезапном ухудшении зрения, вспышках или множественных новых мушках прекрати практику и обратись за медицинской оценкой.</p></div></div>';
+ document.getElementById('app').innerHTML=html;
+}
+function setVisionExerciseLevel(level){
+ var allowed=['Все','Лёгкие','Простые','Обычные','Средние','Высокие','Очень высокие','Максимальные'];
+ window.__lifeosVisionLevel=allowed.indexOf(level)>=0?level:'Все';renderVision60();
 }
 function renderVisionTracker(){
  var v=ensureVisionState(),metrics=v.metrics||{},keys=Object.keys(metrics).sort().slice(-30),logs=v.symptomLog||[];
@@ -4471,7 +4462,7 @@ function sendJarvisMessage(){
   return;
  }
  var core=window.LifeOSJarvisCore,parsed=core?core.parseCommand(text):{type:'chat'};
- if(d.cloudAIEnabled&&(parsed.type==='chat'||parsed.type==='summary')){sendJarvisCloudMessage(text);return;}
+ /* Local-only mode: do not send user prompts to cloud APIs. */
  var reply=jarvisReply(text);if(reply)jarvisAddMessage('assistant',reply);
  if(parsed.type==='checkin')renderJarvisCheckin();
  else if(parsed.type==='methods')renderJarvisMethods();
@@ -5772,6 +5763,10 @@ function applyJarvisRecommendation(id){
 /* Expose new inline-action handlers from the IIFE */
 window.renderJarvis=renderJarvis;
 window.renderStats=renderStats;
+window.getSafeLifeStats=getSafeLifeStats;
+window.buildComprehensiveStats=buildComprehensiveStats;
+window.getJarvisAnalytics=getJarvisAnalytics;
+window.setVisionExerciseLevel=setVisionExerciseLevel;
 window.getSafeLifeStats=getSafeLifeStats;
 window.buildComprehensiveStats=buildComprehensiveStats;
 window.getJarvisAnalytics=getJarvisAnalytics;
