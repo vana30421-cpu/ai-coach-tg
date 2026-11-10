@@ -5215,7 +5215,7 @@ function init(){
   if(window.__LIFE_OS_INIT_STARTED)return;
   window.__LIFE_OS_INIT_STARTED=true;
   try{
-    initGlobalSaveControls();
+    if(typeof initGlobalSaveControls==='function')initGlobalSaveControls();
     applyTheme(state.settings.theme);
     applyUserSettings();
     updateHeader();
