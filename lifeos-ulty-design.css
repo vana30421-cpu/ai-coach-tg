@@ -243,3 +243,125 @@ p,.subtitle,.page-subtitle,.list-title,.list-subtitle,.task-title,.task-meta,.fo
 @media(max-width:759px){
  #themeEffect .life-effect{opacity:.9!important;filter:drop-shadow(0 0 5px var(--brand))}
 }
+
+
+/* ==========================================================
+   LIFEOS — TITANIUM GLASS / ONE UI 9.5 INSPIRED
+   Premium mobile-first visual system, tuned for Android WebView
+   ========================================================== */
+:root{
+ --bg:#070a12;--bg-1:#0b1220;--bg-2:#111b2d;
+ --brand:#9abaff;--brand-2:#b4a5ff;--brand-glow:rgba(106,157,255,.36);
+ --glass-1:rgba(17,25,41,.52);--glass-2:rgba(23,34,54,.68);
+ --glass-3:rgba(32,46,70,.78);--glass-4:rgba(44,61,89,.88);
+ --glass-border:rgba(211,226,255,.15);--glass-border-strong:rgba(220,233,255,.25);
+ --glass-highlight:rgba(255,255,255,.16);
+ --shadow-premium:0 18px 55px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.12);
+ --ease-premium:cubic-bezier(.2,.8,.2,1);
+}
+html{background:var(--bg);scroll-behavior:smooth}
+body{
+ background:
+  radial-gradient(ellipse at 12% 4%,color-mix(in srgb,var(--brand) 20%,transparent),transparent 42%),
+  radial-gradient(ellipse at 90% 24%,color-mix(in srgb,var(--brand-2) 13%,transparent),transparent 38%),
+  linear-gradient(155deg,var(--bg-1),var(--bg) 65%)!important;
+ background-attachment:fixed!important;
+}
+body:before,body:after{content:"";position:fixed;inset:-28%;z-index:-1;pointer-events:none;will-change:transform,opacity}
+body:before{
+ background:radial-gradient(ellipse at 30% 38%,rgba(69,123,222,.24),transparent 36%),radial-gradient(ellipse at 75% 65%,rgba(133,96,214,.18),transparent 34%),radial-gradient(ellipse at 50% 90%,rgba(61,171,190,.10),transparent 30%);
+ filter:blur(42px);animation:lifeosAuroraDrift 22s ease-in-out infinite alternate;
+}
+body:after{
+ inset:0;z-index:0;opacity:.12;
+ background-image:radial-gradient(rgba(255,255,255,.55) .55px,transparent .8px);
+ background-size:5px 5px;mask-image:linear-gradient(135deg,black,transparent 75%);
+}
+@keyframes lifeosAuroraDrift{0%{transform:translate3d(-4%,1%,0) scale(.96) rotate(-4deg)}50%{transform:translate3d(3%,-2%,0) scale(1.04) rotate(2deg)}100%{transform:translate3d(-1%,4%,0) scale(1.08) rotate(5deg)}}
+#themeEffect{
+ position:fixed!important;inset:0!important;z-index:1!important;display:block!important;
+ overflow:hidden!important;pointer-events:none!important;opacity:1!important;
+ contain:strict;
+}
+#themeEffect .life-effect{
+ position:absolute!important;display:block!important;visibility:visible!important;
+ left:var(--x)!important;top:-12vh!important;font-style:normal!important;
+ color:var(--brand)!important;font-size:clamp(15px,3.6vw,25px)!important;
+ opacity:0!important;text-shadow:0 0 9px var(--brand-glow),0 0 22px var(--brand-glow)!important;
+ animation:lifeosParticleFloat var(--duration,16s) var(--delay,0s) linear infinite!important;
+ will-change:transform,opacity;
+}
+@keyframes lifeosParticleFloat{
+ 0%{transform:translate3d(0,-8vh,0) rotate(0deg) scale(.65);opacity:0}
+ 12%{opacity:.72}78%{opacity:.48}
+ 100%{transform:translate3d(var(--drift,20px),115vh,0) rotate(260deg) scale(1.15);opacity:0}
+}
+#app,.app-header,.tab-bar-wrap,.toast-container{position:relative;z-index:2}
+.app-header{
+ background:linear-gradient(180deg,rgba(9,14,24,.88),rgba(9,14,24,.58))!important;
+ border-bottom:1px solid rgba(222,234,255,.10)!important;
+ -webkit-backdrop-filter:blur(30px) saturate(180%)!important;backdrop-filter:blur(30px) saturate(180%)!important;
+ box-shadow:0 12px 36px rgba(0,0,0,.18),inset 0 1px rgba(255,255,255,.06)!important;
+}
+.header-inner{gap:clamp(7px,2vw,13px)!important}
+.avatar-btn,.icon-btn{
+ border:1px solid rgba(221,233,255,.17)!important;
+ background:linear-gradient(145deg,rgba(255,255,255,.15),rgba(255,255,255,.035) 58%,rgba(76,110,170,.12))!important;
+ box-shadow:0 7px 22px rgba(0,0,0,.27),inset 0 1px rgba(255,255,255,.19),inset 0 -1px rgba(0,0,0,.22)!important;
+ -webkit-backdrop-filter:blur(22px) saturate(170%)!important;backdrop-filter:blur(22px) saturate(170%)!important;
+ transition:transform .32s var(--ease-premium),box-shadow .32s,border-color .32s!important;
+}
+.avatar-btn:active,.icon-btn:active,.tab-item:active,.btn:active{transform:scale(.93)!important}
+.card,.list-row,.task-item,.stat-item,.group-item,.compact-item,.search-bar,.msg,.progress-ring-hero,
+.method-card,.insight-card,.level-hero,.profile-hero,.lesson-section,.detox-progress-hero{
+ background:linear-gradient(145deg,rgba(255,255,255,.105),rgba(255,255,255,.025) 46%,rgba(103,139,198,.055)) ,var(--glass-1)!important;
+ border:1px solid var(--glass-border)!important;
+ box-shadow:var(--shadow-premium)!important;
+ -webkit-backdrop-filter:blur(26px) saturate(175%)!important;backdrop-filter:blur(26px) saturate(175%)!important;
+}
+.card{border-radius:25px!important;transition:transform .35s var(--ease-premium),border-color .35s,box-shadow .35s!important}
+.card:active{border-color:var(--glass-border-strong)!important}
+button,.btn,input,textarea,select{font-family:inherit}
+.btn{
+ border-radius:17px!important;transition:transform .25s var(--ease-premium),filter .25s,box-shadow .25s!important;
+}
+.btn-primary{
+ background:linear-gradient(135deg,color-mix(in srgb,var(--brand) 88%,white),color-mix(in srgb,var(--brand-2) 76%,#273a65))!important;
+ color:#09101d!important;border:1px solid rgba(255,255,255,.28)!important;
+ box-shadow:0 8px 25px var(--brand-glow),inset 0 1px rgba(255,255,255,.48)!important;
+}
+input,textarea,select{
+ border-radius:15px!important;border-color:var(--glass-border)!important;
+ background:rgba(4,9,18,.34)!important;
+}
+.tab-bar-wrap{
+ background:linear-gradient(180deg,rgba(10,15,25,.62),rgba(8,12,20,.91))!important;
+ border-top:1px solid rgba(220,232,255,.12)!important;
+ -webkit-backdrop-filter:blur(32px) saturate(180%)!important;backdrop-filter:blur(32px) saturate(180%)!important;
+ box-shadow:0 -14px 44px rgba(0,0,0,.28),inset 0 1px rgba(255,255,255,.08)!important;
+}
+.tab-bar{
+ border:1px solid rgba(220,232,255,.18)!important;
+ background:linear-gradient(145deg,rgba(255,255,255,.10),rgba(255,255,255,.025))!important;
+ box-shadow:0 10px 34px rgba(0,0,0,.34),inset 0 1px rgba(255,255,255,.14)!important;
+ -webkit-backdrop-filter:blur(30px) saturate(190%)!important;backdrop-filter:blur(30px) saturate(190%)!important;
+}
+.tab-item{transition:all .3s var(--ease-premium)!important}
+.tab-item.active{
+ background:linear-gradient(145deg,rgba(135,174,255,.25),rgba(139,121,227,.10))!important;
+ border:1px solid rgba(175,202,255,.24)!important;
+ box-shadow:inset 0 1px rgba(255,255,255,.19),0 5px 20px rgba(67,110,190,.16)!important;
+}
+.title-xl,.page-title{letter-spacing:-.045em!important}
+@media(max-width:760px){
+ body{background-attachment:scroll!important}
+ .app-main{padding-left:14px!important;padding-right:14px!important}
+ .card{padding:16px!important}
+ .tab-bar-wrap{padding-bottom:max(8px,env(safe-area-inset-bottom))!important}
+ #themeEffect .life-effect{font-size:20px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ body:before{animation:none!important}
+ #themeEffect .life-effect{animation:none!important;opacity:.28!important}
+ *,*:before,*:after{scroll-behavior:auto!important;transition-duration:.01ms!important}
+}
