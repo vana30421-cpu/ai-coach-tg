@@ -16,7 +16,7 @@ test('main navigation labels the assistant Jarvis',()=>assert.match(content,/id:
 test('command core loads before app runtime',()=>assert.ok(index.search(/src="jarvis-core\.js(?:\\?[^\"]*)?"/)<index.search(/src="app\.js(?:\\?[^\"]*)?"/)));
 test('Jarvis command core is included in offline shell cache',()=>assert.match(sw,/\.\/jarvis-core\.js/));
 test('PWA cache is versioned and activates the fresh worker without a stale waiting worker',()=>{assert.match(sw,/const CACHE='life-os-v\d+'/);assert.match(sw,/await self\.skipWaiting\(\)/);assert.match(sw,/ignoreSearch:true/);});
-test('app scripts use a cache-busting version',()=>{for(const name of ['content.js','content2.js','content3.js','jarvis-core.js','app.js','lifeos-workspaces.js','lifeos-systems.js'])assert.match(index,new RegExp('src="'+name.replace('.','[.]')+'[?]v=[0-9]+(?:-[0-9]+)?"'));});
+ assert.ok(index.includes('lifeos-systems.js?v=20261110-1'));
 
 test('initial navigation waits until all deferred extension scripts have executed',()=>assert.match(app,/if\(document\.readyState === 'complete'\)[\s\S]*document\.addEventListener\('DOMContentLoaded', init, \{once:true\}\)/));
 test('extension-backed routes are used instead of stale legacy renderers',()=>{

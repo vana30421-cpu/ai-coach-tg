@@ -32,8 +32,8 @@ test('mobile glass effects keep critical surfaces while reducing blur on dense c
  assert.match(css,/\.card,.list-row,.task-item/);
  assert.match(css,/backdrop-filter:none!important/);
  assert.doesNotMatch(css,/\.method-card|\.modal|\.tab-bar-wrap/);
- assert.match(sw,/const CACHE='life-os-v\\d+'/);
- assert.ok(/lifeos-ulty-design\\.css\\?v=\\d{8}-\\d+/.test(index));
+ assert.match(sw,/const CACHE='life-os-v[0-9]+'/);
+ assert.ok(index.includes('lifeos-ulty-design.css?v=20261110-1'));
  assert.ok(sw.includes("'./lifeos-ulty-design.css'"));
  assert.match(design,/Dark glass surfaces, tactile controls/);
  assert.match(design,/prefers-reduced-motion:reduce/);

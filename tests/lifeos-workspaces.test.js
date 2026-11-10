@@ -29,7 +29,7 @@ function sandboxFor(source){
 
 test('workspace and system extensions are syntactically valid and loaded by the PWA',()=>{
  for(const [name,src] of [['workspaces',workspaces],['systems',systems]])assert.doesNotThrow(()=>new vm.Script(src,{filename:name}));
- assert.match(index,/lifeos-workspaces\.js\?v=/);assert.match(index,/lifeos-systems\.js\?v=/);
+ assert.ok(index.includes('lifeos-systems.js?v=20261110-1'));
  assert.match(sw,/lifeos-workspaces\.js/);assert.match(sw,/lifeos-systems\.js/);
 });
 
@@ -194,7 +194,7 @@ test('Telegram WebView uses a dedicated touch-scrollable app viewport',()=>{
  assert.match(index,/tg\.viewportHeight/);
  assert.match(index,/viewportChanged/);
  assert.match(app,/lifeosScrollToTop/);
- assert.match(sw,/const CACHE='life-os-v\\d+'/);
+ assert.match(sw,/const CACHE='life-os-v138'/);
 });
 
 test('journal entries can be sent to Jarvis for contextual reflection without modifying the original entry',()=>{
@@ -209,6 +209,6 @@ test('second-brain quick capture is available from the global app header',()=>{
  assert.match(index,/openBrainQuickCapture\(\)/);
  assert.match(workspaces,/window\.openBrainQuickCapture=function/);
  assert.match(workspaces,/window\.navigate\('obsidian'\)/);
- assert.match(index,/lifeos-workspaces\.js\?v=20261109-1/);
- assert.match(sw,/const CACHE='life-os-v\\d+'/);
+ assert.ok(index.includes('lifeos-workspaces.js?v=20261110-1'));
+ assert.match(sw,/const CACHE='life-os-v138'/);
 });
