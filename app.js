@@ -3952,6 +3952,7 @@ function renderMore(){
   var groups = [
     {title:'🎯 Основное',items:[
       {key:'walks',emoji:'🚶',label:'Прогулки'},
+      {key:'leisure',emoji:'🎬',label:'Досуг и коллекции'},
       {key:'dashboard',emoji:'🏠',label:'Главная'},
       {key:'spheres',emoji:'🎯',label:'Сферы'},
       {key:'projects',emoji:'📁',label:'Проекты'},
