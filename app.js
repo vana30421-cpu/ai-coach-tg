@@ -633,34 +633,35 @@ function applyUserSettings(){
 /* ============ ЭФФЕКТЫ ТЕМ ============ */
 function startEffects(){
   var overlay=document.getElementById('themeEffect');
-  if(!overlay)return;
-  overlay.replaceChildren();
+  if(!overlay){
+    overlay=document.createElement('div');overlay.id='themeEffect';overlay.className='theme-effect';
+    overlay.setAttribute('aria-hidden','true');document.body.insertBefore(overlay,document.body.firstChild);
+  }
   try{
     var settings=state&&state.settings?state.settings:{};
+    overlay.replaceChildren();
     document.body.classList.toggle('life-motion-override',settings.effectsMotionOverride===true);
-    overlay.setAttribute('aria-hidden','true');
-    if(document.hidden||settings.effectsEnabled===false)return;
-    var theme=(window.THEMES||[]).find(function(t){return t.id===settings.theme;})||{effect:'stars'};
-    var effect=theme.effect||'stars';
-    if(effect==='none')effect='stars';
+    if(settings.effectsEnabled===false||document.hidden)return;
+    var selected=(window.THEMES||[]).find(function(t){return t.id===settings.theme;})||{effect:'stars'};
+    var effect=selected.effect&&selected.effect!=='none'?selected.effect:'stars';
     var mobile=window.innerWidth<760;
-    var intensity=Math.max(.5,Math.min(1.5,Number(settings.effectsIntensity)||1));
-    var cap=mobile?9:16;
-    var counts={stars:12,petals:9,leaves:9,snow:10,sparkles:10,spark:10,dust:8,fireflies:8,bubbles:8,rain:9,fire:8,lava:8,pumpkin:6,bats:6,ghosts:6,bones:6,drops:8,candles:5,feathers:7,aurora:5,waves:5,lightning:4,spiderweb:4,fog:5};
-    var count=Math.min(cap,Math.max(3,Math.round((counts[effect]||7)*intensity)));
-    var glyphs={petals:['✿','❀','✾'],leaves:['❧','❦','✽'],snow:['❄','❅','✧'],pumpkin:['🎃'],bats:['🦇'],ghosts:['👻'],bones:['☠'],candles:['♨','✧'],feathers:['❧'],stars:['✦','✧','⋆'],sparkles:['✧','✦','✴'],spark:['✧','✦'],fireflies:['✧','·'],bubbles:['◌','○'],rain:['╱','╲'],drops:['●','◦'],fog:['◌','○'],aurora:['✧','·'],waves:['〜','〰'],lightning:['ϟ','✦'],spiderweb:['✳','✧']};
+    var intensity=Math.max(.6,Math.min(1.6,Number(settings.effectsIntensity)||1));
+    var counts={stars:25,petals:18,leaves:18,snow:22,sparkles:24,spark:20,dust:18,fireflies:18,bubbles:18,rain:26,fire:16,lava:14,pumpkin:12,bats:12,ghosts:12,bones:12,drops:22,candles:10,feathers:15,aurora:10,waves:10,lightning:8,spiderweb:8,fog:10};
+    var count=Math.min(mobile?28:46,Math.max(8,Math.round((counts[effect]||18)*intensity)));
+    var glyphs={petals:['✿','❀','✾','❁'],leaves:['❧','❦','✽'],snow:['❄','❅','✧','❆'],pumpkin:['🎃'],bats:['🦇'],ghosts:['👻'],bones:['☠'],candles:['♨','✧'],feathers:['❧'],stars:['✦','✧','⋆','✴'],sparkles:['✧','✦','✴'],spark:['✧','✦'],fireflies:['✧','·','✦'],bubbles:['◌','○','◦'],rain:['╱','╲','⋰'],drops:['●','◦','◌'],fog:['◌','○','✧'],aurora:['✧','·','⋆'],waves:['〜','〰','∿'],lightning:['ϟ','✦'],spiderweb:['✳','✧']};
     for(var i=0;i<count;i++){
       var el=document.createElement('i');
       el.className='life-effect life-effect-'+effect;
+      el.setAttribute('aria-hidden','true');
       el.style.setProperty('--x',(Math.random()*100)+'%');
-      el.style.setProperty('--delay',(-Math.random()*10)+'s');
-      el.style.setProperty('--duration',(9+Math.random()*13)+'s');
-      el.style.setProperty('--drift',((Math.random()-.5)*90)+'px');
+      el.style.setProperty('--delay',(-Math.random()*22)+'s');
+      el.style.setProperty('--duration',(8+Math.random()*17)+'s');
+      el.style.setProperty('--drift',((Math.random()-.5)*130)+'px');
       if(glyphs[effect])el.textContent=glyphs[effect][Math.floor(Math.random()*glyphs[effect].length)];
       overlay.appendChild(el);
     }
-    overlay.dataset.effect=effect;
-    overlay.dataset.active='true';
+    var aura=document.createElement('span');aura.className='lifeos-effect-aura';aura.setAttribute('aria-hidden','true');overlay.appendChild(aura);
+    overlay.dataset.effect=effect;overlay.dataset.active='true';
   }catch(e){console.warn('[Effects]',e);overlay.replaceChildren();}
 }
 function lifeOSCelebrate(symbol){
