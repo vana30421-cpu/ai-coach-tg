@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,viewport-fit=cover">
 <meta name="theme-color" content="#090d16">
-<meta name="lifeos-build" content="LIFEOS-20261110-2530">
+<meta name="lifeos-build" content="LIFEOS-20261110-2540">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Life OS">
@@ -962,20 +962,38 @@ body{
 }
 </style>
 <link rel="stylesheet" href="lifeos-ulty-design.css?v=20261110-19">
+<style>
+/* LIFEOS compact capsule header + reversible collapse */
+.app-header{padding:calc(var(--safe-top) + 3px) 0 5px!important;background:transparent!important;border:0!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.header-inner{width:max-content;max-width:calc(100% - 14px);min-height:44px;padding:4px 7px!important;gap:6px!important;border:1px solid var(--glass-border-strong);border-radius:999px;background:color-mix(in srgb,var(--bg-2) 82%,transparent);box-shadow:0 4px 18px rgba(0,0,0,.18),inset 0 1px 0 var(--glass-highlight);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.header-inner .icon-btn,.header-inner .avatar-btn{width:36px!important;height:36px!important;flex-basis:36px!important;border-radius:50%!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.header-inner .header-collapse-btn{width:27px!important;height:27px!important;flex-basis:27px!important;font-size:16px!important;background:transparent!important;border:0!important;color:var(--text-3)!important}
+.header-inner .header-back-btn{font-size:22px!important;font-weight:500}
+.app-main{padding-top:8px!important;transition:padding-top .16s ease}
+.header-restore-btn{display:none;position:fixed;top:calc(var(--safe-top) + 5px);right:10px;z-index:1000;width:34px;height:34px;border-radius:50%;border:1px solid var(--glass-border-strong);background:var(--bg-2);color:var(--text);font-size:18px;box-shadow:var(--shadow-sm)}
+body.lifeos-header-hidden .app-header{display:none!important}
+body.lifeos-header-hidden .header-restore-btn{display:grid;place-items:center}
+body.lifeos-header-hidden .app-main{padding-top:4px!important}
+@media(max-width:480px){.header-inner{gap:4px!important;padding:3px 5px!important}.header-inner .icon-btn,.header-inner .avatar-btn{width:34px!important;height:34px!important;flex-basis:34px!important}}
+@media(prefers-reduced-motion:reduce){.app-main{transition:none!important}}
+</style>
 </head>
 <body class="theme-dark">
 <div class="theme-effect" id="themeEffect"></div>
 
 <header class="app-header is-compact" id="appHeader">
   <div class="header-inner">
+    <button class="icon-btn header-back-btn" onclick="window.navigateBack &amp;&amp; window.navigateBack()" aria-label="Назад" title="Назад">←</button>
     <button class="avatar-btn" id="headerAvatar" onclick="window.navigate &amp;&amp; window.navigate('profile')" aria-label="Профиль">👤</button>
     <button class="icon-btn" onclick="window.openStatsQuick ? window.openStatsQuick() : (window.navigate &amp;&amp; window.navigate('stats'))" aria-label="Статистика">📊</button>
     <button class="icon-btn" onclick="window.openLifeOSGlobalSearch ? window.openLifeOSGlobalSearch() : (window.navigate &amp;&amp; window.navigate('search'))" aria-label="Поиск по LIFEOS">🔎</button>
     <button class="icon-btn" onclick="window.openBrainQuickCapture ? window.openBrainQuickCapture() : (window.navigate &amp;&amp; window.navigate('notes'))" aria-label="Быстрая заметка во второй мозг">🧠</button>
     <button class="icon-btn" onclick="window.openThemePicker ? window.openThemePicker() : (window.toast &amp;&amp; window.toast('Темы временно недоступны','info'))" aria-label="Темы">🎨</button>
     <button class="icon-btn" onclick="window.openLifeOSQuickActions ? window.openLifeOSQuickActions() : (window.navigate &amp;&amp; window.navigate('more'))" aria-label="Быстрые действия">⚡</button>
+    <button class="icon-btn header-collapse-btn" type="button" onclick="window.toggleLifeOSHeader &amp;&amp; window.toggleLifeOSHeader(true)" aria-label="Скрыть верхнюю панель" title="Скрыть панель">⌃</button>
   </div>
 </header>
+<button class="header-restore-btn" id="headerRestoreBtn" type="button" onclick="window.toggleLifeOSHeader &amp;&amp; window.toggleLifeOSHeader(false)" aria-label="Показать верхнюю панель" title="Показать панель">⌄</button>
 
 <main class="app-main" id="app"></main>
 
