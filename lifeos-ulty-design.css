@@ -199,3 +199,28 @@ p,.subtitle,.page-subtitle,.list-title,.list-subtitle,.task-title,.task-meta,.fo
 @media(prefers-reduced-motion:reduce){
  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
 }
+
+/* LIFEOS Android refinement: searchable all-sections hub + native glass rendering */
+.more-search{display:flex;align-items:center;gap:10px;min-height:54px;padding:5px 14px;margin:14px 0 8px;border-radius:19px;background:var(--glass-2);border:1px solid var(--glass-border-strong);box-shadow:inset 0 1px 0 var(--glass-highlight);-webkit-backdrop-filter:blur(20px) saturate(160%);backdrop-filter:blur(20px) saturate(160%)}
+.more-search>span{font-size:25px;color:var(--text-3)}
+.more-search input{min-height:42px!important;padding:7px 2px!important;border:0!important;background:transparent!important;box-shadow:none!important;font-size:14px}
+.more-count{font-size:12px;color:var(--text-3);margin:0 3px 14px}
+.more-group{padding:16px!important;margin-bottom:14px!important}
+.more-group-title{font-size:16px;font-weight:760;margin:0 0 13px;letter-spacing:-.025em}
+.more-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.more-tile{position:relative;display:flex;align-items:center;gap:10px;min-width:0;min-height:64px;padding:10px;border-radius:17px;text-align:left;color:var(--text);background:linear-gradient(145deg,var(--glass-3),var(--glass-1));border:1px solid var(--glass-border);box-shadow:inset 0 1px 0 var(--glass-highlight);cursor:pointer}
+.more-tile:active{transform:scale(.975);background:color-mix(in srgb,var(--brand) 15%,var(--glass-2))}
+.more-tile-icon{display:grid;place-items:center;flex:0 0 36px;width:36px;height:36px;border-radius:13px;background:color-mix(in srgb,var(--brand) 15%,var(--glass-2));font-size:19px}
+.more-tile-label{flex:1;min-width:0;font-size:12px;line-height:1.3;font-weight:680;overflow-wrap:anywhere}
+.more-tile-arrow{font-size:19px;color:var(--text-4)}
+.more-tile[hidden],.more-group[hidden]{display:none!important}
+@media(max-width:360px){.more-grid{gap:7px}.more-tile{gap:7px;padding:8px;min-height:60px}.more-tile-icon{flex-basis:32px;width:32px;height:32px}}
+/* Respect the selected theme on Android: keep its color palette, blur and animated layer. */
+@media(max-width:759px){
+ body::before{animation:auroraShift 25s ease-in-out infinite alternate!important;opacity:.13!important}
+ .theme-effect{display:block!important;opacity:.7!important}
+ .card,.list-row,.task-item,.stat-item,.group-item,.compact-item,.search-bar,.msg,.progress-ring-hero{
+  -webkit-backdrop-filter:blur(14px) saturate(150%)!important;
+  backdrop-filter:blur(14px) saturate(150%)!important;
+ }
+}
