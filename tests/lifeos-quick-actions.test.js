@@ -9,7 +9,7 @@ const sw=fs.readFileSync('sw.js','utf8');
 test('global header exposes a quick-action launcher',()=>{
  assert.match(index,/openLifeOSQuickActions\(\)/);
  assert.match(index,/aria-label="Быстрые действия"/);
- assert.ok(index.includes('lifeos-systems.js?v=20261110-1'));
+ assert.ok(index.includes('lifeos-systems.js?v=20261110-3'));
 });
 
 test('quick actions link only to existing LIFEOS routes and preserve data',()=>{
