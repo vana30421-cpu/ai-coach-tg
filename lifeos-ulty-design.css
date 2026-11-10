@@ -599,3 +599,23 @@ input:focus,textarea:focus,select:focus{outline:none!important;border-color:colo
 .theme-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.theme-tile{min-width:0;min-height:104px;padding:12px;border-radius:20px;overflow:hidden}.theme-tile-name{font-size:12px;line-height:1.25;overflow-wrap:anywhere}.theme-tile-emoji{font-size:25px}
 @media(max-width:760px){.card,.list-row,.task-item,.stat-item,.group-item,.compact-item,.search-bar,.msg,.progress-ring-hero{-webkit-backdrop-filter:blur(8px) saturate(125%)!important;backdrop-filter:blur(8px) saturate(125%)!important}.lc-day-planner{display:flex;flex-direction:column;gap:0}.lc-day-planner-head{display:flex;align-items:center;justify-content:space-between;padding:10px 0 16px;text-transform:capitalize}.lc-day-planner-head button{border:1px solid var(--glass-border);border-radius:14px;background:var(--glass-2);color:var(--text);padding:9px 12px}.lc-hour-row{display:grid;grid-template-columns:52px minmax(0,1fr);gap:9px;min-height:62px;border-top:1px solid var(--glass-border)}.lc-hour-row>span{padding-top:12px;color:var(--text-3);font-size:12px;font-variant-numeric:tabular-nums}.lc-hour-content{min-width:0;padding:5px 0}.lc-empty-hour{width:100%;height:48px;text-align:left;padding:0 12px;border:1px dashed var(--glass-border);border-radius:13px;background:transparent;color:var(--text-4);font-size:12px}.lc-day-planner .lc-event{margin:3px 0}.lifeos-fx-particle{will-change:transform;contain:layout style paint}}
 @media(prefers-reduced-motion:reduce){.lc-page,.theme-tile,.tab-item{animation:none!important;transition:none!important}}
+
+
+/* Compact oval header + calendar range planner */
+.app-header.is-compact{position:sticky;top:0;padding:calc(var(--safe-top) + 5px) 10px 5px;background:transparent;border:0;backdrop-filter:none;-webkit-backdrop-filter:none}
+.app-header.is-compact .header-inner{width:max-content;max-width:calc(100vw - 20px);justify-content:flex-start;gap:6px;padding:5px 8px;border:1px solid var(--glass-border);border-radius:999px;background:color-mix(in srgb,var(--bg-2) 88%,transparent);box-shadow:0 5px 20px rgba(0,0,0,.16),inset 0 1px var(--glass-highlight);backdrop-filter:blur(12px) saturate(130%);-webkit-backdrop-filter:blur(12px) saturate(130%);overflow-x:auto;scrollbar-width:none}
+.app-header.is-compact .header-inner::-webkit-scrollbar{display:none}
+.app-header.is-compact .icon-btn,.app-header.is-compact .avatar-btn{width:38px;height:38px;min-width:38px;font-size:17px;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+.app-header.is-compact .icon-btn::before,.app-header.is-compact .avatar-btn::before{display:none}
+.app-header.is-compact .icon-btn:active,.app-header.is-compact .avatar-btn:active{transform:scale(.94)}
+@media(max-width:390px){.app-header.is-compact .header-inner{gap:4px;padding:4px 6px}.app-header.is-compact .icon-btn,.app-header.is-compact .avatar-btn{width:35px;height:35px;min-width:35px}}
+.lc-year-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.lc-year-month{min-width:0;text-align:left;padding:12px;border:1px solid var(--glass-border);border-radius:17px;background:var(--glass-1);color:var(--text);display:flex;flex-direction:column;gap:6px}
+.lc-year-month>b{text-transform:capitalize;font-size:14px}.lc-year-month>span{font-size:10px;color:var(--text-3)}
+.lc-year-month>small{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;color:var(--text-4);font-size:8px;text-align:center}
+.lc-year-month>strong{display:flex;flex-direction:column;gap:3px;min-height:30px;font-weight:500}
+.lc-year-month em{font-style:normal;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-left:2px solid var(--event-color);padding-left:5px;color:var(--text-2)}
+.lc-hour-row.is-half{min-height:38px;border-top-style:dashed}.lc-hour-row.is-half>span{padding-top:8px;font-size:10px;color:var(--text-4)}
+.lc-hour-row.is-half .lc-empty-hour{height:28px;opacity:.48}
+@media(max-width:759px){.lc-year-grid{gap:7px}.lc-year-month{padding:9px;border-radius:14px}.lc-year-month>b{font-size:12px}}
+@media(prefers-reduced-motion:reduce){.app-header.is-compact *{transition:none!important}}
