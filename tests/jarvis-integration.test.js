@@ -15,7 +15,7 @@ test('Jarvis is wired to the existing AI tab and direct route',()=>{
 test('main navigation labels the assistant Jarvis',()=>assert.match(content,/id:'ai',emoji:'✧',label:'Джарвис'/));
 test('command core loads before app runtime',()=>assert.ok(index.search(/src="jarvis-core\.js(?:\\?[^\"]*)?"/)<index.search(/src="app\.js(?:\\?[^\"]*)?"/)));
 test('Jarvis command core is included in offline shell cache',()=>assert.match(sw,/\.\/jarvis-core\.js/));
-test('PWA cache is versioned and activates the fresh worker without a stale waiting worker',()=>{assert.ok(sw.includes('life-os-v138'));assert.match(sw,/await self\.skipWaiting\(\)/);assert.match(sw,/ignoreSearch:true/);});
+test('PWA cache is versioned and activates the fresh worker without a stale waiting worker',()=>{assert.ok(sw.includes('life-os-v165'));assert.match(sw,/await self\.skipWaiting\(\)/);assert.match(sw,/ignoreSearch:true/);});
  assert.ok(index.includes('lifeos-systems.js?v=20261110-1'));
 
 test('initial navigation waits until all deferred extension scripts have executed',()=>assert.match(app,/if\(document\.readyState === 'complete'\)[\s\S]*document\.addEventListener\('DOMContentLoaded', init, \{once:true\}\)/));
@@ -268,5 +268,5 @@ test('final layout normalization keeps Telegram WebView and desktop content with
   assert.match(index,/max-width:1200px/);
   assert.match(index,/grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
   assert.match(index,/env\(safe-area-inset-bottom,0px\)/);
-  assert.ok(sw.includes('life-os-v138'));
+  assert.ok(sw.includes('life-os-v165'));
 });
