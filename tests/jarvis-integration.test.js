@@ -18,7 +18,7 @@ test('Jarvis command core is included in offline shell cache',()=>assert.match(s
 test('PWA cache is versioned and activates the fresh worker without a stale waiting worker',()=>{assert.ok(sw.includes('life-os-v166'));assert.match(sw,/await self\.skipWaiting\(\)/);assert.match(sw,/ignoreSearch:true/);});
  assert.ok(index.includes('lifeos-systems.js?v=20261110-3'));
 
-test('initial navigation waits until all deferred extension scripts have executed',()=>assert.match(app,/if\(document\.readyState === 'complete'\)[\s\S]*document\.addEventListener\('DOMContentLoaded', init, \{once:true\}\)/));
+test('initial navigation waits for deferred scripts and has a load fallback',()=>{assert.match(app,/if\(document\.readyState === 'loading'\)[\s\S]*document\.addEventListener\('DOMContentLoaded',init,\{once:true\}\)/);assert.match(app,/window\.addEventListener\('load'/);});
 test('extension-backed routes are used instead of stale legacy renderers',()=>{
   assert.match(app,/schedule: window\.renderSchedule \|\| renderSchedule/);
   assert.match(app,/calendar: window\.renderCalendar \|\| renderCalendar/);
@@ -259,9 +259,9 @@ test('Jarvis autopilot controls are callable from the interface',()=>{
  for(const name of ['runJarvisAutopilot','setJarvisAutopilot'])assert.match(app,new RegExp('window\\.'+name+'='+name));
 });
 
-test('script load diagnostics attach to versioned assets',()=>{
-  assert.ok(index.includes('script[src^='));
-  assert.ok(index.includes("name+'?"));
+test('script load diagnostics report failed deferred assets by filename',()=>{
+  assert.match(index,/e\.target\.tagName==='SCRIPT'/);
+  assert.match(index,/Не загрузился скрипт/);
 });
 test('final layout normalization keeps Telegram WebView and desktop content within the viewport',()=>{
   assert.match(index,/id="lifeos-layout-normalization"/);
