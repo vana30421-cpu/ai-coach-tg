@@ -977,7 +977,7 @@ body{
 @media(max-width:380px){.lifeos-learning-hub{padding-left:10px;padding-right:10px}.lifeos-learning-hub .card{padding:14px;border-radius:19px}.lifeos-learning-hub .list-row{gap:8px}}
 
 </style>
-<link rel="stylesheet" href="lifeos-ulty-design.css?v=20261110-1">
+<link rel="stylesheet" href="lifeos-ulty-design.css?v=20261110-2">
 </head>
 <body class="theme-dark">
 <div class="theme-effect" id="themeEffect"></div>
@@ -999,22 +999,22 @@ body{
 
 <div class="toast-container" id="toasts"></div>
 
-<script defer src="content.js?v=20261110-1"></script>
-<script defer src="lifeos-detox-enhancements.js?v=20261110-1"></script>
-<script defer src="lifeos-detox-details.js?v=20261110-1"></script>
-<script defer src="content2.js?v=20261110-1"></script>
-<script defer src="content3.js?v=20261110-1"></script>
-<script defer src="lifeos-curriculum.js?v=20261110-1"></script>
-<script defer src="jarvis-core.js?v=20261110-1"></script>
-<script defer src="lifeos-mira-skills.js?v=20261110-1"></script>
-<script defer src="lifeos-jarvis-memory.js?v=20261110-1"></script>
-<script defer src="app.js?v=20261110-1"></script>
-<script defer src="lifeos-workspaces.js?v=20261110-1"></script>
-<script defer src="lifeos-systems.js?v=20261110-1"></script>
-<script defer src="lifeos-learning-experience.js?v=20261110-1"></script>
-<script defer src="lifeos-learning-plan.js?v=20261110-1"></script>
-<script defer src="lifeos-learning-content.js?v=20261110-1"></script>
-<script defer src="lifeos-search.js?v=20261110-1"></script>
+<script defer src="content.js?v=20261110-2"></script>
+<script defer src="lifeos-detox-enhancements.js?v=20261110-2"></script>
+<script defer src="lifeos-detox-details.js?v=20261110-2"></script>
+<script defer src="content2.js?v=20261110-2"></script>
+<script defer src="content3.js?v=20261110-2"></script>
+<script defer src="lifeos-curriculum.js?v=20261110-2"></script>
+<script defer src="jarvis-core.js?v=20261110-2"></script>
+<script defer src="lifeos-mira-skills.js?v=20261110-2"></script>
+<script defer src="lifeos-jarvis-memory.js?v=20261110-2"></script>
+<script defer src="app.js?v=20261110-2"></script>
+<script defer src="lifeos-workspaces.js?v=20261110-2"></script>
+<script defer src="lifeos-systems.js?v=20261110-2"></script>
+<script defer src="lifeos-learning-experience.js?v=20261110-2"></script>
+<script defer src="lifeos-learning-plan.js?v=20261110-2"></script>
+<script defer src="lifeos-learning-content.js?v=20261110-2"></script>
+<script defer src="lifeos-search.js?v=20261110-2"></script>
 <script>
 (function(){
   var failed=[];
@@ -1084,7 +1084,7 @@ body{
  }
  navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloading)return;reloading=true;if(banner)banner.remove();window.location.reload();});
  window.addEventListener('load',function(){
-  navigator.serviceWorker.register('./sw.js?v=20261110-138',{scope:'./',updateViaCache:'none'}).then(function(reg){
+  navigator.serviceWorker.register('./sw.js?v=20261110-238',{scope:'./',updateViaCache:'none'}).then(function(reg){
    function inspect(){if(reg.waiting&&navigator.serviceWorker.controller)offerUpdate(reg.waiting);}
    inspect();reg.addEventListener('updatefound',function(){var installing=reg.installing;if(!installing)return;installing.addEventListener('statechange',function(){if(installing.state==='installed')inspect();});});
    reg.update().catch(function(){});document.addEventListener('visibilitychange',function(){if(!document.hidden)reg.update().catch(function(){});});
@@ -1111,7 +1111,7 @@ body{
 <script>
 (function(){
  'use strict';
- var BUILD='LIFEOS-DIAG-20261110-1545';
+ var BUILD='LIFEOS-DIAG-20261110-1600';
  var errors=[];
  var panel=document.getElementById('lifeosDiagPanel');
  var report=document.getElementById('lifeosDiagReport');
