@@ -25,8 +25,8 @@ test('all 62 detox days have a unique, actionable detailed guide',()=>{
 });
 
 test('detox detail data is loaded, rendered and available offline',()=>{
- assert.ok(index.includes('lifeos-detox-details.js?v=20261110-1'));
- assert.ok(index.includes('lifeos-detox-details.js?v=20261110-1'));
+ assert.ok(index.includes('lifeos-detox-details.js?v=20261110-3'));
+ assert.ok(index.includes('lifeos-detox-details.js?v=20261110-3'));
  assert.match(app,/window\.DETOX_DAY_DETAILS&&window\.DETOX_DAY_DETAILS\[day\]/);
  assert.match(app,/Подробная методика/);
  assert.match(app,/Критерий выполнения/);
