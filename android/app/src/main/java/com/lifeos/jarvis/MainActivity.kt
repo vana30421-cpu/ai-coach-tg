@@ -7,17 +7,20 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.webkit.PermissionRequest
-import android.webkit.WebChromeClient
+import android.speech.RecognitionListener
+import android.speech.RecognizerIntent
+import android.speech.SpeechRecognizer
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.Toast
+import org.json.JSONObject
 
 class MainActivity : Activity() {
     private lateinit var webView: WebView
-    private var pendingWebPermission: PermissionRequest? = null
+    private var speechRecognizer: SpeechRecognizer? = null
+    private var pendingVoiceStart = false
     private var startVoiceAfterLoad = false
 
     companion object {
@@ -49,32 +52,7 @@ class MainActivity : Activity() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 if (startVoiceAfterLoad) {
                     startVoiceAfterLoad = false
-                    webView.postDelayed({
-                        webView.evaluateJavascript(
-                            "window.LifeOSJarvisMobile && window.LifeOSJarvisMobile.open(true)",
-                            null
-                        )
-                    }, 500)
-                }
-            }
-        }
-        webView.webChromeClient = object : WebChromeClient() {
-            override fun onPermissionRequest(request: PermissionRequest) {
-                val wantsAudio = request.resources.contains(PermissionRequest.RESOURCE_AUDIO_CAPTURE)
-                if (!wantsAudio) {
-                    request.deny()
-                    return
-                }
-                if (checkSelfPermission(Manifest.permission.RECORD_AUDIO)
-                    == PackageManager.PERMISSION_GRANTED) {
-                    request.grant(arrayOf(PermissionRequest.RESOURCE_AUDIO_CAPTURE))
-                } else {
-                    pendingWebPermission = request
-                    requestPermissions(
-                        this@MainActivity,
-                        arrayOf(Manifest.permission.RECORD_AUDIO),
-                        AUDIO_PERMISSION_REQUEST
-                    )
+                    startNativeVoiceRecognition()
                 }
             }
         }
@@ -88,13 +66,69 @@ class MainActivity : Activity() {
             startVoiceAfterLoad = true
             if (webView.url?.startsWith(getString(R.string.lifeos_url)) == true) {
                 startVoiceAfterLoad = false
-                webView.postDelayed({
-                    webView.evaluateJavascript(
-                        "window.LifeOSJarvisMobile && window.LifeOSJarvisMobile.open(true)",
-                        null
-                    )
-                }, 250)
+                startNativeVoiceRecognition()
             } else webView.loadUrl(getString(R.string.lifeos_url))
+        }
+    }
+
+    private fun openVoiceSheet() {
+        webView.evaluateJavascript(
+            "window.LifeOSJarvisMobile && window.LifeOSJarvisMobile.open(false)",
+            null
+        )
+    }
+
+    private fun startNativeVoiceRecognition() {
+        if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            pendingVoiceStart = true
+            requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), AUDIO_PERMISSION_REQUEST)
+            openVoiceSheet()
+            return
+        }
+        if (!SpeechRecognizer.isRecognitionAvailable(this)) {
+            openVoiceSheet()
+            Toast.makeText(this, "Сервис распознавания речи недоступен. Можно написать команду.", Toast.LENGTH_LONG).show()
+            return
+        }
+        try {
+            speechRecognizer?.destroy()
+            speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this).apply {
+                setRecognitionListener(object : RecognitionListener {
+                    override fun onReadyForSpeech(params: Bundle?) = openVoiceSheet()
+                    override fun onBeginningOfSpeech() {}
+                    override fun onRmsChanged(rmsdB: Float) {}
+                    override fun onBufferReceived(buffer: ByteArray?) {}
+                    override fun onEndOfSpeech() {}
+                    override fun onError(error: Int) {
+                        openVoiceSheet()
+                        Toast.makeText(this@MainActivity, "Не удалось распознать речь. Попробуй ещё раз.", Toast.LENGTH_SHORT).show()
+                    }
+                    override fun onResults(results: Bundle?) {
+                        val phrase = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.firstOrNull()
+                        if (!phrase.isNullOrBlank()) {
+                            val safePhrase = JSONObject.quote(phrase)
+                            webView.evaluateJavascript(
+                                "window.LifeOSJarvisMobile && window.LifeOSJarvisMobile.submit($safePhrase)",
+                                null
+                            )
+                        } else openVoiceSheet()
+                    }
+                    override fun onPartialResults(partialResults: Bundle?) {}
+                    override fun onEvent(eventType: Int, params: Bundle?) {}
+                })
+            }
+            val request = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+                putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ru-RU")
+                putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, "ru-RU")
+                putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
+                putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, false)
+                putExtra(RecognizerIntent.EXTRA_PROMPT, "Скажите команду для Джарвиса")
+            }
+            speechRecognizer?.startListening(request)
+        } catch (error: Exception) {
+            openVoiceSheet()
+            Toast.makeText(this, "Голосовой ввод недоступен. Используй текстовый режим.", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -117,11 +151,15 @@ class MainActivity : Activity() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == AUDIO_PERMISSION_REQUEST) {
-            val request = pendingWebPermission
-            pendingWebPermission = null
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED && request != null) {
-                request.grant(arrayOf(PermissionRequest.RESOURCE_AUDIO_CAPTURE))
-            } else request?.deny()
+            val granted = grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
+            if (granted && pendingVoiceStart) {
+                pendingVoiceStart = false
+                startNativeVoiceRecognition()
+            } else if (!granted) {
+                pendingVoiceStart = false
+                openVoiceSheet()
+                Toast.makeText(this, "Без доступа к микрофону голосовой вызов недоступен.", Toast.LENGTH_LONG).show()
+            }
         }
     }
 
@@ -130,7 +168,9 @@ class MainActivity : Activity() {
     }
 
     override fun onDestroy() {
-        pendingWebPermission?.deny()
+        speechRecognizer?.cancel()
+        speechRecognizer?.destroy()
+        speechRecognizer = null
         webView.destroy()
         super.onDestroy()
     }
