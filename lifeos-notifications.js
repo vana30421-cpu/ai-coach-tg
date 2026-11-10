@@ -18,7 +18,7 @@ window.renderNotifications=render;
 window.lifeNoticePermission=requestPermission;
 window.lifeNoticeEnable=function(v){var n=data();if(v&&permission()!=='granted'){requestPermission();return;}n.enabled=!!v;save();schedule();render();};
 window.lifeNoticeSet=function(k,v){var n=data();if(k==='quietStart'||k==='quietEnd')n[k]=v;save();schedule();};
-window.lifeNoticeCategory=function(k,v){data().categories[k]=!!v;save();};
+window.lifeNoticeCategory=function(k,v){data().categories[k]=!!v;save();schedule();};
 window.lifeNoticeTest=function(){notify('LIFEOS · Проверка','Уведомления работают на этом устройстве.');};
 window.lifeNoticeAdd=function(){var title=document.getElementById('lnTitle'),at=document.getElementById('lnAt'),note=document.getElementById('lnNote');if(!title||!title.value.trim()||!at||!at.value){toast('Укажи название и дату/время','warning');return;}var time=new Date(at.value);if(!Number.isFinite(time.getTime())||time.getTime()<=Date.now()){toast('Выбери время в будущем','warning');return;}var n=data();n.reminders.push({id:'rem_'+Date.now().toString(36),title:title.value.trim(),at:time.toISOString(),note:note?note.value.trim():'',category:document.getElementById('lnCategory').value,done:false,createdAt:new Date().toISOString()});save();render();schedule();toast('Напоминание добавлено','success');};
 window.lifeNoticeDone=function(id){var x=data().reminders.find(function(r){return r.id===id;});if(x){x.done=!x.done;save();render();schedule();}};
