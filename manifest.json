@@ -29,6 +29,17 @@
   ],
   "shortcuts": [
     {
+      "name": "Джарвис",
+      "short_name": "Jarvis",
+      "url": "./?page=jarvis",
+      "icons": [
+        {
+          "src": "icon.svg",
+          "sizes": "any"
+        }
+      ]
+    },
+    {
       "name": "Задачи",
       "short_name": "Задачи",
       "url": "./?page=tasks",
