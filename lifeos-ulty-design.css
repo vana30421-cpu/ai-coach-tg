@@ -169,3 +169,22 @@ input[type="checkbox"]{border-radius:6px;border-color:rgba(171,190,224,.3)}
   .page,.workspace-entry,.card,.list-row,.task-item,.btn,.tab-item{animation:none!important;transition:none!important}
   body::before{animation:none!important}
 }
+
+/* One UI 8 inspired glass system — readable, responsive, touch-first */
+:root{--glass-blur:22px;--glass-blur-strong:28px;--glass-border:rgba(210,224,255,.19);--glass-highlight:rgba(255,255,255,.12)}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:-.012em}
+#app,.page,.card,.method-card,.sheet,.modal,.tabbar,.quick-tabs{min-width:0;max-width:100%}
+.page{width:100%;overflow-x:clip;padding-left:clamp(12px,3.5vw,20px);padding-right:clamp(12px,3.5vw,20px)}
+.page *{min-width:0;overflow-wrap:anywhere;word-break:normal}
+.card,.method-card,.insight-card,.sheet{background:linear-gradient(145deg,rgba(35,43,59,.78),rgba(17,22,33,.88));border:1px solid rgba(210,224,255,.16);border-radius:24px;box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 12px 32px rgba(0,0,0,.18);-webkit-backdrop-filter:blur(22px) saturate(155%);backdrop-filter:blur(22px) saturate(155%)}
+button,.btn,input,select,textarea{font:inherit;max-width:100%}
+button,.btn{white-space:normal;overflow-wrap:anywhere;line-height:1.35}
+p,.subtitle,.footnote,.list-title,.list-subtitle,.method-title,.method-cat{white-space:normal;overflow-wrap:anywhere;word-break:normal;line-height:1.5}
+.grid-2,.grid-3,.row,.row-between,.method-header{min-width:0;max-width:100%;flex-wrap:wrap}
+.grid-2>*,.grid-3>*{min-width:0}
+.glass-filter{display:flex;flex-wrap:wrap;gap:7px;padding:10px;border:1px solid var(--glass-border);border-radius:20px;background:rgba(18,24,36,.55);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+.vision-exercise-open{display:block;width:100%;padding:0;border:0;background:transparent;color:inherit;text-align:left}
+.vision-details{margin-top:10px;padding:10px 12px;border-top:1px solid var(--glass-border)}
+.vision-details summary{cursor:pointer;font-weight:700;padding:5px 0}
+#lifeosSaveDock,#lifeosDiagLauncher,#lifeosDiagPanel{display:none!important}
+@media(max-width:420px){.title-xl{font-size:clamp(22px,6vw,28px)}.card{padding:14px!important}.grid-2{grid-template-columns:minmax(0,1fr)}.stat-value{font-size:20px}}
