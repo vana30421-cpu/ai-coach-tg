@@ -5249,9 +5249,11 @@ function init(){
     window.__LIFE_OS_BOOTED = true;
     console.log('[INIT ✅] Life OS v' + CURRENT_VERSION);
   }catch(e){
-    console.error('[INIT]', e);
-    var app = document.getElementById('app');
-    if(app) app.innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-title">Ошибка</div><div class="empty-text">' + esc(e.message) + '</div></div>';
+    window.__LIFEOS_INIT_ERROR={message:String(e&&e.message||e),stack:String(e&&e.stack||''),at:new Date().toISOString()};
+    window.__LIFE_OS_INIT_STARTED=false;
+    console.error('[INIT]',e);
+    var app=document.getElementById('app');
+    if(app)app.innerHTML='<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-title">Ошибка запуска</div><div class="empty-text">'+esc(e&&e.message||e)+'</div><details><summary>Технические сведения</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">'+esc(e&&e.stack||'')+'</pre></details></div>';
   }
 }
 function checkCooldownAndSleep(){
