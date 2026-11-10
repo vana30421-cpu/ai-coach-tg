@@ -20,7 +20,7 @@ test('vision catalog contains only five defined comfort routines, not fake visio
  const sandbox={window:{},console:{log(){},warn(){},error(){}}};
  vm.runInNewContext(content,sandbox,{filename:'content.js'});
  const routines=sandbox.window.VISION_EXERCISES;
- assert.equal(routines.length,5);
+ assert.equal(routines.length,7);
  assert.ok(routines.every(x=>x.title&&x.desc&&x.how&&x.science&&x.seconds>0));
  assert.doesNotMatch(content,/Солнечные ванны|Соляризация|Без очков|Природные капли/);
 });
@@ -33,7 +33,7 @@ test('vision section has timed breaks, symptom logging, exam history and urgent-
  assert.match(app,/visionFlashes/);
  assert.match(app,/visionFloaters/);
  assert.match(app,/срочная очная оценка/);
- assert.match(content,/AAO — Computers, Digital Devices, and Eye Strain/);
+ assert.match(content,/AAO — экранная нагрузка и редкое моргание/);
 });
 
 test('Jarvis can send opt-in conversations with app analytics to a server-side API',()=>{
