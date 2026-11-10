@@ -1092,5 +1092,74 @@ body{
  });
 })();;
 </script>
+
+<!-- LIFEOS-DIAGNOSTICS-20261110: visible runtime/build diagnostics -->
+<style>
+#lifeosDiagLauncher{position:fixed;right:12px;bottom:calc(88px + env(safe-area-inset-bottom,0px));z-index:99999;border:1px solid rgba(120,170,255,.55);border-radius:999px;padding:10px 13px;background:#111d31;color:#fff;font:700 12px system-ui;box-shadow:0 4px 20px #0008}
+#lifeosDiagPanel{position:fixed;inset:auto 10px calc(140px + env(safe-area-inset-bottom,0px));z-index:100000;max-height:65dvh;overflow:auto;display:none;padding:14px;border:1px solid #648bd0;border-radius:16px;background:#0b1220;color:#edf4ff;font:12px/1.5 ui-monospace,monospace;box-shadow:0 12px 40px #000b}
+#lifeosDiagPanel pre{white-space:pre-wrap;overflow-wrap:anywhere;margin:10px 0}
+#lifeosDiagPanel button{border:1px solid #648bd0;border-radius:10px;padding:8px 10px;background:#172945;color:#fff;margin:4px 6px 4px 0}
+</style>
+<button id="lifeosDiagLauncher" type="button">🔎 Проверка LIFEOS</button>
+<section id="lifeosDiagPanel" aria-live="polite">
+ <b>ПРОВЕРКА LIFEOS</b><div id="lifeosDiagStatus">Собираю данные…</div>
+ <pre id="lifeosDiagReport"></pre>
+ <button id="lifeosDiagRefresh" type="button">Повторить проверку</button>
+ <button id="lifeosDiagCopy" type="button">Скопировать отчёт</button>
+ <button id="lifeosDiagClose" type="button">Закрыть</button>
+</section>
+<script>
+(function(){
+ 'use strict';
+ var BUILD='LIFEOS-DIAG-20261110-1545';
+ var errors=[];
+ var panel=document.getElementById('lifeosDiagPanel');
+ var report=document.getElementById('lifeosDiagReport');
+ var status=document.getElementById('lifeosDiagStatus');
+ function record(kind,message,source,line,stack){
+  errors.push({kind:kind,message:String(message||''),source:String(source||''),line:line||0,stack:String(stack||'')});
+  if(errors.length>12)errors.shift();
+ }
+ window.addEventListener('error',function(e){
+  record('JS',e.message,e.filename,e.lineno,e.error&&e.error.stack);
+ },true);
+ window.addEventListener('unhandledrejection',function(e){
+  var r=e.reason;record('PROMISE',r&&r.message||r,r&&r.fileName,r&&r.lineNumber,r&&r.stack);
+ });
+ function safe(v){try{return JSON.stringify(v)}catch(e){return String(v)}}
+ async function probe(path){
+  try{
+   var u=new URL(path,location.href);u.searchParams.set('__lifeos_diag',BUILD);
+   var r=await fetch(u.href,{method:'HEAD',cache:'no-store'});
+   return path+': HTTP '+r.status+(r.ok?' OK':' FAIL');
+  }catch(e){return path+': ERROR '+(e&&e.message||e)}
+ }
+ async function run(){
+  status.textContent='Проверяю опубликованные файлы…';
+  var scripts=Array.from(document.scripts).map(function(s){return s.src?new URL(s.src).pathname.split('/').pop()+' '+(s.src.match(/[?&]v=([^&]+)/)||[])[1]||'без версии':'inline'});
+  var sw={supported:!!navigator.serviceWorker,controller:navigator.serviceWorker&&navigator.serviceWorker.controller?navigator.serviceWorker.controller.scriptURL:'нет активного контроллера'};
+  if(navigator.serviceWorker){
+   try{var reg=await navigator.serviceWorker.getRegistration();sw.registration=reg?{scope:reg.scope,active:reg.active&&reg.active.state,waiting:reg.waiting&&reg.waiting.state,installing:reg.installing&&reg.installing.state}:'не зарегистрирован'}catch(e){sw.registration='ошибка: '+e.message}
+  }
+  var cacheNames=[];try{cacheNames=await caches.keys()}catch(e){}
+  var checks=await Promise.all(['./index.html','./sw.js','./app.js','./jarvis-core.js','./lifeos-ulty-design.css','./content.js'].map(probe));
+  var data={
+   expectedBuild:BUILD,documentBuild:document.querySelector('meta[name="lifeos-build"]')&&document.querySelector('meta[name="lifeos-build"]').content||'meta отсутствует',
+   page:location.href,loadedAt:new Date().toISOString(),userAgent:navigator.userAgent,
+   serviceWorker:sw,caches:cacheNames,scriptTags:scripts,
+   globals:{state:typeof window.state,daysPeriod:typeof window.daysPeriod,jarvis:typeof window.jarvis,jarvisCore:typeof window.JarvisCore},
+   fileChecks:checks,errors:errors.slice(-8)
+  };
+  var out=safe(data);report.textContent=out;status.textContent='Отчёт готов. Сравни expectedBuild и documentBuild.';window.__LIFEOS_DIAGNOSTIC__=data;
+ }
+ document.getElementById('lifeosDiagLauncher').addEventListener('click',function(){panel.style.display=panel.style.display==='block'?'none':'block';run()});
+ document.getElementById('lifeosDiagRefresh').addEventListener('click',run);
+ document.getElementById('lifeosDiagClose').addEventListener('click',function(){panel.style.display='none'});
+ document.getElementById('lifeosDiagCopy').addEventListener('click',async function(){
+  try{await navigator.clipboard.writeText(report.textContent);status.textContent='Отчёт скопирован'}catch(e){status.textContent='Не удалось скопировать — выдели текст отчёта вручную'}
+ });
+})();
+</script>
+
 </body>
 </html>
