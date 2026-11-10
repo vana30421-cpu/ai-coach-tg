@@ -592,3 +592,5 @@ input:focus,textarea:focus,select:focus{outline:none!important;border-color:colo
 @keyframes lifeFxGlow{0%,100%{transform:translate3d(0,0,0) scale(.65);opacity:.05}50%{transform:translate3d(var(--fx-drift),30vh,0) scale(1.35);opacity:var(--fx-alpha)}}
 @keyframes lifeFxFlash{0%,85%,100%{opacity:0}88%,91%{opacity:var(--fx-alpha)}89%,92%{opacity:.05}}
 @media(prefers-reduced-motion:reduce){.lifeos-fx-particle{animation-duration:36s!important;opacity:.18!important}}
+
+.lc-action-modal{padding-bottom:calc(24px + env(safe-area-inset-bottom))}.lc-action-btn{display:block;width:100%;min-height:48px;margin:8px 0;padding:12px 14px;text-align:left;border:1px solid var(--glass-border);border-radius:14px;background:var(--glass-1);color:var(--text);font-weight:700}.lc-action-btn.danger{color:#ff858d;border-color:rgba(255,110,120,.22)}
