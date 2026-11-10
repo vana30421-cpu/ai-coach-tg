@@ -817,7 +817,7 @@ function navigate(page, silent){
     ai: renderAI, jarvis: renderJarvis, health: renderHealth, water: renderWater, mood: renderMood,
     workouts: renderWorkouts, meditation: renderMeditation, meds: window.renderMeds || renderMeds,
     recovery: window.renderRecovery || renderRecovery, medical: window.renderMedical || renderMedical,
-    entertainment: window.renderEntertainment || renderEntertainment, resources: window.renderResources || renderResources,
+    leisure: window.renderLeisure || function(){renderEntertainment();}, entertainment: window.renderEntertainment || renderEntertainment, resources: window.renderResources || renderResources,
     movies: window.renderMovies || renderMovies, series: window.renderSeries || renderSeries, books: window.renderBooks || renderBooks,
     musiclib: window.renderMusic || renderMusic, gameslib: window.renderGames || renderGames, podcastslib: window.renderPodcasts || renderPodcasts,
     habitList: renderHabitList, habitCatalog: renderHabitCatalog,
