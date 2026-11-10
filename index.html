@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,viewport-fit=cover">
 <meta name="theme-color" content="#090d16">
-<meta name="lifeos-build" content="LIFEOS-20261110-2510">
+<meta name="lifeos-build" content="LIFEOS-20261110-2520">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Life OS">
@@ -994,7 +994,7 @@ body{
 <script defer src="lifeos-jarvis-memory.js?v=20261110-3"></script>
 <script defer src="app.js?v=20261110-13"></script>
 <script defer src="lifeos-effects-v2.js?v=20261110-3"></script>
-<script defer src="lifeos-emoji-engine.js?v=20261110-2"></script>
+<script defer src="lifeos-emoji-engine.js?v=20261110-3"></script>
 <script defer src="lifeos-workspaces.js?v=20261110-3"></script>
 <script defer src="lifeos-systems.js?v=20261110-3"></script>
 <script defer src="lifeos-learning-experience.js?v=20261110-4"></script>
@@ -1089,7 +1089,7 @@ body{
   window.location.reload();
  });
  window.addEventListener('load',function(){
-  navigator.serviceWorker.register('./sw.js?v=20261110-159',{scope:'./',updateViaCache:'none'}).then(function(reg){
+  navigator.serviceWorker.register('./sw.js?v=20261110-160',{scope:'./',updateViaCache:'none'}).then(function(reg){
    registration=reg;
    activateWaiting();
    reg.addEventListener('updatefound',function(){
