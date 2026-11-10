@@ -745,7 +745,7 @@ function renderTabBar(){
     var tabs=window.TABS||[];
     var html='';
     tabs.forEach(function(t,index){
-      html+='<button type="button" class="tab-item '+(t.id===currentPage?'active':'')+'" onclick="navigate(\\''+t.id+'\\')" aria-label="'+t.label+'" title="'+t.label+'" style="--nav-index:'+index+'">';
+      html+='<button type="button" class="tab-item '+(t.id===currentPage?'active':'')+'" onclick="window.navigate(&quot;'+t.id+'&quot;)" aria-label="'+t.label+'" title="'+t.label+'" style="--nav-index:'+index+'">';
       html+='<span class="tab-icon">'+lifeOSNavGlyph(t.id)+'</span><span class="tab-label">'+t.label+'</span></button>';
     });
     bar.innerHTML=html;
