@@ -60,7 +60,7 @@
   return '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><defs><linearGradient id="lifeEmojiGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--brand,#9bbaff)"/><stop offset="1" stop-color="var(--brand-2,#b5a5ff)"/></linearGradient></defs>'+paths.map(function(d){return '<path d="'+d+'" />';}).join('')+'</svg>';
  }
  function transformTextNode(node){
-  if(!node.nodeValue||!/[🏠✅🎓📅📊👁️✨🧠🎨⚡🔎👤💎🚀🎯💪❤️🔥🌙☀️💧🧘🏆📚💡⏱️🎵🛡️💬🔒🌱🎮🌈]/u.test(node.nodeValue))return;
+  if(!node.nodeValue)return;
   var parent=node.parentElement;if(!parent||parent.closest(skip))return;
   var text=node.nodeValue,fragment=document.createDocumentFragment(),changed=false;
   var keys=Object.keys(icons).sort(function(a,b){return b.length-a.length;});
@@ -83,10 +83,15 @@
   nodes.forEach(transformTextNode);
  }
  function start(){
-  scan(document.getElementById('app'));scan(document.querySelector('.app-header'));scan(document.getElementById('tabBar'));
-  var root=document.getElementById('app');if(root&&window.MutationObserver){var observer=new MutationObserver(function(records){records.forEach(function(r){r.addedNodes.forEach(function(n){if(n.nodeType===3)transformTextNode(n);else if(n.nodeType===1)scan(n);});});});observer.observe(root,{childList:true,subtree:true});}
-  var header=document.querySelector('.app-header');if(header&&window.MutationObserver){var hObs=new MutationObserver(function(records){records.forEach(function(r){r.addedNodes.forEach(function(n){if(n.nodeType===3)transformTextNode(n);else if(n.nodeType===1)scan(n);});});});hObs.observe(header,{childList:true,subtree:true});}
-  window.LIFEOS_CUSTOM_EMOJI={version:'1.0',count:Object.keys(icons).length,refresh:function(){scan(document.getElementById('app'));scan(document.querySelector('.app-header'));}};
+  var roots=[document.getElementById('app'),document.querySelector('.app-header'),document.getElementById('tabBar')].filter(Boolean);
+  roots.forEach(scan);
+  if(window.MutationObserver){
+   var pending=new Set(),scheduled=false;
+   function flush(){scheduled=false;pending.forEach(function(n){if(n.isConnected){if(n.nodeType===3)transformTextNode(n);else if(n.nodeType===1)scan(n);}});pending.clear();}
+   var observer=new MutationObserver(function(records){records.forEach(function(r){r.addedNodes.forEach(function(n){pending.add(n);});});if(!scheduled&&pending.size){scheduled=true;if(window.requestAnimationFrame)requestAnimationFrame(flush);else setTimeout(flush,32);}});
+   roots.forEach(function(root){observer.observe(root,{childList:true,subtree:true});});
+  }
+  window.LIFEOS_CUSTOM_EMOJI={version:'1.1-batched',count:Object.keys(icons).length,refresh:function(){roots.forEach(scan);}};
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
