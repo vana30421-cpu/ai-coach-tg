@@ -5,7 +5,6 @@ import android.app.Activity
 import android.app.role.RoleManager
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.webkit.PermissionRequest
@@ -15,8 +14,6 @@ import android.webkit.WebViewClient
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 
 class MainActivity : Activity() {
     private lateinit var webView: WebView
@@ -68,12 +65,12 @@ class MainActivity : Activity() {
                     request.deny()
                     return
                 }
-                if (ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.RECORD_AUDIO)
+                if (checkSelfPermission(Manifest.permission.RECORD_AUDIO)
                     == PackageManager.PERMISSION_GRANTED) {
                     request.grant(arrayOf(PermissionRequest.RESOURCE_AUDIO_CAPTURE))
                 } else {
                     pendingWebPermission = request
-                    ActivityCompat.requestPermissions(
+                    requestPermissions(
                         this@MainActivity,
                         arrayOf(Manifest.permission.RECORD_AUDIO),
                         AUDIO_PERMISSION_REQUEST
