@@ -30,6 +30,6 @@ test('navigation and offline cache load the academy',()=>{
  assert.ok(app.includes('skills: window.renderSkills || renderSkills'));
  assert.ok(app.includes('english: window.renderEnglish || renderEnglish'));
  assert.ok(index.includes('lifeos-learning-experience.js?v=20261110-4'));
- assert.ok(sw.includes('life-os-v166'));
+ assert.ok(sw.includes('life-os-v167'));
  assert.ok(sw.includes('lifeos-learning-experience.js'));
 });
