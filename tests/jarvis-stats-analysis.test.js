@@ -32,7 +32,8 @@ test('Jarvis statistics summary uses saved data and distinguishes missing values
  assert.match(report,/не считывается автоматически/);
 });
 
-test('summary commands build the comprehensive report and cloud mode routes summary to the configured provider',()=>{
- assert.match(source,/if\(cmd\.type==='summary'\)\{[\s\S]*?buildComprehensiveStats\(/);
- assert.match(source,/d\.cloudAIEnabled&&\(parsed\.type==='chat'\|\|parsed\.type==='summary'\)\)\{sendJarvisCloudMessage\(text\);return;\}/);
+test('summary commands build a comprehensive report locally and chat remains offline by default',()=>{
+ assert.match(source,/if\(cmd\.type==='summary'\)\{[\s\S]*?getSafeLifeStats\(/);
+ assert.match(source,/function sendJarvisMessage\(\)\{[\s\S]*?\/\* Local-only mode: do not send user prompts to cloud APIs\. \*\/[\s\S]*?var reply=jarvisReply\(text\)/);
+ assert.doesNotMatch(source,/d\.cloudAIEnabled&&\(parsed\.type==='chat'\|\|parsed\.type==='summary'\)\)/);
 });
