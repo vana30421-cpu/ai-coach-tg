@@ -134,7 +134,7 @@ test('detox day screen renders detailed explanation, method, criteria and safety
 
 test('detox task enrichment loads after source content and is cached offline',()=>{
  assert.match(indexSource,/content\.js[^\n]*\n<script defer src="lifeos-detox-enhancements\.js/);
- assert.ok(indexSource.includes('lifeos-detox-details.js?v=20261110-1'));
+ assert.ok(indexSource.includes('lifeos-detox-details.js?v=20261110-3'));
  assert.match(swSource,/lifeos-detox-enhancements\.js/);
  assert.match(swSource,/lifeos-detox-details\.js/);
  assert.match(swSource,/const CACHE='life-os-v\d+';/);
