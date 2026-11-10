@@ -10,7 +10,7 @@ class LifeOSVoiceInteractionSession(context: android.content.Context) : VoiceInt
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             putExtra(MainActivity.EXTRA_START_VOICE, true)
         }
-        context.startActivity(intent)
+        startAssistantActivity(intent)
         hide()
     }
 }
