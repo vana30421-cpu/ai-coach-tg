@@ -2,7 +2,7 @@
 
 Last updated: 2026-11-11
 Default branch: `main`
-Current main commit: `e9e27600ae66018ebff0f3494caee4c74d8b5ff4`
+Current main commit: `f402a8035f7f2de9bc375e4ee568e2d725d0d619` (documentation follow-up; application code commit: `e9e27600ae66018ebff0f3494caee4c74d8b5ff4`)
 Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https://github.com/vana30421-cpu/ai-coach-tg/pull/41)
 
 ## Implemented in the merged change
@@ -19,10 +19,10 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 
 ## Verification
 
-- GitHub Actions `LIFEOS checks`: success on `e9e27600ae66018ebff0f3494caee4c74d8b5ff4`.
+- GitHub Actions `LIFEOS checks`: success on application commit `e9e27600ae66018ebff0f3494caee4c74d8b5ff4` (224 regression tests passed).
 - GitHub Actions `LIFE OS Jarvis tests`: success on the same commit.
 - Detox course verification: success on the same commit.
-- GitHub Pages deployment: pending at the time of this update.
+- GitHub Pages deployment for application commit `e9e27600ae66018ebff0f3494caee4c74d8b5ff4`: success. Documentation-only follow-up deployment for `f402a8035f7f2de9bc375e4ee568e2d725d0d619`: pending.
 - Physical Android and Telegram Android WebView manual verification: not yet performed.
 
 ## Incomplete requirements — do not mark as done
