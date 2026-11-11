@@ -44,3 +44,12 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 3. Build the psychology and communication content banks in curated, deduplicated batches with sources and practical exercises.
 4. Turn the 50-app audit into a per-feature implementation matrix with screen, data model, status, and test.
 5. Continue public RAD source indexing without copying closed or paid materials.
+
+
+## 2026-11-11 — Sleep, calendar and check-in automation
+- Hardened sleep saving: validate date/time/duration, ensure list exists, preserve record IDs on edit, confirm storage write before success, award XP only for new entries.
+- Calendar adds persisted 75–150% zoom, expanded event types, 12-color picker, and event reminders connected to the notification center with configurable lead time.
+- Added once-per-period morning review (default 08:00–11:00) of yesterday, evening plan (default 18:00–21:00) for tomorrow, plus configurable weekly/monthly reviews.
+- Check-in history and settings stay in offline-first local state; no user records are reset.
+- Client timers cannot guarantee delivery after Android suspends/terminates the app; guaranteed background delivery requires push infrastructure.
+- Target cache life-os-v171. Source regression tests added; CI and Android/Telegram WebView verification pending.
