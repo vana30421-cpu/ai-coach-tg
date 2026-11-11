@@ -96,7 +96,7 @@ function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){retur
 function appState(){
  if(!root.state)return null;
  if(!root.state.microLearning||typeof root.state.microLearning!=='object')root.state.microLearning={progress:{},sessions:[],v:1};
- if(!root.state.microLearning.progress)root.state.microLearning.progress={};
+ if(!root.state.microLearning.progress||typeof root.state.microLearning.progress!=='object'||Array.isArray(root.state.microLearning.progress))root.state.microLearning.progress={};
  if(!Array.isArray(root.state.microLearning.sessions))root.state.microLearning.sessions=[];
  return root.state.microLearning;
 }
@@ -140,7 +140,7 @@ function complete(key){
  st.sessions.unshift({key:key,at:new Date().toISOString(),correct:correct});st.sessions=st.sessions.slice(0,500);
  if(correct&& !old.completed&&root.addXP)root.addXP(10,'lesson');
  if(root.save)root.save();
- if(correct){root.toast('Усвоено: '+row.lesson.title+' · +10 XP','success');root.closeSheet();renderPanel();}
+ if(correct){root.toast('Усвоено: '+row.lesson.title+' · +10 XP','success');root.closeSheet();var panel=root.document.getElementById('lifeosFiveMinute');if(panel)panel.outerHTML=renderPanel();}
  else root.toast('Ответ пока неверный. Перечитай объяснение и попробуй ещё раз.','warning');
 }
 function stats(){
