@@ -3213,7 +3213,7 @@ function renderSleepEditor(){
 function saveSleepEntry(){
   var dateInput=document.getElementById('sl-date'),startInput=document.getElementById('sl-start'),endInput=document.getElementById('sl-end');
   var date=dateInput&&dateInput.value||today(),start=startInput&&startInput.value||'23:00',end=endInput&&endInput.value||'07:00';
-  if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(date)||!/^\\d{2}:\\d{2}$/.test(start)||!/^\\d{2}:\\d{2}$/.test(end)){toast('Проверь дату и время сна','warning');return false;}
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!/^\d{2}:\d{2}$/.test(start)||!/^\d{2}:\d{2}$/.test(end)){toast('Проверь дату и время сна','warning');return false;}
   var hours=calcSleepHours(start,end);if(!Number.isFinite(hours)||hours<=0||hours>24){toast('Продолжительность сна должна быть от 1 до 24 часов','warning');return false;}
   var qualityInput=document.getElementById('sl-quality-value'),quality=Number(qualityInput&&qualityInput.value);quality=Math.max(1,Math.min(10,Number.isFinite(quality)&&quality?quality:7));
   var notes=String((document.getElementById('sl-notes')||{}).value||'').slice(0,3000);if(!Array.isArray(state.sleepEntries))state.sleepEntries=[];
