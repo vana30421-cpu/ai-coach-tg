@@ -6,6 +6,7 @@ const vm=require('node:vm');
 const source=fs.readFileSync('lifeos-rad-method.js','utf8');
 const index=fs.readFileSync('index.html','utf8');
 const sw=fs.readFileSync('sw.js','utf8');
+const renderer=fs.readFileSync('lifeos-learning-experience.js','utf8');
 const context={window:{ALL_NEW_COURSES:[]}};
 vm.runInNewContext(source,context,{timeout:1000});
 const courses=context.window.ALL_NEW_COURSES;
@@ -36,4 +37,6 @@ test('RAD course is loaded before renderer and cached for offline use',()=>{
  assert.ok(index.indexOf('lifeos-rad-method.js?v=1')<index.indexOf('lifeos-learning-experience.js'));
  assert.ok(sw.includes("'./lifeos-rad-method.js'"));
  assert.match(sw,/life-os-v169/);
+ assert.match(renderer,/Цель урока/);
+ assert.match(renderer,/Критерий усвоения/);
 });
