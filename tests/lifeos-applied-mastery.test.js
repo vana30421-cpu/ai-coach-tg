@@ -61,9 +61,9 @@ test('new curriculum is loaded by index and precached for offline use',()=>{
 
 
 test('five-minute academy is connected to the real learning navigation renderer',()=>{
- assert.match(appSource,/window\\.renderLearning\\s*=\\s*renderLearning/);
- assert.match(index,/app\\.js\\?v=20261111-2/);
- assert.match(index,/sw\\.js\\?v=20261111-170/);
+ assert.match(appSource,/window\.renderLearning\s*=\s*renderLearning/);
+ assert.match(index,/app\.js\?v=20261111-2/);
+ assert.match(index,/sw\.js\?v=20261111-170/);
 });
 
 test('learning renderer wrapper actually mounts the five-minute panel',()=>{
