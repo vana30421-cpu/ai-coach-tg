@@ -47,7 +47,7 @@ test('RAD track has safety boundaries and no income guarantees',()=>{
 test('RAD course is loaded before renderer and cached for offline use',()=>{
  assert.ok(index.indexOf('lifeos-rad-method.js?v=2')<index.indexOf('lifeos-learning-experience.js'));
  assert.ok(sw.includes("'./lifeos-rad-method.js'"));
- assert.match(sw,/life-os-v169/);
+ assert.match(sw,/life-os-v170/);
  assert.match(renderer,/Цель урока/);
  assert.match(renderer,/Критерий усвоения/);
 });
