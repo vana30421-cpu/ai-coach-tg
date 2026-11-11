@@ -16,11 +16,12 @@ test('all changed browser scripts parse',()=>{
  for(const [name,source] of [['app.js',app],['content.js',content],['jarvis-core.js',fs.readFileSync('jarvis-core.js','utf8')],['sw.js',fs.readFileSync('sw.js','utf8')]])assert.doesNotThrow(()=>new vm.Script(source,{filename:name}));
 });
 
-test('vision catalog contains only five defined comfort routines, not fake vision-correction drills',()=>{
+test('vision catalog contains 200 detailed comfort routines, not fake vision-correction drills',()=>{
  const sandbox={window:{},console:{log(){},warn(){},error(){}}};
  vm.runInNewContext(content,sandbox,{filename:'content.js'});
  const routines=sandbox.window.VISION_EXERCISES;
- assert.equal(routines.length,7);
+ assert.equal(routines.length,200);
+ assert.equal(new Set(routines.map(x=>x.id)).size,200);
  assert.ok(routines.every(x=>x.title&&x.desc&&x.how&&x.science&&x.seconds>0));
  assert.doesNotMatch(content,/Солнечные ванны|Соляризация|Без очков|Природные капли/);
 });
