@@ -11,6 +11,7 @@ const css = read('jarvis-mobile.css');
 const gradle = read('android/app/build.gradle');
 const androidManifest = read('android/app/src/main/AndroidManifest.xml');
 const activity = read('android/app/src/main/java/com/lifeos/jarvis/MainActivity.kt');
+const androidStrings = read('android/app/src/main/res/values/strings.xml');
 
 test('Jarvis mobile UI is wired into the real LIFEOS shell', () => {
   assert.match(html, /jarvis-mobile\.css\?v=/);
@@ -34,6 +35,10 @@ test('mobile assistant has accessible controls and reduced-motion support', () =
   assert.match(mobile, /aria-label/);
   assert.match(css, /prefers-reduced-motion:reduce/);
   assert.match(css, /\.lj-overlay\.is-open/);
+});
+
+test('Android companion loads the repository GitHub Pages project URL, not the account root', () => {
+  assert.match(androidStrings, /https:\/\/vana30421-cpu\.github\.io\/ai-coach-tg\//);
 });
 
 test('Android companion registers a system voice interaction service', () => {
