@@ -18,3 +18,9 @@ test('navigation prefers the complete global renderer over legacy local stubs',(
  assert.ok(routes.includes('finance: window.renderFinance || renderFinance'));
  assert.ok(routes.includes('psychology: window.renderPsychology || renderPsychology'));
 });
+
+
+test('dashboard navigation prefers the wrapped global renderer',()=>{
+ const source=fs.readFileSync('app.js','utf8');
+ assert.match(source,/dashboard:\s*window\.renderDashboard\s*\|\|\s*renderDashboard/);
+});

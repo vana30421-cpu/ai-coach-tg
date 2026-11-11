@@ -4,8 +4,11 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const vm=require('node:vm');
 const source=fs.readFileSync('lifeos-applied-mastery.js','utf8');
+const advancedSource=fs.readFileSync('lifeos-advanced-academy.js','utf8');
+const radSource=fs.readFileSync('lifeos-rad-method.js','utf8');
 const index=fs.readFileSync('index.html','utf8');
 const sw=fs.readFileSync('sw.js','utf8');
+const appSource=fs.readFileSync('app.js','utf8');
 function fixture(){
  const values={lmRecall:{value:'Принцип проверяется на реальном примере.'},lmApply:{value:'Сегодня применю это в своей задаче.'}};
  const app={innerHTML:''};let xp=0,saved=0,sheet='';
@@ -15,7 +18,7 @@ function fixture(){
   ALL_NEW_COURSES:[],setTimeout,clearTimeout,setInterval,clearInterval
  };
  sandbox.window=sandbox;sandbox.document.querySelector=()=>({value:'1'});
- vm.createContext(sandbox);vm.runInContext(source,sandbox);
+ vm.createContext(sandbox);vm.runInContext(advancedSource,sandbox);vm.runInContext(radSource,sandbox);vm.runInContext(source,sandbox);
  return {sandbox,values,get xp(){return xp;},get saved(){return saved;},get sheet(){return sheet;}};
 }
 test('applied mastery module is syntactically valid and adds five substantive courses',()=>{
@@ -53,10 +56,93 @@ test('wrong answer is not marked as mastered',()=>{
  assert.equal(f.xp,0);
 });
 test('new curriculum is loaded by index and precached for offline use',()=>{
- assert.match(index,/lifeos-applied-mastery\.js\?v=20261111-1/);
+ assert.match(index,/lifeos-applied-mastery\.js\?v=20261111-2/);
  assert.match(sw,/lifeos-applied-mastery\.js/);
  assert.match(sw,/life-os-v170/);
- const moduleSource=source;
- assert.match(moduleSource,/wrapRenderer\('renderDashboard',false\)/);
- assert.match(moduleSource,/wrapRenderer\('renderLearning',true\)/);
+});
+
+
+test('five-minute academy is connected to the real learning navigation renderer',()=>{
+ assert.match(appSource,/window\.renderLearning\s*=\s*renderLearning/);
+ assert.match(index,/app\.js\?v=20261111-4/);
+ assert.match(index,/sw\.js\?v=20261111-170/);
+});
+
+test('learning renderer wrapper actually mounts the five-minute panel',()=>{
+ const page={children:[],appendChild(node){this.children.push(node);}};
+ const sandbox={console,Date,Math,Number,String,Array,Object,JSON,RegExp,Promise,state:{},
+  document:{readyState:'complete',querySelector(selector){return selector==='#app .page'?page:{value:'1'};},getElementById(id){return id==='lifeosFiveMinute'&&page.children.length?{}:null;},createElement(){return {innerHTML:''};}},
+  renderLearning(){page.rendered=true;},toast(){},save(){},addXP(){},closeSheet(){}};
+ sandbox.window=sandbox;vm.createContext(sandbox);vm.runInContext(source,sandbox);
+ sandbox.renderLearning();
+ assert.equal(page.rendered,true);
+ assert.equal(page.children.length,1);
+ assert.match(page.children[0].innerHTML,/LIFEOS · 5 минут развития/);
+});
+
+
+test('thinking, psychology, finance and biohacking academies have direct working routes',()=>{
+ const f=fixture(),appRoot={innerHTML:''};f.sandbox.document.getElementById=(id)=>id==='app'?appRoot:(f.values[id]||null);
+ for(const name of ['renderFinance','renderPsychology','renderThinking','renderNeuro','openLIFEOSAcademy','openLIFEOSMicroLesson'])assert.equal(typeof f.sandbox[name],'function',name+' must be exposed');
+ f.sandbox.renderThinking();
+ assert.match(appRoot.innerHTML,/Критическое мышление/);
+ assert.match(appRoot.innerHTML,/Аналитическое мышление/);
+ assert.match(appRoot.innerHTML,/Стратегическое мышление/);
+ f.sandbox.renderFinance();assert.match(appRoot.innerHTML,/Финансовая грамотность/);
+ f.sandbox.renderPsychology();assert.match(appRoot.innerHTML,/Психология/);
+ f.sandbox.renderNeuro();assert.match(appRoot.innerHTML,/Биохакинг/);
+});
+
+test('lesson visuals are topic-specific, interactive and respect reduced motion',()=>{
+ const f=fixture();f.sandbox.startLIFEOSFiveMinute();
+ assert.match(f.sheet,/lm-visual-step/);
+ assert.match(f.sheet,/prefers-reduced-motion/);
+ assert.match(f.sheet,/ИНТЕРАКТИВНАЯ КАРТА ПРИНЦИПА/);
+});
+
+test('correct lessons schedule spaced reviews and failed lessons return tomorrow',()=>{
+ const f=fixture(),row=f.sandbox.LIFEOS_APPLIED_MASTERY.allLessons()[0];
+ f.sandbox.document.querySelector=()=>({value:String(row.lesson.quiz.correctIndex)});
+ f.sandbox.completeLIFEOSMicroLesson(row.key);
+ const saved=f.sandbox.state.microLearning.progress[row.key];
+ assert.equal(saved.completed,true);assert.equal(saved.reviewCount,1);assert.ok(saved.nextReviewAt);
+ const f2=fixture(),row2=f2.sandbox.LIFEOS_APPLIED_MASTERY.allLessons()[0];
+ f2.sandbox.document.querySelector=()=>({value:String((row2.lesson.quiz.correctIndex+1)%3)});
+ f2.sandbox.completeLIFEOSMicroLesson(row2.key);
+ assert.equal(f2.sandbox.state.microLearning.progress[row2.key].completed,false);
+ assert.ok(f2.sandbox.state.microLearning.progress[row2.key].nextReviewAt);
+});
+
+
+test('memory development tracks exact recall quality in addition to speed, accuracy, volume and retention',()=>{
+ assert.match(appSource,/exactRecall/);
+ assert.match(appSource,/Качество точного воспроизведения/);
+ assert.match(appSource,/workingSpeed/);
+ assert.match(appSource,/shortRetention/);
+ assert.match(appSource,/workingSpan/);
+});
+
+
+test('five-minute recommendation is mounted on the dashboard without duplicating it',()=>{
+ const page={children:[],appendChild(node){this.children.push(node);}};
+ const sandbox={console,Date,Math,Number,String,Array,Object,JSON,RegExp,Promise,state:{},
+  document:{readyState:'complete',querySelector(selector){return selector==='#app .page'?page:null;},getElementById(id){return id==='lifeosFiveMinute'&&page.children.length?{}:null;},createElement(){return {innerHTML:''};}},
+  renderDashboard(){page.rendered=true;},renderLearning(){},toast(){},save(){}};
+ sandbox.window=sandbox;vm.createContext(sandbox);vm.runInContext(source,sandbox);
+ sandbox.renderDashboard();sandbox.renderDashboard();
+ assert.equal(page.rendered,true);assert.equal(page.children.length,1);
+ assert.match(page.children[0].innerHTML,/LIFEOS · 5 минут развития/);
+});
+
+
+test('communication vocabulary is unique, daily and uses spaced practice',()=>{
+ const f=fixture(),api=f.sandbox.LIFEOS_APPLIED_MASTERY;
+ assert.equal(api.vocabulary.length,25);
+ assert.equal(new Set(api.vocabulary.map(x=>x.id)).size,25);
+ const word=api.getWordOfDay();assert.ok(word.word);assert.ok(word.meaning);assert.ok(word.example);
+ f.values.lmVocabSentence={value:'Я использую это слово в конкретном предложении сегодня.'};
+ f.values.lmVocabConfidence={value:'4'};
+ f.sandbox.saveLIFEOSVocabPractice(word.id);
+ const saved=f.sandbox.state.microLearning.vocabulary.progress[word.id];
+ assert.equal(saved.reviewCount,1);assert.ok(saved.nextReviewAt);assert.match(saved.sentence,/слово/);
 });
