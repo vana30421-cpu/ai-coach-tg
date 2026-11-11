@@ -10,11 +10,12 @@ const renderer=fs.readFileSync('lifeos-learning-experience.js','utf8');
 const context={window:{ALL_NEW_COURSES:[]}};
 vm.runInNewContext(source,context,{timeout:1000});
 const courses=context.window.ALL_NEW_COURSES;
+const radLibrary=context.window.LIFEOS_RAD_LIBRARY;
 const course=courses.find(c=>c.id==='rad_god_mode');
-test('RAD track registers eight practical modules and 24 original lessons',()=>{
+test('RAD track registers 16 modules and 48 original lessons',()=>{
  assert.ok(course);
- assert.equal(course.modules.length,8);
- assert.equal(course.modules.reduce((n,m)=>n+m.lessons.length,0),24);
+ assert.equal(course.modules.length,16);
+ assert.equal(course.modules.reduce((n,m)=>n+m.lessons.length,0),48);
  const ids=course.modules.map(m=>m.id);
  assert.equal(new Set(ids).size,8);
  for(const m of course.modules){
@@ -27,6 +28,13 @@ test('RAD track registers eight practical modules and 24 original lessons',()=>{
    assert.ok(l.sources.some(s=>s.url==='https://radgilmanov.ru/rezhim_boga'));
   }
  }
+});
+test('RAD public resource library and challenge templates are registered',()=>{
+ assert.ok(radLibrary);
+ assert.equal(radLibrary.resources.length,4);
+ assert.ok(radLibrary.publicTopics.length>=15);
+ assert.ok(radLibrary.challengeTemplates.length>=7);
+ assert.ok(radLibrary.resources.some(x=>x.url==='https://www.youtube.com/@rad.gilmanov'));
 });
 test('RAD track has safety boundaries and no income guarantees',()=>{
  const all=course.modules.flatMap(m=>m.lessons).map(l=>l.theory+' '+l.practice).join(' ');
