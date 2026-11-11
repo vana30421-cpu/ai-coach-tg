@@ -27,4 +27,4 @@ The PWA voice sheet uses the browser Web Speech API. Recognition availability de
 
 ## Security and privacy
 
-The wrapper loads the configured HTTPS LIFEOS origin only. Microphone access is requested at runtime and only granted to WebView audio capture after the Android permission is granted. The AI provider/API keys remain in the existing Cloudflare Worker configuration; never add them to this Android project.
+The wrapper loads the configured HTTPS LIFEOS origin. Android requests microphone permission only when native speech recognition is invoked; recognized text is passed into the LIFEOS Jarvis interface. The AI provider/API keys remain in the existing Cloudflare Worker configuration; never add them to this Android project.
