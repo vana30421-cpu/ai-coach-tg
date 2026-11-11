@@ -71,7 +71,7 @@ test('five-minute academy is connected to the real learning navigation renderer'
 test('learning renderer wrapper actually mounts the five-minute panel',()=>{
  const page={children:[],appendChild(node){this.children.push(node);}};
  const sandbox={console,Date,Math,Number,String,Array,Object,JSON,RegExp,Promise,state:{},
-  document:{readyState:'complete',querySelector(selector){return selector==='#app .page'?page:{value:'1'};},getElementById(){return null;},createElement(){return {innerHTML:''};}},
+  document:{readyState:'complete',querySelector(selector){return selector==='#app .page'?page:{value:'1'};},getElementById(id){return id==='lifeosFiveMinute'&&page.children.length?{}:null;},createElement(){return {innerHTML:''};}},
   renderLearning(){page.rendered=true;},toast(){},save(){},addXP(){},closeSheet(){}};
  sandbox.window=sandbox;vm.createContext(sandbox);vm.runInContext(source,sandbox);
  sandbox.renderLearning();
