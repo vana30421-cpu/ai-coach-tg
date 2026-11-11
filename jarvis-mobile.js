@@ -118,6 +118,7 @@
     build();installGesture();
     try{
       var params=new URLSearchParams(location.search);
+      if(params.get('page')==='jarvis'&&typeof window.navigate==='function')window.navigate('jarvis');
       if(params.get('voice')==='1'){history.replaceState(null,'',location.pathname+location.hash);openAssistant(true);}
     }catch(e){}
   }
