@@ -92,6 +92,61 @@ L('Удержание и клиентский опыт','Снижать отто
 definitions.forEach(function(course){
  if(!courses.some(function(x){return x.id===course.id;}))courses.push(course);
 });
+
+var vocabulary=[
+{id:'clarity',word:'Ясность',part:'существительное',meaning:'Понятность мысли без лишней двусмысленности.',example:'Ясность формулировки ускорила согласование задачи.',synonyms:'понятность, определённость'},
+{id:'concise',word:'Лаконичность',part:'существительное',meaning:'Умение передавать смысл кратко, не теряя важного.',example:'Лаконичность отчёта помогла быстро принять решение.',synonyms:'краткость, сжатость'},
+{id:'nuance',word:'Нюанс',part:'существительное',meaning:'Небольшая, но значимая особенность или оттенок.',example:'В предложениях есть важный нюанс по срокам.',synonyms:'оттенок, тонкость'},
+{id:'premise',word:'Предпосылка',part:'существительное',meaning:'Исходное условие или допущение, на котором строится вывод.',example:'Проверим предпосылку, прежде чем масштабировать план.',synonyms:'условие, основание'},
+{id:'relevant',word:'Релевантный',part:'прилагательное',meaning:'Непосредственно относящийся к текущей задаче.',example:'Нужны релевантные примеры из нашей отрасли.',synonyms:'уместный, относящийся к делу'},
+{id:'empathy',word:'Эмпатия',part:'существительное',meaning:'Способность понять переживания и точку зрения другого человека.',example:'Эмпатия помогает услышать потребность за возражением.',synonyms:'сопереживание, понимание'},
+{id:'assertive',word:'Ассертивность',part:'существительное',meaning:'Уверенное и уважительное выражение своих интересов и границ.',example:'Ассертивность позволяет отказать без агрессии.',synonyms:'уверенная коммуникация'},
+{id:'paraphrase',word:'Перефразировать',part:'глагол',meaning:'Передать услышанную мысль своими словами для проверки понимания.',example:'Позволь перефразировать, чтобы убедиться, что я понял задачу.',synonyms:'пересказать, сформулировать иначе'},
+{id:'specific',word:'Конкретизировать',part:'глагол',meaning:'Заменить расплывчатое описание точными деталями и критериями.',example:'Конкретизируй срок и ожидаемый результат.',synonyms:'уточнить, детализировать'},
+{id:'substantiate',word:'Обосновать',part:'глагол',meaning:'Подкрепить утверждение данными, логикой или проверяемыми примерами.',example:'Обоснуй рекомендацию двумя независимыми источниками.',synonyms:'аргументировать, подтвердить'},
+{id:'interpretation',word:'Интерпретация',part:'существительное',meaning:'Объяснение значения фактов или событий; не сами факты.',example:'Это возможная интерпретация, а не установленный факт.',synonyms:'толкование, трактовка'},
+{id:'constructive',word:'Конструктивный',part:'прилагательное',meaning:'Направленный на решение проблемы и улучшение результата.',example:'Дай конструктивную обратную связь с конкретным предложением.',synonyms:'созидательный, предметный'},
+{id:'consensus',word:'Консенсус',part:'существительное',meaning:'Общее согласие, достигнутое после обсуждения позиций.',example:'Команда достигла консенсуса по критериям качества.',synonyms:'согласие, общее решение'},
+{id:'compromise',word:'Компромисс',part:'существительное',meaning:'Решение, в котором стороны согласуют взаимные уступки.',example:'Компромисс сохранил ключевые требования обеих сторон.',synonyms:'взаимная уступка'},
+{id:'objection',word:'Возражение',part:'существительное',meaning:'Выраженное сомнение или препятствие, которое требует уточнения.',example:'Сначала выясним причину возражения по цене.',synonyms:'сомнение, несогласие'},
+{id:'context',word:'Контекст',part:'существительное',meaning:'Обстоятельства и информация, необходимые для верного понимания.',example:'Без контекста короткое сообщение легко истолковать неверно.',synonyms:'обстановка, условия'},
+{id:'objective',word:'Объективный',part:'прилагательное',meaning:'Опирающийся на проверяемые данные, а не только на личные оценки.',example:'Сравним объективные показатели двух вариантов.',synonyms:'беспристрастный, фактический'},
+{id:'subjective',word:'Субъективный',part:'прилагательное',meaning:'Зависящий от личного опыта, вкуса или точки зрения.',example:'Отделим субъективное впечатление от измеряемого результата.',synonyms:'личный, индивидуальный'},
+{id:'coherent',word:'Последовательный',part:'прилагательное',meaning:'Логично связанный и не противоречащий предыдущим тезисам.',example:'Последовательный рассказ облегчает понимание аргумента.',synonyms:'связный, логичный'},
+{id:'diplomatic',word:'Дипломатичный',part:'прилагательное',meaning:'Тактичный способ говорить о сложном, сохраняя уважение.',example:'Дипломатичный ответ обозначил границу без конфликта.',synonyms:'тактичный, деликатный'},
+{id:'summarize',word:'Резюмировать',part:'глагол',meaning:'Кратко собрать основные выводы и договорённости.',example:'В конце встречи резюмируй решения и ответственных.',synonyms:'подытожить, обобщить'},
+{id:'clarify',word:'Уточнить',part:'глагол',meaning:'Снять неоднозначность дополнительным вопросом или проверкой.',example:'Уточни, что именно считается готовым результатом.',synonyms:'прояснить, конкретизировать'},
+{id:'tradeoff',word:'Компромиссный выбор',part:'словосочетание',meaning:'Выбор, при котором выгода одного свойства оплачивается потерей другого.',example:'Быстрый запуск — компромиссный выбор между скоростью и полнотой.',synonyms:'обмен преимуществ на издержки'},
+{id:'assumption',word:'Допущение',part:'существительное',meaning:'Условно принятое положение, которое ещё нужно проверить.',example:'В расчёте заложено допущение о стабильном спросе.',synonyms:'гипотеза, предположение'},
+{id:'feedback',word:'Обратная связь',part:'словосочетание',meaning:'Конкретная информация о действии и его последствиях для улучшения результата.',example:'Обратная связь должна описывать поведение, а не навешивать ярлык.',synonyms:'отклик, оценка'}
+];
+function vocabularyState(){
+ var st=appState();if(!st.vocabulary||typeof st.vocabulary!=='object')st.vocabulary={progress:{}};if(!st.vocabulary.progress||typeof st.vocabulary.progress!=='object')st.vocabulary.progress={};return st.vocabulary;
+}
+function getWordOfDay(){
+ var state=vocabularyState(),today=dayKey(new Date()),due=vocabulary.filter(function(w){var p=state.progress[w.id];return p&&p.nextReviewAt&&p.nextReviewAt<=today;});
+ if(due.length){due.sort(function(a,b){return String(state.progress[a.id].nextReviewAt).localeCompare(String(state.progress[b.id].nextReviewAt));});return due[0];}
+ return vocabulary[Math.floor(Date.now()/86400000)%vocabulary.length];
+}
+function renderVocabulary(){
+ var state=vocabularyState(),word=getWordOfDay(),done=vocabulary.filter(function(w){return state.progress[w.id]&&state.progress[w.id].reviewCount>=3;}).length;
+ var html='<div class="page"><div class="title-xl">🗣️ Словарный запас</div><div class="subtitle">Ежедневно изучай точные слова, употребляй их в своей речи и возвращайся к ним по расписанию.</div><section class="card"><div class="footnote">СЕГОДНЯШНЕЕ СЛОВО / ПОВТОРЕНИЕ</div><h2>'+esc(word.word)+' · '+esc(word.part)+'</h2><p>'+esc(word.meaning)+'</p><p class="footnote">Пример: '+esc(word.example)+'</p><p class="footnote">Близкие слова: '+esc(word.synonyms)+'</p><button class="btn btn-primary btn-block" data-id="'+word.id+'" onclick="openLIFEOSVocabPractice(this.dataset.id)">Составить собственное предложение</button></section><div class="row-between mt-3"><b>Словарь · '+vocabulary.length+' слов</b><span class="footnote">'+done+' закреплено</span></div>';
+ vocabulary.forEach(function(w){var p=state.progress[w.id]||{};html+='<div class="card"><div class="row-between"><b>'+esc(w.word)+'</b><span class="badge">'+(p.reviewCount>=3?'Закреплено':p.reviewCount?'Повтор '+p.reviewCount:'Новое')+'</span></div><p class="footnote">'+esc(w.meaning)+'</p><button class="btn btn-ghost btn-sm" data-id="'+w.id+'" onclick="openLIFEOSVocabPractice(this.dataset.id)">Практика</button></div>';});
+ html+='<button class="btn btn-ghost btn-block" onclick="navigate(\'learning\')">← К обучению</button></div>';
+ var app=root.document.getElementById('app');if(app)app.innerHTML=html;
+}
+function openVocabPractice(id){
+ var w=vocabulary.find(function(x){return x.id===id;});if(!w)return;
+ var p=vocabularyState().progress[id]||{};
+ root.openSheet('Слово: '+w.word,'<div class="card"><p>'+esc(w.meaning)+'</p><p class="footnote">'+esc(w.example)+'</p></div><label class="field-label">Составь своё предложение с этим словом</label><textarea id="lmVocabSentence" rows="3" maxlength="600">'+esc(p.sentence||'')+'</textarea><label class="field-label">Насколько легко употребить слово?</label><select id="lmVocabConfidence"><option value="1">1 — пока трудно</option><option value="2">2 — с подсказкой</option><option value="3" selected>3 — получается</option><option value="4">4 — уверенно</option><option value="5">5 — свободно</option></select><button class="btn btn-primary btn-block mt-2" data-id="'+id+'" onclick="saveLIFEOSVocabPractice(this.dataset.id)">Сохранить и назначить повторение</button>');
+}
+function saveVocabPractice(id){
+ var w=vocabulary.find(function(x){return x.id===id;}),sentence=(root.document.getElementById('lmVocabSentence')||{}).value||'',confidence=Number((root.document.getElementById('lmVocabConfidence')||{}).value)||3;
+ if(!w)return;if(sentence.trim().length<15)return root.toast('Составь предложение не короче 15 символов','warning');
+ var state=vocabularyState(),old=state.progress[id]||{},interval=confidence>=4?[1,3,7,14,30][Math.min(Number(old.reviewCount)||0,4)]:1,next=addDays(new Date(),interval);
+ state.progress[id]={sentence:sentence.trim(),confidence:confidence,reviewCount:(old.reviewCount||0)+1,lastPracticedAt:new Date().toISOString(),nextReviewAt:dayKey(next)};
+ if(root.save)root.save();if(root.closeSheet)root.closeSheet();root.toast('Слово сохранено · повтор через '+interval+' дн.','success');renderVocabulary();
+}
 function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function appState(){
  if(!root.state)return null;
@@ -171,6 +226,7 @@ function renderPanel(){
  var st=appState(),n=nextLesson(),s=stats(),html='<section class="card mt-3" id="lifeosFiveMinute"><div class="row-between"><div><div class="card-title">⚡ LIFEOS · 5 минут развития</div><div class="footnote">Одна идея → проверка памяти → действие в реальной жизни.</div></div><span class="badge badge-brand">'+s.done+'/'+s.total+'</span></div>';
  html+='<div class="progress mt-2"><div class="progress-fill" style="width:'+s.percent+'%"></div></div>';
  if(n)html+='<div class="card mt-2"><div class="footnote">'+esc(n.course.emoji+' '+n.course.title)+' · '+esc(n.module.title)+'</div><h3>'+esc(n.lesson.title)+'</h3><p class="footnote">'+esc(n.lesson.objective)+'</p><p class="footnote">Почему предлагаю: '+esc(n.reason||'Следующий шаг учебного маршрута')+'</p><button class="btn btn-primary btn-block" onclick="startLIFEOSFiveMinute()">Начать 5-минутный урок</button></div>';
+ var dailyWord=getWordOfDay();html+='<div class="card mt-2"><div class="footnote">🗣️ СЛОВО ДНЯ</div><b>'+esc(dailyWord.word)+'</b><p class="footnote">'+esc(dailyWord.meaning)+'</p><button class="btn btn-ghost btn-sm" data-id="'+dailyWord.id+'" onclick="openLIFEOSVocabPractice(this.dataset.id)">Применить в предложении</button></div>';
  html+='<div class="grid-2 mt-2"><div class="stat-item"><b>'+s.sessions+'</b><span class="footnote">попыток</span></div><div class="stat-item"><b>'+s.percent+'%</b><span class="footnote">усвоено</span></div></div>';
  html+='<div class="footnote mt-2">Уроки адаптируются по ответам. Ошибка возвращает тему в повторение; правильный ответ без объяснения и применения не засчитывается.</div></section>';
  return html;
@@ -188,6 +244,7 @@ function renderAcademyPage(title,ids){
  html+='<section class="card"><div class="row-between"><div><h2>'+esc(g.course.emoji+' '+g.course.title)+'</h2><div class="footnote">'+esc(g.module.title)+'</div></div><b>'+done+'/'+g.rows.length+'</b></div><div class="progress mt-2"><div class="progress-fill" style="width:'+Math.round(done/Math.max(1,g.rows.length)*100)+'%"></div></div>';
  g.rows.forEach(function(x){var p=appState().progress[x.key]||{};html+='<button type="button" class="list-row" style="width:100%;text-align:left;background:transparent;color:var(--text);border:0" data-key="'+esc(x.key)+'" onclick="openLIFEOSMicroLesson(this.dataset.key)"><span>'+(p.completed?'✓':p.attempts?'↻':'○')+'</span><span style="flex:1"><b>'+esc(x.lesson.title)+'</b><span class="footnote" style="display:block">'+esc(x.lesson.objective)+'</span></span><span>›</span></button>';});
  html+='</section>';});
+ if(ids.indexOf('communication_mastery')>=0)html+='<section class="card"><h2>Словарь и развитие речи</h2><p class="footnote">Ежедневное слово, собственные примеры и интервальное повторение.</p><button class="btn btn-primary btn-block" onclick="renderLIFEOSVocabulary()">Открыть словарную тренировку</button></section>';
  html+='<button class="btn btn-ghost btn-block" onclick="navigate(\'learning\')">← Ко всему обучению</button></div>';
  var app=root.document.getElementById('app');if(app)app.innerHTML=html;
 }
@@ -214,6 +271,9 @@ function attach(){
  wrapRenderer('renderLearning',true);
 }
 root.openLIFEOSAcademy=openAcademy;
+root.renderLIFEOSVocabulary=renderVocabulary;
+root.openLIFEOSVocabPractice=openVocabPractice;
+root.saveLIFEOSVocabPractice=saveVocabPractice;
 root.openLIFEOSMicroLesson=openByKey;
 root.renderFinance=renderFinance;
 root.renderPsychology=renderPsychology;
@@ -221,6 +281,6 @@ root.renderThinking=renderThinking;
 root.renderNeuro=renderNeuro;
 root.startLIFEOSFiveMinute=function(){var n=nextLesson();if(n)openLesson(n);else root.toast('Все уроки пройдены — повтори сложные темы.','success');};
 root.completeLIFEOSMicroLesson=complete;
-root.LIFEOS_APPLIED_MASTERY={courses:definitions,allLessons:allLessons,stats:stats,renderPanel:renderPanel,version:1};
+root.LIFEOS_APPLIED_MASTERY={courses:definitions,allLessons:allLessons,stats:stats,renderPanel:renderPanel,vocabulary:vocabulary,getWordOfDay:getWordOfDay,version:2};
 if(root.document){if(root.document.readyState==='loading')root.document.addEventListener('DOMContentLoaded',attach,{once:true});else attach();}
 })(typeof window!=='undefined'?window:globalThis);
