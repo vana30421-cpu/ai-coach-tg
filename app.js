@@ -794,7 +794,7 @@ function navigate(page, silent){
   if(!main) return;
   main.innerHTML = '';
   var renderers = {
-    dashboard: renderDashboard,
+    dashboard: window.renderDashboard || renderDashboard,
     spheres: renderSpheres, sphereDetail: renderSphereDetail,
     projects: renderProjects, projectDetail: renderProjectDetail, projectEditor: window.renderProjectEditor || renderProjectEditor,
     coach: renderCoach, coachSettings: renderCoachSettings, coachChat: renderCoachChat,
