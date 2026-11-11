@@ -56,7 +56,7 @@ test('wrong answer is not marked as mastered',()=>{
  assert.equal(f.xp,0);
 });
 test('new curriculum is loaded by index and precached for offline use',()=>{
- assert.match(index,/lifeos-applied-mastery\.js\?v=20261111-1/);
+ assert.match(index,/lifeos-applied-mastery\.js\?v=20261111-2/);
  assert.match(sw,/lifeos-applied-mastery\.js/);
  assert.match(sw,/life-os-v170/);
 });
@@ -132,4 +132,17 @@ test('five-minute recommendation is mounted on the dashboard without duplicating
  sandbox.renderDashboard();sandbox.renderDashboard();
  assert.equal(page.rendered,true);assert.equal(page.children.length,1);
  assert.match(page.children[0].innerHTML,/LIFEOS · 5 минут развития/);
+});
+
+
+test('communication vocabulary is unique, daily and uses spaced practice',()=>{
+ const f=fixture(),api=f.sandbox.LIFEOS_APPLIED_MASTERY;
+ assert.equal(api.vocabulary.length,25);
+ assert.equal(new Set(api.vocabulary.map(x=>x.id)).size,25);
+ const word=api.getWordOfDay();assert.ok(word.word);assert.ok(word.meaning);assert.ok(word.example);
+ f.values.lmVocabSentence={value:'Я использую это слово в конкретном предложении сегодня.'};
+ f.values.lmVocabConfidence={value:'4'};
+ f.sandbox.saveLIFEOSVocabPractice(word.id);
+ const saved=f.sandbox.state.microLearning.vocabulary.progress[word.id];
+ assert.equal(saved.reviewCount,1);assert.ok(saved.nextReviewAt);assert.match(saved.sentence,/слово/);
 });
