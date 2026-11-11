@@ -619,3 +619,24 @@ input:focus,textarea:focus,select:focus{outline:none!important;border-color:colo
 .lc-hour-row.is-half .lc-empty-hour{height:28px;opacity:.48}
 @media(max-width:759px){.lc-year-grid{gap:7px}.lc-year-month{padding:9px;border-radius:14px}.lc-year-month>b{font-size:12px}}
 @media(prefers-reduced-motion:reduce){.app-header.is-compact *{transition:none!important}}
+
+
+/* LIFEOS calendar scale, custom event palette and check-in sheet */
+.lc-page{zoom:var(--lc-zoom,1);transform-origin:top left}
+.lc-zoom{display:flex;align-items:center;gap:8px;margin:10px 0;padding:7px 10px;border:1px solid var(--border,rgba(255,255,255,.12));border-radius:14px;background:var(--card,rgba(255,255,255,.04))}
+.lc-zoom button{width:32px;height:32px;border:0;border-radius:10px;background:var(--surface,rgba(255,255,255,.08));color:inherit;font-size:18px}
+.lc-zoom input{flex:1;min-width:60px;accent-color:var(--brand)}
+.lc-zoom span{min-width:42px;text-align:right;font-size:12px;font-variant-numeric:tabular-nums}
+.lc-colors{display:flex;flex-wrap:wrap;gap:9px;padding:9px 0}
+.lc-colors label{position:relative;display:inline-flex;cursor:pointer}
+.lc-colors input{position:absolute;opacity:0;inset:0}
+.lc-colors i{display:block;width:27px;height:27px;border-radius:50%;background:var(--swatch);border:2px solid rgba(255,255,255,.25);box-shadow:0 0 0 0 transparent}
+.lc-colors input:checked+i{outline:2px solid var(--brand);outline-offset:3px}
+.lc-checkin-modal{max-height:min(88vh,820px);overflow:auto}
+.lc-checkin-intro{color:var(--muted);font-size:13px;line-height:1.5}
+.lc-checkin-field{display:block;margin:12px 0;font-size:13px;font-weight:650}
+.lc-checkin-field textarea,.lc-checkin-field select{display:block;width:100%;margin-top:6px;padding:11px;border:1px solid var(--border,rgba(255,255,255,.15));border-radius:12px;background:var(--surface,rgba(255,255,255,.06));color:inherit;font:inherit}
+.lc-checkin-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.lc-checkin-grid label{font-size:12px;font-weight:650}
+.lc-checkin-grid select{width:100%;margin-top:5px;padding:9px;border-radius:10px;background:var(--surface,rgba(255,255,255,.06));color:inherit;border:1px solid var(--border,rgba(255,255,255,.15))}
+@media(max-width:480px){.lc-checkin-grid{grid-template-columns:1fr}.lc-zoom{gap:5px}.lc-zoom input{min-width:40px}}
