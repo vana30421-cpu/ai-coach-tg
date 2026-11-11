@@ -64,7 +64,7 @@ test('new curriculum is loaded by index and precached for offline use',()=>{
 
 test('five-minute academy is connected to the real learning navigation renderer',()=>{
  assert.match(appSource,/window\.renderLearning\s*=\s*renderLearning/);
- assert.match(index,/app\.js\?v=20261111-3/);
+ assert.match(index,/app\.js\?v=20261111-4/);
  assert.match(index,/sw\.js\?v=20261111-170/);
 });
 
@@ -120,4 +120,16 @@ test('memory development tracks exact recall quality in addition to speed, accur
  assert.match(appSource,/workingSpeed/);
  assert.match(appSource,/shortRetention/);
  assert.match(appSource,/workingSpan/);
+});
+
+
+test('five-minute recommendation is mounted on the dashboard without duplicating it',()=>{
+ const page={children:[],appendChild(node){this.children.push(node);}};
+ const sandbox={console,Date,Math,Number,String,Array,Object,JSON,RegExp,Promise,state:{},
+  document:{readyState:'complete',querySelector(selector){return selector==='#app .page'?page:null;},getElementById(){return null;},createElement(){return {innerHTML:''};}},
+  renderDashboard(){page.rendered=true;},renderLearning(){},toast(){},save(){}};
+ sandbox.window=sandbox;vm.createContext(sandbox);vm.runInContext(source,sandbox);
+ sandbox.renderDashboard();sandbox.renderDashboard();
+ assert.equal(page.rendered,true);assert.equal(page.children.length,1);
+ assert.match(page.children[0].innerHTML,/LIFEOS · 5 минут развития/);
 });
