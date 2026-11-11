@@ -2562,19 +2562,48 @@ function resetVisionRedFlags(){
   renderVision();
 }
 function renderVisionExercises(){ renderVision60(); }
+function visionExerciseCategory(e){
+ if(e.category)return e.category;
+ var id=String(e.id||'');
+ if(/blink/.test(id))return 'Моргание';
+ if(/distance/.test(id))return 'Дальний фокус';
+ if(/posture/.test(id))return 'Эргономика';
+ if(/walk/.test(id))return 'Движение';
+ return 'Отдых';
+}
 function renderVision60(){
- var ex=window.VISION_EXERCISES||[],levels=['Все','Лёгкие','Простые','Обычные','Средние','Высокие','Очень высокие','Максимальные'],selected=window.__lifeosVisionLevel||'Все';
- var visible=ex.filter(function(e){return selected==='Все'||e.level===selected;});
- var html='<div class="page"><div class="title-xl">👁 Практики зрительного комфорта</div><p class="subtitle">Фильтр по длительности и уровню нагрузки. Это паузы для комфорта, не лечение и не тренировка диоптрий.</p><div class="glass-filter">';
+ var ex=window.VISION_EXERCISES||[],levels=['Все','Лёгкие','Простые','Обычные','Средние','Высокие','Очень высокие','Максимальные'];
+ var selected=window.__lifeosVisionLevel||'Все',category=window.__lifeosVisionCategory||'Все',duration=window.__lifeosVisionDuration||'Все';
+ var categories=['Все','Моргание','Дальний фокус','Отдых','Эргономика','Освещение','Движение','Осознанность'];
+ var visible=ex.filter(function(e){
+  var sec=Number(e.seconds)||0,cat=visionExerciseCategory(e);
+  var byLevel=selected==='Все'||e.level===selected,byCategory=category==='Все'||cat===category;
+  var byDuration=duration==='Все'||(duration==='До 30 сек'&&sec<=30)||(duration==='30–60 сек'&&sec>30&&sec<=60)||(duration==='1–2 мин'&&sec>60&&sec<=120)||(duration==='Более 2 мин'&&sec>120);
+  return byLevel&&byCategory&&byDuration;
+ });
+ var html='<div class="page"><div class="title-xl">👁 200 практик зрительного комфорта</div><p class="subtitle">200 коротких сценариев пауз, моргания, смены дистанции и настройки рабочего места. Это не лечение и не тренировка диоптрий.</p>';
+ html+='<div class="card"><div class="field"><label class="field-label">Категория</label><select onchange="setVisionExerciseCategory(this.value)">'+categories.map(function(v){return '<option '+(category===v?'selected':'')+'>'+esc(v)+'</option>';}).join('')+'</select></div>';
+ html+='<div class="field"><label class="field-label">Длительность</label><select onchange="setVisionExerciseDuration(this.value)">'+['Все','До 30 сек','30–60 сек','1–2 мин','Более 2 мин'].map(function(v){return '<option '+(duration===v?'selected':'')+'>'+esc(v)+'</option>';}).join('')+'</select></div></div>';
+ html+='<div class="glass-filter">';
  levels.forEach(function(level){html+='<button class="btn btn-xs '+(selected===level?'btn-primary':'btn-ghost')+'" onclick="setVisionExerciseLevel(\''+level+'\')">'+level+'</button>';});
- html+='</div><p class="footnote">Показано: '+visible.length+' из '+ex.length+'. Более долгий протокол не означает более сильный лечебный эффект.</p>';
- visible.forEach(function(e){html+='<article class="card method-card mb-2"><div class="method-header"><div class="method-emoji">'+e.emoji+'</div><div style="flex:1;min-width:0"><div class="method-title">'+esc(e.title)+'</div><div class="method-cat">'+esc(e.level)+' · '+esc(e.duration)+'</div><p class="footnote">'+esc(e.desc)+'</p></div></div><details class="vision-details"><summary>Как выполнять точно</summary><p class="footnote">'+esc(e.how)+'</p><p class="footnote">Основание: '+esc(e.science||'')+'.</p></details></article>';});
- html+='<div class="card"><b>Безопасность</b><p class="footnote">Не дави на глаза, не смотри на солнце. При боли, внезапном ухудшении зрения, вспышках или множественных новых мушках прекрати практику и обратись за медицинской оценкой.</p></div></div>';
+ html+='</div><p class="footnote">Показано: '+visible.length+' из '+ex.length+'. В каталоге разные контекстные сценарии безопасных практик, а не 200 методов лечения.</p>';
+ visible.forEach(function(e){
+  html+='<article class="card method-card mb-2"><div class="method-header"><div class="method-emoji">'+esc(e.emoji||'👁️')+'</div><div style="flex:1;min-width:0"><div class="method-title">'+esc(e.title)+'</div><div class="method-cat">'+esc(e.level||'Простые')+' · '+esc(e.duration||((Number(e.seconds)||30)+' сек'))+' · '+esc(visionExerciseCategory(e))+'</div><p class="footnote">'+esc(e.desc)+'</p></div></div><details class="vision-details"><summary>Как выполнять точно</summary><p class="footnote">'+esc(e.how)+'</p><p class="footnote"><b>Задача:</b> '+esc(e.effect||'Зрительный комфорт')+'</p><p class="footnote">Основание: '+esc(e.science||'Практика перерыва; не медицинское лечение')+'</p></details></article>';
+ });
+ html+='<div class="card"><b>Безопасность</b><p class="footnote">Не дави на глаза, не смотри на солнце и не выполняй движения через боль. При внезапном ухудшении зрения, вспышках, множественных новых мушках или сильной боли нужна срочная медицинская оценка.</p></div></div>';
  document.getElementById('app').innerHTML=html;
 }
 function setVisionExerciseLevel(level){
  var allowed=['Все','Лёгкие','Простые','Обычные','Средние','Высокие','Очень высокие','Максимальные'];
  window.__lifeosVisionLevel=allowed.indexOf(level)>=0?level:'Все';renderVision60();
+}
+function setVisionExerciseCategory(value){
+ var allowed=['Все','Моргание','Дальний фокус','Отдых','Эргономика','Освещение','Движение','Осознанность'];
+ window.__lifeosVisionCategory=allowed.indexOf(value)>=0?value:'Все';renderVision60();
+}
+function setVisionExerciseDuration(value){
+ var allowed=['Все','До 30 сек','30–60 сек','1–2 мин','Более 2 мин'];
+ window.__lifeosVisionDuration=allowed.indexOf(value)>=0?value:'Все';renderVision60();
 }
 function renderVisionTracker(){
  var v=ensureVisionState(),metrics=v.metrics||{},keys=Object.keys(metrics).sort().slice(-30),logs=v.symptomLog||[];
