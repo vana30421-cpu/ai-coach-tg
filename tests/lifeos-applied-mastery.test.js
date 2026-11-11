@@ -126,7 +126,7 @@ test('memory development tracks exact recall quality in addition to speed, accur
 test('five-minute recommendation is mounted on the dashboard without duplicating it',()=>{
  const page={children:[],appendChild(node){this.children.push(node);}};
  const sandbox={console,Date,Math,Number,String,Array,Object,JSON,RegExp,Promise,state:{},
-  document:{readyState:'complete',querySelector(selector){return selector==='#app .page'?page:null;},getElementById(){return null;},createElement(){return {innerHTML:''};}},
+  document:{readyState:'complete',querySelector(selector){return selector==='#app .page'?page:null;},getElementById(id){return id==='lifeosFiveMinute'&&page.children.length?{}:null;},createElement(){return {innerHTML:''};}},
   renderDashboard(){page.rendered=true;},renderLearning(){},toast(){},save(){}};
  sandbox.window=sandbox;vm.createContext(sandbox);vm.runInContext(source,sandbox);
  sandbox.renderDashboard();sandbox.renderDashboard();
