@@ -21,7 +21,8 @@ jobs:
           node-version: 22
       - name: Check browser scripts
         run: |
-          node --check lifeos-intelligence-core.js\n          node --check app.js
+          node --check lifeos-intelligence-core.js
+          node --check app.js
           node --check content.js
           node --check content2.js
           node --check content3.js
