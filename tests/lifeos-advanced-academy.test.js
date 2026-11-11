@@ -26,6 +26,6 @@ test('biohacking course contains safety boundaries and primary sources',()=>{
  assert.ok(bio.modules.flatMap(m=>m.lessons).some(l=>l.sources.some(s=>/aasm.org/.test(s.url))));
 });
 test('advanced academy is loaded before the course renderer and cached offline',()=>{
- assert.ok(index.indexOf('lifeos-advanced-academy.js?v=1')<index.indexOf('lifeos-learning-experience.js?v=20261111-1'));
+ assert.ok(index.indexOf('lifeos-advanced-academy.js?v=1')<index.indexOf('lifeos-learning-experience.js?v=20261111-2'));
  assert.ok(sw.includes("'./lifeos-advanced-academy.js'"));
 });
