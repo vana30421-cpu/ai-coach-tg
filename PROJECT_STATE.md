@@ -72,3 +72,11 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Added unit tests for empty profiles, overdue work, load heuristics, correlation minimum sample size and missing-data handling.
 - New core is loaded before app.js and included in offline cache. Cache namespace advanced to life-os-v176; app script query advanced to 20261111-6.
 - This is the first Intelligence Core slice, not completion of the full 19-section catalogue or all predictive/adaptive requirements.
+
+
+## 2026-11-11 — Expanded in-app diagnostics
+- Replaced the basic checklist with live checks for local storage read/write, app state, backup, export, Service Worker, offline cache, key screen renderers, Jarvis and Intelligence Core.
+- Added a bounded in-session JavaScript error and unhandled-rejection log; entries are not persisted and do not contain full user records.
+- Shows browser notification permission separately from background push capability; it does not claim guaranteed delivery without a confirmed push subscription and server.
+- Shows counts of actual local tasks, sleep, mood and calendar records; empty data is not interpreted as a zero health score.
+- Updated app asset version and offline cache namespace. CI regression and device verification pending.
