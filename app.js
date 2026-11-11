@@ -3900,6 +3900,18 @@ function getJarvisAnalytics(silent){
   else if(a.learning.memoryAccuracy!==null&&a.learning.memoryAccuracy<65)items.push({id:'memory-training',level:'medium',title:'Снизить сложность тренировки памяти',detail:'Средняя точность воспроизведения '+a.learning.memoryAccuracy+'%.',action:'Вернись на более короткую последовательность и постепенно увеличивай объём.'});
   if(a.health.sleepAvgHours!==null&&a.health.sleepAvgHours<6.5)items.push({id:'sleep',level:'high',title:'Недостаточно данных о сне',detail:'Среднее по записанным сессиям: '+a.health.sleepAvgHours+' ч. Это ориентир по журналу, не медицинская оценка.',action:'Зафиксируй сон и оставь запас времени на восстановление.'});
   if(a.coverage.percent<35)items.push({id:'coverage',level:'info',title:'Недостаточно данных для точного управления',detail:'Заполнено '+a.coverage.activeSections+' из '+a.coverage.totalTracked+' основных трекеров.',action:'Добавь записи в важные для тебя разделы. Неактивные трекеры не считаются нулевыми результатами.'});
+  try{
+    var core=window.LIFEOS_INTELLIGENCE_CORE;
+    if(core&&typeof core.analyze==='function'){
+      var coreResult=core.analyze(state,today());
+      coreResult.recommendations.forEach(function(rec){
+        items.push({id:'core-'+rec.id,level:rec.level,title:rec.title,detail:rec.detail+' Основание: '+rec.why,action:'Следующий шаг · '+rec.timeMinutes+' мин. Критерий: '+rec.successCriteria,target:rec.target,confidence:rec.confidence});
+      });
+      if(coreResult.quality.trackedSections>0&&coreResult.quality.trackedSections<3){
+        items.push({id:'core-data-quality',level:'info',title:'Уточнить картину по данным',detail:'Есть записи в '+coreResult.quality.trackedSections+' из '+coreResult.quality.totalSections+' отслеживаемых блоков. Пустые разделы не считаются нулевыми результатами.',action:'Заполняй только те направления, которые действительно важны для твоих целей.',target:'stats',confidence:'Ограниченная · полнота локальных данных'});
+      }
+    }
+  }catch(coreError){console.warn('[LIFEOS Intelligence Core]',coreError);}
   if(!items.length)items.push({id:'steady',level:'good',title:'Критичных сигналов не найдено',detail:'Продолжай текущий ритм. Джарвис проверяет только реально сохранённые записи.',action:'Сохрани регулярность и проведи вечерний обзор.'});
   var selected=getLifeStatsFilter().category||'all';
   if(selected!=='all'){var allowed={productivity:['overdue','overload','habits'],screen:['screen','screen-target','screen-data','screen-trend','screen-coverage'],health:['sleep','sleep-data','energy','concentration','vision-fatigue','vision-headache'],learning:['reviews','study-due','memory-training'],life:['detox-feedback','coverage']};var ids=allowed[selected]||[];items=items.filter(function(x){return ids.indexOf(x.id)>=0||x.id.indexOf('screen-')===0;});if(!items.length)items.push({id:'filtered-empty',level:'good',title:'Отклонений в выбранном направлении не найдено',detail:'Для выбранного фильтра нет сигналов, требующих вмешательства.',action:'Продолжай наблюдение и проверь динамику позже.',target:'stats',confidence:'Текущие фильтры'});}
