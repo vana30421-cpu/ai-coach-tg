@@ -77,3 +77,36 @@ test('learning renderer wrapper actually mounts the five-minute panel',()=>{
  assert.equal(page.children.length,1);
  assert.match(page.children[0].innerHTML,/LIFEOS · 5 минут развития/);
 });
+
+
+test('thinking, psychology, finance and biohacking academies have direct working routes',()=>{
+ const f=fixture(),appRoot={innerHTML:''};f.sandbox.document.getElementById=(id)=>id==='app'?appRoot:(f.values[id]||null);
+ for(const name of ['renderFinance','renderPsychology','renderThinking','renderNeuro','openLIFEOSAcademy','openLIFEOSMicroLesson'])assert.equal(typeof f.sandbox[name],'function',name+' must be exposed');
+ f.sandbox.renderThinking();
+ assert.match(appRoot.innerHTML,/Критическое мышление/);
+ assert.match(appRoot.innerHTML,/Аналитическое мышление/);
+ assert.match(appRoot.innerHTML,/Стратегическое мышление/);
+ f.sandbox.renderFinance();assert.match(appRoot.innerHTML,/Финансовая грамотность/);
+ f.sandbox.renderPsychology();assert.match(appRoot.innerHTML,/Психология/);
+ f.sandbox.renderNeuro();assert.match(appRoot.innerHTML,/Биохакинг/);
+});
+
+test('lesson visuals are topic-specific, interactive and respect reduced motion',()=>{
+ const f=fixture();f.sandbox.startLIFEOSFiveMinute();
+ assert.match(f.sheet,/lm-visual-step/);
+ assert.match(f.sheet,/prefers-reduced-motion/);
+ assert.match(f.sheet,/ИНТЕРАКТИВНАЯ КАРТА ПРИНЦИПА/);
+});
+
+test('correct lessons schedule spaced reviews and failed lessons return tomorrow',()=>{
+ const f=fixture(),row=f.sandbox.LIFEOS_APPLIED_MASTERY.allLessons()[0];
+ f.sandbox.document.querySelector=()=>({value:String(row.lesson.quiz.correctIndex)});
+ f.sandbox.completeLIFEOSMicroLesson(row.key);
+ const saved=f.sandbox.state.microLearning.progress[row.key];
+ assert.equal(saved.completed,true);assert.equal(saved.reviewCount,1);assert.ok(saved.nextReviewAt);
+ const f2=fixture(),row2=f2.sandbox.LIFEOS_APPLIED_MASTERY.allLessons()[0];
+ f2.sandbox.document.querySelector=()=>({value:String((row2.lesson.quiz.correctIndex+1)%3)});
+ f2.sandbox.completeLIFEOSMicroLesson(row2.key);
+ assert.equal(f2.sandbox.state.microLearning.progress[row2.key].completed,false);
+ assert.ok(f2.sandbox.state.microLearning.progress[row2.key].nextReviewAt);
+});
