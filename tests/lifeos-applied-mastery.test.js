@@ -58,7 +58,7 @@ test('wrong answer is not marked as mastered',()=>{
 test('new curriculum is loaded by index and precached for offline use',()=>{
  assert.match(index,/lifeos-applied-mastery\.js\?v=20261111-3/);
  assert.match(sw,/lifeos-applied-mastery\.js/);
- assert.match(sw,/life-os-v170/);
+ assert.match(sw,/life-os-v171/);
 });
 
 
