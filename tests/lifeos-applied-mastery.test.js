@@ -21,10 +21,10 @@ function fixture(){
  vm.createContext(sandbox);vm.runInContext(advancedSource,sandbox);vm.runInContext(radSource,sandbox);vm.runInContext(source,sandbox);
  return {sandbox,values,get xp(){return xp;},get saved(){return saved;},get sheet(){return sheet;}};
 }
-test('applied mastery module is syntactically valid and adds five substantive courses',()=>{
+test('applied mastery module is syntactically valid and adds six substantive courses',()=>{
  assert.doesNotThrow(()=>new vm.Script(source));
  const f=fixture(),api=f.sandbox.LIFEOS_APPLIED_MASTERY;
- assert.equal(api.courses.length,5);
+ assert.equal(api.courses.length,6);
  assert.ok(api.allLessons().length>=25);
  for(const id of ['finance_mastery','psychology_mastery','martial_arts_mastery','communication_mastery','business_growth'])
   assert.ok(api.courses.some(c=>c.id===id));
@@ -65,7 +65,7 @@ test('new curriculum is loaded by index and precached for offline use',()=>{
 test('five-minute academy is connected to the real learning navigation renderer',()=>{
  assert.match(appSource,/window\.renderLearning\s*=\s*renderLearning/);
  assert.match(index,/app\.js\?v=20261111-5/);
- assert.match(index,/sw\.js\?v=20261111-170/);
+ assert.match(index,/sw\.js\?v=20261111-174/);
 });
 
 test('learning renderer wrapper actually mounts the five-minute panel',()=>{
