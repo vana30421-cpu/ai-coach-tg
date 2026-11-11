@@ -28,7 +28,16 @@ test('Jarvis local analytics context and summary use guarded statistics',()=>{
 });
 
 test('updated analytics assets are versioned and available offline',()=>{
- assert.ok(index.includes('app.js?v=20261111-5'));
- assert.ok(sw.includes('life-os-v175'));
+ assert.ok(index.includes('app.js?v=20261111-6'));
+ assert.ok(sw.includes('life-os-v176'));
  assert.match(sw,/\.\/app\.js/);
+});
+
+
+test('Jarvis consumes explainable recommendations from the offline Intelligence Core',()=>{
+ assert.match(app,/core\.analyze\(state,today\(\)\)/);
+ assert.match(app,/Основание:/);
+ assert.match(app,/Критерий:/);
+ assert.ok(index.includes('lifeos-intelligence-core.js?v=20261111-1'));
+ assert.ok(sw.includes('./lifeos-intelligence-core.js'));
 });
