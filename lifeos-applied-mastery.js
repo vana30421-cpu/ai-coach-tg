@@ -197,12 +197,21 @@ function renderFinance(){renderAcademyPage('Финансовая грамотн�
 function renderPsychology(){renderAcademyPage('Психология',['psychology_mastery']);}
 function renderThinking(){renderAcademyPage('Мышление',['critical_thinking','analytical_thinking','strategic_thinking']);}
 function renderNeuro(){renderAcademyPage('Биохакинг и нейронаука',['evidence_biohacking','rad_god_mode']);}
+function wrapRenderer(name,withCourses){
+ var base=root[name];if(typeof base!=='function'||base.__microWrapped)return;
+ var wrapped=function(){
+  base();
+  var page=root.document.querySelector('#app .page');
+  if(!page||root.document.getElementById('lifeosFiveMinute'))return;
+  var el=root.document.createElement('div');
+  el.innerHTML=renderPanel()+(withCourses?renderCourses():'');
+  page.appendChild(el);
+ };
+ wrapped.__microWrapped=true;root[name]=wrapped;
+}
 function attach(){
- if(typeof root.renderLearning==='function'&&!root.renderLearning.__microWrapped){
-  var base=root.renderLearning;
-  var wrapped=function(){base();var page=root.document.querySelector('#app .page');if(page){var el=root.document.createElement('div');el.innerHTML=renderPanel()+renderCourses();page.appendChild(el);}};
-  wrapped.__microWrapped=true;root.renderLearning=wrapped;
- }
+ wrapRenderer('renderDashboard',false);
+ wrapRenderer('renderLearning',true);
 }
 root.openLIFEOSAcademy=openAcademy;
 root.openLIFEOSMicroLesson=openByKey;
