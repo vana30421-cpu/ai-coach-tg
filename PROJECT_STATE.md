@@ -2,13 +2,14 @@
 
 Last updated: 2026-11-11
 Default branch: `main`
-Current main commit: `f402a8035f7f2de9bc375e4ee568e2d725d0d619` (documentation follow-up; application code commit: `e9e27600ae66018ebff0f3494caee4c74d8b5ff4`)
+Latest RAD catalogue implementation commit: `e631cefdf854be3e804bb5caf413d88849a24dbc`; latest verified test commit: `6b583fd870548e77faa14f20d41a19aa5aadcd10`; main includes merged application commit `e9e27600ae66018ebff0f3494caee4c74d8b5ff4`.
 Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https://github.com/vana30421-cpu/ai-coach-tg/pull/41)
 
 ## Implemented in the merged change
 
 - Five new applied academies, 43 lessons total: finance, psychology, martial arts foundations, communication, and business/marketing/sales.
 - Existing advanced-thinking and RAD learning modules are reused and exposed through learning navigation.
+- RAD public-source catalogue is visible in the learning screen, with official links, public topic index, named challenge inventory, and explicit labels for closed materials that are not copied.
 - Five-minute coach on dashboard and learning screen, with explainable next-step recommendations, due-review priority, error recovery, and expanding review intervals.
 - Dedicated routes for finance, psychology, critical/analytical/strategic thinking, and biohacking.
 - Topic-specific animated SVG concept maps and expandable step explanations.
@@ -19,17 +20,18 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 
 ## Verification
 
-- GitHub Actions `LIFEOS checks`: success on application commit `e9e27600ae66018ebff0f3494caee4c74d8b5ff4` (224 regression tests passed).
+- GitHub Actions `LIFEOS checks`: success on the RAD catalogue update test commit `6b583fd870548e77faa14f20d41a19aa5aadcd10`.
+- Applied mastery regression suite: 224 passed, 0 failed on `dca13058`; subsequent RAD catalogue tests also passed.
 - GitHub Actions `LIFE OS Jarvis tests`: success on the same commit.
 - Detox course verification: success on the same commit.
-- GitHub Pages deployment for application commit `e9e27600ae66018ebff0f3494caee4c74d8b5ff4`: success. Documentation-only follow-up deployment for `f402a8035f7f2de9bc375e4ee568e2d725d0d619`: pending.
+- GitHub Pages deployment for application commit `e9e27600ae66018ebff0f3494caee4c74d8b5ff4`: success. Deployment for the later RAD catalogue update: pending.
 - Physical Android and Telegram Android WebView manual verification: not yet performed.
 
 ## Incomplete requirements — do not mark as done
 
 1. 5,000 unique psychology learning units.
 2. 5,000 unique communication/vocabulary learning units.
-3. Complete RAD public-material source catalogue and lesson coverage.
+3. Exhaustive RAD public-material source catalogue and lesson coverage; current app now exposes the public inventory and marks gated content explicitly.
 4. Full original/licensed photo, animation, and interactive video library. Current SVG diagrams are not video lessons.
 5. Full implementation and verification of all useful features from the 50-app benchmark.
 6. Full combat-sport curriculum beyond foundational lessons.
