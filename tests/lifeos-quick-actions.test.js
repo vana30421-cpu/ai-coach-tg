@@ -18,5 +18,5 @@ test('quick actions link only to existing LIFEOS routes and preserve data',()=>{
  for(const route of routes)assert.ok(systems.includes("'"+route+"'"),'missing route '+route);
  assert.match(systems,/window\.openSheet\('⚡ Быстрые действия',html\)/);
  assert.match(systems,/Быстрый переход к основным инструментам\. Данные не меняются при открытии раздела/);
- assert.ok(sw.includes('life-os-v168'));
+ assert.ok(sw.includes('life-os-v169'));
 });
