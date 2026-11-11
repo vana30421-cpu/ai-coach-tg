@@ -147,6 +147,20 @@ challengeTemplates:[
 note:'Это каталог публично заявленных тем и официальных ссылок. Он не содержит закрытые RADкасты, платные уроки, воркбук или закрытые материалы. Для их добавления нужен предоставленный пользователем легальный доступ/файл; конспекты и задания LIFEOS создаются самостоятельно.'
 };
 
+window.renderLIFEOSRADResources=function(){
+ var lib=window.LIFEOS_RAD_LIBRARY,app=window.document&&window.document.getElementById('app');if(!lib||!app)return;
+ function safe(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
+ var h='<div class="page"><div class="title-xl">⚡ RAD · публичные материалы</div><div class="subtitle">Каталог тем и первоисточников. Уроки LIFEOS — самостоятельные объяснения, а не копия платных материалов.</div><section class="card"><h2>Официальные источники</h2>';
+ lib.resources.forEach(function(x){h+='<div class="list-row"><div style="flex:1"><b>'+safe(x.title)+'</b><div class="footnote">'+safe(x.topics.join(' · '))+'</div></div><a class="btn btn-ghost btn-sm" href="'+safe(x.url)+'" target="_blank" rel="noopener noreferrer">Открыть источник ↗</a></div>';});
+ h+='</section><section class="card"><h2>Публично описанные темы</h2><div class="grid-2">';
+ lib.publicTopics.forEach(function(x){h+='<div class="list-row"><span>✓</span><span>'+safe(x)+'</span></div>';});
+ h+='</div></section><section class="card"><h2>Челленджи</h2><p class="footnote">На официальной странице заявлено 12 месячных челленджей. В доступном тексте удалось однозначно определить '+lib.publicChallengeInventory.identifiedMonthlyCount+' названий; остальные '+lib.publicChallengeInventory.unidentifiedMonthlyCount+' не выдумываем.</p>';
+ lib.challengeTemplates.forEach(function(x){h+='<div class="list-row"><b>'+safe(x.title)+'</b><span class="footnote">'+x.days+' дней</span></div>';});
+ h+='</section><section class="card"><h2>Закрытые материалы — не импортированы</h2><p class="footnote">Нужен легальный доступ или файл от владельца. Содержимое не копируется из закрытых источников.</p>';
+ lib.restrictedMaterials.forEach(function(x){h+='<div class="list-row"><div style="flex:1"><b>'+safe(x.title)+'</b><div class="footnote">'+safe(x.reason)+'</div></div><span class="badge">Закрыто</span></div>';});
+ h+='</section><button class="btn btn-ghost btn-block" onclick="navigate(\'learning\')">← К обучению</button></div>';
+ app.innerHTML=h;
+};
 window.ALL_NEW_COURSES=all;
 window.LIFEOS_RAD_TRACK={courseId:course.id,moduleCount:modules.length,lessonCount:modules.reduce(function(n,m){return n+m.lessons.length;},0),source:programme,channel:channel,version:1};
 })();
