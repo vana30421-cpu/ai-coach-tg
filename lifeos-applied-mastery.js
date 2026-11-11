@@ -234,7 +234,7 @@ function renderPanel(){
 function renderCourses(){
  var s=stats(),html='<section class="card mt-3"><div class="card-title">📚 Новые практические академии</div>';
  definitions.forEach(function(c){var count=c.modules.reduce(function(n,m){return n+m.lessons.length;},0);html+='<div class="list-row"><span style="font-size:23px">'+c.emoji+'</span><div style="flex:1"><b>'+esc(c.title)+'</b><div class="footnote">'+count+' уроков · '+esc(c.subtitle)+'</div></div><button class="btn btn-ghost btn-sm" data-course="'+esc(c.id)+'" onclick="openLIFEOSAcademy(this.dataset.course)">Открыть</button></div>';});
- html+='<div class="footnote">Всего '+allLessons().length+' уроков в этой библиотеке. Прогресс сохраняется на устройстве.</div></section>';return html;
+ html+='<div class="footnote">Всего '+allLessons().length+' уроков в этой библиотеке. Прогресс сохраняется на устройстве.</div></section><section class="card mt-2"><div class="card-title">⚡ Материалы RAD</div><p class="footnote">Публичные статьи, заявленные темы, челленджи и прозрачная отметка закрытых материалов.</p><button class="btn btn-ghost btn-block" onclick="renderLIFEOSRADResources()">Открыть каталог RAD</button></section>';return html;
 }
 function renderAcademyPage(title,ids){
  var rows=allLessons().filter(function(x){return ids.indexOf(x.course.id)>=0;}),html='<div class="page"><div class="title-xl">📚 '+esc(title)+'</div><div class="subtitle">Полные уроки, практика, проверка знаний и повторение. Прогресс сохраняется локально.</div>';
