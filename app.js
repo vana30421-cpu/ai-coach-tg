@@ -3211,22 +3211,17 @@ function renderSleepEditor(){
   document.getElementById('app').innerHTML = html;
 }
 function saveSleepEntry(){
-  var date = (document.getElementById('sl-date')||{}).value || today();
-  var start = (document.getElementById('sl-start')||{}).value || '23:00';
-  var end = (document.getElementById('sl-end')||{}).value || '07:00';
-  var hours = calcSleepHours(start, end);
-  var quality = parseInt((document.getElementById('sl-quality-value')||{}).value) || 7;
-  var notes = (document.getElementById('sl-notes')||{}).value || '';
-  var entry = {id: uid(), date:date, type:'night', start:start, end:end, hours:hours, quality:quality, notes:notes, createdAt:nowISO()};
-  var idx = state.sleepEntries.findIndex(function(s){ return s.date === date; });
-  if(idx >= 0) state.sleepEntries[idx] = entry;
-  else state.sleepEntries.push(entry);
-  addXP(5, 'sleep');
-  save();
-  haptic('success');
-  toast('✓ ' + hours + ' ч','success');
-  currentSleepDate = null;
-  navigate('sleep');
+  var dateInput=document.getElementById('sl-date'),startInput=document.getElementById('sl-start'),endInput=document.getElementById('sl-end');
+  var date=dateInput&&dateInput.value||today(),start=startInput&&startInput.value||'23:00',end=endInput&&endInput.value||'07:00';
+  if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(date)||!/^\\d{2}:\\d{2}$/.test(start)||!/^\\d{2}:\\d{2}$/.test(end)){toast('Проверь дату и время сна','warning');return false;}
+  var hours=calcSleepHours(start,end);if(!Number.isFinite(hours)||hours<=0||hours>24){toast('Продолжительность сна должна быть от 1 до 24 часов','warning');return false;}
+  var qualityInput=document.getElementById('sl-quality-value'),quality=Number(qualityInput&&qualityInput.value);quality=Math.max(1,Math.min(10,Number.isFinite(quality)&&quality?quality:7));
+  var notes=String((document.getElementById('sl-notes')||{}).value||'').slice(0,3000);if(!Array.isArray(state.sleepEntries))state.sleepEntries=[];
+  var idx=state.sleepEntries.findIndex(function(s){return s&&s.date===date;}),previous=idx>=0?state.sleepEntries[idx]:null;
+  var entry={id:previous&&previous.id||uid(),date:date,type:'night',start:start,end:end,hours:hours,quality:quality,notes:notes,createdAt:previous&&previous.createdAt||nowISO(),updatedAt:nowISO()};
+  if(idx>=0)state.sleepEntries[idx]=entry;else state.sleepEntries.push(entry);
+  if(!save()){if(idx>=0)state.sleepEntries[idx]=previous;else state.sleepEntries.pop();toast('Не удалось сохранить сон. Проверь свободное место на устройстве.','error');return false;}
+  if(!previous)addXP(5,'sleep');haptic('success');toast('✓ Сон сохранён · '+hours+' ч','success');currentSleepDate=null;navigate('sleep');return true;
 }
 function deleteSleepEntry(date){
   if(!confirm('Удалить?')) return;
