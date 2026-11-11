@@ -58,14 +58,14 @@ test('wrong answer is not marked as mastered',()=>{
 test('new curriculum is loaded by index and precached for offline use',()=>{
  assert.match(index,/lifeos-applied-mastery\.js\?v=20261111-4/);
  assert.match(sw,/lifeos-applied-mastery\.js/);
- assert.match(sw,/life-os-v174/);
+ assert.match(sw,/life-os-v175/);
 });
 
 
 test('five-minute academy is connected to the real learning navigation renderer',()=>{
  assert.match(appSource,/window\.renderLearning\s*=\s*renderLearning/);
  assert.match(index,/app\.js\?v=20261111-5/);
- assert.match(index,/sw\.js\?v=20261111-174/);
+ assert.match(index,/sw\.js\?v=20261111-175/);
 });
 
 test('learning renderer wrapper actually mounts the five-minute panel',()=>{
