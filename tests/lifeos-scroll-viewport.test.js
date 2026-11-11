@@ -37,5 +37,5 @@ test('page and workspace navigation scroll the actual app viewport', () => {
 
 test('modal keeps its own scroll and app cache is refreshed', () => {
   assert.match(html, /\.modal\s*\{[\s\S]*?overflow-y:auto!important/);
-  assert.ok(sw.includes('life-os-v174'));
+  assert.ok(sw.includes('life-os-v175'));
 });
