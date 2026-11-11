@@ -52,7 +52,7 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Added once-per-period morning review (default 08:00–11:00) of yesterday, evening plan (default 18:00–21:00) for tomorrow, plus configurable weekly/monthly reviews.
 - Check-in history and settings stay in offline-first local state; no user records are reset.
 - Client timers cannot guarantee delivery after Android suspends/terminates the app; guaranteed background delivery requires push infrastructure.
-- Target cache life-os-v174. Source regression tests added; CI and Android/Telegram WebView verification pending.
+- Target cache life-os-v175. Source regression tests added; CI and Android/Telegram WebView verification pending.
 
 - Final cache namespace advanced to life-os-v172 after the last asset updates; regression expectations refreshed accordingly.
 
@@ -60,3 +60,5 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 
 - Morning and periodic review dialogs now include actual local summaries for mood, sleep, calendar events and journal coverage; weekly/monthly prompts summarize the previous completed period. Foreground re-entry rechecks once-per-period eligibility.
 - Final offline cache and Service Worker registration version: life-os-v174 / 20261111-174.
+
+- When weekly and monthly review windows coincide, eligible reviews are queued sequentially after each save instead of silently deferring the second.
