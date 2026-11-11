@@ -74,3 +74,14 @@ test('course lesson rows open enhanced full lesson view',()=>{
  assert.match(app,/window.openCourseLesson\|\|openCourseLesson/);
  assert.match(renderer,/richFormatLesson/);
 });
+
+
+test('RAD public catalogue tracks closed materials without copying them',()=>{
+ assert.equal(radLibrary.publicChallengeInventory.advertisedMonthlyCount,12);
+ assert.equal(radLibrary.publicChallengeInventory.identifiedMonthlyCount,5);
+ assert.equal(radLibrary.publicChallengeInventory.unidentifiedMonthlyCount,7);
+ assert.ok(radLibrary.restrictedMaterials.length>=4);
+ assert.ok(radLibrary.restrictedMaterials.every(x=>x.importable===false));
+ assert.ok(radLibrary.publicTopics.includes('MONEY MODE и личные финансы'));
+ assert.ok(radLibrary.publicTopics.includes('Нейросети и AI-инструменты GOD MODE'));
+});
