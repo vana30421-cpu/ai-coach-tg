@@ -103,3 +103,14 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Fixed deferred-script precedence so the full reminder center is not overwritten by the legacy notification preferences renderer.
 - GitHub Actions LIFEOS checks passed: 241 tests passed, 0 failed. Jarvis tests also passed.
 - Local scheduled reminders still depend on the app being active or resumed; guaranteed background delivery remains unimplemented pending push infrastructure and device subscription.
+
+
+## 2026-11-11 — Jarvis 3.0 mainline port (PR #45)
+- The older PR #40 branch was found to be 341 commits behind current main and its Android build failed because Java compilation targeted JVM 1.8 while Kotlin targeted JVM 17.
+- Ported the Android companion onto a clean branch based on current main rather than merging the stale branch.
+- Added the Android VoiceInteractionService, assistant role request, native Russian speech recognition, permission checks, and text fallback.
+- Added the mobile Jarvis quick sheet, direct PWA shortcut, accessible controls, reduced-motion handling, and offline cache assets.
+- Aligned Java and Kotlin compilation to JVM 17 and declared Android speech-recognition service package visibility.
+- Added seven regression tests and CI configuration for JavaScript syntax, Node tests, and Android debug APK build.
+- PR #45 is open. CI results have not yet been confirmed through the available run data. Android Chrome / Telegram Android WebView manual testing and APK installation remain outstanding.
+- Do not mark Jarvis 3.0 complete until PR #45 is merged, the APK builds, and the physical-device checks pass.
