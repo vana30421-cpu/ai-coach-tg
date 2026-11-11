@@ -194,7 +194,7 @@ test('Telegram WebView uses a dedicated touch-scrollable app viewport',()=>{
  assert.match(index,/tg\.viewportHeight/);
  assert.match(index,/viewportChanged/);
  assert.match(app,/lifeosScrollToTop/);
- assert.ok(sw.includes('life-os-v174'));
+ assert.ok(sw.includes('life-os-v175'));
 });
 
 test('journal entries can be sent to Jarvis for contextual reflection without modifying the original entry',()=>{
@@ -210,5 +210,5 @@ test('second-brain quick capture is available from the global app header',()=>{
  assert.match(workspaces,/window\.openBrainQuickCapture=function/);
  assert.match(workspaces,/window\.navigate\('obsidian'\)/);
  assert.ok(index.includes('lifeos-workspaces.js?v=20261110-3'));
- assert.ok(sw.includes('life-os-v174'));
+ assert.ok(sw.includes('life-os-v175'));
 });
