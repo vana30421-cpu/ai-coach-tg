@@ -62,3 +62,13 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Final offline cache and Service Worker registration version: life-os-v174 / 20261111-174.
 
 - When weekly and monthly review windows coincide, eligible reviews are queued sequentially after each save instead of silently deferring the second.
+
+
+## 2026-11-11 — LIFEOS Intelligence Core, first integrated slice
+- Added a deterministic, offline-capable analysis core that reads existing saved LIFEOS state without creating or mutating user records.
+- Jarvis now consumes explainable recommendations with evidence, estimated time, success criteria, destination and confidence.
+- Initial signals: overdue tasks, unusually large active task queues, sleep review from at least three actual records, seven-day paired sleep/mood correlation with explicit non-causality warning, and active goals without next actions.
+- Data coverage distinguishes missing sections from zero-valued measurements; recommendations are based only on available local records.
+- Added unit tests for empty profiles, overdue work, load heuristics, correlation minimum sample size and missing-data handling.
+- New core is loaded before app.js and included in offline cache. Cache namespace advanced to life-os-v176; app script query advanced to 20261111-6.
+- This is the first Intelligence Core slice, not completion of the full 19-section catalogue or all predictive/adaptive requirements.
