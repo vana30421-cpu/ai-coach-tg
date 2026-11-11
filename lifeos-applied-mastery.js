@@ -170,7 +170,7 @@ function stats(){
 function renderPanel(){
  var st=appState(),n=nextLesson(),s=stats(),html='<section class="card mt-3" id="lifeosFiveMinute"><div class="row-between"><div><div class="card-title">⚡ LIFEOS · 5 минут развития</div><div class="footnote">Одна идея → проверка памяти → действие в реальной жизни.</div></div><span class="badge badge-brand">'+s.done+'/'+s.total+'</span></div>';
  html+='<div class="progress mt-2"><div class="progress-fill" style="width:'+s.percent+'%"></div></div>';
- if(n)html+='<div class="card mt-2"><div class="footnote">'+esc(n.course.emoji+' '+n.course.title)+' · '+esc(n.module.title)+'</div><h3>'+esc(n.lesson.title)+'</h3><p class="footnote">'+esc(n.lesson.objective)+'</p><button class="btn btn-primary btn-block" onclick="startLIFEOSFiveMinute()">Начать 5-минутный урок</button></div>';
+ if(n)html+='<div class="card mt-2"><div class="footnote">'+esc(n.course.emoji+' '+n.course.title)+' · '+esc(n.module.title)+'</div><h3>'+esc(n.lesson.title)+'</h3><p class="footnote">'+esc(n.lesson.objective)+'</p><p class="footnote">Почему предлагаю: '+esc(n.reason||'Следующий шаг учебного маршрута')+'</p><button class="btn btn-primary btn-block" onclick="startLIFEOSFiveMinute()">Начать 5-минутный урок</button></div>';
  html+='<div class="grid-2 mt-2"><div class="stat-item"><b>'+s.sessions+'</b><span class="footnote">попыток</span></div><div class="stat-item"><b>'+s.percent+'%</b><span class="footnote">усвоено</span></div></div>';
  html+='<div class="footnote mt-2">Уроки адаптируются по ответам. Ошибка возвращает тему в повторение; правильный ответ без объяснения и применения не засчитывается.</div></section>';
  return html;
