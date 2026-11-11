@@ -89,3 +89,10 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - PR #43 GitHub Actions: LIFEOS checks passed; 239 tests passed, 0 failed. Jarvis tests and Detox verification also passed.
 - Android Chrome / Telegram WebView physical-device verification remains outstanding. Do not claim that real push delivery or device invocation is verified.
 - Production Pages deployment status after these merges has not been independently confirmed.
+
+
+## 2026-11-11 — Notification renderer precedence fix
+- Found that `lifeos-systems.js` loaded after `lifeos-notifications.js` and replaced its richer notification center renderer with a legacy preference-only screen.
+- Reordered deferred scripts so the full notification module loads after the legacy systems module and owns the final `renderNotifications` route.
+- Existing calendar reminder integration remains available because the notification module still loads before the calendar-v2 module.
+- Offline cache namespace advanced to life-os-v178. CI and device verification pending.
