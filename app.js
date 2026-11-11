@@ -2444,7 +2444,7 @@ function renderCourseGeneric(course, progressKey){
     (mod.lessons||[]).forEach(function(l, idx){
       var key = course.id + '_' + mod.id + '_' + idx;
       var isDone = !!progress[key];
-      html += '<div class="lesson-row ' + (isDone?'done':'') + '" onclick="openCourseLesson(\'' + course.id + '\',\'' + mod.id + '\',' + idx + ')">';
+      html += '<div class="lesson-row ' + (isDone?'done':'') + '" onclick="(window.openCourseLesson||openCourseLesson)(\'' + course.id + '\',\'' + mod.id + '\',' + idx + ')">';
       html += '<div class="lesson-num">' + (isDone?'✓':(idx+1)) + '</div>';
       html += '<div class="lesson-title">' + esc(l.title) + '</div>';
       html += '</div>';
