@@ -56,7 +56,7 @@ test('wrong answer is not marked as mastered',()=>{
  assert.equal(f.xp,0);
 });
 test('new curriculum is loaded by index and precached for offline use',()=>{
- assert.match(index,/lifeos-applied-mastery\.js\?v=20261111-3/);
+ assert.match(index,/lifeos-applied-mastery\.js\?v=20261111-4/);
  assert.match(sw,/lifeos-applied-mastery\.js/);
  assert.match(sw,/life-os-v172/);
 });
@@ -146,3 +146,5 @@ test('communication vocabulary is unique, daily and uses spaced practice',()=>{
  const saved=f.sandbox.state.microLearning.vocabulary.progress[word.id];
  assert.equal(saved.reviewCount,1);assert.ok(saved.nextReviewAt);assert.match(saved.sentence,/слово/);
 });
+
+test('wellbeing academy is available in the applied learning catalogue',()=>{const mastery=fs.readFileSync('lifeos-applied-mastery.js','utf8');assert.match(mastery,/id:'wellbeing_mastery'/);assert.match(mastery,/function renderWellbeing\(/);assert.match(mastery,/Поведенческая активация/);assert.match(mastery,/Эмоциональная регуляция/);});
