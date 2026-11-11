@@ -85,3 +85,13 @@ test('RAD public catalogue tracks closed materials without copying them',()=>{
  assert.ok(radLibrary.publicTopics.includes('MONEY MODE и личные финансы'));
  assert.ok(radLibrary.publicTopics.includes('Нейросети и AI-инструменты GOD MODE'));
 });
+
+
+test('RAD public resource catalogue renders source links and closed-material boundaries',()=>{
+ const page={innerHTML:''};context.window.document={getElementById(id){return id==='app'?page:null;}};
+ context.window.renderLIFEOSRADResources();
+ assert.match(page.innerHTML,/публичные материалы/);
+ assert.match(page.innerHTML,/radgilmanov\.ru/);
+ assert.match(page.innerHTML,/Закрытые материалы — не импортированы/);
+ assert.match(page.innerHTML,/140\+ обучающих гайдов/);
+});
