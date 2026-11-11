@@ -105,21 +105,39 @@ function allLessons(){
  courses.forEach(function(c){(c.modules||[]).forEach(function(m){(m.lessons||[]).forEach(function(l,i){out.push({course:c,module:m,lesson:l,index:i,key:c.id+'::'+m.id+'::'+i});});});});
  return out;
 }
+function dayKey(d){return d.toISOString().slice(0,10);}
+function addDays(d,n){var x=new Date(d.getTime());x.setDate(x.getDate()+n);return x;}
 function nextLesson(){
  var st=appState(),rows=allLessons();if(!rows.length)return null;
- rows=rows.filter(function(x){return !(st.progress[x.key]&&st.progress[x.key].completed);});
- if(!rows.length)return null;
- rows.sort(function(a,b){return (st.progress[a.key]&&st.progress[a.key].attempts||0)-(st.progress[b.key]&&st.progress[b.key].attempts||0);});
- return rows[0];
+ var today=dayKey(new Date());
+ var due=rows.filter(function(x){var p=st.progress[x.key];return p&&p.nextReviewAt&&p.nextReviewAt<=today;});
+ due.sort(function(a,b){var pa=st.progress[a.key],pb=st.progress[b.key];return String(pa.nextReviewAt).localeCompare(String(pb.nextReviewAt))||(Number(pb.attempts)||0)-(Number(pa.attempts)||0);});
+ if(due.length){due[0].mode='review';due[0].reason=st.progress[due[0].key].correct===false?'Вернись к теме после ошибки':'Пора повторить материал, чтобы закрепить его в памяти';return due[0];}
+ var fresh=rows.filter(function(x){var p=st.progress[x.key];return !p||!p.completed;});
+ if(!fresh.length)return null;
+ fresh.sort(function(a,b){var pa=st.progress[a.key]||{},pb=st.progress[b.key]||{};return (Number(pb.attempts)||0)-(Number(pa.attempts)||0)||a.index-b.index;});
+ fresh[0].mode='new';fresh[0].reason=(st.progress[fresh[0].key]&&st.progress[fresh[0].key].attempts)?'Ранее возникла ошибка — закрепим слабое место':'Следующая незавершённая тема учебного маршрута';return fresh[0];
 }
-function diagram(course){
- var label=course.id==='finance_mastery'?'ДОХОД → РАСХОД → РЕЗЕРВ':course.id==='psychology_mastery'?'СИТУАЦИЯ → МЫСЛЬ → ДЕЙСТВИЕ':course.id==='martial_arts_mastery'?'СТОЙКА → БАЛАНС → ДИСТАНЦИЯ':course.id==='communication_mastery'?'СЛУШАЙ → УТОЧНЯЙ → ОТВЕЧАЙ':'ПРОБЛЕМА → ЦЕННОСТЬ → РЕЗУЛЬТАТ';
- return '<div class="card" style="padding:12px"><div class="footnote">КАРТА ПРИНЦИПА</div><svg viewBox="0 0 320 74" role="img" aria-label="'+esc(label)+'" style="width:100%;height:auto"><defs><linearGradient id="lmGrad" x1="0" x2="1"><stop stop-color="var(--brand)"/><stop offset="1" stop-color="var(--brand-2)"/></linearGradient></defs><rect x="2" y="8" width="96" height="48" rx="12" fill="var(--glass-2)" stroke="var(--glass-border)"/><rect x="112" y="8" width="96" height="48" rx="12" fill="var(--glass-2)" stroke="var(--glass-border)"/><rect x="222" y="8" width="96" height="48" rx="12" fill="var(--glass-2)" stroke="var(--glass-border)"/><path d="M99 32h12m-4-4 4 4-4 4m98-4h12m-4-4 4 4-4 4" stroke="url(#lmGrad)" stroke-width="2" fill="none"/><text x="50" y="37" fill="var(--text)" font-size="9" text-anchor="middle">ШАГ 1</text><text x="160" y="37" fill="var(--text)" font-size="9" text-anchor="middle">ШАГ 2</text><text x="270" y="37" fill="var(--text)" font-size="9" text-anchor="middle">ШАГ 3</text></svg><div class="footnote" style="text-align:center">'+esc(label)+'</div></div>';
+function diagram(course,lesson){
+ var map={
+  finance_mastery:{labels:['ДАННЫЕ','СЦЕНАРИЙ','РЕШЕНИЕ'],notes:['Собери реальные доходы, расходы и обязательства.','Сравни варианты, сроки, комиссии и риски.','Выбери действие и проверь результат по цифрам.']},
+  psychology_mastery:{labels:['СИТУАЦИЯ','ОЦЕНКА','РЕАКЦИЯ'],notes:['Отдели событие от предположений о нём.','Проверь мысли, эмоции, потребности и контекст.','Выбери осознанное действие и оцени последствия.']},
+  martial_arts_mastery:{labels:['СТОЙКА','ДИСТАНЦИЯ','КОНТРОЛЬ'],notes:['Устойчивая позиция и безопасное положение тела.','Оцени дистанцию, пространство и направление движения.','Работай с техникой без контакта; спарринг — только с тренером.']},
+  communication_mastery:{labels:['СЛУШАЙ','УТОЧНЯЙ','ОТВЕЧАЙ'],notes:['Дай собеседнику закончить и улови основную мысль.','Задай точный вопрос и проверь, правильно ли понял.','Ответь ясно, уважительно и по существу.']},
+  business_growth:{labels:['КЛИЕНТ','ЦЕННОСТЬ','РЕЗУЛЬТАТ'],notes:['Определи конкретную аудиторию и её задачу.','Сформулируй проверяемую пользу и отличие.','Измерь конверсию, удержание и экономику решения.']},
+  critical_thinking:{labels:['ТЕЗИС','ДАННЫЕ','ВЫВОД'],notes:['Сформулируй утверждение так, чтобы его можно было проверить.','Найди первоисточник и оцени качество доказательств.','Сделай вывод с учётом неопределённости и альтернатив.']},
+  analytical_thinking:{labels:['РАЗЛОЖИ','ИЗМЕРЬ','ПРОВЕРЬ'],notes:['Разбей задачу на компоненты и найди узкое место.','Собери данные и выбери подходящую метрику.','Проверь гипотезу и сравни результат с альтернативами.']},
+  strategic_thinking:{labels:['ЦЕЛЬ','ВЫБОР','ИСПОЛНЕНИЕ'],notes:['Определи долгосрочный результат и ограничения.','Сравни сценарии, цену отказа и риски.','Назначь владельца, срок, метрику и точку пересмотра.']},
+  evidence_biohacking:{labels:['БАЗА','ИЗМЕРЕНИЕ','КОРРЕКЦИЯ'],notes:['Начни с сна, движения, питания и восстановления.','Измеряй сопоставимые показатели и их ограничения.','Меняй по одному фактору и прекращай небезопасные практики.']}
+ };
+ var v=map[course.id]||{labels:['ПОНЯТЬ','ПРОВЕРИТЬ','ПРИМЕНИТЬ'],notes:['Разберись в принципе.','Проверь понимание на примере.','Примени и оцени результат.']};
+ var nodes=v.labels.map(function(x,i){var x0=2+i*110;return '<g><rect x="'+x0+'" y="8" width="96" height="48" rx="12" fill="var(--glass-2)" stroke="var(--glass-border)"/><text x="'+(x0+48)+'" y="37" fill="var(--text)" font-size="9" text-anchor="middle">'+esc(x)+'</text></g>';}).join('');
+ return '<style>@keyframes lmFlow{from{stroke-dashoffset:18}to{stroke-dashoffset:0}}.lm-flow{stroke-dasharray:4 4;animation:lmFlow 1.5s linear infinite}@media(prefers-reduced-motion:reduce){.lm-flow{animation:none}}</style><div class="card lm-visual" style="padding:12px"><div class="footnote">ИНТЕРАКТИВНАЯ КАРТА ПРИНЦИПА</div><svg viewBox="0 0 320 74" role="img" aria-label="'+esc(v.labels.join(' → '))+'" style="width:100%;height:auto">'+nodes+'<path class="lm-flow" d="M98 32h14m-4-4 4 4-4 4m94-4h14m-4-4 4 4-4 4" stroke="var(--brand)" stroke-width="2" fill="none"/></svg><div class="grid-2 mt-2">'+v.notes.map(function(note,i){return '<details class="lm-visual-step"><summary>'+esc(v.labels[i])+'</summary><p class="footnote">'+esc(note)+'</p></details>';}).join('')+'</div></div>';
 }
 function openLesson(row){
  var st=appState();if(!st||!row)return;
  var key=row.key,old=st.progress[key]||{},l=row.lesson,c=row.course;
- var html='<div class="title-xl">'+esc(c.emoji+' '+l.title)+'</div><div class="footnote">5-минутный урок · '+esc(c.title)+'</div>'+diagram(c);
+ var html='<div class="title-xl">'+esc(c.emoji+' '+l.title)+'</div><div class="footnote">5-минутный урок · '+esc(c.title)+'</div>'+diagram(c,l);
  html+='<div class="card"><b>🎯 Результат</b><p>'+esc(l.objective)+'</p></div>';
  html+='<div class="card"><b>📖 Разбор</b><p>'+esc(l.theory)+'</p></div>';
  html+='<div class="card"><b>⚡ Применение за 1 минуту</b><p>'+esc(l.practice)+'</p></div>';
@@ -135,13 +153,15 @@ function complete(key){
  if(!selected)return root.toast('Ответь на проверочный вопрос','warning');
  if(recall.trim().length<15)return root.toast('Объясни идею своими словами (минимум 15 символов)','warning');
  if(application.trim().length<10)return root.toast('Запиши конкретное применение (минимум 10 символов)','warning');
- var correct=Number(selected.value)===row.lesson.quiz.correctIndex,old=st.progress[key]||{};
- st.progress[key]={completed:correct,answer:Number(selected.value),correct:correct,recall:recall.trim(),application:application.trim(),attempts:(old.attempts||0)+1,updatedAt:new Date().toISOString(),completedAt:correct?new Date().toISOString():old.completedAt||null};
- st.sessions.unshift({key:key,at:new Date().toISOString(),correct:correct});st.sessions=st.sessions.slice(0,500);
- if(correct&& !old.completed&&root.addXP)root.addXP(10,'lesson');
+ var correct=Number(selected.value)===row.lesson.quiz.correctIndex,old=st.progress[key]||{},now=new Date(),reviewCount=Number(old.reviewCount)||0;
+ var interval=correct?[1,3,7,14,30,60][Math.min(reviewCount,5)]:1;
+ var next=addDays(now,interval);
+ st.progress[key]={completed:correct||!!old.completed,needsReview:!correct,answer:Number(selected.value),correct:correct,recall:recall.trim(),application:application.trim(),attempts:(old.attempts||0)+1,reviewCount:correct?reviewCount+1:reviewCount,updatedAt:now.toISOString(),completedAt:correct?(old.completedAt||now.toISOString()):old.completedAt||null,lastReviewedAt:now.toISOString(),nextReviewAt:dayKey(next)};
+ st.sessions.unshift({key:key,at:now.toISOString(),correct:correct,mode:row.mode||'new',reviewCount:reviewCount});st.sessions=st.sessions.slice(0,500);
+ if(correct&&!old.completed&&root.addXP)root.addXP(10,'lesson');
  if(root.save)root.save();
- if(correct){root.toast('Усвоено: '+row.lesson.title+' · +10 XP','success');root.closeSheet();var panel=root.document.getElementById('lifeosFiveMinute');if(panel)panel.outerHTML=renderPanel();}
- else root.toast('Ответ пока неверный. Перечитай объяснение и попробуй ещё раз.','warning');
+ if(correct){root.toast('Усвоено: '+row.lesson.title+' · повтор через '+interval+' дн.','success');root.closeSheet();var panel=root.document.getElementById('lifeosFiveMinute');if(panel)panel.outerHTML=renderPanel();}
+ else root.toast('Ответ неверный. Тема вернётся в рекомендации завтра.','warning');
 }
 function stats(){
  var st=appState(),rows=allLessons(),done=rows.filter(function(x){return st.progress[x.key]&&st.progress[x.key].completed;}).length;
@@ -157,9 +177,26 @@ function renderPanel(){
 }
 function renderCourses(){
  var s=stats(),html='<section class="card mt-3"><div class="card-title">📚 Новые практические академии</div>';
- definitions.forEach(function(c){var count=c.modules.reduce(function(n,m){return n+m.lessons.length;},0);html+='<div class="list-row"><span style="font-size:23px">'+c.emoji+'</span><div style="flex:1"><b>'+esc(c.title)+'</b><div class="footnote">'+count+' уроков · '+esc(c.subtitle)+'</div></div></div>';});
+ definitions.forEach(function(c){var count=c.modules.reduce(function(n,m){return n+m.lessons.length;},0);html+='<div class="list-row"><span style="font-size:23px">'+c.emoji+'</span><div style="flex:1"><b>'+esc(c.title)+'</b><div class="footnote">'+count+' уроков · '+esc(c.subtitle)+'</div></div><button class="btn btn-ghost btn-sm" data-course="'+esc(c.id)+'" onclick="openLIFEOSAcademy(this.dataset.course)">Открыть</button></div>';});
  html+='<div class="footnote">Всего '+allLessons().length+' уроков в этой библиотеке. Прогресс сохраняется на устройстве.</div></section>';return html;
 }
+function renderAcademyPage(title,ids){
+ var rows=allLessons().filter(function(x){return ids.indexOf(x.course.id)>=0;}),html='<div class="page"><div class="title-xl">📚 '+esc(title)+'</div><div class="subtitle">Полные уроки, практика, проверка знаний и повторение. Прогресс сохраняется локально.</div>';
+ if(!rows.length)html+='<div class="card">Материалы этого направления пока не подключены.</div>';
+ var grouped={};rows.forEach(function(x){var key=x.course.id+'::'+x.module.id;if(!grouped[key])grouped[key]={course:x.course,module:x.module,rows:[]};grouped[key].rows.push(x);});
+ Object.keys(grouped).forEach(function(key){var g=grouped[key],done=g.rows.filter(function(x){return appState().progress[x.key]&&appState().progress[x.key].completed;}).length;
+ html+='<section class="card"><div class="row-between"><div><h2>'+esc(g.course.emoji+' '+g.course.title)+'</h2><div class="footnote">'+esc(g.module.title)+'</div></div><b>'+done+'/'+g.rows.length+'</b></div><div class="progress mt-2"><div class="progress-fill" style="width:'+Math.round(done/Math.max(1,g.rows.length)*100)+'%"></div></div>';
+ g.rows.forEach(function(x){var p=appState().progress[x.key]||{};html+='<button type="button" class="list-row" style="width:100%;text-align:left;background:transparent;color:var(--text);border:0" data-key="'+esc(x.key)+'" onclick="openLIFEOSMicroLesson(this.dataset.key)"><span>'+(p.completed?'✓':p.attempts?'↻':'○')+'</span><span style="flex:1"><b>'+esc(x.lesson.title)+'</b><span class="footnote" style="display:block">'+esc(x.lesson.objective)+'</span></span><span>›</span></button>';});
+ html+='</section>';});
+ html+='<button class="btn btn-ghost btn-block" onclick="navigate(\'learning\')">← Ко всему обучению</button></div>';
+ var app=root.document.getElementById('app');if(app)app.innerHTML=html;
+}
+function openAcademy(id){var c=courses.find(function(x){return x.id===id;});if(c)renderAcademyPage(c.title,[id]);}
+function openByKey(key){var row=allLessons().find(function(x){return x.key===key;});if(row)openLesson(row);}
+function renderFinance(){renderAcademyPage('Финансовая грамотность',['finance_mastery']);}
+function renderPsychology(){renderAcademyPage('Психология',['psychology_mastery']);}
+function renderThinking(){renderAcademyPage('Мышление',['critical_thinking','analytical_thinking','strategic_thinking']);}
+function renderNeuro(){renderAcademyPage('Биохакинг и нейронаука',['evidence_biohacking','rad_god_mode']);}
 function attach(){
  if(typeof root.renderLearning==='function'&&!root.renderLearning.__microWrapped){
   var base=root.renderLearning;
@@ -167,6 +204,12 @@ function attach(){
   wrapped.__microWrapped=true;root.renderLearning=wrapped;
  }
 }
+root.openLIFEOSAcademy=openAcademy;
+root.openLIFEOSMicroLesson=openByKey;
+root.renderFinance=renderFinance;
+root.renderPsychology=renderPsychology;
+root.renderThinking=renderThinking;
+root.renderNeuro=renderNeuro;
 root.startLIFEOSFiveMinute=function(){var n=nextLesson();if(n)openLesson(n);else root.toast('Все уроки пройдены — повтори сложные темы.','success');};
 root.completeLIFEOSMicroLesson=complete;
 root.LIFEOS_APPLIED_MASTERY={courses:definitions,allLessons:allLessons,stats:stats,renderPanel:renderPanel,version:1};
