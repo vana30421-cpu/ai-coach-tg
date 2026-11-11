@@ -96,3 +96,10 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Reordered deferred scripts so the full notification module loads after the legacy systems module and owns the final `renderNotifications` route.
 - Existing calendar reminder integration remains available because the notification module still loads before the calendar-v2 module.
 - Offline cache namespace advanced to life-os-v178. CI and device verification pending.
+
+
+## 2026-11-11 — Notification renderer fix verification
+- PR #44 merged to `main`: `17abcdd80857d121ab19f44ba6ced8f41620dc56`.
+- Fixed deferred-script precedence so the full reminder center is not overwritten by the legacy notification preferences renderer.
+- GitHub Actions LIFEOS checks passed: 241 tests passed, 0 failed. Jarvis tests also passed.
+- Local scheduled reminders still depend on the app being active or resumed; guaranteed background delivery remains unimplemented pending push infrastructure and device subscription.
