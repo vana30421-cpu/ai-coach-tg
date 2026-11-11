@@ -7,6 +7,7 @@ const index=fs.readFileSync('index.html','utf8');
 const sw=fs.readFileSync('sw.js','utf8');
 const notifications=fs.readFileSync('lifeos-notifications.js','utf8');
 const calendar=fs.readFileSync('lifeos-calendar-v2.js','utf8');
+const routines=fs.readFileSync('lifeos-routines.js','utf8');
 
 test('notification center is loaded and cached for offline use',()=>{
  assert.match(index,/lifeos-notifications\.js\?v=/);
@@ -34,4 +35,4 @@ test('calendar stores end time and warns about overlapping events',()=>{
 });
 
 test('sleep save validates and persists before reward',()=>{const app=fs.readFileSync('app.js','utf8');const fn=app.slice(app.indexOf('function saveSleepEntry(){'),app.indexOf('function deleteSleepEntry('));assert.match(fn,/if\(!save\(\)\)/);assert.match(fn,/if\(!previous\)addXP/);assert.match(fn,/hours>24/);});
-test('check-in routines enforce once-per-period persistence',()=>{const routines=fs.readFileSync('lifeos-routines.js','utf8');for(const k of ['morningStart','eveningStart','weeklyEnabled','monthlyEnabled','checkinShown','dailyReviews','tomorrowPlans','weeklyReview','monthlyReviews'])assert.ok(routines.includes(k),k);assert.match(routines,/lifeOSCheckinOnOpen/);});
+test('check-in routines enforce once-per-period persistence and parse',()=>{for(const k of ['morningStart','eveningStart','weeklyEnabled','monthlyEnabled','checkinShown','dailyReviews','tomorrowPlans','weeklyReview','monthlyReviews'])assert.ok(routines.includes(k),k);assert.match(routines,/lifeOSCheckinOnOpen/);assert.doesNotThrow(()=>new vm.Script(routines,{filename:'lifeos-routines.js'}));assert.match(index,/lifeos-routines\\.js\\?v=/);assert.match(sw,/lifeos-routines\\.js/);});
