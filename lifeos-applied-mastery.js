@@ -107,7 +107,9 @@ function allLessons(){
 }
 function nextLesson(){
  var st=appState(),rows=allLessons();if(!rows.length)return null;
- rows.sort(function(a,b){var pa=st.progress[a.key],pb=st.progress[b.key];return (pa&&pa.completed?1:0)-(pb&&pb.completed?1:0);});
+ rows=rows.filter(function(x){return !(st.progress[x.key]&&st.progress[x.key].completed);});
+ if(!rows.length)return null;
+ rows.sort(function(a,b){return (st.progress[a.key]&&st.progress[a.key].attempts||0)-(st.progress[b.key]&&st.progress[b.key].attempts||0);});
  return rows[0];
 }
 function diagram(course){
