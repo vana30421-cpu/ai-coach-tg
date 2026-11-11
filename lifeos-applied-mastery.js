@@ -101,8 +101,8 @@ function appState(){
  return root.state.microLearning;
 }
 function allLessons(){
- var out=[];
- courses.forEach(function(c){(c.modules||[]).forEach(function(m){(m.lessons||[]).forEach(function(l,i){out.push({course:c,module:m,lesson:l,index:i,key:c.id+'::'+m.id+'::'+i});});});});
+ var out=[],catalog=Array.isArray(root.ALL_NEW_COURSES)?root.ALL_NEW_COURSES:courses;
+ catalog.forEach(function(c){(c.modules||[]).forEach(function(m){(m.lessons||[]).forEach(function(l,i){out.push({course:c,module:m,lesson:l,index:i,key:c.id+'::'+m.id+'::'+i});});});});
  return out;
 }
 function dayKey(d){return d.toISOString().slice(0,10);}
@@ -191,7 +191,7 @@ function renderAcademyPage(title,ids){
  html+='<button class="btn btn-ghost btn-block" onclick="navigate(\'learning\')">← Ко всему обучению</button></div>';
  var app=root.document.getElementById('app');if(app)app.innerHTML=html;
 }
-function openAcademy(id){var c=courses.find(function(x){return x.id===id;});if(c)renderAcademyPage(c.title,[id]);}
+function openAcademy(id){var catalog=Array.isArray(root.ALL_NEW_COURSES)?root.ALL_NEW_COURSES:courses,c=catalog.find(function(x){return x.id===id;});if(c)renderAcademyPage(c.title,[id]);}
 function openByKey(key){var row=allLessons().find(function(x){return x.key===key;});if(row)openLesson(row);}
 function renderFinance(){renderAcademyPage('Финансовая грамотность',['finance_mastery']);}
 function renderPsychology(){renderAcademyPage('Психология',['psychology_mastery']);}
