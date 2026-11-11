@@ -5039,10 +5039,10 @@ function collectLifeOSDiagnostics(){
   var rows=[],runtime=Array.isArray(window.__LIFEOS_RUNTIME_ERRORS)?window.__LIFEOS_RUNTIME_ERRORS:[];
   function add(group,name,status,detail){rows.push({group:group,name:name,status:status,detail:detail||''});}
   var storageOk=false;
-  try{var key='lifeos-diagnostic-probe';localStorage.setItem(key,'ok');storageOk=localStorage.getItem(key)==='ok';localStorage.removeItem(key);}catch(storageError){storageOk=false;}
+  var probeKey='lifeos-diagnostic-probe';\n  try{localStorage.setItem(probeKey,'ok');storageOk=localStorage.getItem(probeKey)==='ok';}catch(storageError){storageOk=false;}finally{try{localStorage.removeItem(probeKey);}catch(cleanupError){}}
   add('Система','Локальное хранилище',storageOk?'ok':'error',storageOk?'Тестовая запись создана и удалена без изменения пользовательских данных.':'Браузер запретил тестовую запись.');
   add('Система','Состояние LIFEOS',state&&typeof state==='object'?'ok':'error',state&&typeof state==='object'?'Основной объект состояния доступен.':'Основное состояние не загружено.');
-  var hasBackup=!!localStorage.getItem(STORAGE_BACKUP);
+  var hasBackup=false;try{hasBackup=!!localStorage.getItem(STORAGE_BACKUP);}catch(backupError){hasBackup=false;}
   add('Система','Резервная копия',hasBackup?'ok':'warning',hasBackup?'Локальная резервная копия найдена.':'Резервная копия пока не обнаружена.');
   add('Система','Экспорт данных',typeof exportDB==='function'?'ok':'error',typeof exportDB==='function'?'Экспорт JSON доступен.':'Функция экспорта не подключена.');
   var swSupported='serviceWorker'in navigator;
