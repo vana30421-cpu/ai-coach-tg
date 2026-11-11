@@ -80,3 +80,12 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Shows browser notification permission separately from background push capability; it does not claim guaranteed delivery without a confirmed push subscription and server.
 - Shows counts of actual local tasks, sleep, mood and calendar records; empty data is not interpreted as a zero health score.
 - Updated app asset version and offline cache namespace. CI regression and device verification pending.
+
+
+## 2026-11-11 — Verification after PR #42 and PR #43
+- PR #42 (Intelligence Core) merged to `main`: `780069d9aaf6ae9faebaa168067cb0aec4ecf21f`.
+- PR #42 GitHub Actions: LIFEOS checks passed; 237 tests passed, 0 failed. Jarvis tests and Detox verification also passed.
+- PR #43 (expanded diagnostics) merged to `main`: `50eee766a3b3609b7c71f4cdbb07a74792e7c26d`.
+- PR #43 GitHub Actions: LIFEOS checks passed; 239 tests passed, 0 failed. Jarvis tests and Detox verification also passed.
+- Android Chrome / Telegram WebView physical-device verification remains outstanding. Do not claim that real push delivery or device invocation is verified.
+- Production Pages deployment status after these merges has not been independently confirmed.
