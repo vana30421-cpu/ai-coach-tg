@@ -38,12 +38,25 @@ function render(){
 function run(id){
  var skill=skills.find(function(s){return s.id===id;});if(!skill)return;
  try{
-  var st=root.state;if(st){if(!st.miraSkills||typeof st.miraSkills!=='object')st.miraSkills={};if(!st.miraSkills.usage)st.miraSkills.usage={};var row=st.miraSkills.usage[id]||{count:0};row.count=(Number(row.count)||0)+1;row.lastUsedAt=root.nowISO?root.nowISO():new Date().toISOString();st.miraSkills.usage[id]=row;if(root.save)root.save();}
+  var st=root.state;
+  if(st){
+   if(!st.miraSkills||typeof st.miraSkills!=='object')st.miraSkills={};
+   if(!st.miraSkills.usage)st.miraSkills.usage={};
+   var row=st.miraSkills.usage[id]||{count:0};
+   row.count=(Number(row.count)||0)+1;
+   row.lastUsedAt=root.nowISO?root.nowISO():new Date().toISOString();
+   st.miraSkills.usage[id]=row;
+   if(root.save)root.save();
+  }
  }catch(e){}
- var enabled=!!(root.state&&root.state.jarvis&&root.state.jarvis.cloudAIEnabled);
+ if(skill.page&&skill.page!=='jarvis'){
+  if(root.navigate)root.navigate(skill.page);
+  if(root.toast)root.toast('Открыт раздел «'+skill.name+'»','success');
+  return;
+ }
  if(root.navigate)root.navigate('ai');
- if(!enabled){if(root.toast)root.toast('Для генеративного навыка включи облачный ИИ в настройках Джарвиса','warning');return;}
- if(root.jarvisQuick)root.jarvisQuick(skill.prompt);
+ if(root.jarvisQuick){root.jarvisQuick(skill.prompt);return;}
+ if(root.toast)root.toast('Локальный помощник пока не готов. Проверь загрузку Джарвиса.','warning');
 }
 root.LIFEOS_MIRA_SKILLS=skills;
 root.renderMiraSkillsPanel=render;
