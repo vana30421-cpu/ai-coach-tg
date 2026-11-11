@@ -7,6 +7,20 @@
    ============================================================ */
 (function(){
 
+/* ============ RUNTIME ERROR TELEMETRY ============ */
+if(!window.__LIFEOS_RUNTIME_CAPTURED){
+  window.__LIFEOS_RUNTIME_CAPTURED=true;
+  window.__LIFEOS_RUNTIME_ERRORS=[];
+  function recordRuntimeError(entry){
+    var list=window.__LIFEOS_RUNTIME_ERRORS;
+    if(!Array.isArray(list))list=window.__LIFEOS_RUNTIME_ERRORS=[];
+    list.push({at:new Date().toISOString(),message:String(entry.message||'Unknown error').slice(0,240),source:String(entry.source||'').slice(0,180),line:Number(entry.line)||0});
+    if(list.length>30)list.splice(0,list.length-30);
+  }
+  window.addEventListener('error',function(event){recordRuntimeError({message:event.message||'Resource or script error',source:event.filename,line:event.lineno});},true);
+  window.addEventListener('unhandledrejection',function(event){var reason=event.reason;recordRuntimeError({message:reason&&reason.message?reason.message:String(reason||'Unhandled promise rejection')});});
+}
+
 /* ============ КОНСТАНТЫ ============ */
 var STORAGE_KEY = 'life_os_v45';
 var STORAGE_BACKUP = 'life_os_backup_v45';
@@ -5021,13 +5035,45 @@ function restoreStorageBackup(){
   try{var raw=localStorage.getItem(STORAGE_BACKUP);if(!raw)throw new Error('backup missing');var parsed=JSON.parse(raw);if(!parsed||typeof parsed!=='object')throw new Error('invalid backup');localStorage.setItem(STORAGE_KEY,raw);toast('Копия восстановлена. Перезапускаю…','success');setTimeout(function(){location.reload();},700);}catch(e){toast('Резервная копия не найдена или повреждена','error');}
 }
 /* Экранный трекер реализован в блоке личных трекеров выше. */
+function collectLifeOSDiagnostics(){
+  var rows=[],runtime=Array.isArray(window.__LIFEOS_RUNTIME_ERRORS)?window.__LIFEOS_RUNTIME_ERRORS:[];
+  function add(group,name,status,detail){rows.push({group:group,name:name,status:status,detail:detail||''});}
+  var storageOk=false;
+  try{var key='lifeos-diagnostic-probe';localStorage.setItem(key,'ok');storageOk=localStorage.getItem(key)==='ok';localStorage.removeItem(key);}catch(storageError){storageOk=false;}
+  add('Система','Локальное хранилище',storageOk?'ok':'error',storageOk?'Тестовая запись создана и удалена без изменения пользовательских данных.':'Браузер запретил тестовую запись.');
+  add('Система','Состояние LIFEOS',state&&typeof state==='object'?'ok':'error',state&&typeof state==='object'?'Основной объект состояния доступен.':'Основное состояние не загружено.');
+  var hasBackup=!!localStorage.getItem(STORAGE_BACKUP);
+  add('Система','Резервная копия',hasBackup?'ok':'warning',hasBackup?'Локальная резервная копия найдена.':'Резервная копия пока не обнаружена.');
+  add('Система','Экспорт данных',typeof exportDB==='function'?'ok':'error',typeof exportDB==='function'?'Экспорт JSON доступен.':'Функция экспорта не подключена.');
+  var swSupported='serviceWorker'in navigator;
+  add('Система','Service Worker',swSupported?'ok':'warning',swSupported?(navigator.serviceWorker.controller?'Активный Service Worker управляет страницей.':'Поддерживается, но ещё не управляет текущей страницей.'):'Браузер не поддерживает Service Worker.');
+  var cacheSupported='caches'in window;
+  add('Система','Офлайн-кеш',cacheSupported?'ok':'warning',cacheSupported?'Cache Storage доступен.':'Cache Storage недоступен.');
+  add('Система','Отслеживание ошибок',runtime.length?'warning':'ok',runtime.length?'Зафиксировано ошибок в этой сессии: '+runtime.length+'. Последняя: '+runtime[runtime.length-1].message:'Ошибок JavaScript в текущей сессии пока не зафиксировано.');
+  var modules=[['Календарь','renderCalendar'],['Сон','renderSleep'],['Настроение','renderMood'],['Задачи','renderTasks'],['Jarvis','renderJarvis'],['Статистика','renderStats'],['Второй мозг','renderSecondBrain'],['Питомец','renderPet'],['Уведомления','renderNotifications']];
+  modules.forEach(function(m){var ok=typeof window[m[1]]==='function';add('Модули',m[0],ok?'ok':'error',ok?'Экранный обработчик подключён.':'Экранный обработчик не найден: '+m[1]);});
+  var coreOk=!!(window.LIFEOS_INTELLIGENCE_CORE&&typeof window.LIFEOS_INTELLIGENCE_CORE.analyze==='function');
+  add('Модули','Intelligence Core',coreOk?'ok':'error',coreOk?'Локальный движок анализа подключён.':'Модуль анализа не загружен.');
+  var jarvisOk=!!window.LifeOSJarvisCore;
+  add('Модули','Jarvis Core',jarvisOk?'ok':'warning',jarvisOk?'Локальные команды Jarvis доступны.':'Расширенное ядро Jarvis не обнаружено; базовые функции могут оставаться доступными.');
+  var notificationSupported=typeof Notification!=='undefined';
+  add('Устройство','Разрешение уведомлений',notificationSupported?(Notification.permission==='granted'?'ok':'warning'):'warning',notificationSupported?'Разрешение браузера: '+Notification.permission+'.':'API уведомлений браузера недоступен.');
+  var pushSupported='PushManager'in window&&swSupported;
+  add('Устройство','Фоновые push-уведомления','warning',pushSupported?'Поддержка API есть; наличие подписки и серверной доставки отдельно не подтверждено.':'Фоновая push-доставка этим браузером не поддерживается.');
+  var counts={tasks:Array.isArray(state.tasks)?state.tasks.length:0,sleep:Array.isArray(state.sleepEntries)?state.sleepEntries.length:0,mood:Array.isArray(state.customMood)?state.customMood.length:0,calendar:Array.isArray(state.calendarEvents)?state.calendarEvents.length:0};
+  add('Данные','Сохранённые записи','ok','Задачи: '+counts.tasks+' · сон: '+counts.sleep+' · настроение: '+counts.mood+' · события: '+counts.calendar+'. Отсутствующие записи не считаются нулевым результатом.');
+  return {rows:rows,summary:{ok:rows.filter(function(x){return x.status==='ok';}).length,warning:rows.filter(function(x){return x.status==='warning';}).length,error:rows.filter(function(x){return x.status==='error';}).length},runtimeErrors:runtime.slice(-10),dataCounts:counts};
+}
 function renderDiagnostic(){
-  var checks=[['Состояние данных',!!state&&typeof state==='object'],['Локальное хранилище',!!window.localStorage],['Service Worker','serviceWorker'in navigator],['Поддержка офлайн-кеша','caches'in window],['Экспорт данных',typeof exportDB==='function'],['Резервная копия',!!localStorage.getItem(STORAGE_BACKUP)]];
-  var html='<div class="page"><div class="title-xl">🔍 Диагностика</div><div class="subtitle">Проверка возможностей устройства и сохранности данных</div><div class="card">';
-  checks.forEach(function(c){html+='<div class="list-row"><div class="list-body"><div class="list-title">'+esc(c[0])+'</div></div><div class="list-value">'+(c[1]?'✓':'—')+'</div></div>';});
-  html+='<button class="btn btn-primary btn-block mt-3" onclick="navigate(\'storage\')">Открыть хранилище</button></div></div>';
+  var report=collectLifeOSDiagnostics(),html='<div class="page"><div class="row-between"><div><div class="title-xl">🔍 Диагностика LIFEOS</div><div class="subtitle">Состояние приложения, сохранения, модулей и возможностей устройства</div></div><button class="btn btn-ghost btn-sm" onclick="renderDiagnostic()">↻</button></div>';
+  html+='<div class="grid-3 mb-3"><div class="card"><div class="stat-value">'+report.summary.ok+'</div><div class="stat-label">В норме</div></div><div class="card"><div class="stat-value">'+report.summary.warning+'</div><div class="stat-label">Ограничения</div></div><div class="card"><div class="stat-value">'+report.summary.error+'</div><div class="stat-label">Ошибки</div></div></div>';
+  ['Система','Модули','Устройство','Данные'].forEach(function(group){var items=report.rows.filter(function(x){return x.group===group;});html+='<div class="card mb-3"><div class="card-title">'+esc(group)+'</div>';items.forEach(function(item){var icon=item.status==='ok'?'✓':item.status==='error'?'✕':'!';var color=item.status==='ok'?'#35b77b':item.status==='error'?'#e06a62':'#d6a64b';html+='<div class="list-row" style="align-items:flex-start"><div style="width:22px;color:'+color+';font-weight:900">'+icon+'</div><div class="list-body"><div class="list-title">'+esc(item.name)+'</div><div class="footnote">'+esc(item.detail)+'</div></div></div>';});html+='</div>';});
+  if(report.runtimeErrors.length){html+='<div class="card mb-3"><div class="card-title">Последние ошибки сессии</div>';report.runtimeErrors.slice().reverse().forEach(function(e){html+='<div class="footnote mb-2">'+esc(e.at)+' · '+esc(e.message)+(e.source?' · '+esc(e.source):'')+'</div>';});html+='</div>';}
+  html+='<div class="card"><div class="footnote">Диагностика проверяет доступность интерфейсов и локальные данные. Она не подтверждает доставку push-уведомлений, работу на физическом Android-устройстве или подключение внешних сервисов.</div><button class="btn btn-primary btn-block mt-3" onclick="navigate(\\'storage\\')">Открыть хранилище</button></div></div>';
   document.getElementById('app').innerHTML=html;
 }
+window.collectLifeOSDiagnostics=collectLifeOSDiagnostics;
+
 function renderOnboarding(){ renderStub('👋 Добро пожаловать'); }
 
 /* ============ XP-СИСТЕМА ============ */
