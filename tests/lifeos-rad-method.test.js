@@ -7,6 +7,9 @@ const source=fs.readFileSync('lifeos-rad-method.js','utf8');
 const index=fs.readFileSync('index.html','utf8');
 const sw=fs.readFileSync('sw.js','utf8');
 const renderer=fs.readFileSync('lifeos-learning-experience.js','utf8');
+const app=fs.readFileSync('app.js','utf8');
+const content=fs.readFileSync('content.js','utf8');
+const mira=fs.readFileSync('lifeos-mira-skills.js','utf8');
 const context={window:{ALL_NEW_COURSES:[]}};
 vm.runInNewContext(source,context,{timeout:1000});
 const courses=context.window.ALL_NEW_COURSES;
@@ -17,7 +20,7 @@ test('RAD track registers 16 modules and 48 original lessons',()=>{
  assert.equal(course.modules.length,16);
  assert.equal(course.modules.reduce((n,m)=>n+m.lessons.length,0),48);
  const ids=course.modules.map(m=>m.id);
- assert.equal(new Set(ids).size,8);
+ assert.equal(new Set(ids).size,16);
  for(const m of course.modules){
   assert.ok(m.title&&m.desc);
   for(const l of m.lessons){
@@ -42,9 +45,32 @@ test('RAD track has safety boundaries and no income guarantees',()=>{
  assert.match(all,/не являются гарантией заработка|не должны вытеснять здоровье/i);
 });
 test('RAD course is loaded before renderer and cached for offline use',()=>{
- assert.ok(index.indexOf('lifeos-rad-method.js?v=1')<index.indexOf('lifeos-learning-experience.js'));
+ assert.ok(index.indexOf('lifeos-rad-method.js?v=2')<index.indexOf('lifeos-learning-experience.js'));
  assert.ok(sw.includes("'./lifeos-rad-method.js'"));
  assert.match(sw,/life-os-v169/);
  assert.match(renderer,/Цель урока/);
  assert.match(renderer,/Критерий усвоения/);
+});
+
+test('vision catalog has 200 unique detailed routines',()=>{
+ const ctx={window:{},console:{log(){},warn(){},error(){}}};
+ vm.runInNewContext(content,ctx,{timeout:3000});
+ const list=ctx.window.VISION_EXERCISES;
+ assert.equal(list.length,200);
+ assert.equal(new Set(list.map(x=>x.id)).size,200);
+ for(const item of list) assert.ok(item.id&&item.title&&item.desc&&item.how&&item.seconds>0&&item.level);
+});
+test('vision catalog exposes category and duration filters plus start action',()=>{
+ assert.match(app,/setVisionExerciseCategory/);
+ assert.match(app,/setVisionExerciseDuration/);
+ assert.match(app,/startEyeExercise/);
+});
+test('Mira skills work without cloud AI',()=>{
+ assert.match(mira,/root.navigate\(skill.page\)/);
+ assert.match(mira,/root.jarvisQuick\(skill.prompt\)/);
+ assert.doesNotMatch(mira,/if\(!enabled\)/);
+});
+test('course lesson rows open enhanced full lesson view',()=>{
+ assert.match(app,/window.openCourseLesson\|\|openCourseLesson/);
+ assert.match(renderer,/richFormatLesson/);
 });
