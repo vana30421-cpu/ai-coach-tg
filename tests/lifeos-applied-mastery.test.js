@@ -4,6 +4,8 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const vm=require('node:vm');
 const source=fs.readFileSync('lifeos-applied-mastery.js','utf8');
+const advancedSource=fs.readFileSync('lifeos-advanced-academy.js','utf8');
+const radSource=fs.readFileSync('lifeos-rad-method.js','utf8');
 const index=fs.readFileSync('index.html','utf8');
 const sw=fs.readFileSync('sw.js','utf8');
 const appSource=fs.readFileSync('app.js','utf8');
@@ -16,7 +18,7 @@ function fixture(){
   ALL_NEW_COURSES:[],setTimeout,clearTimeout,setInterval,clearInterval
  };
  sandbox.window=sandbox;sandbox.document.querySelector=()=>({value:'1'});
- vm.createContext(sandbox);vm.runInContext(source,sandbox);
+ vm.createContext(sandbox);vm.runInContext(advancedSource,sandbox);vm.runInContext(radSource,sandbox);vm.runInContext(source,sandbox);
  return {sandbox,values,get xp(){return xp;},get saved(){return saved;},get sheet(){return sheet;}};
 }
 test('applied mastery module is syntactically valid and adds five substantive courses',()=>{
