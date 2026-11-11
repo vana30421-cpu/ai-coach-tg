@@ -62,7 +62,7 @@ test('new curriculum is loaded by index and precached for offline use',()=>{
 
 test('five-minute academy is connected to the real learning navigation renderer',()=>{
  assert.match(appSource,/window\.renderLearning\s*=\s*renderLearning/);
- assert.match(index,/app\.js\?v=20261111-2/);
+ assert.match(index,/app\.js\?v=20261111-3/);
  assert.match(index,/sw\.js\?v=20261111-170/);
 });
 
@@ -109,4 +109,13 @@ test('correct lessons schedule spaced reviews and failed lessons return tomorrow
  f2.sandbox.completeLIFEOSMicroLesson(row2.key);
  assert.equal(f2.sandbox.state.microLearning.progress[row2.key].completed,false);
  assert.ok(f2.sandbox.state.microLearning.progress[row2.key].nextReviewAt);
+});
+
+
+test('memory development tracks exact recall quality in addition to speed, accuracy, volume and retention',()=>{
+ assert.match(appSource,/exactRecall/);
+ assert.match(appSource,/Качество точного воспроизведения/);
+ assert.match(appSource,/workingSpeed/);
+ assert.match(appSource,/shortRetention/);
+ assert.match(appSource,/workingSpan/);
 });
