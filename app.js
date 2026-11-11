@@ -5039,7 +5039,8 @@ function collectLifeOSDiagnostics(){
   var rows=[],runtime=Array.isArray(window.__LIFEOS_RUNTIME_ERRORS)?window.__LIFEOS_RUNTIME_ERRORS:[];
   function add(group,name,status,detail){rows.push({group:group,name:name,status:status,detail:detail||''});}
   var storageOk=false;
-  var probeKey='lifeos-diagnostic-probe';\n  try{localStorage.setItem(probeKey,'ok');storageOk=localStorage.getItem(probeKey)==='ok';}catch(storageError){storageOk=false;}finally{try{localStorage.removeItem(probeKey);}catch(cleanupError){}}
+  var probeKey='lifeos-diagnostic-probe';
+  try{localStorage.setItem(probeKey,'ok');storageOk=localStorage.getItem(probeKey)==='ok';}catch(storageError){storageOk=false;}finally{try{localStorage.removeItem(probeKey);}catch(cleanupError){}}
   add('Система','Локальное хранилище',storageOk?'ok':'error',storageOk?'Тестовая запись создана и удалена без изменения пользовательских данных.':'Браузер запретил тестовую запись.');
   add('Система','Состояние LIFEOS',state&&typeof state==='object'?'ok':'error',state&&typeof state==='object'?'Основной объект состояния доступен.':'Основное состояние не загружено.');
   var hasBackup=false;try{hasBackup=!!localStorage.getItem(STORAGE_BACKUP);}catch(backupError){hasBackup=false;}
