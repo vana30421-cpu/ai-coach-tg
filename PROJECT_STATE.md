@@ -120,3 +120,13 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Incorrect quiz answers still do not advance the schedule; a lesson is only recorded after the existing practice, recall, example, and quiz gates pass.
 - Updated the learning renderer asset version and offline cache namespace to life-os-v180.
 - Added regression coverage for interval progression, cap behavior, and preservation of existing progress fields.
+
+
+## 2026-11-12 — Adaptive learning release verification
+- PR #48 merged to `main`: `ba0a814e154b185c74c5e6cef98ce8715e21a1ae`.
+- Adaptive spaced repetition now schedules successful retrieval at 1, 3, 7, 14, and 30 days (capped); progress writes are additive and preserve existing record fields.
+- LIFEOS checks: 246 passed, 0 failed on the release commit.
+- LIFE OS Jarvis tests: success.
+- GitHub Pages build and deployment: success; deployment environment URL reported as https://vana30421-cpu.github.io/ai-coach-tg/.
+- Live browser interaction and physical Android / Telegram WebView testing have not been independently completed in this run.
+- Remaining targets are unchanged: 5,000 unique psychology units, 5,000 communication units, exhaustive RAD lesson coverage, licensed/original media library, full 50-app feature implementation matrix, complete combat-sport curriculum, and physical-device QA.
