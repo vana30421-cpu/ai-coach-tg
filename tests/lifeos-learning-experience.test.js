@@ -38,7 +38,7 @@ test('navigation and offline cache load the academy',()=>{
 
 test('rich course quiz requires an explicit answer before completion',()=>{
  assert.match(academy,/<select id="richCourseQuiz" required><option value="" selected disabled>Выбери ответ/);
- assert.match(academy,/choice===Number\(l\.quiz\.correctIndex\)/);
+ assert.match(academy,/selected===''\?NaN:Number\(selected\)/);\n assert.match(academy,/choice===Number\(l\.quiz\.correctIndex\)/);
 });
 
 test('rich course completion uses adaptive review intervals and preserves old record fields',()=>{
