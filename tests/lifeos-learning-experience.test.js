@@ -36,7 +36,12 @@ test('navigation and offline cache load the academy',()=>{
  assert.ok(sw.includes('lifeos-learning-experience.js'));
 });
 
-test('rich course quiz requires an explicit answer before completion',()=>{\n assert.match(academy,/<select id="richCourseQuiz" required><option value="" selected disabled>Выбери ответ/);\n assert.match(academy,/choice===Number\\(l\\.quiz\\.correctIndex\\)/);\n});\n\ntest('rich course completion uses adaptive review intervals and preserves old record fields',()=>{
+test('rich course quiz requires an explicit answer before completion',()=>{
+ assert.match(academy,/<select id="richCourseQuiz" required><option value="" selected disabled>Выбери ответ/);
+ assert.match(academy,/choice===Number\(l\.quiz\.correctIndex\)/);
+});
+
+test('rich course completion uses adaptive review intervals and preserves old record fields',()=>{
  assert.match(academy,/lifeosCourseReviewIntervalDays\(nextReviewCount\)/);
  assert.match(academy,/reviewIntervalDays:intervalDays/);
  assert.match(academy,/reviewCount:nextReviewCount/);
