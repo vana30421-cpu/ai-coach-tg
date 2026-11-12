@@ -33,3 +33,10 @@ test('combat curriculum explicitly prevents unsupervised contact techniques',()=
  assert.match(text,/тренер|контакт|останов/i);
  assert.match(text,/не следует переносить спортивные навыки в уличные конфликты/i);
 });
+
+test('adaptive review schedule grows and caps without mutating existing progress',()=>{
+ const context={window:{ALL_NEW_COURSES:[]}};
+ vm.runInNewContext(source,context,{timeout:1000});
+ const schedule=context.window.lifeosCourseReviewIntervalDays;
+ assert.deepEqual([1,2,3,4,5,6].map(schedule),[1,3,7,14,30,30]);
+});

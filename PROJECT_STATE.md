@@ -112,3 +112,11 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Loaded the additive module before the learning renderer and included it in the offline core cache; cache namespace advanced to life-os-v179.
 - Added regression tests for unique lesson IDs/titles, schema completeness, quiz bounds, integration order, offline caching, and martial-arts safety.
 - This is a verified-scope expansion, not completion of the 5,000-unit targets, full media library, full benchmark, or physical-device QA.
+
+
+## 2026-11-12 — Adaptive spaced repetition
+- Replaced the fixed four-day review interval for rich academy lessons with successful-retrieval intervals of 1, 3, 7, 14, and 30 days (then capped at 30 days).
+- Review count and actual interval are stored additively in the existing per-course progress record; previous completion, recall, example, and checklist fields are preserved.
+- Incorrect quiz answers still do not advance the schedule; a lesson is only recorded after the existing practice, recall, example, and quiz gates pass.
+- Updated the learning renderer asset version and offline cache namespace to life-os-v180.
+- Added regression coverage for interval progression, cap behavior, and preservation of existing progress fields.

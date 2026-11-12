@@ -35,3 +35,10 @@ test('navigation and offline cache load the academy',()=>{
  assert.ok(sw.includes('lifeos-advanced-academy.js'));
  assert.ok(sw.includes('lifeos-learning-experience.js'));
 });
+
+test('rich course completion uses adaptive review intervals and preserves old record fields',()=>{
+ assert.match(academy,/lifeosCourseReviewIntervalDays\(nextReviewCount\)/);
+ assert.match(academy,/reviewIntervalDays:intervalDays/);
+ assert.match(academy,/reviewCount:nextReviewCount/);
+ assert.match(academy,/nextReviewAt:d\.toISOString\(\)\.slice\(0,10\)/);
+});
