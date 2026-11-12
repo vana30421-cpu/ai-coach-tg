@@ -13,7 +13,7 @@ var LIFEOS_LEARNING_SCHEDULER=(function(){
   var prior=record.learningSchedule&&typeof record.learningSchedule==='object'?record.learningSchedule:{};
   var ease=Number(prior.easeFactor);
   if(!isFinite(ease)||ease<1.3||ease>3.5)ease=2.3;
-  var reps=Math.max(0,Math.floor(Number(prior.repetitions)||0));
+  var reps=Math.max(0,Math.floor(Number(prior.repetitions)||Number(record.reviewCount)||0));
   var interval=Math.max(0,Number(prior.intervalDays)||0);
   var lapses=Math.max(0,Math.floor(Number(prior.lapses)||0));
   if(!interval&&record.nextReviewAt){
