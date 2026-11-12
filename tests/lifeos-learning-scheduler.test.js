@@ -40,7 +40,8 @@ test('interval is bounded and grade is clamped',()=>{
 });
 test('legacy nextReviewAt is used as a backwards-compatible interval hint',()=>{
  const result=scheduler.schedule({reviewCount:4,nextReviewAt:'2026-11-19'},4,new Date('2026-11-12T12:00:00Z'));
- assert.equal(result.learningSchedule.intervalDays,3);
+ assert.equal(result.learningSchedule.repetitions,5);
+ assert.equal(result.learningSchedule.intervalDays,16);
  assert.equal(result.reviewCount,5);
 });
 test('summary distinguishes due, scheduled and mastered items',()=>{
