@@ -23,7 +23,7 @@ test('learning expansion registers 18 unique, structured lessons across three sa
 test('expansion is loaded before learning renderer and cached offline',()=>{
  assert.ok(index.indexOf('lifeos-learning-expansion.js?v=20261112-1')<index.indexOf('lifeos-learning-experience.js'));
  assert.ok(sw.includes("'./lifeos-learning-expansion.js'"));
- assert.match(sw,/life-os-v180/);
+ assert.match(sw,/life-os-v181/);
 });
 test('combat curriculum explicitly prevents unsupervised contact techniques',()=>{
  const context={window:{ALL_NEW_COURSES:[]}};
