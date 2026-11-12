@@ -1,6 +1,56 @@
 /* LIFEOS Learning Academy v2: real English lessons and applied skill tracks */
 (function(){
 'use strict';
+
+/* Adaptive spaced retrieval scheduler (SM-2-inspired, offline and backwards-compatible). */
+var LIFEOS_LEARNING_SCHEDULER=(function(){
+ function dateOnly(date){return date.toISOString().slice(0,10);}
+ function schedule(record,grade,now){
+  record=record&&typeof record==='object'?record:{};
+  now=now instanceof Date?new Date(now.getTime()):new Date(now||Date.now());
+  if(!isFinite(now.getTime()))now=new Date();
+  grade=Math.max(0,Math.min(5,Math.round(Number(grade)||0)));
+  var prior=record.learningSchedule&&typeof record.learningSchedule==='object'?record.learningSchedule:{};
+  var ease=Number(prior.easeFactor);
+  if(!isFinite(ease)||ease<1.3||ease>3.5)ease=2.3;
+  var reps=Math.max(0,Math.floor(Number(prior.repetitions)||0));
+  var interval=Math.max(0,Number(prior.intervalDays)||0);
+  var lapses=Math.max(0,Math.floor(Number(prior.lapses)||0));
+  if(!interval&&record.nextReviewAt){
+   var legacyDue=new Date(record.nextReviewAt+'T00:00:00Z');
+   var elapsed=Math.round((legacyDue.getTime()-Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate()))/86400000);
+   if(isFinite(elapsed)&&elapsed>0)interval=Math.min(365,elapsed);
+  }
+  if(grade<3){reps=0;interval=1;ease=Math.max(1.3,ease-0.2);lapses++;}
+  else{
+   reps++;
+   if(reps===1)interval=1;
+   else if(reps===2)interval=3;
+   else interval=Math.min(365,Math.max(1,Math.round(Math.max(1,interval)*ease)));
+   var delta=0.1-(5-grade)*(0.08+(5-grade)*0.02);
+   ease=Math.max(1.3,Math.min(3.5,ease+delta));
+  }
+  interval=Math.max(1,Math.min(365,Math.round(interval)));
+  var due=new Date(now.getTime());due.setUTCDate(due.getUTCDate()+interval);
+  var state={algorithm:'sm2-inspired-v1',repetitions:reps,intervalDays:interval,easeFactor:Number(ease.toFixed(2)),lapses:lapses,lastReviewedAt:now.toISOString(),nextReviewAt:dateOnly(due),lastGrade:grade};
+  return {learningSchedule:state,nextReviewAt:state.nextReviewAt,reviewCount:Math.max(0,Number(record.reviewCount)||0)+1};
+ }
+ function summarize(records,now){
+  now=now instanceof Date?now:new Date(now||Date.now());
+  var due=0,scheduled=0,mastered=0,intervalTotal=0;
+  (Array.isArray(records)?records:[]).forEach(function(record){
+   if(!record||typeof record!=='object'||!record.completed)return;
+   var schedule=record.learningSchedule||{},date=record.nextReviewAt||schedule.nextReviewAt;
+   if(date){scheduled++;if(new Date(date+'T23:59:59').getTime()<now.getTime())due++;}
+   var interval=Number(schedule.intervalDays)||0;
+   if(interval>=21)mastered++;
+   intervalTotal+=interval;
+  });
+  return {scheduled:scheduled,due:due,mastered:mastered,averageIntervalDays:scheduled?Number((intervalTotal/scheduled).toFixed(1)):0};
+ }
+ return {schedule:schedule,summarize:summarize};
+})();
+window.LIFEOS_LEARNING_SCHEDULER=LIFEOS_LEARNING_SCHEDULER;
 var EN=[
 ['A1','Глагол to be','Используй am с I, is с he/she/it и единственным числом, are с you/we/they. В вопросе вынеси форму be перед подлежащим; в отрицании добавь not.','I am a developer. / She is not at home. / Are they ready?','Составь 6 предложений о себе и своей работе: 3 утверждения, 2 отрицания, 1 вопрос.','What is the correct question?','You are ready.','Are you ready?',['Are you ready?','You ready are?','Do you are ready?']],
 ['A1','Present Simple: привычки и факты','Present Simple описывает регулярные действия и факты. С he/she/it добавляй -s/-es: works, watches. В вопросах используй do/does, после does основной глагол возвращается к начальной форме.','I work every day. / He works remotely. / Does she speak English?','Опиши свой обычный день 8 предложениями; используй always, usually, sometimes, never.','Choose the correct form: He ___ remotely.','work','works',['work','works','working']],
@@ -70,8 +120,8 @@ function completeEnglishAcademyLesson(level,index){
  if(speaking.trim().length<8)return toast('Добавь свой пример для устной практики','warning');
  if(choice!==(x[8]||[]).indexOf(x[7]))return toast('Проверь правило и попробуй ответить на вопрос ещё раз','warning');
  var s=progress(),courseId='english_academy_'+level.toLowerCase(),pKey=courseId+'Progress',key=courseId+'_core_'+level.toLowerCase()+'_'+index;
- if(!s[pKey])s[pKey]={};var old=s[pKey][key]||{},was=!!old.completed,d=new Date();d.setDate(d.getDate()+({A1:1,A2:2,B1:4,B2:7,C1:10}[level]||3));
- s[pKey][key]={completed:true,completedAt:old.completedAt||new Date().toISOString(),updatedAt:new Date().toISOString(),steps:steps,recall:answer.trim(),example:speaking.trim(),answer:answer.trim(),speaking:speaking.trim(),quizCorrect:true,nextReviewAt:d.toISOString().slice(0,10),reviewCount:(old.reviewCount||0)+1};
+ if(!s[pKey])s[pKey]={};var old=s[pKey][key]||{},was=!!old.completed,now=new Date(),grade=(answer.trim().length>=80&&speaking.trim().length>=30)?4:3,scheduled=LIFEOS_LEARNING_SCHEDULER.schedule(old,grade,now),d=new Date(scheduled.nextReviewAt+'T00:00:00Z');
+ s[pKey][key]={completed:true,completedAt:old.completedAt||now.toISOString(),updatedAt:now.toISOString(),steps:steps,recall:answer.trim(),example:speaking.trim(),answer:answer.trim(),speaking:speaking.trim(),quizCorrect:true,nextReviewAt:scheduled.nextReviewAt,reviewCount:scheduled.reviewCount,learningSchedule:scheduled.learningSchedule,lastLearningGrade:grade};
  save();if(!was&&window.addXP)window.addXP(15,'lesson');if(!was&&window.addPetXP)window.addPetXP(2);toast('Урок пройден · следующий повтор '+d.toLocaleDateString('ru-RU'),'success');window.closeSheet();renderEnglish();
 }
 function renderSkills(){
@@ -109,7 +159,7 @@ function completeRichCourseLesson(courseId,moduleId,index){
  var recall=(document.getElementById('richCourseRecall')||{}).value||'',example=(document.getElementById('richCourseExample')||{}).value||'',steps=[0,1,2].map(function(i){return !!(document.getElementById('richCourseStep'+i)||{}).checked;}),quizOk=true;
  if(l.quiz){var choice=Number((document.getElementById('richCourseQuiz')||{}).value);quizOk=choice===Number(l.quiz.correctIndex);}
  if(steps.some(function(x){return !x;}))return toast('Отметь все этапы урока','warning');if(recall.trim().length<25)return toast('Объясни материал своими словами (минимум 25 символов)','warning');if(example.trim().length<10)return toast('Добавь пример применения','warning');if(!quizOk)return toast('Ответ неверный — перечитай объяснение и попробуй ещё раз','warning');
- var s=st(),key=courseId+'_'+moduleId+'_'+index,pKey=courseId+'Progress';if(!s[pKey])s[pKey]={};var old=s[pKey][key],was=!!old,d=new Date();d.setDate(d.getDate()+4);s[pKey][key]={completed:true,completedAt:old&&old.completedAt||new Date().toISOString(),updatedAt:new Date().toISOString(),steps:steps,recall:recall.trim(),example:example.trim(),quizCorrect:true,nextReviewAt:d.toISOString().slice(0,10),reviewCount:(old&&old.reviewCount||0)+1};save();if(!was&&window.addXP)window.addXP(15,'lesson');if(!was&&window.addPetXP)window.addPetXP(2);toast('Урок усвоен · повтор через 4 дня','success');window.closeSheet();window.renderCourseGeneric(course,pKey);
+ var s=st(),key=courseId+'_'+moduleId+'_'+index,pKey=courseId+'Progress';if(!s[pKey])s[pKey]={};var old=s[pKey][key]||{},was=!!old,now=new Date(),grade=(recall.trim().length>=80&&example.trim().length>=40)?4:3,scheduled=LIFEOS_LEARNING_SCHEDULER.schedule(old,grade,now),d=new Date(scheduled.nextReviewAt+'T00:00:00Z');s[pKey][key]={completed:true,completedAt:old.completedAt||now.toISOString(),updatedAt:now.toISOString(),steps:steps,recall:recall.trim(),example:example.trim(),quizCorrect:true,nextReviewAt:scheduled.nextReviewAt,reviewCount:scheduled.reviewCount,learningSchedule:scheduled.learningSchedule,lastLearningGrade:grade};save();if(!was&&window.addXP)window.addXP(15,'lesson');if(!was&&window.addPetXP)window.addPetXP(2);toast('Урок усвоен · следующий повтор '+d.toLocaleDateString('ru-RU'),'success');window.closeSheet();window.renderCourseGeneric(course,pKey);
 }
 window.renderEnglish=renderEnglish;window.openEnglishAcademyLesson=openEnglishAcademyLesson;window.completeEnglishAcademyLesson=completeEnglishAcademyLesson;
 window.renderSkills=renderSkills;window.openSkillAcademyLesson=openSkillAcademyLesson;window.completeSkillAcademyLesson=completeSkillAcademyLesson;
