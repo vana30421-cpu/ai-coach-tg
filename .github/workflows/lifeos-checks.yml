@@ -33,6 +33,7 @@ jobs:
           node --check lifeos-rad-method.js
           node --check lifeos-workspaces.js
           node --check lifeos-learning-plan.js
+          node --check lifeos-learning-experience.js
           node --check lifeos-applied-mastery.js
           node --check sw.js
       - name: Check Worker module syntax
