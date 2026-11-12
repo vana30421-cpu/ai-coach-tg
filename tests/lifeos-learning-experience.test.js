@@ -29,8 +29,8 @@ test('English and skill lessons require practice, self-explanation and a knowled
 test('navigation and offline cache load the academy',()=>{
  assert.ok(app.includes('skills: window.renderSkills || renderSkills'));
  assert.ok(app.includes('english: window.renderEnglish || renderEnglish'));
- assert.ok(index.includes('lifeos-learning-experience.js?v=20261111-2'));
- assert.ok(sw.includes('life-os-v178'));
+ assert.ok(index.includes('lifeos-learning-experience.js?v=20261112-3'));
+ assert.ok(sw.includes('life-os-v180'));
  assert.ok(index.includes('lifeos-advanced-academy.js?v=1'));
  assert.ok(sw.includes('lifeos-advanced-academy.js'));
  assert.ok(sw.includes('lifeos-learning-experience.js'));
