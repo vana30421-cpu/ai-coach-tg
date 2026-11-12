@@ -103,3 +103,12 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Fixed deferred-script precedence so the full reminder center is not overwritten by the legacy notification preferences renderer.
 - GitHub Actions LIFEOS checks passed: 241 tests passed, 0 failed. Jarvis tests also passed.
 - Local scheduled reminders still depend on the app being active or resumed; guaranteed background delivery remains unimplemented pending push infrastructure and device subscription.
+
+
+## 2026-11-12 — Additive learning expansion
+- Added three integrated applied academies: psychology (6 lessons), communication (6 lessons), and martial-arts foundations/safety (6 lessons).
+- Every lesson includes objective, explanation, practice, mastery criterion, retrieval quiz, answer key, duration, steps, and a source link.
+- Martial-arts material explicitly restricts contact techniques and sparring to qualified supervision and prioritizes de-escalation outside sport.
+- Loaded the additive module before the learning renderer and included it in the offline core cache; cache namespace advanced to life-os-v179.
+- Added regression tests for unique lesson IDs/titles, schema completeness, quiz bounds, integration order, offline caching, and martial-arts safety.
+- This is a verified-scope expansion, not completion of the 5,000-unit targets, full media library, full benchmark, or physical-device QA.
