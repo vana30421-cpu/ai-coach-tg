@@ -181,3 +181,16 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - LIFE OS Jarvis tests: **success** on the same commit.
 - GitHub Pages deployment: **success** on the same commit.
 - Manual Android Chrome / Telegram WebView verification remains outstanding.
+
+## 2026-11-14 — Focus timer integration and persistence
+
+- Fixed the dashboard focus presets: they referenced an undefined `startFocusSession`; all presets now call the existing shared `startJarvisFocus` timer.
+- Unified the timer's active state with the existing `state.focus.active` record so the dashboard, focus screen and Jarvis use the same session.
+- Completed and manually stopped sessions are stored in the existing `state.focus.history`; duration is measured from actual elapsed time, planned duration is kept separately, and partial sessions are not marked complete or awarded XP.
+- History is bounded to the latest 500 sessions; existing focus history and unrelated user data are preserved.
+- Added a runtime regression test that starts, partially stops, restarts and completes sessions, verifies measured duration, and ensures stopping twice does not duplicate a record.
+- Updated app asset query to `20261114-2` and Service Worker cache to `life-os-v187`.
+- GitHub Actions LIFEOS checks: **258 passed, 0 failed** on `0b96e03d1949e20695b9c2c1d83ed97187f914ea`.
+- LIFE OS Jarvis tests: **success** on the same commit.
+- GitHub Pages deployment: **success** on the same commit.
+- Physical Android Chrome / Telegram WebView timer behavior remains unverified; automated runtime tests do not replace device testing.
