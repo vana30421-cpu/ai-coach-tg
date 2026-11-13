@@ -154,5 +154,6 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Added `lifeos-focus-academy.js`, an offline-first course with 12 practical lessons in three modules: attention foundations, focus-session execution, and resilience/progress measurement.
 - Topics include task switching, concrete session goals, distraction-resistant environment, if-then plans, short start ritual, adaptive session length, active recall, restorative breaks, returning after distraction, task initiation, measurement, and a personal deep-focus protocol.
 - Added a featured training card to the Learning page with a 14-day learning path and progress count. The existing generic course engine stores progress under the separate `focus_mastery_courseProgress` key; existing learning records and course IDs are untouched.
-- Added the academy script before `app.js`; bumped the app asset query to `20261113-4`.
+- Added the academy script before `app.js`; bumped the app asset query to `20261113-4` and Service Worker cache to `life-os-v185`.
+- Added the new academy file to the Service Worker precache so the course is available after offline installation/update.
 - Added static regression tests for course lesson count, module structure, progress integration, and script load order. Runtime/browser and device verification remain pending.
