@@ -206,3 +206,17 @@ LIFEOS не должен постоянно спрашивать пользов�
 - Проверены холодный запуск, повторный запуск, Android Chrome и Telegram Android WebView.
 - CI должен быть зелёным; ручная проверка устройства указывается отдельно.
 - Нельзя заявлять завершение всего ТЗ, пока не выполнены количественные цели, медиакритерии и ручная проверка.
+
+
+## 4.5 Engineering academies: JavaScript, Python and English
+
+Target curriculum:
+- JavaScript: 1,000 detailed lessons, from Intern foundations through Junior, Middle, Senior, Staff, Principal and Distinguished Engineer scope.
+- Python: 1,000 detailed lessons across the same engineering responsibility ladder.
+- English: approximately 1,500 detailed lessons mapped to CEFR A1, A2, B1, B2, C1 and C2. Coverage must include grammar, vocabulary, pronunciation, listening, speaking, reading, writing, interaction, mediation, register and exam-style performance.
+
+Each programming lesson must include a learning objective, accurate explanation, worked code example, practical implementation task, edge cases, tests, debugging/refactoring or code-review activity appropriate to level, mastery rubric, quiz with explained answer, and authoritative references. Advanced levels must assess system design, reliability, security, performance, observability, technical strategy and cross-team impact—not merely more syntax.
+
+Each English lesson must include a communicative objective, contextualized input, form/meaning/use explanation, vocabulary and collocations, pronunciation or discourse focus where relevant, productive and receptive practice, answer feedback, and a CEFR-aligned performance rubric.
+
+Counts must distinguish target, authored, reviewed, integrated and verified lessons. Do not count outlines, templates, duplicates or unreviewed generated records as completed lessons. Use staged content releases and regression tests for uniqueness, schema completeness, answer-key correctness, source validity, progression and persistence.
