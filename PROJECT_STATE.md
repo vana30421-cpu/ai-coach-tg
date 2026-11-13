@@ -194,3 +194,14 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - LIFE OS Jarvis tests: **success** on the same commit.
 - GitHub Pages deployment: **success** on the same commit.
 - Physical Android Chrome / Telegram WebView timer behavior remains unverified; automated runtime tests do not replace device testing.
+
+## 2026-11-14 — Focus history and weekly analytics
+
+- Expanded the focus screen with today's recorded minutes, seven-day session count, weekly total, average session length, completed count and the five most recent sessions.
+- The renderer merges canonical `state.focus.history` with legacy `timerSessions` and `focusSessions`, deduplicating records by stable ID or session fields.
+- Date-only legacy records are parsed in local time to avoid timezone shifts in weekly summaries.
+- The renderer displays actual elapsed minutes, planned duration and whether the session was completed or stopped early; empty history is clearly distinguished from zero performance.
+- Bumped `lifeos-systems.js` to query version `20261114-2`; Service Worker cache is `life-os-v189`.
+- GitHub Actions LIFEOS checks: **259 passed, 0 failed** on `31d9ab74a15845ed1cd43bfc59b96f58aa5ebff4`.
+- LIFE OS Jarvis tests: **success** on the same commit.
+- GitHub Pages deployment: **success** on the same commit.
