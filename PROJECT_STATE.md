@@ -130,3 +130,11 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - GitHub Pages build and deployment: success; deployment environment URL reported as https://vana30421-cpu.github.io/ai-coach-tg/.
 - Live browser interaction and physical Android / Telegram WebView testing have not been independently completed in this run.
 - Remaining targets are unchanged: 5,000 unique psychology units, 5,000 communication units, exhaustive RAD lesson coverage, licensed/original media library, full 50-app feature implementation matrix, complete combat-sport curriculum, and physical-device QA.
+
+
+## 2026-11-13 — Sleep editor handler exposure fix
+- Root cause identified: sleep editor buttons and calendar cells use inline HTML handlers, but `saveSleepEntry`, `deleteSleepEntry`, and `openSleepForDate` were private functions inside the app IIFE and were not attached to `window`. Browser inline handlers therefore could not resolve them.
+- Exposed these three existing handlers on `window`; no sleep schema, IDs, records, or existing user data were changed.
+- Bumped the app asset query to `20261113-1`, build marker to `LIFEOS-20261113-1`, and Service Worker cache to `life-os-v182`.
+- Added regression tests for global handler exposure and corresponding inline UI wiring.
+- Verification status at commit time: pending GitHub Actions; Android Chrome / Telegram WebView manual verification remains outstanding.
