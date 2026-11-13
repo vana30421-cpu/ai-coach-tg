@@ -135,6 +135,7 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 ## 2026-11-13 — Sleep editor handler exposure fix
 - Root cause identified: sleep editor buttons and calendar cells use inline HTML handlers, but `saveSleepEntry`, `deleteSleepEntry`, and `openSleepForDate` were private functions inside the app IIFE and were not attached to `window`. Browser inline handlers therefore could not resolve them.
 - Exposed these three existing handlers on `window`; no sleep schema, IDs, records, or existing user data were changed.
+- Replaced the new-entry inline assignment to the IIFE-private `currentSleepDate` with the exported date-opening handler, preventing stale selected dates from leaking into a new entry.
 - Bumped the app asset query to `20261113-1`, build marker to `LIFEOS-20261113-1`, and Service Worker cache to `life-os-v182`.
 - Added regression tests for global handler exposure and corresponding inline UI wiring.
 - Verification status at commit time: pending GitHub Actions; Android Chrome / Telegram WebView manual verification remains outstanding.
