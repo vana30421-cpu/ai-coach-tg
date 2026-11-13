@@ -5926,6 +5926,10 @@ window.startVisionBreak=startVisionBreak;
 window.finishVisionBreak=finishVisionBreak;
 window.cancelVisionBreak=cancelVisionBreak;
 window.saveVisionCheckin=saveVisionCheckin;
+// Sleep editor uses inline HTML handlers; expose its actions outside the IIFE.
+window.openSleepForDate=openSleepForDate;
+window.saveSleepEntry=saveSleepEntry;
+window.deleteSleepEntry=deleteSleepEntry;
 
 /* Заглушки на window */
 window.renderMemory = renderMemory;
