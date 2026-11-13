@@ -21,6 +21,6 @@ test('diagnostics renderer is available and the updated app is cached offline',(
  assert.match(app,/window\.collectLifeOSDiagnostics=collectLifeOSDiagnostics/);
  assert.match(app,/function renderDiagnostic\(\)/);
  assert.ok(/app\\.js\\?v=\\d{8}-\\d+/.test(index));
- assert.ok(/const CACHE='life-os-v\\d+'/.test(sw));
+ assert.ok(/const CACHE='life-os-v\d+'/.test(sw));
  assert.ok(sw.includes('./app.js'));
 });
