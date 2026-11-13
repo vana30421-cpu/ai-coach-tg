@@ -27,7 +27,11 @@ test('every published lesson has theory, example, practical work, test, criterio
   assert.equal(root.LIFEOS_ENGINEERING_ACADEMIES.courses[2].modules.length, 6);
   for (const mod of root.LIFEOS_ENGINEERING_ACADEMIES.courses[2].modules) assert.equal(mod.lessons.length, 5);
   const ids = new Set();
+  const lessonIds = new Set();
   for (const lesson of lessons) {
+    assert.ok(lesson.id && lesson.id.startsWith('lesson-'));
+    assert.equal(lessonIds.has(lesson.id), false, 'duplicate lesson id: ' + lesson.id);
+    lessonIds.add(lesson.id);
     assert.ok(lesson.title.length >= 8);
     assert.ok(lesson.objective.length >= 20);
     assert.ok(lesson.theory.length >= 120);
@@ -35,6 +39,7 @@ test('every published lesson has theory, example, practical work, test, criterio
     assert.ok(lesson.metric.length >= 20);
     assert.ok(lesson.quiz.question.length >= 10);
     assert.equal(lesson.quiz.options.length, 3);
+    assert.ok(lesson.quiz.answerExplanation.length >= 40);
     assert.ok(lesson.quiz.correctIndex >= 0 && lesson.quiz.correctIndex < 3);
     assert.ok(lesson.sources[0].url.startsWith('https://'));
     assert.equal(ids.has(lesson.title), false, 'duplicate lesson title: ' + lesson.title);
