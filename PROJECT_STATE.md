@@ -157,3 +157,14 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Added the academy script before `app.js`; bumped the app asset query to `20261113-4` and Service Worker cache to `life-os-v185`.
 - Added the new academy file to the Service Worker precache so the course is available after offline installation/update.
 - Added static regression tests for course lesson count, module structure, progress integration, and script load order. Runtime/browser and device verification remain pending.
+
+## 2026-11-14 — CI recovery and release verification
+
+- Root cause of the red CI was stale version-pinned regression assertions: tests expected old app.js query strings and Service Worker cache generations even though the assets had been deliberately bumped.
+- Updated affected regression tests to validate versioned app assets and the presence of a valid Service Worker cache namespace without pinning obsolete build identifiers.
+- CI now runs `node --check` for every root-level JavaScript module, in addition to Worker syntax checks and the full test suite.
+- GitHub Actions LIFEOS checks: **254 passed, 0 failed** on `db6251bb501205acbcca2727ed65e788420320b5`.
+- LIFE OS Jarvis tests: **success** on the same commit.
+- GitHub Pages deployment: **success** for the same application commit. Documentation-only follow-up commit `3d28747613b9221c15236602f79ef277199b359a` is awaiting its own workflow completion.
+- Updated the implementation roadmap: the vision-comfort catalogue currently has 200 unique routines, so 100 remain to reach the 300-card target. The older count of 7 is obsolete.
+- Physical Android Chrome / Telegram WebView testing, real-device performance profiling, and verification of actual sleep entry interaction remain outstanding. Automated tests do not replace device QA.
