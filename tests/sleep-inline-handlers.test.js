@@ -21,3 +21,8 @@ test('sleep overview renders recent records and a seven-day trend without changi
   assert.match(app, /Последние записи/);
   assert.match(app, /openSleepForDate\(/);
 });
+
+test('sleep metrics do not convert missing values into zero measurements', () => {
+  assert.match(app, /x\.hours!==null&&x\.hours!==undefined&&x\.hours!==''/);
+  assert.match(app, /qualityRows=recentWindow\.filter/);
+});
