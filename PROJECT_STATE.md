@@ -205,3 +205,12 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - GitHub Actions LIFEOS checks: **259 passed, 0 failed** on `31d9ab74a15845ed1cd43bfc59b96f58aa5ebff4`.
 - LIFE OS Jarvis tests: **success** on the same commit.
 - GitHub Pages deployment: **success** on the same commit.
+
+
+## 2026-11-14 — Sleep-entry runtime regression coverage
+
+- Hardened sleep input validation: dates must be real calendar dates and clock values must be within 00:00–23:59 before duration calculation or persistence.
+- Added runtime tests that execute the actual sleep functions from `app.js` in an isolated VM: overnight entry persistence, stable-ID editing, XP idempotency, invalid date/time rejection, and rollback when local persistence fails.
+- Existing sleep records and IDs are preserved; invalid input is rejected before state mutation.
+- App asset query advanced to `20261114-3`, build marker to `LIFEOS-20261114-5`, and Service Worker cache to `life-os-v190`.
+- GitHub Actions and Pages deployment are pending for this change; physical Android Chrome / Telegram WebView input verification remains required.
