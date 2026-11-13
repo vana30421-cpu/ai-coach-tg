@@ -3163,7 +3163,7 @@ function renderSleep(){
     html += '<div style="font-size:16px;font-weight:800;">Добавь первую запись</div>';
   }
   html += '</div>';
-  html += '<button class="btn btn-primary btn-block mb-3" onclick="currentSleepDate=today();navigate(\'sleepEditor\')">➕ Записать сон</button>';
+  html += '<button class="btn btn-primary btn-block mb-3" onclick="openSleepForDate(today())">➕ Записать сон</button>';
   html += '</div>';
   document.getElementById('app').innerHTML = html;
 }
