@@ -15,7 +15,7 @@ test('focus course uses generic course quiz and progress-compatible fields',()=>
  assert.match(academy,/quiz:\{question:question,options:options,correctIndex:correct\}/);
  assert.match(academy,/sources:sources/);
  assert.match(app,/state\.focus_mastery_courseProgress/);
- assert.match(app,/navigate\\\('focus_mastery_course'\\\)/);
+ assert.match(app,/navigate\(\\'focus_mastery_course\\'\)/);
 });
 test('focus academy loads before app router and learning page links to it',()=>{
  assert.ok(index.indexOf('lifeos-focus-academy.js')<index.indexOf('app.js?v=20261113-4'));
