@@ -6,6 +6,7 @@ const vm=require('node:vm');
 const app=fs.readFileSync('app.js','utf8');
 const content=fs.readFileSync('content.js','utf8');
 const content2=fs.readFileSync('content2.js','utf8');
+const content3=fs.readFileSync('content3.js','utf8');
 const api=fs.readFileSync('functions/api/jarvis.js','utf8');
 const systems=fs.readFileSync('lifeos-systems.js','utf8');
 const ws=fs.readFileSync('lifeos-workspaces.js','utf8');
@@ -26,6 +27,21 @@ test('vision catalog contains 200 detailed comfort routines, not fake vision-cor
  assert.doesNotMatch(content,/Солнечные ванны|Соляризация|Без очков|Природные капли/);
 });
 
+test('eye comfort content avoids unsupported myopia claims and removes palming',()=>{
+ assert.doesNotMatch(content,/Пальминг|ch_palming|Бейтс|без очков/);
+ assert.doesNotMatch(content3,/Пальминг|Bates|Бейтс|профилактика миопии|восстанавливают глазные мышцы|Приводит к близорукости/);
+ assert.match(content3,/AAO: https:\/\/www\.aao\.org\/eye-health\/drugs\/computer-usage/);
+ assert.match(content3,/не доказана как способ предотвратить или исправить близорукость/);
+});
+test('updated eye comfort assets are versioned and cached offline',()=>{
+ const index=fs.readFileSync('index.html','utf8');
+ const sw=fs.readFileSync('sw.js','utf8');
+ assert.match(index,/content\.js\?v=20261114-1/);
+ assert.match(index,/content3\.js\?v=20261114-1/);
+ assert.match(sw,/const CACHE='life-os-v186'/);
+ assert.match(sw,/\.\/content\.js/);
+ assert.match(sw,/\.\/content3\.js/);
+});
 test('vision section has timed breaks, symptom logging, exam history and urgent-symptom guidance',()=>{
  for(const name of ['startVisionBreak','finishVisionBreak','openVisionSymptomLog','saveVisionSymptoms','saveVisionExam','startEyeExercise','completeEyeExercise'])assert.match(app,new RegExp('function '+name+'\\('));
  assert.match(app,/visionBreakCountdown/);
