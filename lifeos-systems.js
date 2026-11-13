@@ -46,7 +46,8 @@ window.addCalendarEvent=function(){
  state.calendarEvents.push({id:uid(),source:'lifeos',title:title,date:date,time:v('calTime')||'09:00',category:v('calCategory')||'Личное',note:v('calNote'),done:false,createdAt:nowISO()});selectedDate=date;window.LIFEOS_SELECTED_CAL_DATE=date;monthCursor=new Date(date+'T12:00:00');save();toast('Событие добавлено','success');window.renderCalendar();
 };
 window.renderFocus=function(){
- var f=state.jarvis&&state.jarvis.focus,history=[],historyKeys={},now=new Date(),weekStart=new Date(now);\n [state.focus&&Array.isArray(state.focus.history)?state.focus.history:[],Array.isArray(state.timerSessions)?state.timerSessions:[],Array.isArray(state.focusSessions)?state.focusSessions:[]].forEach(function(rows){rows.forEach(function(x){if(!x||typeof x!=='object')return;var key=String(x.id||[x.startedAt||x.date||'',x.taskTitle||'',x.minutes||x.duration||''].join('|'));if(!historyKeys[key]){historyKeys[key]=true;history.push(x);}});});
+ var f=state.jarvis&&state.jarvis.focus,history=[],historyKeys={},now=new Date(),weekStart=new Date(now);
+ [state.focus&&Array.isArray(state.focus.history)?state.focus.history:[],Array.isArray(state.timerSessions)?state.timerSessions:[],Array.isArray(state.focusSessions)?state.focusSessions:[]].forEach(function(rows){rows.forEach(function(x){if(!x||typeof x!=='object')return;var key=String(x.id||[x.startedAt||x.date||'',x.taskTitle||'',x.minutes||x.duration||''].join('|'));if(!historyKeys[key]){historyKeys[key]=true;history.push(x);}});});
  weekStart.setHours(0,0,0,0);weekStart.setDate(weekStart.getDate()-6);
  function rowDate(x){var raw=x.startedAt||x.date||'',d=new Date(/^\d{4}-\d{2}-\d{2}$/.test(raw)?raw+'T12:00:00':raw);return Number.isNaN(d.getTime())?null:d;}
  function rowMinutes(x){var seconds=Number(x.actualSeconds);if(Number.isFinite(seconds)&&seconds>0)return seconds/60;return Math.max(0,Number(x.minutes)||Number(x.duration)||0);}
