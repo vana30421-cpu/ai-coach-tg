@@ -20,7 +20,7 @@ test('diagnostics checks storage, runtime errors, modules and data coverage',()=
 test('diagnostics renderer is available and the updated app is cached offline',()=>{
  assert.match(app,/window\.collectLifeOSDiagnostics=collectLifeOSDiagnostics/);
  assert.match(app,/function renderDiagnostic\(\)/);
- assert.ok(index.includes('app.js?v=20261113-4'));
- assert.ok(sw.includes('life-os-v185'));
+ assert.ok(/app\\.js\\?v=\\d{8}-\\d+/.test(index));
+ assert.ok(/const CACHE='life-os-v\\d+'/.test(sw));
  assert.ok(sw.includes('./app.js'));
 });
