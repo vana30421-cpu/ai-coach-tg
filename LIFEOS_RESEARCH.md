@@ -44,6 +44,8 @@ Research snapshot: 2026-11-08. This is a selection guide, not a claim that every
 - Todoist filters: https://www.todoist.com/help/todoist/features/introduction-to-filters-V98wIH
 - TickTick features (habits, Pomodoro, Eisenhower matrix, statistics, themes): https://www.ticktick.com/features
 - Telegram Mini App design and performance guidance: https://core.telegram.org/bots/webapps
+- AAO guidance on digital eye strain, blinking, breaks, screen distance and brightness: https://www.aao.org/eye-health/drugs/computer-usage
+- AAO clarification that screens do not permanently damage eyes and that symptoms can include temporary discomfort/dryness: https://www.aao.org/eye-health/tips-prevention/common-eye-vision-myths-facts
 - Digital habit-formation interventions systematic review: https://pubmed.ncbi.nlm.nih.gov/38787601/
 - Distributed practice meta-analysis (2025): https://pubmed.ncbi.nlm.nih.gov/40564553/
 - Retrieval practice review: https://pubmed.ncbi.nlm.nih.gov/33006925/
@@ -79,3 +81,10 @@ Research snapshot: 2026-11-08. This is a selection guide, not a claim that every
 - Interrupted anti-stress sessions are preserved as partial records without completion XP.
 - Pet progression now measures progress within the current evolution stage rather than against the next absolute XP threshold.
 - The final responsive CSS layer normalizes the main content width, safe-area padding and two-column grids for Telegram WebView and desktop; visual device verification remains outstanding.
+
+
+## 2026-11-14 eye-comfort content review
+
+- Removed unsupported Bates-method / palming recommendations and claims that eye exercises prevent or reverse myopia.
+- Reframed the routines as optional comfort habits: regular breaks, looking away from near work, blinking, appropriate screen distance, brightness and glare adjustment.
+- The 20-20-20 pattern is described as a practical reminder, not a proven myopia-prevention or treatment protocol. Persistent pain, blurred vision or other concerning symptoms require an eye-care professional.
