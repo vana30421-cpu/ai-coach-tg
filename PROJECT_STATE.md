@@ -247,3 +247,17 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Added tests/lifeos-engineering-language-academies.test.js for target metadata, lesson completeness, unique IDs, source presence and idempotent registration.
 - NOT COMPLETE: 18 lessons are the initial authored slice, not the 3,500-lesson target. Remaining: 994 JavaScript, 994 Python and 1,494 English lessons. Remaining lessons must be authored and reviewed in batches; no count inflation with placeholders.
 - CI, Pages deployment and manual Android/Telegram WebView verification are pending for this change until workflows complete.
+
+
+## 2026-11-14 — Engineering and English academy content batch 2
+
+- Expanded the curated curriculum from 18 to **36 authored lessons**: JavaScript 9/1,000, Python 9/1,000, English 18/1,500.
+- JavaScript additions cover numeric edge cases, API error contracts, and event-loop scheduling.
+- Python additions cover LEGB scope, decorators/metadata, and concurrency model selection.
+- English adds two distinct practice lessons at each CEFR level A1–C2, covering questions/frequency, quantifiers/polite requests, tense/conditionals, passive/collocations, inversion/discourse markers, and idiomatic editing.
+- Each addition includes an objective, substantive explanation, worked example, independent practice, retrieval quiz, answer key, mastery criterion and reference link.
+- English lessons are grouped correctly into six CEFR modules (three lessons per level); the earlier one-lesson-per-level layout is retained and expanded.
+- Updated academy asset query and Service Worker cache to `life-os-v192`.
+- Regression tests now assert 36 unique lessons, per-academy counts, CEFR module distribution, schema completeness and idempotent registration.
+- Remaining to target: JavaScript 991, Python 991, English 1,482. These targets are not represented as completed content.
+- CI, Pages deployment and manual Android Chrome / Telegram WebView verification are pending until the updated workflows finish.
