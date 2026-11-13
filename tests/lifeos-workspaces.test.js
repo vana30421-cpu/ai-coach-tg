@@ -29,7 +29,7 @@ function sandboxFor(source){
 
 test('workspace and system extensions are syntactically valid and loaded by the PWA',()=>{
  for(const [name,src] of [['workspaces',workspaces],['systems',systems]])assert.doesNotThrow(()=>new vm.Script(src,{filename:name}));
- assert.ok(index.includes('lifeos-systems.js?v=20261110-3'));
+ assert.match(index,/lifeos-systems\.js\?v=\d{8}-\d+/);
  assert.match(sw,/lifeos-workspaces\.js/);assert.match(sw,/lifeos-systems\.js/);
 });
 
