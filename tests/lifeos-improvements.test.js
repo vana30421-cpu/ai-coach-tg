@@ -110,7 +110,7 @@ test('vision section has timed breaks, symptom logging, exam history and urgent-
 });
 
 test('focus screen reports only saved session history and real weekly metrics',()=>{
- assert.match(systems,/history=state\.focus&&Array\.isArray\(state\.focus\.history\)/);
+ assert.match(systems,/history=\[\],historyKeys=\{\}/);
  assert.match(systems,/Array\.isArray\(state\.timerSessions\)/);
  assert.match(systems,/Array\.isArray\(state\.focusSessions\)/);
  assert.match(systems,/todayMinutes/);
