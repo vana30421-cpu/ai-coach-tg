@@ -29,7 +29,7 @@ test('Jarvis local analytics context and summary use guarded statistics',()=>{
 
 test('updated analytics assets are versioned and available offline',()=>{
  assert.ok(/app\\.js\\?v=\\d{8}-\\d+/.test(index));
- assert.ok(/const CACHE='life-os-v\\d+'/.test(sw));
+ assert.ok(/const CACHE='life-os-v\d+'/.test(sw));
  assert.match(sw,/\.\/app\.js/);
 });
 
