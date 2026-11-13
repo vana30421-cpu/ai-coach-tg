@@ -25,7 +25,7 @@ test('every published lesson has theory, example, practical work, test, criterio
   const byCourse = Object.fromEntries(root.LIFEOS_ENGINEERING_ACADEMIES.courses.map(c => [c.id, c.modules.reduce((n,m) => n + m.lessons.length, 0)]));
   assert.deepEqual(JSON.parse(JSON.stringify(byCourse)), { javascript_engineering_1000: 38, python_engineering_1000: 37, english_cefr_1500: 77 });
   assert.equal(root.LIFEOS_ENGINEERING_ACADEMIES.courses[2].modules.length, 6);
-  assert.deepEqual(root.LIFEOS_ENGINEERING_ACADEMIES.courses[2].modules.map(m => m.lessons.length), [13,13,12,13,13,13]);
+  assert.deepEqual(root.LIFEOS_ENGINEERING_ACADEMIES.courses[2].modules.map(m => m.lessons.length), [13,13,13,13,13,12]);
   const ids = new Set();
   const lessonIds = new Set();
   for (const lesson of lessons) {
