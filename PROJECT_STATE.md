@@ -235,3 +235,15 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - The successful app code/test commit is `f6ef995449e36789bb72b1789c2006e351a192e9`; later commits are documentation/roadmap updates.
 - The 50-app matrix does not mean all benchmark features are implemented. Remaining: psychology/communication banks (5,000 unique units each), exhaustive RAD public-source lesson coverage, original/licensed media, complete combat-sport curriculum, remaining benchmark features, and physical Android Chrome / Telegram Android WebView QA.
 - No physical device was available to this run; do not claim device-level verification.
+
+
+## 2026-11-14 — JavaScript, Python and English academy foundation
+
+- Added lifeos-engineering-language-academies.js and registered three new offline-first academies in the existing ALL_NEW_COURSES learning engine.
+- JavaScript path target: 1,000 lessons; Python path target: 1,000 lessons; English path target: 1,500 lessons across CEFR A1–C2.
+- Career ladder metadata covers Intern, Junior, Middle, Senior, Staff, Principal and Distinguished Engineer.
+- Added 18 authored starter lessons (6 JavaScript, 6 Python, 6 English), each with objective, substantive explanation, worked example, practical assignment, mastery criterion, quiz, answer key, steps and official/reference source.
+- Integrated academy cards into the actual Learning renderer and added the module to Service Worker precache; cache advanced to life-os-v191.
+- Added tests/lifeos-engineering-language-academies.test.js for target metadata, lesson completeness, unique IDs, source presence and idempotent registration.
+- NOT COMPLETE: 18 lessons are the initial authored slice, not the 3,500-lesson target. Remaining: 994 JavaScript, 994 Python and 1,494 English lessons. Remaining lessons must be authored and reviewed in batches; no count inflation with placeholders.
+- CI, Pages deployment and manual Android/Telegram WebView verification are pending for this change until workflows complete.
