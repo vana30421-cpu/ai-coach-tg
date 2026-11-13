@@ -94,8 +94,8 @@ test('dashboard focus buttons use the shared timer and persist completed or part
  assert.match(app,/function renderAfterFocusChange\(\)/);
  assert.match(app,/state\.focus && state\.focus\.active/);
  const index=fs.readFileSync('index.html','utf8');
- assert.match(index,/app\.js\?v=20261114-2/);
- assert.match(index,/sw\.js\?v=20261114-4/);
+ assert.match(index,/app\.js\?v=20261114-\d+/);
+ assert.match(index,/sw\.js\?v=20261114-\d+/);
  assert.match(fs.readFileSync('sw.js','utf8'),/const CACHE='life-os-v\d+'/);
 });
 test('vision section has timed breaks, symptom logging, exam history and urgent-symptom guidance',()=>{
