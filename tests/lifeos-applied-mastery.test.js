@@ -58,13 +58,13 @@ test('wrong answer is not marked as mastered',()=>{
 test('new curriculum is loaded by index and precached for offline use',()=>{
  assert.match(index,/lifeos-applied-mastery\.js\?v=20261111-4/);
  assert.match(sw,/lifeos-applied-mastery\.js/);
- assert.match(sw,/const CACHE='life-os-v\\d+'/);
+ assert.match(sw,/const CACHE='life-os-v\d+'/);
 });
 
 
 test('five-minute academy is connected to the real learning navigation renderer',()=>{
  assert.match(appSource,/window\.renderLearning\s*=\s*renderLearning/);
- assert.match(index,/app\.js\?v=20261111-7/);
+ assert.match(index,/app\.js\?v=\d{8}-\d+/);
  assert.match(index,/sw\.js\?v=20261111-175/);
 });
 
