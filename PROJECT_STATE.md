@@ -1,6 +1,6 @@
 # LIFEOS — PROJECT_STATE
 
-Last updated: 2026-11-11
+Last updated: 2026-11-14
 Default branch: `main`
 Latest RAD catalogue implementation commit: `e631cefdf854be3e804bb5caf413d88849a24dbc`; latest verified test commit: `6b583fd870548e77faa14f20d41a19aa5aadcd10`; main includes merged application commit `e9e27600ae66018ebff0f3494caee4c74d8b5ff4`.
 Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https://github.com/vana30421-cpu/ai-coach-tg/pull/41)
@@ -168,3 +168,16 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - GitHub Pages deployment: **success** for the same application commit. Documentation-only follow-up commit `3d28747613b9221c15236602f79ef277199b359a` is awaiting its own workflow completion.
 - Updated the implementation roadmap: the vision-comfort catalogue currently has 200 unique routines, so 100 remain to reach the 300-card target. The older count of 7 is obsolete.
 - Physical Android Chrome / Telegram WebView testing, real-device performance profiling, and verification of actual sleep entry interaction remain outstanding. Automated tests do not replace device QA.
+
+## 2026-11-14 — Evidence-based eye-comfort content
+
+- Removed palming from the challenge catalogue and eye-comfort instructions; existing stored records are not deleted or rewritten.
+- Replaced unsupported claims that screen use causes myopia or that eye exercises prevent/correct myopia with accurate guidance about temporary digital eye discomfort, blinking, breaks, screen distance, brightness and symptom escalation.
+- Updated the legacy eye-care persona and daily tips to avoid Bates-method treatment claims, sun-gazing / removing glasses advice, and claims that individual foods improve visual acuity.
+- Added official AAO reference links to the relevant eye-comfort routines.
+- Updated `content.js` and `content3.js` asset versions; Service Worker cache advanced to `life-os-v186`.
+- Added regression coverage for misleading claims, palming removal, asset versioning and offline precache.
+- GitHub Actions LIFEOS checks: **256 passed, 0 failed** on `28ff4e4be8a6ca632b5b90f12b792fd7c6b61253`.
+- LIFE OS Jarvis tests: **success** on the same commit.
+- GitHub Pages deployment: **success** on the same commit.
+- Manual Android Chrome / Telegram WebView verification remains outstanding.
