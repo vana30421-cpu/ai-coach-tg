@@ -109,6 +109,20 @@ test('vision section has timed breaks, symptom logging, exam history and urgent-
  assert.match(content,/AAO — экранная нагрузка и редкое моргание/);
 });
 
+test('focus screen reports only saved session history and real weekly metrics',()=>{
+ assert.match(systems,/history=state\.focus&&Array\.isArray\(state\.focus\.history\)/);
+ assert.match(systems,/todayMinutes/);
+ assert.match(systems,/weekMinutes/);
+ assert.match(systems,/average=weekRows\.length\?weekMinutes\/weekRows\.length/);
+ assert.match(systems,/completed===true/);
+ assert.match(systems,/История фокуса/);
+ assert.match(systems,/Остановлена раньше/);
+ const index=fs.readFileSync('index.html','utf8');
+ const sw=fs.readFileSync('sw.js','utf8');
+ assert.match(index,/lifeos-systems\.js\?v=20261114-1/);
+ assert.match(sw,/const CACHE='life-os-v\d+'/);
+ assert.match(sw,/\.\/lifeos-systems\.js/);
+});
 test('Jarvis can send opt-in conversations with app analytics to a server-side API',()=>{
  assert.match(app,/function buildJarvisAppContext\(memoryQuery\)/);
  assert.match(app,/function sendJarvisCloudMessage\(text\)/);
