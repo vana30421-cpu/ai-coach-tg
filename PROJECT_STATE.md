@@ -308,3 +308,13 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - CI, Pages deployment and physical-device verification remain unconfirmed.
 
 - Count reconciliation: batch 5 contains 6 JavaScript, 5 Python and 12 English lessons (23 additions); the verified authored total is 104, not 105.
+
+
+## 2026-11-14 — Platform strategy, reliability and advanced English batch 6
+
+- Expanded the authored curriculum to **128 unique lessons**: JavaScript 32/1,000, Python 31/1,000, English 65/1,500.
+- JavaScript: Principal/Distinguished platform strategy, distributed consistency/idempotency, chaos engineering, circuit breakers/bulkheads, technical due diligence and long-term technical vision.
+- Python: packaging/reproducible builds, supply-chain security, safe serialization, load/capacity testing, disaster recovery and platform strategy.
+- English: 12 lessons across A1–C2, including spoken interaction, complex grammar, data presentation and expert discussion.
+- Updated tests for exact lesson totals and per-level CEFR grouping. Updated app asset version and offline cache to `life-os-v197`.
+- Remaining: JavaScript 968, Python 969, English 1,435. Full 3,500-lesson target is not complete.
