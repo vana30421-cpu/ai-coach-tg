@@ -148,3 +148,11 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Regression coverage extended for the history and trend UI. Automated CI and manual device verification remain pending.
 
 - Trend calculations explicitly exclude missing duration/quality values instead of interpreting missing measurements as zero.
+
+
+## 2026-11-13 — Focus training academy
+- Added `lifeos-focus-academy.js`, an offline-first course with 12 practical lessons in three modules: attention foundations, focus-session execution, and resilience/progress measurement.
+- Topics include task switching, concrete session goals, distraction-resistant environment, if-then plans, short start ritual, adaptive session length, active recall, restorative breaks, returning after distraction, task initiation, measurement, and a personal deep-focus protocol.
+- Added a featured training card to the Learning page with a 14-day learning path and progress count. The existing generic course engine stores progress under the separate `focus_mastery_courseProgress` key; existing learning records and course IDs are untouched.
+- Added the academy script before `app.js`; bumped the app asset query to `20261113-4`.
+- Added static regression tests for course lesson count, module structure, progress integration, and script load order. Runtime/browser and device verification remain pending.
