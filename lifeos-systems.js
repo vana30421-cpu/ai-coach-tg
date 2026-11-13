@@ -46,9 +46,23 @@ window.addCalendarEvent=function(){
  state.calendarEvents.push({id:uid(),source:'lifeos',title:title,date:date,time:v('calTime')||'09:00',category:v('calCategory')||'Личное',note:v('calNote'),done:false,createdAt:nowISO()});selectedDate=date;window.LIFEOS_SELECTED_CAL_DATE=date;monthCursor=new Date(date+'T12:00:00');save();toast('Событие добавлено','success');window.renderCalendar();
 };
 window.renderFocus=function(){
- var f=state.jarvis&&state.jarvis.focus,html='<div class="page"><div class="title-xl">⏱ Фокус</div><div class="subtitle">Короткие рабочие блоки с возможностью остановиться раньше.</div>';
+ var f=state.jarvis&&state.jarvis.focus,history=state.focus&&Array.isArray(state.focus.history)?state.focus.history:[],now=new Date(),weekStart=new Date(now);
+ weekStart.setHours(0,0,0,0);weekStart.setDate(weekStart.getDate()-6);
+ function rowDate(x){var d=new Date(x.startedAt||x.date||'');return Number.isNaN(d.getTime())?null:d;}
+ function rowMinutes(x){var seconds=Number(x.actualSeconds);if(Number.isFinite(seconds)&&seconds>0)return seconds/60;return Math.max(0,Number(x.minutes)||Number(x.duration)||0);}
+ var todayRows=history.filter(function(x){var d=rowDate(x);return x.date===today()||(d&&d.toDateString()===now.toDateString());});
+ var weekRows=history.filter(function(x){var d=rowDate(x);return d&&d>=weekStart&&d<=now;});
+ var todayMinutes=todayRows.reduce(function(n,x){return n+rowMinutes(x);},0),weekMinutes=weekRows.reduce(function(n,x){return n+rowMinutes(x);},0);
+ var average=weekRows.length?weekMinutes/weekRows.length:0,completed=weekRows.filter(function(x){return x.completed===true;}).length;
+ var html='<div class="page"><div class="title-xl">⏱ Фокус</div><div class="subtitle">Короткие рабочие блоки с возможностью остановиться раньше. История считает только сохранённые сессии.</div>';
+ html+='<div class="grid-2 mb-3"><div class="card"><div class="stat-value">'+Math.round(todayMinutes*10)/10+'</div><div class="stat-label">Минут сегодня</div></div><div class="card"><div class="stat-value">'+weekRows.length+'</div><div class="stat-label">Сессий за 7 дней</div></div></div>';
+ html+='<div class="card mb-3"><div class="card-title">📈 Итоги недели</div><div class="grid-2"><div><b>'+Math.round(weekMinutes*10)/10+' мин</b><div class="footnote">Общее время</div></div><div><b>'+Math.round(average*10)/10+' мин</b><div class="footnote">Средняя сессия</div></div><div><b>'+completed+'/'+weekRows.length+'</b><div class="footnote">Завершено полностью</div></div></div></div>';
  if(f&&f.active){var left=Math.max(0,Math.ceil((f.endsAt-Date.now())/1000));html+='<div class="card card-gradient"><div class="stat-value">'+Math.floor(left/60)+':'+String(left%60).padStart(2,'0')+'</div><div class="footnote">'+esc(f.taskTitle||'Фокус-сессия')+'</div><button class="btn btn-primary btn-block mt-3" onclick="stopJarvisFocus()">Завершить фокус</button></div>';}
  else html+='<div class="grid-2"><button class="card" onclick="startJarvisFocus(15)"><b>15 минут</b><div class="footnote">Мягкий старт</div></button><button class="card" onclick="startJarvisFocus(25)"><b>25 минут</b><div class="footnote">Классический блок</div></button><button class="card" onclick="startJarvisFocus(45)"><b>45 минут</b><div class="footnote">Глубокая работа</div></button><button class="card" onclick="startJarvisFocus(50)"><b>50 минут</b><div class="footnote">Длинный блок</div></button></div>';
+ html+='<div class="section-title mt-3">История фокуса</div>';
+ var recent=history.slice().sort(function(a,b){return (new Date(b.startedAt||b.date||0).getTime()||0)-(new Date(a.startedAt||a.date||0).getTime()||0);}).slice(0,5);
+ if(!recent.length)html+='<div class="card"><div class="empty"><div class="empty-icon">🎯</div><div class="empty-title">Пока нет сессий</div><div class="footnote">После первого блока здесь появится фактическое время и результат.</div></div></div>';
+ else recent.forEach(function(x){var d=rowDate(x),dateLabel=d?d.toLocaleDateString('ru-RU',{day:'numeric',month:'short'}):'Дата не указана';var m=Math.round(rowMinutes(x)*10)/10;html+='<div class="card mb-2"><div class="row-between"><div><b>'+esc(x.taskTitle||'Фокус-сессия')+'</b><div class="footnote">'+dateLabel+' · '+(x.completed?'Завершена':'Остановлена раньше')+'</div></div><b>'+m+' мин'+(x.plannedMinutes?' / '+Number(x.plannedMinutes)+' мин':'')+'</b></div></div>';});
  html+='<button class="btn btn-ghost btn-block mt-3" onclick="navigate(\'ai\')">Обсудить нагрузку с Джарвисом</button></div>';document.getElementById('app').innerHTML=html;
 };
 window.renderEveningReview=function(){navigate('dailyReport');};
