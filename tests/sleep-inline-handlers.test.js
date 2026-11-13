@@ -13,5 +13,5 @@ test('sleep editor inline handlers are exported from the app IIFE', () => {
 test('sleep editor buttons call the exported save and delete handlers', () => {
   assert.match(app, /onclick="saveSleepEntry\(\)"/);
   assert.match(app, /onclick="deleteSleepEntry\(/);
-  assert.match(app, /onclick="openSleepForDate\(/);
+  assert.match(app, /onclick="openSleepForDate\(today\(\)\)"/);
 });
