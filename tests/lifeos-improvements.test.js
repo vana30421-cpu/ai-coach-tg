@@ -111,6 +111,8 @@ test('vision section has timed breaks, symptom logging, exam history and urgent-
 
 test('focus screen reports only saved session history and real weekly metrics',()=>{
  assert.match(systems,/history=state\.focus&&Array\.isArray\(state\.focus\.history\)/);
+ assert.match(systems,/Array\.isArray\(state\.timerSessions\)/);
+ assert.match(systems,/Array\.isArray\(state\.focusSessions\)/);
  assert.match(systems,/todayMinutes/);
  assert.match(systems,/weekMinutes/);
  assert.match(systems,/average=weekRows\.length\?weekMinutes\/weekRows\.length/);
@@ -119,7 +121,7 @@ test('focus screen reports only saved session history and real weekly metrics',(
  assert.match(systems,/Остановлена раньше/);
  const index=fs.readFileSync('index.html','utf8');
  const sw=fs.readFileSync('sw.js','utf8');
- assert.match(index,/lifeos-systems\.js\?v=20261114-1/);
+ assert.match(index,/lifeos-systems\.js\?v=20261114-2/);
  assert.match(sw,/const CACHE='life-os-v\d+'/);
  assert.match(sw,/\.\/lifeos-systems\.js/);
 });
