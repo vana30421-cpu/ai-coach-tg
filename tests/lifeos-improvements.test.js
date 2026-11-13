@@ -38,9 +38,25 @@ test('updated eye comfort assets are versioned and cached offline',()=>{
  const sw=fs.readFileSync('sw.js','utf8');
  assert.match(index,/content\.js\?v=20261114-1/);
  assert.match(index,/content3\.js\?v=20261114-1/);
- assert.match(sw,/const CACHE='life-os-v186'/);
+ assert.match(sw,/const CACHE='life-os-v\d+'/);
  assert.match(sw,/\.\/content\.js/);
  assert.match(sw,/\.\/content3\.js/);
+});
+test('dashboard focus buttons use the shared timer and persist completed or partial sessions',()=>{
+ assert.equal((app.match(/startFocusSession\(/g)||[]).length,0);
+ assert.match(app,/startJarvisFocus\(25/);
+ assert.match(app,/startJarvisFocus\(50/);
+ assert.match(app,/startJarvisFocus\(90/);
+ assert.match(app,/function getFocusState\(\)/);
+ assert.match(app,/function finishJarvisFocusSession\(completed\)/);
+ assert.match(app,/focusState\.history\.push\(session\)/);
+ assert.match(app,/focusState\.active=\{id:sessionId/);
+ assert.match(app,/function renderAfterFocusChange\(\)/);
+ assert.match(app,/state\.focus && state\.focus\.active/);
+ const index=fs.readFileSync('index.html','utf8');
+ assert.match(index,/app\.js\?v=20261114-2/);
+ assert.match(index,/sw\.js\?v=20261114-2/);
+ assert.match(fs.readFileSync('sw.js','utf8'),/const CACHE='life-os-v\d+'/);
 });
 test('vision section has timed breaks, symptom logging, exam history and urgent-symptom guidance',()=>{
  for(const name of ['startVisionBreak','finishVisionBreak','openVisionSymptomLog','saveVisionSymptoms','saveVisionExam','startEyeExercise','completeEyeExercise'])assert.match(app,new RegExp('function '+name+'\\('));
