@@ -139,3 +139,10 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Bumped the app asset query to `20261113-1`, build marker to `LIFEOS-20261113-1`, and Service Worker cache to `life-os-v182`.
 - Added regression tests for global handler exposure and corresponding inline UI wiring.
 - Verification status at commit time: pending GitHub Actions; Android Chrome / Telegram WebView manual verification remains outstanding.
+
+
+## 2026-11-13 — Sleep overview usability
+- Sleep overview now sorts records by date, shows a seven-day average for duration and subjective quality, and provides direct editing access to the seven latest records.
+- Calculations read existing `sleepEntries` only; no record fields, IDs, or persistence format changed. Empty data remains an explicit empty state.
+- App asset query advanced to `20261113-2`; Service Worker cache advanced to `life-os-v183`.
+- Regression coverage extended for the history and trend UI. Automated CI and manual device verification remain pending.
