@@ -318,3 +318,13 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - English: 12 lessons across A1–C2, including spoken interaction, complex grammar, data presentation and expert discussion.
 - Updated tests for exact lesson totals and per-level CEFR grouping. Updated app asset version and offline cache to `life-os-v197`.
 - Remaining: JavaScript 968, Python 969, English 1,435. Full 3,500-lesson target is not complete.
+
+
+## 2026-11-14 — Security, governance and proficiency batch 7
+
+- Expanded the authored curriculum to **152 unique lessons**: JavaScript 38/1,000, Python 37/1,000, English 77/1,500.
+- JavaScript: STRIDE threat modeling, OAuth/OIDC token handling, frontend supply-chain security, offline-first conflict resolution, architecture fitness functions and technical portfolio governance.
+- Python: subprocess security, observability/tracing, zero-downtime schema migrations, feature-flag rollout, performance trade-offs and Distinguished-level ecosystem governance.
+- English: 12 further A1–C2 lessons covering core communication, complex grammar, argumentation, quantitative accuracy and executive summaries.
+- Updated regression counts and CEFR distribution, script asset version and offline cache to `life-os-v198`.
+- Remaining to target: JavaScript 962, Python 963, English 1,423. CI, Pages deployment and device verification are still not confirmed.
