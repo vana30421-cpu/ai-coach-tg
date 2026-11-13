@@ -283,3 +283,15 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Bumped the academy script query and offline cache to `life-os-v194`.
 - Current authored count remains 60/3,500 (15 JavaScript, 15 Python, 30 English); remaining targets 985, 985 and 1,470 respectively.
 - Automated CI and Pages deployment are not confirmed in this environment.
+
+
+## 2026-11-14 — Engineering and English academy content batch 4
+
+- Expanded the authored curriculum to **81 lessons**: JavaScript 20/1,000, Python 20/1,000, English 41/1,500.
+- JavaScript adds TypeScript boundary validation, HTTP/retry safety, concurrency limits, frontend observability and release strategy.
+- Python adds dataclasses, descriptors, context managers, async generators and dependency-injected service architecture.
+- English adds twelve distinct lessons across A1–C2.
+- Fixed CEFR module assembly to group lessons by their explicit A1–C2 title prefix. This prevents later authored lessons from being silently omitted because they were appended in batches.
+- Regression tests now assert actual counts per course, expected distribution per CEFR level, unique IDs, answer explanations and schema completeness.
+- Updated academy asset version and offline cache to `life-os-v195`.
+- Remaining: JavaScript 980, Python 980, English 1,459. Full curriculum and deployment verification remain incomplete.
