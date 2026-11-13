@@ -17,6 +17,46 @@ test('all changed browser scripts parse',()=>{
  for(const [name,source] of [['app.js',app],['content.js',content],['jarvis-core.js',fs.readFileSync('jarvis-core.js','utf8')],['sw.js',fs.readFileSync('sw.js','utf8')]])assert.doesNotThrow(()=>new vm.Script(source,{filename:name}));
 });
 
+test('focus timer records actual partial duration once and preserves history',()=>{
+ const start=app.indexOf('function getFocusState()');
+ const end=app.indexOf('function renderJarvisCheckin()',start);
+ assert.ok(start>=0&&end>start);
+ let clock=1700000000000;
+ class FakeDate extends Date{static now(){return clock;}}
+ const state={focus:{active:null,history:[]},jarvis:{focusDefault:25}};
+ const sandbox={
+  state,window:{},currentPage:'dashboard',Date:FakeDate,
+  uid:()=> 'focus-session-test',
+  today:()=> '2026-11-14',
+  nowISO:()=>new FakeDate(clock).toISOString(),
+  getJarvisState:()=>state.jarvis,
+  save:()=>{},
+  renderDashboard:()=>{},
+  renderJarvis:()=>{},
+  setInterval:()=>1,
+  clearInterval:()=>{},
+  document:{getElementById:()=>null}
+ };
+ vm.runInNewContext(app.slice(start,end),sandbox);
+ sandbox.startJarvisFocus(25,'Учёба');
+ assert.equal(state.focus.active.taskTitle,'Учёба');
+ assert.equal(state.jarvis.focus.active,true);
+ clock+=600000;
+ sandbox.stopJarvisFocus();
+ assert.equal(state.focus.active,null);
+ assert.equal(state.focus.history.length,1);
+ assert.equal(state.focus.history[0].minutes,10);
+ assert.equal(state.focus.history[0].plannedMinutes,25);
+ assert.equal(state.focus.history[0].completed,false);
+ sandbox.stopJarvisFocus();
+ assert.equal(state.focus.history.length,1);
+ sandbox.startJarvisFocus(5,'Повторение');
+ clock+=300000;
+ sandbox.finishJarvisFocusSession(true);
+ assert.equal(state.focus.history.length,2);
+ assert.equal(state.focus.history[1].minutes,5);
+ assert.equal(state.focus.history[1].completed,true);
+});
 test('vision catalog contains 200 detailed comfort routines, not fake vision-correction drills',()=>{
  const sandbox={window:{},console:{log(){},warn(){},error(){}}};
  vm.runInNewContext(content,sandbox,{filename:'content.js'});
