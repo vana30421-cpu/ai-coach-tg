@@ -273,3 +273,13 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Updated regression assertions, asset query version and offline cache to `life-os-v193`.
 - Remaining to target: JavaScript 985, Python 985, English 1,470. No placeholders or target-count inflation.
 - CI, Pages deployment and real Android/Telegram WebView checks remain pending; no successful run is claimed.
+
+
+## 2026-11-14 — Lesson schema and career-stage structure
+
+- Added deterministic stable IDs to all authored lessons and answer explanations to quiz records.
+- Split JavaScript curriculum into Intern, Junior, Middle and Senior modules; Python into Intern, Junior and Middle modules. Advanced Staff/Principal/Distinguished levels remain explicit targets and are not misrepresented as completed curriculum.
+- Expanded regression tests to require unique lesson IDs and non-empty answer explanations.
+- Bumped the academy script query and offline cache to `life-os-v194`.
+- Current authored count remains 60/3,500 (15 JavaScript, 15 Python, 30 English); remaining targets 985, 985 and 1,470 respectively.
+- Automated CI and Pages deployment are not confirmed in this environment.
