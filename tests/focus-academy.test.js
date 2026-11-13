@@ -6,6 +6,7 @@ const path=require('node:path');
 const academy=fs.readFileSync(path.join(__dirname,'..','lifeos-focus-academy.js'),'utf8');
 const app=fs.readFileSync(path.join(__dirname,'..','app.js'),'utf8');
 const index=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
+const sw=fs.readFileSync(path.join(__dirname,'..','sw.js'),'utf8');
 test('focus course contains 12 practical lessons across three modules',()=>{
  assert.match(academy,/id:'focus_mastery_course'/);
  assert.equal((academy.match(/lesson\('/g)||[]).length,12);
@@ -20,4 +21,6 @@ test('focus course uses generic course quiz and progress-compatible fields',()=>
 test('focus academy loads before app router and learning page links to it',()=>{
  assert.ok(index.indexOf('lifeos-focus-academy.js')<index.indexOf('app.js?v=20261113-4'));
  assert.match(app,/Тренировка фокуса/);
+ assert.match(sw,/life-os-v185/);
+ assert.match(sw,/\.\/lifeos-focus-academy\.js/);
 });
