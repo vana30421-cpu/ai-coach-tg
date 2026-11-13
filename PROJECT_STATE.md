@@ -2,7 +2,7 @@
 
 Last updated: 2026-11-14
 Default branch: `main`
-Latest RAD catalogue implementation commit: `e631cefdf854be3e804bb5caf413d88849a24dbc`; latest verified test commit: `6b583fd870548e77faa14f20d41a19aa5aadcd10`; main includes merged application commit `e9e27600ae66018ebff0f3494caee4c74d8b5ff4`.
+Latest main commit: `89c5585c49d198819ede3718bf22724f18b8326a`; latest verified application/test commit: `f6ef995449e36789bb72b1789c2006e351a192e9`; latest successful Pages deployment: `f6ef995449e36789bb72b1789c2006e351a192e9`.
 Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https://github.com/vana30421-cpu/ai-coach-tg/pull/41)
 
 ## Implemented in the merged change
@@ -214,3 +214,14 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Existing sleep records and IDs are preserved; invalid input is rejected before state mutation.
 - App asset query advanced to `20261114-3`, build marker to `LIFEOS-20261114-5`, and Service Worker cache to `life-os-v190`.
 - GitHub Actions and Pages deployment are pending for this change; physical Android Chrome / Telegram WebView input verification remains required.
+
+
+## 2026-11-14 — Sleep runtime validation and 50-app execution matrix
+
+- Sleep input now rejects impossible calendar dates and out-of-range clock values before changing state.
+- Added runtime tests against the actual sleep functions: overnight create, edit with stable ID, no duplicate XP, invalid date/time rejection, and rollback on persistence failure.
+- Fixed stale asset-version assertions in the regression suite. GitHub Actions LIFEOS checks: **263 passed, 0 failed** on `f6ef995449e36789bb72b1789c2006e351a192e9`.
+- LIFE OS Jarvis tests: **success** on the same commit.
+- GitHub Pages deployment: **success** on the same commit.
+- Added `LIFEOS_50_APP_IMPLEMENTATION_MATRIX.md`: all 50 reference apps are mapped to LIFEOS destinations, conservative implementation statuses, gaps and acceptance criteria.
+- Remaining manual requirement: verify sleep create/edit/delete, offline reload, focus timer and core navigation on physical Android Chrome and Telegram Android WebView.
