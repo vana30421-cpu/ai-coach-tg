@@ -15,7 +15,7 @@ test('registers three distinct academies with the requested curriculum targets',
   assert.deepEqual(JSON.parse(JSON.stringify(academy.targets)), { javascript: 1000, python: 1000, english: 1500 });
   assert.equal(academy.courses.length, 3);
   assert.equal(root.ALL_NEW_COURSES.length, 3);
-  assert.deepEqual(academy.englishLevels, ['A1','A2','B1','B2','C1','C2']);
+  assert.deepEqual(JSON.parse(JSON.stringify(academy.englishLevels)), ['A1','A2','B1','B2','C1','C2']);
   assert.ok(academy.levels.some(x => x.code === 'Distinguished'));
 });
 test('every published lesson has theory, example, practical work, test, criterion and source', () => {
