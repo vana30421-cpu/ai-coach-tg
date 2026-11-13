@@ -21,6 +21,6 @@ test('focus course uses generic course quiz and progress-compatible fields',()=>
 test('focus academy loads before app router and learning page links to it',()=>{
  assert.ok(index.indexOf('lifeos-focus-academy.js')<index.indexOf('app.js?v=20261113-4'));
  assert.match(app,/Тренировка фокуса/);
- assert.match(sw,/const CACHE='life-os-v\\d+'/);
+ assert.match(sw,/const CACHE='life-os-v\d+'/);
  assert.match(sw,/\.\/lifeos-focus-academy\.js/);
 });
