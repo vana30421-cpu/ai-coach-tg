@@ -48,7 +48,7 @@ window.addCalendarEvent=function(){
 window.renderFocus=function(){
  var f=state.jarvis&&state.jarvis.focus,history=state.focus&&Array.isArray(state.focus.history)?state.focus.history:[],now=new Date(),weekStart=new Date(now);
  weekStart.setHours(0,0,0,0);weekStart.setDate(weekStart.getDate()-6);
- function rowDate(x){var d=new Date(x.startedAt||x.date||'');return Number.isNaN(d.getTime())?null:d;}
+ function rowDate(x){var raw=x.startedAt||x.date||'',d=new Date(/^\\d{4}-\\d{2}-\\d{2}$/.test(raw)?raw+'T12:00:00':raw);return Number.isNaN(d.getTime())?null:d;}
  function rowMinutes(x){var seconds=Number(x.actualSeconds);if(Number.isFinite(seconds)&&seconds>0)return seconds/60;return Math.max(0,Number(x.minutes)||Number(x.duration)||0);}
  var todayRows=history.filter(function(x){var d=rowDate(x);return x.date===today()||(d&&d.toDateString()===now.toDateString());});
  var weekRows=history.filter(function(x){var d=rowDate(x);return d&&d>=weekStart&&d<=now;});
