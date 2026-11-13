@@ -3150,11 +3150,12 @@ function getSleepEntryForDate(date){
   return (state.sleepEntries||[]).find(function(s){ return s.date === date; });
 }
 function renderSleep(){
-  var entries=(Array.isArray(state.sleepEntries)?state.sleepEntries:[]).filter(function(x){return x&&/^\d{4}-\d{2}-\d{2}$/.test(String(x.date||''))&&Number.isFinite(Number(x.hours));}).slice().sort(function(a,b){return String(b.date).localeCompare(String(a.date));});
+  var entries=(Array.isArray(state.sleepEntries)?state.sleepEntries:[]).filter(function(x){return x&&/^\d{4}-\d{2}-\d{2}$/.test(String(x.date||''))&&x.hours!==null&&x.hours!==undefined&&x.hours!==''&&Number.isFinite(Number(x.hours));}).slice().sort(function(a,b){return String(b.date).localeCompare(String(a.date));});
   var lastEntry=entries[0]||null,cutoff=new Date();cutoff.setHours(0,0,0,0);cutoff.setDate(cutoff.getDate()-6);
   var recentWindow=entries.filter(function(x){var d=new Date(x.date+'T12:00:00');return !Number.isNaN(d.getTime())&&d>=cutoff;});
   var avgHours=recentWindow.length?recentWindow.reduce(function(n,x){return n+Number(x.hours);},0)/recentWindow.length:null;
-  var avgQuality=recentWindow.length?recentWindow.reduce(function(n,x){return n+(Number(x.quality)||0);},0)/recentWindow.length:null;
+  var qualityRows=recentWindow.filter(function(x){return x.quality!==null&&x.quality!==undefined&&x.quality!==''&&Number.isFinite(Number(x.quality));});
+  var avgQuality=qualityRows.length?qualityRows.reduce(function(n,x){return n+Number(x.quality);},0)/qualityRows.length:null;
   var html='<div class="page">';
   html+='<div class="row-between" style="margin-bottom:14px;"><div class="title-xl" style="margin:0;">😴 Сон</div>';
   html+='<button class="btn btn-ghost btn-sm" onclick="navigate(\'sleepCalendar\')">📅 Календарь</button></div>';
