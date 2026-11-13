@@ -1142,9 +1142,9 @@ function renderDashboard(){
   } else {
     html += '<div class="card"><h2>⏱ Фокус</h2>';
     html += '<div class="row" style="gap:6px;">';
-    html += '<button class="btn btn-primary" style="flex:1;" onclick="startFocusSession(25,\'Pomodoro\')">▶ 25 мин</button>';
-    html += '<button class="btn btn-ghost" style="flex:1;" onclick="startFocusSession(50,\'Focus\')">▶ 50 мин</button>';
-    html += '<button class="btn btn-ghost" style="flex:1;" onclick="startFocusSession(90,\'Deep Work\')">▶ 90 мин</button>';
+    html += '<button class="btn btn-primary" style="flex:1;" onclick="startJarvisFocus(25,\'Pomodoro\')">▶ 25 мин</button>';
+    html += '<button class="btn btn-ghost" style="flex:1;" onclick="startJarvisFocus(50,\'Focus\')">▶ 50 мин</button>';
+    html += '<button class="btn btn-ghost" style="flex:1;" onclick="startJarvisFocus(90,\'Deep Work\')">▶ 90 мин</button>';
     html += '</div></div>';
   }
 
@@ -4583,19 +4583,54 @@ function speakJarvisLast(){
   if(!m||!window.speechSynthesis){toast('Озвучивание недоступно','warning');return;}
   try{window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(m.text);u.lang='ru-RU';u.rate=1;window.speechSynthesis.speak(u);}catch(e){toast('Не удалось озвучить ответ','warning');}
 }
-function startJarvisFocus(minutes){
+function getFocusState(){
+  if(!state.focus||typeof state.focus!=='object')state.focus={active:null,history:[]};
+  if(!Array.isArray(state.focus.history))state.focus.history=[];
+  return state.focus;
+}
+function finishJarvisFocusSession(completed){
+  var d=getJarvisState(),f=d.focus,focusState=getFocusState();
+  if(!f||!f.startedAt||f.recordedAt){focusState.active=null;return null;}
+  var startedAt=Number(f.startedAt)||new Date(f.startedAt).getTime();
+  if(!Number.isFinite(startedAt))startedAt=Date.now();
+  var elapsedSeconds=Math.max(0,Math.min((Number(f.minutes)||25)*60,Math.floor((Date.now()-startedAt)/1000)));
+  var actualMinutes=Math.round(elapsedSeconds/6)/10;
+  var endedAt=nowISO();
+  var session={id:f.sessionId||uid(),date:today(),startedAt:new Date(startedAt).toISOString(),endedAt:endedAt,minutes:actualMinutes,duration:actualMinutes,plannedMinutes:Number(f.minutes)||25,actualSeconds:elapsedSeconds,completed:!!completed,taskTitle:f.taskTitle||'Фокус-сессия',source:'focus_timer'};
+  if(elapsedSeconds>0){focusState.history.push(session);if(focusState.history.length>500)focusState.history=focusState.history.slice(-500);}
+  focusState.active=null;
+  f.active=false;f.completed=!!completed;f.completedAt=endedAt;f.recordedAt=endedAt;
+  return session;
+}
+function renderAfterFocusChange(){
+  if(currentPage==='ai'||currentPage==='jarvis')renderJarvis();
+  else if(currentPage==='focus'&&typeof window.renderFocus==='function')window.renderFocus();
+  else renderDashboard();
+}
+function startJarvisFocus(minutes,taskTitle){
   minutes=Math.max(5,Math.min(180,Number(minutes)||Number(getJarvisState().focusDefault)||25));
-  var d=getJarvisState();d.focus={active:true,minutes:minutes,startedAt:Date.now(),endsAt:Date.now()+minutes*60000};save();renderJarvis();startJarvisTicker();
+  var d=getJarvisState(),focusState=getFocusState();
+  if(d.focus&&d.focus.active)finishJarvisFocusSession(false);
+  var startedAt=Date.now(),sessionId=uid(),title=String(taskTitle||'Фокус-сессия').slice(0,120);
+  d.focus={active:true,minutes:minutes,startedAt:startedAt,endsAt:startedAt+minutes*60000,sessionId:sessionId,taskTitle:title};
+  focusState.active={id:sessionId,startedAt:new Date(startedAt).toISOString(),taskTitle:title,plannedMinutes:minutes};
+  save();renderAfterFocusChange();startJarvisTicker();
 }
 function startJarvisTicker(){
   if(window.__jarvisTicker)return;
   window.__jarvisTicker=setInterval(function(){
     var d=getJarvisState(),f=d.focus,el=document.getElementById('jarvisCountdown');if(!f||!f.active){clearInterval(window.__jarvisTicker);window.__jarvisTicker=null;return;}
     var left=Math.max(0,Math.ceil((f.endsAt-Date.now())/1000));if(el)el.textContent=Math.floor(left/60)+':'+String(left%60).padStart(2,'0');
-    if(left===0){f.active=false;f.completedAt=nowISO();save();clearInterval(window.__jarvisTicker);window.__jarvisTicker=null;toast('Фокус-сессия завершена. Сделай короткий перерыв.','success',4000);if(window.speechSynthesis){var u=new SpeechSynthesisUtterance('Фокус сессия завершена. Время отдохнуть.');u.lang='ru-RU';window.speechSynthesis.speak(u);}if(currentPage==='ai'||currentPage==='jarvis')renderJarvis();}
+    if(left===0){finishJarvisFocusSession(true);save();clearInterval(window.__jarvisTicker);window.__jarvisTicker=null;toast('Фокус-сессия завершена. Сделай короткий перерыв.','success',4000);if(window.speechSynthesis){var u=new SpeechSynthesisUtterance('Фокус сессия завершена. Время отдохнуть.');u.lang='ru-RU';window.speechSynthesis.speak(u);}renderAfterFocusChange();}
   },1000);
 }
-function stopJarvisFocus(){var d=getJarvisState();if(d.focus)d.focus.active=false;save();if(window.__jarvisTicker){clearInterval(window.__jarvisTicker);window.__jarvisTicker=null;}renderJarvis();}
+function stopJarvisFocus(){
+  var d=getJarvisState();
+  if(d.focus&&d.focus.active)finishJarvisFocusSession(false);
+  else getFocusState().active=null;
+  save();if(window.__jarvisTicker){clearInterval(window.__jarvisTicker);window.__jarvisTicker=null;}
+  renderAfterFocusChange();
+}
 function renderJarvisCheckin(){
   var html='<div class="page"><div class="title-xl">📋 Самооценка состояния</div><div class="subtitle">Короткий дневной срез. Не медицинский тест и не диагностика.</div><div class="card">';
   [['energy','Энергия'],['focus','Концентрация'],['sleep','Качество сна'],['stress','Стресс (5 — низкий)']].forEach(function(x){html+='<div class="field"><label class="field-label">'+x[1]+'</label><select id="jarvis-'+x[0]+'"><option value="1">1 — очень низко</option><option value="2">2</option><option value="3" selected>3 — средне</option><option value="4">4</option><option value="5">5 — очень хорошо</option></select></div>';});
