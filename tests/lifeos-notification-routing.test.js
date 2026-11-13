@@ -22,6 +22,6 @@ test('notification settings expose permission, reminders and delivery limitation
  assert.match(notifications,/function requestPermission/);
  assert.match(notifications,/function schedule/);
  assert.match(notifications,/Для гарантированной доставки в фоне нужен push-сервис/);
- assert.ok(sw.includes('life-os-v178'));
+ assert.match(sw,/const CACHE='life-os-v\d+'/);
  assert.ok(sw.includes('./lifeos-notifications.js'));
 });
