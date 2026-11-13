@@ -3150,22 +3150,33 @@ function getSleepEntryForDate(date){
   return (state.sleepEntries||[]).find(function(s){ return s.date === date; });
 }
 function renderSleep(){
-  var lastEntry = (state.sleepEntries||[]).slice(-1)[0];
-  var html = '<div class="page">';
-  html += '<div class="row-between" style="margin-bottom:14px;"><div class="title-xl" style="margin:0;">😴 Сон</div>';
-  html += '<button class="btn btn-ghost btn-sm" onclick="navigate(\'sleepCalendar\')">📅</button></div>';
-  html += '<div class="card card-gradient">';
+  var entries=(Array.isArray(state.sleepEntries)?state.sleepEntries:[]).filter(function(x){return x&&/^\d{4}-\d{2}-\d{2}$/.test(String(x.date||''))&&Number.isFinite(Number(x.hours));}).slice().sort(function(a,b){return String(b.date).localeCompare(String(a.date));});
+  var lastEntry=entries[0]||null,cutoff=new Date();cutoff.setHours(0,0,0,0);cutoff.setDate(cutoff.getDate()-6);
+  var recentWindow=entries.filter(function(x){var d=new Date(x.date+'T12:00:00');return !Number.isNaN(d.getTime())&&d>=cutoff;});
+  var avgHours=recentWindow.length?recentWindow.reduce(function(n,x){return n+Number(x.hours);},0)/recentWindow.length:null;
+  var avgQuality=recentWindow.length?recentWindow.reduce(function(n,x){return n+(Number(x.quality)||0);},0)/recentWindow.length:null;
+  var html='<div class="page">';
+  html+='<div class="row-between" style="margin-bottom:14px;"><div class="title-xl" style="margin:0;">😴 Сон</div>';
+  html+='<button class="btn btn-ghost btn-sm" onclick="navigate(\'sleepCalendar\')">📅 Календарь</button></div>';
+  html+='<div class="card card-gradient">';
   if(lastEntry){
-    html += '<div style="font-size:12px;opacity:.9;">Последняя ночь</div>';
-    html += '<div style="font-size:40px;font-weight:800;">' + lastEntry.hours + ' ч</div>';
-    html += '<div style="font-size:12px;opacity:.9;margin-top:6px;">' + lastEntry.date + ' · качество ' + lastEntry.quality + '/10</div>';
-  } else {
-    html += '<div style="font-size:16px;font-weight:800;">Добавь первую запись</div>';
+    html+='<div style="font-size:12px;opacity:.9;">Последняя запись · '+esc(lastEntry.date)+'</div>';
+    html+='<div style="font-size:40px;font-weight:800;">'+Number(lastEntry.hours).toFixed(1)+' ч</div>';
+    html+='<div style="font-size:12px;opacity:.9;margin-top:6px;">Качество '+(Number(lastEntry.quality)||'—')+'/10</div>';
+  }else html+='<div style="font-size:16px;font-weight:800;">Добавь первую запись</div><div class="footnote mt-2">Время и качество сна можно записывать вручную — данные не собираются с датчиков.</div>';
+  html+='</div>';
+  html+='<button class="btn btn-primary btn-block mb-3" onclick="openSleepForDate(today())">＋ Записать сон</button>';
+  html+='<div class="grid-2 mb-3"><div class="card"><div class="stat-value">'+(avgHours===null?'—':avgHours.toFixed(1)+' ч')+'</div><div class="stat-label">Среднее за 7 дней</div></div><div class="card"><div class="stat-value">'+(avgQuality===null?'—':avgQuality.toFixed(1)+'/10')+'</div><div class="stat-label">Среднее качество</div></div></div>';
+  html+='<div class="section-title">Последние записи</div>';
+  if(!entries.length)html+='<div class="card empty">История появится после первой сохранённой записи.</div>';
+  else{
+    html+='<div class="card">';
+    entries.slice(0,7).forEach(function(x){
+      html+='<button class="list-row" style="width:100%;text-align:left;background:transparent;border:0;color:inherit;cursor:pointer;" onclick="openSleepForDate(\''+esc(x.date)+'\')"><span class="list-body"><span class="list-title">'+esc(x.date)+'</span><span class="footnote">'+Number(x.hours).toFixed(1)+' ч · качество '+(Number(x.quality)||'—')+'/10</span></span><span aria-hidden="true">›</span></button>';
+    });
+    html+='</div>';
   }
-  html += '</div>';
-  html += '<button class="btn btn-primary btn-block mb-3" onclick="openSleepForDate(today())">➕ Записать сон</button>';
-  html += '</div>';
-  document.getElementById('app').innerHTML = html;
+  html+='</div>';document.getElementById('app').innerHTML=html;
 }
 function renderSleepCalendar(){
   var y = SLEEP_CAL_CURSOR.getFullYear(), m = SLEEP_CAL_CURSOR.getMonth();
