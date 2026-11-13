@@ -328,3 +328,5 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - English: 12 further A1–C2 lessons covering core communication, complex grammar, argumentation, quantitative accuracy and executive summaries.
 - Updated regression counts and CEFR distribution, script asset version and offline cache to `life-os-v198`.
 - Remaining to target: JavaScript 962, Python 963, English 1,423. CI, Pages deployment and device verification are still not confirmed.
+
+- CEFR count reconciliation from source inspection: A1 13, A2 13, B1 13, B2 13, C1 13, C2 12 (77 English lessons total). Regression expectation aligned to the source records.
