@@ -299,10 +299,12 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 
 ## 2026-11-14 — Senior engineering and English curriculum batch 5
 
-- Expanded authored curriculum to **105 unique lessons**: JavaScript 26/1,000, Python 26/1,000, English 53/1,500.
+- Expanded authored curriculum to **104 unique lessons**: JavaScript 26/1,000, Python 25/1,000, English 53/1,500.
 - JavaScript topics: frontend state ownership, Web Workers, memory leaks, Service Worker lifecycle/cache strategies, ADRs and Staff-level RFCs.
 - Python topics: GIL/free-threaded runtime considerations, asyncio cancellation/TaskGroup, transaction isolation, message delivery guarantees, SLO/error budgets.
 - English: 12 further distinct lessons across A1–C2, including advanced argumentation, corpus use, register and negotiation.
 - Updated regression targets and per-level CEFR distribution; bumped script version and offline cache to `life-os-v196`.
-- Remaining to target: JavaScript 974, Python 974, English 1,447. Staff/Principal/Distinguished pathways still require substantial authored depth; current career labels are not a claim of completed mastery.
+- Remaining to target: JavaScript 974, Python 975, English 1,447. Staff/Principal/Distinguished pathways still require substantial authored depth; current career labels are not a claim of completed mastery.
 - CI, Pages deployment and physical-device verification remain unconfirmed.
+
+- Count reconciliation: batch 5 contains 6 JavaScript, 5 Python and 12 English lessons (23 additions); the verified authored total is 104, not 105.
