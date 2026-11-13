@@ -146,3 +146,5 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Calculations read existing `sleepEntries` only; no record fields, IDs, or persistence format changed. Empty data remains an explicit empty state.
 - App asset query advanced to `20261113-2`; Service Worker cache advanced to `life-os-v183`.
 - Regression coverage extended for the history and trend UI. Automated CI and manual device verification remain pending.
+
+- Trend calculations explicitly exclude missing duration/quality values instead of interpreting missing measurements as zero.
