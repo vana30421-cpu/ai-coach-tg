@@ -261,3 +261,15 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Regression tests now assert 36 unique lessons, per-academy counts, CEFR module distribution, schema completeness and idempotent registration.
 - Remaining to target: JavaScript 991, Python 991, English 1,482. These targets are not represented as completed content.
 - CI, Pages deployment and manual Android Chrome / Telegram WebView verification are pending until the updated workflows finish.
+
+
+## 2026-11-14 — Engineering and English academy content batch 3
+
+- Expanded the authored curriculum from 36 to **60 unique lessons**: JavaScript 15/1,000, Python 15/1,000, English 30/1,500.
+- JavaScript: prototypes/classes, iterators/generators, DOM event delegation and XSS, browser storage/schema migration, profiling, and performance-first optimization.
+- Python: resource management, iterators/generators, package boundaries, pytest fixtures/parameterization, Protocol/generics, profiling and algorithmic optimization.
+- English: additional distinct A1, A2, B1, B2, C1 and C2 grammar, pragmatic and academic-register lessons.
+- Each lesson uses the existing academy schema with objective, explanatory theory, example, practical task, quiz and mastery criterion.
+- Updated regression assertions, asset query version and offline cache to `life-os-v193`.
+- Remaining to target: JavaScript 985, Python 985, English 1,470. No placeholders or target-count inflation.
+- CI, Pages deployment and real Android/Telegram WebView checks remain pending; no successful run is claimed.
