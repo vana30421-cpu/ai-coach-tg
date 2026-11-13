@@ -2,7 +2,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
-const app = fs.readFileSync(new URL('../app.js', import.meta.url), 'utf8');
+const app = fs.readFileSync(require('node:path').join(__dirname, '..', 'app.js'), 'utf8');
 
 test('sleep editor inline handlers are exported from the app IIFE', () => {
   assert.match(app, /window\.openSleepForDate\s*=\s*openSleepForDate\s*;/);
