@@ -681,6 +681,7 @@ function startEffects(){
       el.style.setProperty('--delay',(-Math.random()*22)+'s');
       el.style.setProperty('--duration',(8+Math.random()*17)+'s');
       el.style.setProperty('--drift',((Math.random()-.5)*130)+'px');
+      el.style.setProperty('--life-static-y',(8+Math.random()*84).toFixed(1)+'vh');
       if(glyphs[effect])el.textContent=glyphs[effect][Math.floor(Math.random()*glyphs[effect].length)];
       overlay.appendChild(el);
     }
