@@ -176,7 +176,7 @@ test('batch 11 adds performance, data integrity and professional communication l
 test('batch-12 adds the complete 3,000-record expansion with unique topic pairs',()=>{
  const courses=load().LIFEOS_ENGINEERING_ACADEMIES.courses;
  const js=courses[0].modules.flatMap(m=>m.lessons),py=courses[1].modules.flatMap(m=>m.lessons),en=courses[2].modules.flatMap(m=>m.lessons);
- assert.equal(js.length,1000);assert.equal(py.length,1000);assert.equal(en.length,1349);
+ assert.equal(js.length,1000);assert.equal(py.length,1000);assert.equal(en.length,1500);
  const addedJs=js.filter(x=>x.objective.startsWith('Спроектировать и проверить решение по теме'));
  const addedPy=py.filter(x=>x.objective.startsWith('Реализовать инженерный контракт в области'));
  const addedEn=en.filter(x=>x.objective.startsWith('Develop '));
@@ -185,6 +185,25 @@ test('batch-12 adds the complete 3,000-record expansion with unique topic pairs'
   assert.equal(new Set(rows.map(x=>x.title)).size,rows.length);
   for(const row of rows){assert.ok(row.objective.length>=60);assert.ok(row.theory.length>=minTheory);assert.ok(row.practice.length>=minPractice);assert.equal(row.taskInstructions.length,4);assert.equal(row.quiz.options.length,3);assert.ok(row.acceptanceCriteria.length>=20);}
  }
- for(const level of ['A1','A2','B1','B2','C1']) assert.equal(en.filter(x=>x.title.startsWith(level+' ·')).length,225);
- assert.equal(en.filter(x=>x.title.startsWith('C2 ·')).length,224);
+ for(const level of ['A1','A2','B1','B2','C1','C2']) assert.equal(en.filter(x=>x.title.startsWith(level+' ·')).length,250);
+});
+
+
+test('batch-13 adds 151 distinct, level-specific English lessons and completes CEFR target',()=>{
+ const en=load().LIFEOS_ENGINEERING_ACADEMIES.courses[2].modules.flatMap(m=>m.lessons);
+ const added=en.filter(x=>x.objective.startsWith('Demonstrate '));
+ assert.equal(en.length,1500);
+ assert.equal(added.length,151);
+ assert.equal(new Set(added.map(x=>x.title)).size,151);
+ for(const row of added){
+  assert.ok(['A1','A2','B1','B2','C1','C2'].some(level=>row.title.startsWith(level+' ·')));
+  assert.ok(row.objective.length>=100);
+  assert.ok(row.theory.length>=300);
+  assert.ok(row.practice.length>=250);
+  assert.equal(row.taskInstructions.length,4);
+  assert.ok(row.acceptanceCriteria.length>=20);
+  assert.equal(row.quiz.options.length,3);
+  assert.ok(row.sources[0].url.includes('coe.int'));
+ }
+ for(const level of ['A1','A2','B1','B2','C1','C2']) assert.equal(en.filter(x=>x.title.startsWith(level+' ·')).length,250);
 });
