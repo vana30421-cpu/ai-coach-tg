@@ -357,3 +357,120 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - The first CI attempt exposed a duplicate Python lesson title/ID; renamed the duplicate and reran checks successfully. A cross-realm array assertion was also normalized in the test.
 - Published content remains exactly 100 JavaScript, 100 Python and 100 English lessons, 14 career-stage modules in each engineering track and 12 English sublevels. Long-term targets remain 1,000 / 1,000 / 1,500.
 - Task UI now displays step-by-step instructions, expected deliverable, acceptance criteria and a required saved task result. No user learning progress or existing records are reset.
+
+
+## 2026-11-14 — Practice bank expansion (in progress)
+- Added `lifeos-practice-exercise-bank.js` on branch `curriculum-quality-1000-20261114` with 800 distinct exercise records per track (JavaScript, Python, English), 2,400 total. Each record has its own domain, scenario, task type, prompt, deliverable, assessment criteria, time estimate and reference.
+- Added a separate practice UI with track selection, sequential navigation, result submission and isolated localStorage progress key `lifeos.practice.progress.v1`; existing lesson progress is not modified.
+- Added the script to the application entry point and offline cache; cache target advanced to life-os-v201.
+- Counts and UI behavior require automated regression and browser/device verification before merge/deploy. These exercises are a separate bank and do not increase the authored lesson counts (currently 100 per track).
+
+- Practice-bank regression: initial CI caught a missing English type alias; fixed in `e85ab108590ed1095517b27b78f5a08ad42886ce`. Both GitHub Actions workflows then passed: 270/270 tests, 0 failures (`LIFEOS checks` run 43606445910; `LIFE OS Jarvis tests` run 43606445844).
+- Pull request #50 is open as draft for review. The new exercise bank has not been merged or deployed; Android Chrome and Telegram WebView manual verification are still outstanding.
+
+
+## 2026-11-14 — Practice bank quality pass v2
+
+- Reworked all 2,400 exercise prompts: every task now combines its domain scenario, explicit assessment mode, concrete verification situation, and a distinct case variant.
+- Engineering variants: baseline contract, boundary data, failure/recovery, changed requirement/backward compatibility, and production handoff. English variants: free execution, time pressure, audience/register shift, clarification/disagreement, and synthesis/transfer.
+- Added mode-specific task instructions for implementation, debugging, test design, refactoring, profiling, security, code review, architecture, and all eight English skills.
+- Expanded rubrics to explicit 0–5 dimensions; added variant metadata and made the selected variant visible in the practice dialog.
+- Preserved exercise IDs and local progress key `lifeos.practice.progress.v1`; saved answers remain compatible. Lesson progress is untouched.
+- Regression tests now check 2,400 records, five balanced variants (160 per variant per track), domain/mode-specific prompts, and assessment metadata.
+- Updated practice asset query to v2 and Service Worker cache to life-os-v202.
+- GitHub Actions `LIFEOS checks`: **272 passed, 0 failed** on commit `7a903674755376829853e06bf1abbae7027984ae`; browser script syntax checks passed in the same workflow. `LIFE OS Jarvis tests`: success on the same commit.
+- PR #50 is open and ready for review; no merge or Pages deployment has been performed. Physical Android Chrome / Telegram WebView interaction and offline reload still require device verification.
+
+
+## 2026-11-14 — Engineering & English curriculum batch 9
+
+- Added **17 authored lessons**: JavaScript +5, Python +5, English +6 (one per CEFR level).
+- JavaScript topics: event-loop scheduling/starvation, AbortSignal composition and cancellation semantics, structured cloning/transferables, IndexedDB version migrations and blocked connections, CSP/Trusted Types/DOM XSS, browser observability and privacy-safe telemetry.
+- Python topics: structural typing with Protocol, pytest fixtures/parametrization/property-based testing, ContextVar isolation in async tasks, descriptor precedence and instance storage, async generators/backpressure and cancellation.
+- English topics: A1 clarification/spelling, A2 Past Continuous narrative, B1 calibrated hedging, B2 scope/deadline negotiation, C1 synthesis of conflicting sources, C2 executive decision briefings.
+- Totals: JavaScript **105/1,000**, Python **105/1,000**, English **106/1,500**; 316/3,500 authored lessons (9.03%). Remaining: JS 895, Python 895, English 1,394 (3,184 total).
+- Updated lesson count/CEFR distribution regression, asset query v11 and offline cache life-os-v203.
+- Verification pending Actions for this batch. No merge or deployment claimed; Android/Telegram WebView manual checks remain outstanding.
+
+
+## 2026-11-14 — Curriculum batch 9 verified
+
+- Final published totals after module wiring: JavaScript **106/1,000**, Python **105/1,000**, English **106/1,500**; **317/3,500 (9.06%)**. Remaining: JavaScript 894, Python 895, English 1,394 (3,183 total).
+- Batch 9 contains 17 authored case-based lessons: 6 JavaScript, 5 Python and 6 English (one per CEFR level). The new JS/Python lessons are explicitly attached to existing career-stage modules; no lesson records are orphaned.
+- Added regression checks for exact per-course totals, CEFR distribution, presence of all batch-9 lessons and minimum content/task depth.
+- Corrected two CI-discovered issues: appended lessons were not initially attached to the module slices, and the authored-task length assertion was too strict for concise speaking/listening assignments. The final suite verifies the module wiring.
+- GitHub Actions on c6bd4390a40a5d84f2913f11139c166ae68369f3: LIFEOS checks **273/273 passed**; LIFE OS Jarvis tests **273/273 passed**. Browser and Worker syntax checks passed.
+- Updated academy asset query to v12 and Service Worker cache to life-os-v204.
+- PR #50 remains open, ready for review; no merge or deployment. Android Chrome / Telegram WebView manual verification remains outstanding.
+
+
+## 2026-11-14 — Curriculum batch 10 verified
+
+- Added 16 authored lessons: JavaScript +5, Python +5, English +6 (A1–C2).
+- JavaScript: resilient WebSocket lifecycle/reconnect, Fetch streaming/backpressure, Web Crypto key handling, timezone/DST correctness, module graph and cycle control.
+- Python: dataclass equality/mutability/slots, portable multiprocessing, structured logging/redaction, import/plugin discovery, garbage collection/weak references.
+- English: A1 directions, A2 countability, B1 reported speech, B2 passive reporting, C1 argument mapping, C2 technical due diligence.
+- Totals: JavaScript **111/1,000**, Python **110/1,000**, English **112/1,500**; **333/3,500 (9.51%)**. Remaining: JS 889, Python 890, English 1,388 (**3,167 total**).
+- New JS/Python lessons are explicitly included in their academy module arrays; English lessons are automatically distributed across the 12 CEFR sublevels.
+- Regression tests cover batch-10 lesson presence, per-course totals, CEFR distribution, content depth and task metadata.
+- GitHub Actions: LIFEOS checks **274/274 passed**; LIFE OS Jarvis tests **274/274 passed** (runs 43609134060 and 43609134046). Browser and Worker syntax checks passed.
+- Updated academy asset query to v13 and Service Worker cache to life-os-v205.
+- PR #50 remains open and mergeable; no merge or deployment. Android Chrome / Telegram WebView manual verification remains outstanding.
+
+
+## 2026-11-14 — Curriculum batch 11 verified
+
+- Added 16 authored lessons: JavaScript +5, Python +5, English +6 (one per CEFR level).
+- JavaScript: performance budgets/Long Animation Frames, Web Components and Shadow DOM contracts, secure URL routing, storage quota/eviction, keyboard accessibility/focus management.
+- Python: type narrowing/generics/variance, SQL isolation/retry discipline, subprocess pipe deadlocks/process supervision, reproducible package artifacts, async cancellation/cleanup.
+- English: A1 routines, A2 comparisons, B1 conditionals, B2 measurable proposals, C1 diplomatic disagreement, C2 high-stakes negotiation/BATNA.
+- Totals: JavaScript **116/1,000**, Python **115/1,000**, English **118/1,500**; **349/3,500 (9.97%)**. Remaining: JS 884, Python 885, English 1,382 (**3,151 total**).
+- All new engineering lessons are attached to their career-stage module; English lessons distribute into all 12 CEFR sublevels.
+- Added regression coverage for batch-11 lesson presence, exact totals, CEFR distribution and minimum task depth.
+- GitHub Actions on latest PR head 8834152c2bc650d67f1fa17c463fdcc1198c6a50: LIFEOS checks **275/275 passed**; LIFE OS Jarvis tests **275/275 passed** (runs 43609467770 and 43609467759). Browser/Worker syntax checks passed.
+- Academy script query v15; Service Worker cache life-os-v207.
+- PR #50 remains open and mergeable. No merge or deployment; Android Chrome / Telegram WebView manual verification remains outstanding.
+
+
+## 2026-11-14 — Curriculum batch 12: 3,000-lesson expansion
+
+- Added **exactly 3,000 additional lesson records** in one curriculum expansion: JavaScript +884, Python +885, English +1,231.
+- Current catalog totals by academy module construction: JavaScript **1,000/1,000**, Python **1,000/1,000**, English **1,349/1,500**; **3,349/3,500 total (95.69%)**. Remaining: **151 English lessons**.
+- Engineering tracks now reach their requested 1,000-record targets. English additions are distributed across A1–C2; resulting level totals are A1–C1: 225 each and C2: 224.
+- Each added record includes an objective, contextual explanation, applied example, practice task, four task instructions, deliverable, acceptance criteria, metric and quiz. The 3,000 additions are structured from curated domain × competency combinations; this is a large authored curriculum expansion, but it still requires expert editorial review for pedagogical uniqueness and accuracy before being described as fully polished.
+- Regression expectations updated for 3,349 total records, exact per-track counts, unique lesson IDs/titles, content depth and CEFR distribution. Academy asset query bumped to v16; Service Worker cache to life-os-v208 and registration query to 20261114-6.
+- Verification status: GitHub Actions has not yet been observed for this commit. Do not claim tests passed until workflow results are checked. No merge or Pages deployment performed. Android Chrome / Telegram WebView manual QA remains outstanding.
+
+
+- Batch-12 wiring QA corrections: the first CI attempts caught a module-parenthesis syntax error, then exposed accidental inclusion of legacy orphan lessons and a duplicate attachment path. Those issues were corrected by keeping the 3,000 generated records in isolated arrays and attaching them only after legacy module construction. Latest source commit: `e4171e8d2606655ba0e33ce1abc9e48c0572c93d`. The latest CI result for this exact commit is not yet available; previous failed runs are not counted as passing verification.
+
+
+## 2026-11-14 — Batch 12 verification complete
+
+- Final batch-12 branch head at verification: `6863c45bcad0faca6c6d1f95fff98059a60383fa`.
+- GitHub Actions both passed: LIFEOS checks **276/276, 0 failed** (run 43610991626); LIFE OS Jarvis tests **276/276, 0 failed** (run 43610991588). Browser-script syntax and Worker-module syntax checks passed.
+- Regression confirms exact academy totals: JavaScript 1,000; Python 1,000; English 1,349; **3,349/3,500 total**, with exactly 3,000 new batch-12 records. IDs/titles are unique in the published module catalog and all new records meet the tested content/task metadata minimums.
+- This is automated structural/content-depth validation, not expert editorial sign-off for every individual lesson. Android Chrome / Telegram WebView manual QA remains outstanding.
+- PR #50 remains open and mergeable; no merge or Pages deployment was performed.
+
+
+## 2026-11-14 — Batch 13: English academy completion
+
+- Added 151 distinct English lesson records across CEFR A1–C2 (A1–C2: 250 lessons per level).
+- English academy now contains 1,500/1,500 lessons. JavaScript 1,000/1,000; Python 1,000/1,000; English 1,500/1,500. Total: 3,500/3,500.
+- New lessons cover level-specific grammar, pragmatic competence, reading/listening, writing, professional communication, argumentation and critical evaluation. Each has a distinct topic, objective, contextual theory, worked example, multi-stage practice, quiz and acceptance criteria.
+- Regression test now checks 3,500 total lessons, 151 new records, uniqueness, content depth, sources and 250 lessons at each CEFR level.
+- Changes remain in PR #50 branch `curriculum-quality-1000-20261114`. No merge or deployment performed. Automated CI and mobile WebView verification are pending.
+
+
+- Batch-13 CI first pass exposed two stale regression assertions (the previous 3,349 total and pre-completion CEFR level counts). Updated academy-wide and batch-9 assertions to the completed 3,500 / 250-per-level catalog. Re-running CI on the corrected PR head; no merge or deployment.
+
+- Batch-13 uniqueness QA caught a 32-bit title-hash collision in one generated lesson ID. All 151 final English lessons now use deterministic namespaced IDs (`lesson-b13-{level}-{index}`), preserving all pre-existing lesson IDs and progress. Re-running CI on the corrected source.
+
+- Follow-up CI caught a literal escaped newline introduced while assigning the batch-13 stable IDs. Corrected the source to a real line break; source syntax check and full regression suite are being rerun.
+
+- Final UI copy now reports the completed English academy: 1,500 lessons, 250 per CEFR level. Collision-safe IDs and syntax correction are included in the current source; CI must confirm the latest head before merge.
+
+- Corrected the remaining literal escaped newline before the batch-13 array push; the previous syntax check pinpointed that exact character sequence. Fresh CI is required on the new head.
+
+- Final content QA found one English title duplicated an existing batch-12 lesson (“Negotiating scope…”). Renamed the new topic to “Negotiation planning: scope, deadlines and trade-offs” and restored the batch-9 regression's original unique-match expectation. All 151 additions remain distinct; CI rerun pending.

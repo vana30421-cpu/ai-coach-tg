@@ -1054,7 +1054,8 @@ body.lifeos-header-hidden .app-main{padding-top:4px!important}
 <script defer src="lifeos-learning-plan.js?v=20261110-3"></script>
 <script defer src="lifeos-learning-content.js?v=20261110-3"></script>
 <script defer src="lifeos-applied-mastery.js?v=20261111-4"></script>
-<script defer src="lifeos-engineering-language-academies.js?v=10"></script>
+<script defer src="lifeos-engineering-language-academies.js?v=16"></script>
+<script defer src="lifeos-practice-exercise-bank.js?v=2"></script>
 <script defer src="lifeos-search.js?v=20261110-3"></script>
 <script defer src="lifeos-calendar-v2.js?v=20261111-1"></script>
 <script>
@@ -1144,7 +1145,7 @@ body.lifeos-header-hidden .app-main{padding-top:4px!important}
   window.location.reload();
  });
  window.addEventListener('load',function(){
-  navigator.serviceWorker.register('./sw.js?v=20261114-4',{scope:'./',updateViaCache:'none'}).then(function(reg){
+  navigator.serviceWorker.register('./sw.js?v=20261114-6',{scope:'./',updateViaCache:'none'}).then(function(reg){
    registration=reg;
    activateWaiting();
    reg.addEventListener('updatefound',function(){
