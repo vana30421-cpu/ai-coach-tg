@@ -27,7 +27,7 @@ test('every published lesson has theory, example, practical work, test, criterio
   assert.equal(root.LIFEOS_ENGINEERING_ACADEMIES.courses[0].modules.length, 14);
   assert.equal(root.LIFEOS_ENGINEERING_ACADEMIES.courses[1].modules.length, 14);
   assert.equal(root.LIFEOS_ENGINEERING_ACADEMIES.courses[2].modules.length, 12);
-  assert.deepEqual(root.LIFEOS_ENGINEERING_ACADEMIES.courses[2].modules.map(m => m.lessons.length), [9,8,9,8,9,8,9,8,9,8,8,7]);
+  assert.deepEqual(JSON.parse(JSON.stringify(root.LIFEOS_ENGINEERING_ACADEMIES.courses[2].modules.map(m => m.lessons.length))), [9,8,9,8,9,8,9,8,9,8,8,7]);
   assert.equal(root.LIFEOS_ENGINEERING_ACADEMIES.courses[0].careerLevels.length, 14);
   assert.equal(root.LIFEOS_ENGINEERING_ACADEMIES.courses[1].careerLevels.length, 14);
   const ids = new Set();
