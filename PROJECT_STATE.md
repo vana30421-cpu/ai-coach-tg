@@ -366,3 +366,11 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Updated Service Worker cache namespace from `life-os-v200` to `life-os-v201`; the CSS asset is already part of the offline core asset list.
 - Changes are isolated to presentation/accessibility and cache versioning; no application data or state schema is changed.
 - PR #51 is open. CI has not yet reported a run for this branch; Android Chrome and Telegram WebView manual verification remain outstanding.
+
+## 2026-11-14 — LIFEOS reliability and accessibility batch (PR #51)
+- Extended the accessibility pass with keyboard-visible focus, reduced-motion, reduced-transparency and forced-colors fallbacks; retained the existing visual theme and responsive layout.
+- Hardened the local intelligence engine: invalid calendar dates are rejected, blank numeric strings remain missing data, and cancelled/canceled/archived/deleted/done tasks are excluded from active workload and overdue counts.
+- Added regression tests for inactive task states, impossible dates and blank observations.
+- Bumped the Service Worker cache namespace to `life-os-v202` so the updated CSS and intelligence module are refreshed offline.
+- No localStorage keys, user records, learning progress or stored schemas were migrated or reset.
+- CI status must be read from the PR checks; no Android Chrome / Telegram WebView device session has been run in this work batch. Pages deployment is not claimed.
