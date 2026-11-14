@@ -217,8 +217,7 @@ p,.subtitle,.page-subtitle,.list-title,.list-subtitle,.task-title,.task-meta,.fo
 @media(max-width:360px){.more-grid{gap:7px}.more-tile{gap:7px;padding:8px;min-height:60px}.more-tile-icon{flex-basis:32px;width:32px;height:32px}}
 /* Respect the selected theme on Android: keep its color palette, blur and animated layer. */
 @media(max-width:759px){
- body::before{animation:auroraShift 25s ease-in-out infinite alternate!important;opacity:.13!important}
- .theme-effect{display:block!important;opacity:.7!important}
+ body::before{animation:auroraShift 25s ease-in-out infinite alternate!important;opacity:.13!important} .theme-effect{display:block!important;opacity:.7!important}
  .card,.list-row,.task-item,.stat-item,.group-item,.compact-item,.search-bar,.msg,.progress-ring-hero{
   -webkit-backdrop-filter:blur(14px) saturate(150%)!important;
   backdrop-filter:blur(14px) saturate(150%)!important;
@@ -640,3 +639,48 @@ input:focus,textarea:focus,select:focus{outline:none!important;border-color:colo
 .lc-checkin-grid label{font-size:12px;font-weight:650}
 .lc-checkin-grid select{width:100%;margin-top:5px;padding:9px;border-radius:10px;background:var(--surface,rgba(255,255,255,.06));color:inherit;border:1px solid var(--border,rgba(255,255,255,.15))}
 @media(max-width:480px){.lc-checkin-grid{grid-template-columns:1fr}.lc-zoom{gap:5px}.lc-zoom input{min-width:40px}}
+
+/* LIFEOS accessibility pass — keyboard, touch, contrast and low-motion safety */
+:where(a,button,input,select,textarea,summary,[role="button"],[role="tab"],[tabindex]:not([tabindex="-1"])):focus-visible{
+ outline:3px solid var(--brand)!important;
+ outline-offset:3px!important;
+ box-shadow:0 0 0 5px color-mix(in srgb,var(--brand) 18%,transparent)!important;
+}
+:where(button,[role="button"],[role="tab"],.icon-btn,.avatar-btn,.tab-item,.quick-tab,.more-tile,.lc-day,.lc-nav,.lc-add){
+ -webkit-tap-highlight-color:transparent;
+}
+:where(button,[role="button"],input,select,textarea):disabled,
+:where([aria-disabled="true"]){
+ cursor:not-allowed!important;
+ opacity:.58;
+}
+:where(input,select,textarea):not([type="checkbox"]):not([type="radio"]){
+ scroll-margin-block:calc(var(--safe-top) + 84px);
+}
+::selection{background:color-mix(in srgb,var(--brand) 34%,transparent);color:var(--text)}
+@media(prefers-reduced-motion:reduce){
+ html{scroll-behavior:auto!important}
+ *,*::before,*::after{
+  animation-delay:0s!important;
+  animation-duration:.01ms!important;
+  animation-iteration-count:1!important;
+  transition-delay:0s!important;
+  transition-duration:.01ms!important;
+  scroll-behavior:auto!important;
+ }
+ #themeEffect,.lifeos-fx-particle{display:none!important}
+}
+@media(prefers-reduced-transparency:reduce){
+ .app-header,.tab-bar,.quick-tabs,.lc-toolbar,.modal,.lc-modal{
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  background:var(--bg-2)!important;
+ }
+}
+@media(forced-colors:active){
+ :where(a,button,input,select,textarea,summary,[role="button"],[role="tab"]):focus-visible{
+  outline:2px solid Highlight!important;outline-offset:3px!important;
+ }
+ .btn,.icon-btn,.avatar-btn,.tab-item,.quick-tab,.more-tile{
+  border:1px solid ButtonText!important;
+ }
+}

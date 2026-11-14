@@ -51,3 +51,37 @@ test('missing sleep or mood records are not converted to zero values',()=>{
  assert.equal(result.signals.sleepMoodCorrelation,null);
  assert.equal(result.recommendations.some(x=>x.id==='sleep-review'),false);
 });
+
+
+test('ignores cancelled, archived and deleted tasks when calculating active load',()=>{
+ const tasks=[
+  ...Array.from({length:9},(_,i)=>({id:'active-'+i,status:'pending'})),
+  {id:'cancelled',status:'cancelled',due_date:'2026-11-01'},
+  {id:'archived',status:'archived',due_date:'2026-11-01'},
+  {id:'deleted',status:'deleted',due_date:'2026-11-01'}
+ ];
+ const result=core.analyze({tasks},'2026-11-11');
+ assert.equal(result.signals.activeTasks,9);
+ assert.equal(result.signals.overdueTasks,0);
+ assert.ok(result.recommendations.some(x=>x.id==='task-overload'));
+ assert.ok(!result.recommendations.some(x=>x.id==='overdue-tasks'));
+});
+
+test('rejects impossible calendar dates instead of creating false overdue signals',()=>{
+ const result=core.analyze({tasks:[
+  {id:'bad-date',status:'pending',due_date:'2026-02-31'},
+  {id:'valid-date',status:'pending',due_date:'2026-11-10'}
+ ]},'2026-11-11');
+ assert.equal(result.signals.overdueTasks,1);
+ assert.match(result.recommendations.find(x=>x.id==='overdue-tasks').why,/1 просрочено/);
+});
+
+test('blank numeric strings remain missing rather than becoming zero',()=>{
+ const result=core.analyze({
+  sleepEntries:[{date:'2026-11-10',hours:'   '},{date:'2026-11-09',hours:7}],
+  customMood:[{date:'2026-11-10',score:' '}]
+ },'2026-11-11');
+ assert.equal(result.signals.sleepMoodPairedDays,0);
+ assert.equal(result.signals.sleepMoodCorrelation,null);
+ assert.equal(result.recommendations.some(x=>x.id==='sleep-review'),false);
+});

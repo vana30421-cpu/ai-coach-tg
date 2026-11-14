@@ -8,10 +8,12 @@
   function dateKey(value){
     if(!value)return '';
     var raw=String(value).slice(0,10);
-    return /^\d{4}-\d{2}-\d{2}$/.test(raw)?raw:'';
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(raw))return '';
+    var parts=raw.split('-').map(Number),date=new Date(Date.UTC(parts[0],parts[1]-1,parts[2]));
+    return date.getUTCFullYear()===parts[0]&&date.getUTCMonth()===parts[1]-1&&date.getUTCDate()===parts[2]?raw:'';
   }
   function numeric(value){
-    if(value===null||value===undefined||value==='')return null;
+    if(value===null||value===undefined||(typeof value==='string'&&value.trim()===''))return null;
     var n=Number(value);return Number.isFinite(n)?n:null;
   }
   function average(values){
@@ -27,8 +29,10 @@
   }
   function analyze(state,today){
     state=state&&typeof state==='object'?state:{};
-    var now=dateKey(today)||new Date().toISOString().slice(0,10);
-    var tasks=list(state.tasks),active=tasks.filter(function(t){return t&&t.status!=='completed';});
+    var localNow=new Date(),localToday=localNow.getFullYear()+'-'+String(localNow.getMonth()+1).padStart(2,'0')+'-'+String(localNow.getDate()).padStart(2,'0');
+    var now=dateKey(today)||localToday;
+    var tasks=list(state.tasks),inactiveStatuses={completed:true,done:true,cancelled:true,canceled:true,archived:true,deleted:true};
+    var active=tasks.filter(function(t){var status=String(t&&t.status||'').trim().toLowerCase();return t&&!inactiveStatuses[status];});
     var overdue=active.filter(function(t){var due=dateKey(t.due_date||t.dueDate||t.deadline);return due&&due<now;});
     var sleeps=list(state.sleepEntries),moods=list(state.customMood);
     var sleepByDate={},moodByDate={};
