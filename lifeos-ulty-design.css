@@ -436,7 +436,8 @@ button:active,.btn:active,.icon-btn:active,.avatar-btn:active{transform:scale(.9
  min-height:42px;border-radius:15px!important;font-weight:700!important;letter-spacing:-.01em;
 }
 .btn-primary{box-shadow:0 8px 24px var(--brand-glow),inset 0 1px rgba(255,255,255,.38)!important}
-.btn-ghost,.btn-secondary{background:var(--life-glass)!important;border:1px solid var(--life-edge)!important;color:var(--text)!important}input,textarea,select,.field input,.field textarea,.field select{
+.btn-ghost,.btn-secondary{background:var(--life-glass)!important;border:1px solid var(--life-edge)!important;color:var(--text)!important}
+input,textarea,select,.field input,.field textarea,.field select{
  color:var(--text)!important;background:rgba(5,10,19,.43)!important;
  border:1px solid var(--life-edge)!important;border-radius:15px!important;
  min-height:44px;padding:11px 13px!important;
