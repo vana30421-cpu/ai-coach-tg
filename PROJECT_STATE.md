@@ -1,3 +1,11 @@
+## 2026-11-14 — Android reduced-motion effects fix
+
+- Root cause: Android/WebView can report `prefers-reduced-motion: reduce`. Existing CSS disabled particle animation but left each particle at `top:-8vh`, so the particles remained above the viewport and appeared absent.
+- Added a stable per-particle vertical position. Under reduced-motion, ambient particles and aura remain visible but stationary; the explicit in-app motion override animates them only when the user opts in. The app-wide disable-motion preference still wins.
+- Updated app build to `LIFEOS-20261114-9`, CSS query to `20261114-9`, effects bridge query to `20261114-4`, and Service Worker cache to `life-os-v204`.
+- Added regression coverage for static visibility, explicit animation override, global disable-motion precedence, and cache/version wiring.
+- Android Chrome and Telegram WebView physical-device verification remains outstanding; do not mark the fix as device-confirmed until tested.
+
 # LIFEOS — PROJECT_STATE
 
 Last updated: 2026-11-14
