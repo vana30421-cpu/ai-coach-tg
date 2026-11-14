@@ -21,9 +21,9 @@ test('registers three distinct academies with the requested curriculum targets',
 test('every published lesson has theory, example, practical work, test, criterion and source', () => {
   const root = load();
   const lessons = root.LIFEOS_ENGINEERING_ACADEMIES.courses.flatMap(c => c.modules.flatMap(m => m.lessons));
-  assert.equal(lessons.length, 316);
+  assert.equal(lessons.length, 317);
   const byCourse = Object.fromEntries(root.LIFEOS_ENGINEERING_ACADEMIES.courses.map(c => [c.id, c.modules.reduce((n,m) => n + m.lessons.length, 0)]));
-  assert.deepEqual(JSON.parse(JSON.stringify(byCourse)), { javascript_engineering_1000: 105, python_engineering_1000: 105, english_cefr_1500: 106 });
+  assert.deepEqual(JSON.parse(JSON.stringify(byCourse)), { javascript_engineering_1000: 106, python_engineering_1000: 105, english_cefr_1500: 106 });
   assert.equal(root.LIFEOS_ENGINEERING_ACADEMIES.courses[0].modules.length, 14);
   assert.equal(root.LIFEOS_ENGINEERING_ACADEMIES.courses[1].modules.length, 14);
   assert.equal(root.LIFEOS_ENGINEERING_ACADEMIES.courses[2].modules.length, 12);
