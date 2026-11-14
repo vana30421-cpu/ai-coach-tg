@@ -524,7 +524,7 @@ Object.keys(topics).forEach(function(level){topics[level].forEach(function(topic
  var practice='Complete a three-stage performance task on “'+topic+'”: (1) produce an initial response for a clearly stated audience and purpose; (2) respond to a changed constraint such as a misunderstanding, conflicting evidence, time pressure or a register shift; (3) revise the result. Submit the original and revised versions, mark at least three language decisions, and explain one remaining limitation. For speaking, record a 2–4 minute response and transcribe the section you revise.';
  var question='Which evidence best demonstrates '+level+'-level mastery of “'+topic+'”?';
  var options=['A context-appropriate response, accurate language choices and a reasoned revision','A memorised sentence used regardless of audience or meaning','Complex wording without checking clarity or communicative effect'];
- englishBulkByLevel[level].push(lesson(title,objective,theory,example,practice,question,options,0,refs.en,level==='A1'||level==='A2'?20:30));
+ var row=lesson(title,objective,theory,example,practice,question,options,0,refs.en,level==='A1'||level==='A2'?20:30);\n row.id='lesson-b13-'+level.toLowerCase()+'-'+String(index+1).padStart(3,'0');\n englishBulkByLevel[level].push(row);
 });});
 })();
 
