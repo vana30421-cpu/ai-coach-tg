@@ -41,7 +41,7 @@ body{
  font-size:15px;line-height:1.52;letter-spacing:-.012em;
  -webkit-font-smoothing:antialiased;overflow-x:hidden;
 }
-body::before{opacity:.035!important;filter:blur(64px)!important;animation:none!important}
+body::before{opacity:.13!important;filter:blur(64px)!important;animation:auroraShift 25s ease-in-out infinite alternate!important}
 button,input,select,textarea{font:inherit;max-width:100%;touch-action:manipulation}
 button{color:inherit}
 button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
