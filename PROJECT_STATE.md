@@ -461,3 +461,6 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - New lessons cover level-specific grammar, pragmatic competence, reading/listening, writing, professional communication, argumentation and critical evaluation. Each has a distinct topic, objective, contextual theory, worked example, multi-stage practice, quiz and acceptance criteria.
 - Regression test now checks 3,500 total lessons, 151 new records, uniqueness, content depth, sources and 250 lessons at each CEFR level.
 - Changes remain in PR #50 branch `curriculum-quality-1000-20261114`. No merge or deployment performed. Automated CI and mobile WebView verification are pending.
+
+
+- Batch-13 CI first pass exposed two stale regression assertions (the previous 3,349 total and pre-completion CEFR level counts). Updated academy-wide and batch-9 assertions to the completed 3,500 / 250-per-level catalog. Re-running CI on the corrected PR head; no merge or deployment.
