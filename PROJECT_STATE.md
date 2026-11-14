@@ -348,3 +348,12 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Added a total of 136 authored records in this milestone (59 JavaScript, 60 Python, 17 English) to the previous 164 records. Removed unused overage records; published totals are exactly 300 lessons.
 - Regression tests now assert 100 lessons per track, 14 engineering stages, 12 English sublevels, exact CEFR distribution, and actionable task fields. Asset query bumped to v10; Service Worker cache to life-os-v200.
 - Runtime test execution, GitHub Actions result, Pages deployment, and manual Android/Telegram WebView verification must be confirmed separately. Do not claim success until verified.
+
+
+## 2026-11-14 — Verification update: 100-lesson academies
+- Current curriculum source commit: `afefeb1d921104a85b6afd7a9600b741e1429ee8`.
+- GitHub Actions `LIFEOS checks`: success, 267 passed / 0 failed. Browser JavaScript syntax and Worker module syntax checks also passed.
+- GitHub Pages deployment workflow for the curriculum commit: success. Direct live-page verification through the available browser fetch was unavailable; physical Android and Telegram WebView checks remain outstanding.
+- The first CI attempt exposed a duplicate Python lesson title/ID; renamed the duplicate and reran checks successfully. A cross-realm array assertion was also normalized in the test.
+- Published content remains exactly 100 JavaScript, 100 Python and 100 English lessons, 14 career-stage modules in each engineering track and 12 English sublevels. Long-term targets remain 1,000 / 1,000 / 1,500.
+- Task UI now displays step-by-step instructions, expected deliverable, acceptance criteria and a required saved task result. No user learning progress or existing records are reset.
