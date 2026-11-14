@@ -470,3 +470,5 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Follow-up CI caught a literal escaped newline introduced while assigning the batch-13 stable IDs. Corrected the source to a real line break; source syntax check and full regression suite are being rerun.
 
 - Final UI copy now reports the completed English academy: 1,500 lessons, 250 per CEFR level. Collision-safe IDs and syntax correction are included in the current source; CI must confirm the latest head before merge.
+
+- Corrected the remaining literal escaped newline before the batch-13 array push; the previous syntax check pinpointed that exact character sequence. Fresh CI is required on the new head.
