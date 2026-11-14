@@ -378,4 +378,5 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Preserved exercise IDs and local progress key `lifeos.practice.progress.v1`; saved answers remain compatible. Lesson progress is untouched.
 - Regression tests now check 2,400 records, five balanced variants (160 per variant per track), domain/mode-specific prompts, and assessment metadata.
 - Updated practice asset query to v2 and Service Worker cache to life-os-v202.
-- Verification: pending GitHub Actions for the v2 commit. No merge, Pages deployment, or physical Android / Telegram WebView verification is claimed.
+- GitHub Actions `LIFEOS checks`: **272 passed, 0 failed** on commit `7a903674755376829853e06bf1abbae7027984ae`; browser script syntax checks passed in the same workflow. `LIFE OS Jarvis tests`: success on the same commit.
+- PR #50 remains open as draft; no merge or Pages deployment has been performed. Physical Android Chrome / Telegram WebView interaction and offline reload still require device verification.
