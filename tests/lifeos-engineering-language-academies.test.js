@@ -21,11 +21,15 @@ test('registers three distinct academies with the requested curriculum targets',
 test('every published lesson has theory, example, practical work, test, criterion and source', () => {
   const root = load();
   const lessons = root.LIFEOS_ENGINEERING_ACADEMIES.courses.flatMap(c => c.modules.flatMap(m => m.lessons));
-  assert.equal(lessons.length, 164);
+  assert.equal(lessons.length, 300);
   const byCourse = Object.fromEntries(root.LIFEOS_ENGINEERING_ACADEMIES.courses.map(c => [c.id, c.modules.reduce((n,m) => n + m.lessons.length, 0)]));
-  assert.deepEqual(JSON.parse(JSON.stringify(byCourse)), { javascript_engineering_1000: 41, python_engineering_1000: 40, english_cefr_1500: 83 });
-  assert.equal(root.LIFEOS_ENGINEERING_ACADEMIES.courses[2].modules.length, 6);
-  assert.deepEqual(root.LIFEOS_ENGINEERING_ACADEMIES.courses[2].modules.map(m => m.lessons.length), [14,14,14,14,14,13]);
+  assert.deepEqual(JSON.parse(JSON.stringify(byCourse)), { javascript_engineering_1000: 100, python_engineering_1000: 100, english_cefr_1500: 100 });
+  assert.equal(root.LIFEOS_ENGINEERING_ACADEMIES.courses[0].modules.length, 14);
+  assert.equal(root.LIFEOS_ENGINEERING_ACADEMIES.courses[1].modules.length, 14);
+  assert.equal(root.LIFEOS_ENGINEERING_ACADEMIES.courses[2].modules.length, 12);
+  assert.deepEqual(root.LIFEOS_ENGINEERING_ACADEMIES.courses[2].modules.map(m => m.lessons.length), [9,8,9,8,9,8,9,8,9,8,8,7]);
+  assert.equal(root.LIFEOS_ENGINEERING_ACADEMIES.courses[0].careerLevels.length, 14);
+  assert.equal(root.LIFEOS_ENGINEERING_ACADEMIES.courses[1].careerLevels.length, 14);
   const ids = new Set();
   const lessonIds = new Set();
   for (const lesson of lessons) {
@@ -36,6 +40,9 @@ test('every published lesson has theory, example, practical work, test, criterio
     assert.ok(lesson.objective.length >= 20);
     assert.ok(lesson.theory.length >= 120);
     assert.ok(lesson.practice.length >= 30);
+    assert.equal(lesson.taskInstructions.length, 4);
+    assert.ok(lesson.deliverable.length >= 20);
+    assert.ok(lesson.acceptanceCriteria.length >= 20);
     assert.ok(lesson.metric.length >= 20);
     assert.ok(lesson.quiz.question.length >= 10);
     assert.equal(lesson.quiz.options.length, 3);
