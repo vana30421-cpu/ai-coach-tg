@@ -330,3 +330,11 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Remaining to target: JavaScript 962, Python 963, English 1,423. CI, Pages deployment and device verification are still not confirmed.
 
 - CEFR count reconciliation from source inspection: A1 13, A2 13, B1 13, B2 13, C1 13, C2 12 (77 English lessons total). Regression expectation aligned to the source records.
+
+
+## 2026-11-14 — Engineering & English academies, batch 8
+- Added 12 authored lessons: 3 JavaScript (time semantics, versioned state serialization, async race protection), 3 Python (context managers, asyncio cancellation, profiling), and 6 English (one each at A1–C2).
+- Current verified curriculum totals by module construction: JavaScript 41/1,000; Python 40/1,000; English 83/1,500. Total 164/3,500 (4.69%); remaining 3,336.
+- English CEFR distribution: A1 14, A2 14, B1 14, B2 14, C1 14, C2 13.
+- Regression expectations updated to 164 total and the per-course/CEFR counts above. Asset query bumped to v9 and Service Worker cache to life-os-v199.
+- GitHub source commits are recorded in this batch; runtime tests, Actions, Pages deployment, and Android/Telegram WebView checks are not yet verified. Do not describe the full curriculum as complete.
