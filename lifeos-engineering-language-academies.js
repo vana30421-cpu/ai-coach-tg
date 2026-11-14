@@ -525,7 +525,8 @@ Object.keys(topics).forEach(function(level){topics[level].forEach(function(topic
  var question='Which evidence best demonstrates '+level+'-level mastery of “'+topic+'”?';
  var options=['A context-appropriate response, accurate language choices and a reasoned revision','A memorised sentence used regardless of audience or meaning','Complex wording without checking clarity or communicative effect'];
  var row=lesson(title,objective,theory,example,practice,question,options,0,refs.en,level==='A1'||level==='A2'?20:30);
- row.id='lesson-b13-'+level.toLowerCase()+'-'+String(index+1).padStart(3,'0');\n englishBulkByLevel[level].push(row);
+ row.id='lesson-b13-'+level.toLowerCase()+'-'+String(index+1).padStart(3,'0');
+ englishBulkByLevel[level].push(row);
 });});
 })();
 
