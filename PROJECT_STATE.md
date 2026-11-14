@@ -416,3 +416,17 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - GitHub Actions: LIFEOS checks **274/274 passed**; LIFE OS Jarvis tests **274/274 passed** (runs 43609134060 and 43609134046). Browser and Worker syntax checks passed.
 - Updated academy asset query to v13 and Service Worker cache to life-os-v205.
 - PR #50 remains open and mergeable; no merge or deployment. Android Chrome / Telegram WebView manual verification remains outstanding.
+
+
+## 2026-11-14 — Curriculum batch 11 verified
+
+- Added 16 authored lessons: JavaScript +5, Python +5, English +6 (one per CEFR level).
+- JavaScript: performance budgets/Long Animation Frames, Web Components and Shadow DOM contracts, secure URL routing, storage quota/eviction, keyboard accessibility/focus management.
+- Python: type narrowing/generics/variance, SQL isolation/retry discipline, subprocess pipe deadlocks/process supervision, reproducible package artifacts, async cancellation/cleanup.
+- English: A1 routines, A2 comparisons, B1 conditionals, B2 measurable proposals, C1 diplomatic disagreement, C2 high-stakes negotiation/BATNA.
+- Totals: JavaScript **116/1,000**, Python **115/1,000**, English **118/1,500**; **349/3,500 (9.97%)**. Remaining: JS 884, Python 885, English 1,382 (**3,151 total**).
+- All new engineering lessons are attached to their career-stage module; English lessons distribute into all 12 CEFR sublevels.
+- Added regression coverage for batch-11 lesson presence, exact totals, CEFR distribution and minimum task depth.
+- GitHub Actions on latest PR head 8834152c2bc650d67f1fa17c463fdcc1198c6a50: LIFEOS checks **275/275 passed**; LIFE OS Jarvis tests **275/275 passed** (runs 43609467770 and 43609467759). Browser/Worker syntax checks passed.
+- Academy script query v15; Service Worker cache life-os-v207.
+- PR #50 remains open and mergeable. No merge or deployment; Android Chrome / Telegram WebView manual verification remains outstanding.
