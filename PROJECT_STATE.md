@@ -4,13 +4,15 @@
 - Added a stable per-particle vertical position. Under reduced-motion, ambient particles and aura remain visible but stationary; the explicit in-app motion override animates them only when the user opts in. The app-wide disable-motion preference still wins.
 - Updated app build to `LIFEOS-20261114-9`, CSS query to `20261114-9`, effects bridge query to `20261114-4`, and Service Worker cache to `life-os-v204`.
 - Added regression coverage for static visibility, explicit animation override, global disable-motion precedence, and cache/version wiring.
+- PR #53 merged to `main`: `af18db6a053c763933635cdd7e98308d51ffaf00`.
+- GitHub Actions: LIFEOS checks passed (276/276), Jarvis tests passed, Detox verification passed; browser and Worker syntax checks passed.
 - Android Chrome and Telegram WebView physical-device verification remains outstanding; do not mark the fix as device-confirmed until tested.
 
 # LIFEOS — PROJECT_STATE
 
 Last updated: 2026-11-14
 Default branch: `main`
-Latest verified application/test commit: `a4a51153f583ff7947b8ba07c2ecc48eb7c44087` (PR #52 dashboard plan and motion restoration); latest successful Pages deployment: `4ddffb0ff50fcbb397664babef19c2f0ba468721` (deployment of the new merge is not yet verified).
+Latest verified application/test commit: `af18db6a053c763933635cdd7e98308d51ffaf00` (PR #53 Android reduced-motion effects fix); Pages deployment for this merge: pending verification.
 Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https://github.com/vana30421-cpu/ai-coach-tg/pull/41)
 
 ## 2026-11-14 — Dashboard tomorrow plan and motion restoration
