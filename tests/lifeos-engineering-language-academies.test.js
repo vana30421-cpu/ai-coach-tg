@@ -177,9 +177,9 @@ test('batch-12 adds the complete 3,000-record expansion with unique topic pairs'
  const courses=load().LIFEOS_ENGINEERING_ACADEMIES.courses;
  const js=courses[0].modules.flatMap(m=>m.lessons),py=courses[1].modules.flatMap(m=>m.lessons),en=courses[2].modules.flatMap(m=>m.lessons);
  assert.equal(js.length,1000);assert.equal(py.length,1000);assert.equal(en.length,1349);
- const addedJs=js.filter(x=>x.title.includes(' — '));
- const addedPy=py.filter(x=>x.title.includes(' — '));
- const addedEn=en.filter(x=>x.title.includes(' — '));
+ const addedJs=js.filter(x=>x.objective.startsWith('Спроектировать и проверить решение по теме'));
+ const addedPy=py.filter(x=>x.objective.startsWith('Реализовать инженерный контракт в области'));
+ const addedEn=en.filter(x=>x.objective.startsWith('Develop '));
  assert.equal(addedJs.length,884);assert.equal(addedPy.length,885);assert.equal(addedEn.length,1231);
  for(const [rows,minTheory,minPractice] of [[addedJs,250,120],[addedPy,250,120],[addedEn,250,120]]){
   assert.equal(new Set(rows.map(x=>x.title)).size,rows.length);
