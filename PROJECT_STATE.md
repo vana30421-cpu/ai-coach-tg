@@ -452,3 +452,12 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Regression confirms exact academy totals: JavaScript 1,000; Python 1,000; English 1,349; **3,349/3,500 total**, with exactly 3,000 new batch-12 records. IDs/titles are unique in the published module catalog and all new records meet the tested content/task metadata minimums.
 - This is automated structural/content-depth validation, not expert editorial sign-off for every individual lesson. Android Chrome / Telegram WebView manual QA remains outstanding.
 - PR #50 remains open and mergeable; no merge or Pages deployment was performed.
+
+
+## 2026-11-14 — Batch 13: English academy completion
+
+- Added 151 distinct English lesson records across CEFR A1–C2 (A1–C2: 250 lessons per level).
+- English academy now contains 1,500/1,500 lessons. JavaScript 1,000/1,000; Python 1,000/1,000; English 1,500/1,500. Total: 3,500/3,500.
+- New lessons cover level-specific grammar, pragmatic competence, reading/listening, writing, professional communication, argumentation and critical evaluation. Each has a distinct topic, objective, contextual theory, worked example, multi-stage practice, quiz and acceptance criteria.
+- Regression test now checks 3,500 total lessons, 151 new records, uniqueness, content depth, sources and 250 lessons at each CEFR level.
+- Changes remain in PR #50 branch `curriculum-quality-1000-20261114`. No merge or deployment performed. Automated CI and mobile WebView verification are pending.
