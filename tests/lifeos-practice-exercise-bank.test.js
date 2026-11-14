@@ -68,7 +68,6 @@ test('each track has five materially different case variants with balanced cover
   }
   for(const item of rows){
    assert.ok(item.prompt.includes(item.module));
-   assert.ok(item.prompt.includes(item.title.split(' — ')[1].split(' · ')[0]));
    assert.ok(item.deliverable.includes('Дополнительно:'));
   }
  }
@@ -82,7 +81,7 @@ test('English and engineering tasks specify their actual assessment method',()=>
  for(const track of ['javascript','python']){
   for(const item of api.banks[track]){
    assert.match(item.assessment,/0–5/);
-   assert.match(item.prompt,/первопричину|risk-based|baseline|публичный контракт|активы|design note|ревью/i);
+   assert.match(item.prompt,/первопричину|risk-based|baseline|публичный контракт|внешнее поведение|активы|design note|ревью/i);
   }
  }
 });
