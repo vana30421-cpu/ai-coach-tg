@@ -379,4 +379,4 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Regression tests now check 2,400 records, five balanced variants (160 per variant per track), domain/mode-specific prompts, and assessment metadata.
 - Updated practice asset query to v2 and Service Worker cache to life-os-v202.
 - GitHub Actions `LIFEOS checks`: **272 passed, 0 failed** on commit `7a903674755376829853e06bf1abbae7027984ae`; browser script syntax checks passed in the same workflow. `LIFE OS Jarvis tests`: success on the same commit.
-- PR #50 remains open as draft; no merge or Pages deployment has been performed. Physical Android Chrome / Telegram WebView interaction and offline reload still require device verification.
+- PR #50 is open and ready for review; no merge or Pages deployment has been performed. Physical Android Chrome / Telegram WebView interaction and offline reload still require device verification.
