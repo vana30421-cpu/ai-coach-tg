@@ -1048,6 +1048,22 @@ function renderDashboard(){
   var html = '<div class="page">';
   html += '<div class="title-xl">' + greet + userName + '</div>';
 
+  /* План на завтра: быстрый ввод прямо с главного экрана */
+  var tomorrowDate = new Date();
+  tomorrowDate.setDate(tomorrowDate.getDate()+1);
+  var tomorrowKey = tomorrowDate.getFullYear()+'-'+pad(tomorrowDate.getMonth()+1)+'-'+pad(tomorrowDate.getDate());
+  var tomorrowPlans = state.tomorrowPlans && typeof state.tomorrowPlans==='object' ? state.tomorrowPlans : {};
+  var tomorrowPlan = tomorrowPlans[tomorrowKey] || {};
+  html += '<section class="card tomorrow-plan-card" aria-labelledby="tomorrowPlanTitle">';
+  html += '<div class="row-between mb-2"><div><h2 id="tomorrowPlanTitle" style="margin:0;">🗓️ План на завтра</h2><div class="footnote">'+tomorrowDate.toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'})+'</div></div><span class="badge badge-brand">План</span></div>';
+  html += '<div class="field"><label class="field-label" for="tomorrowPriority1">Главный результат дня</label><input id="tomorrowPriority1" type="text" maxlength="180" placeholder="Самое важное, что нужно завершить" value="'+esc(tomorrowPlan.priority1||'')+'"></div>';
+  html += '<div class="grid-2"><div class="field"><label class="field-label" for="tomorrowPriority2">Второй приоритет</label><input id="tomorrowPriority2" type="text" maxlength="180" placeholder="Что ещё важно" value="'+esc(tomorrowPlan.priority2||'')+'"></div><div class="field"><label class="field-label" for="tomorrowPriority3">Третий приоритет</label><input id="tomorrowPriority3" type="text" maxlength="180" placeholder="Дополнительная задача" value="'+esc(tomorrowPlan.priority3||'')+'"></div></div>';
+  html += '<div class="field"><label class="field-label" for="tomorrowSchedule">Расписание / временные блоки</label><textarea id="tomorrowSchedule" rows="2" maxlength="1200" placeholder="Например: 09:00 учёба · 12:00 проект · 17:00 спорт">'+esc(tomorrowPlan.schedule||'')+'</textarea></div>';
+  html += '<div class="field"><label class="field-label" for="tomorrowPrep">Что подготовить заранее</label><input id="tomorrowPrep" type="text" maxlength="500" placeholder="Материалы, вещи, напоминания" value="'+esc(tomorrowPlan.preparation||'')+'"></div>';
+  html += '<button class="btn btn-primary btn-block" type="button" onclick="saveTomorrowPlan()">💾 Сохранить план на завтра</button>';
+  if(tomorrowPlan.updatedAt)html += '<div class="footnote mt-2" role="status">Последнее сохранение: '+new Date(tomorrowPlan.updatedAt).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})+'</div>';
+  html += '</section>';
+
   /* Фаза дня */
   if(phase){
     html += '<div class="card" style="background:linear-gradient(135deg,' + phase.color + '22,' + phase.color + '11);border-color:' + phase.color + '55;">';
@@ -1188,6 +1204,26 @@ function renderDashboard(){
 
   html += '</div>';
   document.getElementById('app').innerHTML = html;
+}
+
+
+function saveTomorrowPlan(){
+  var tomorrowDate=new Date();
+  tomorrowDate.setDate(tomorrowDate.getDate()+1);
+  var key=tomorrowDate.getFullYear()+'-'+pad(tomorrowDate.getMonth()+1)+'-'+pad(tomorrowDate.getDate());
+  var read=function(id){var el=document.getElementById(id);return el?String(el.value||'').trim():'';};
+  var plan={date:key,priority1:read('tomorrowPriority1'),priority2:read('tomorrowPriority2'),priority3:read('tomorrowPriority3'),schedule:read('tomorrowSchedule'),preparation:read('tomorrowPrep'),updatedAt:nowISO()};
+  if(!plan.priority1&&!plan.priority2&&!plan.priority3&&!plan.schedule&&!plan.preparation){
+    toast('Заполни хотя бы одно поле плана','warning');return false;
+  }
+  if(!state.tomorrowPlans||typeof state.tomorrowPlans!=='object'||Array.isArray(state.tomorrowPlans))state.tomorrowPlans={};
+  state.tomorrowPlans[key]=plan;
+  var keys=Object.keys(state.tomorrowPlans).sort();
+  while(keys.length>90){delete state.tomorrowPlans[keys.shift()];}
+  if(!save()){toast('Не удалось сохранить план. Проверь свободное место на устройстве.','error');return false;}
+  toast('План на завтра сохранён','success');
+  renderDashboard();
+  return true;
 }
 
 /* ============ КРУГ 7 СФЕР (SVG) ============ */
@@ -2984,6 +3020,7 @@ function renderAchievements(){
 function renderAchievementsCategory(){ renderAchievements(); }
 
 /* ============ EXPORTS ============ */
+window.saveTomorrowPlan = saveTomorrowPlan;
 window.getEisenhowerQuadrant = getEisenhowerQuadrant;
 window.getEisenhowerPriority = getEisenhowerPriority;
 window.renderTasks = renderTasks;
