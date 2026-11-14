@@ -468,3 +468,5 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Batch-13 uniqueness QA caught a 32-bit title-hash collision in one generated lesson ID. All 151 final English lessons now use deterministic namespaced IDs (`lesson-b13-{level}-{index}`), preserving all pre-existing lesson IDs and progress. Re-running CI on the corrected source.
 
 - Follow-up CI caught a literal escaped newline introduced while assigning the batch-13 stable IDs. Corrected the source to a real line break; source syntax check and full regression suite are being rerun.
+
+- Final UI copy now reports the completed English academy: 1,500 lessons, 250 per CEFR level. Collision-safe IDs and syntax correction are included in the current source; CI must confirm the latest head before merge.
