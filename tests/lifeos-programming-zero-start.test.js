@@ -38,7 +38,7 @@ test('beginner lessons explain code before asking for independent development wo
 });
 test('the first beginner lesson teaches what code is and does not demand a local toolchain',()=>{
  const first=root.LIFEOS_PROGRAMMING_ZERO.javascript[0];
- assert.match(first.theory,/инструкц/i);
+ assert.match(first.theory,/команд/i);
  assert.match(first.practice,/не нужно устанавливать/i);
  assert.doesNotMatch(first.practice,/создай файл|установи Node|запусти терминал/i);
 });
