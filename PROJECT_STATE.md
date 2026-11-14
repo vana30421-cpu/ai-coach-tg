@@ -2,7 +2,7 @@
 
 Last updated: 2026-11-14
 Default branch: `main`
-Latest main commit: `4ddffb0ff50fcbb397664babef19c2f0ba468721`; latest verified application/test commit: `f6ef995449e36789bb72b1789c2006e351a192e9`; latest successful Pages deployment: `4ddffb0ff50fcbb397664babef19c2f0ba468721`.
+Latest main commit: `81947999bf986af41cf0037353e9d2f252132082` (LIFEOS reliability/accessibility merge); latest verified application/test commit: `81947999bf986af41cf0037353e9d2f252132082`; latest successful Pages deployment: `4ddffb0ff50fcbb397664babef19c2f0ba468721` (deployment of the new merge is not yet verified).
 Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https://github.com/vana30421-cpu/ai-coach-tg/pull/41)
 
 ## Implemented in the merged change
@@ -374,3 +374,11 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Bumped the Service Worker cache namespace to `life-os-v202` so the updated CSS and intelligence module are refreshed offline.
 - No localStorage keys, user records, learning progress or stored schemas were migrated or reset.
 - CI status must be read from the PR checks; no Android Chrome / Telegram WebView device session has been run in this work batch. Pages deployment is not claimed.
+
+## 2026-11-14 — Merged LIFEOS reliability/accessibility release
+- Merged PR #51 to `main`: `81947999bf986af41cf0037353e9d2f252132082`.
+- GitHub Actions `LIFEOS checks`: success; browser and Worker syntax checks passed; regression suite: 270 passed, 0 failed.
+- GitHub Actions `LIFE OS Jarvis tests`: success; regression suite: 270 passed, 0 failed.
+- Shipped UI accessibility improvements (visible keyboard focus, reduced motion/transparency and forced-colors support) and intelligence input hardening (strict calendar-date validation, blank numeric values remain missing, inactive task states excluded from workload/overdue counts).
+- Service Worker cache namespace is now `life-os-v202`. Existing user data and storage schema are unchanged.
+- Merge is confirmed. Pages deployment and live-site reflection of this merge have not yet been verified; Android Chrome and Telegram WebView manual QA remain outstanding.
