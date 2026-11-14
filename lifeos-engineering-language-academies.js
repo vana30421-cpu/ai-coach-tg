@@ -474,6 +474,7 @@ englishLessons.push(
 
 
 
+
 /* BATCH_12_BULK_3000 — structured curriculum expansion. Each record has a distinct topic × competency pair. */
 (function(){
 var jsDomains=["Runtime scheduling and event-loop observability","Language semantics and coercion boundaries","Type systems and runtime validation","Functional composition and state isolation","Object model and prototype contracts","Module federation and dependency graphs","Browser rendering and layout pipeline","DOM security and injection resistance","Network protocols and resilient clients","Streaming data and backpressure","Storage consistency and schema evolution","Offline-first synchronization","Web workers and parallel computation","Memory lifecycle and garbage collection","Performance profiling and optimization","Accessibility and inclusive interaction","Frontend architecture and domain boundaries","State machines and transition invariants","Testing strategy and fault injection","Build systems and reproducible delivery","Authentication and session security","Cryptography and secret lifecycle","Observability and production diagnostics","Internationalization and locale correctness","API design and compatibility management","Data serialization and schema contracts","Concurrency and race prevention","Resource management and cancellation","Progressive enhancement and capability detection","Web platform interoperability","Privacy engineering and data minimization","Technical leadership and architecture governance"];
