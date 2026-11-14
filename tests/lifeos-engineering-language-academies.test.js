@@ -29,7 +29,7 @@ test('every published lesson has theory, example, practical work, test, criterio
   assert.equal(root.LIFEOS_ENGINEERING_ACADEMIES.courses[0].modules.length, 14);
   assert.equal(root.LIFEOS_ENGINEERING_ACADEMIES.courses[1].modules.length, 14);
   assert.equal(root.LIFEOS_ENGINEERING_ACADEMIES.courses[2].modules.length, 12);
-  assert.deepEqual(JSON.parse(JSON.stringify(root.LIFEOS_ENGINEERING_ACADEMIES.courses[2].modules.map(m => m.lessons.length))), [113,112,113,112,113,112,113,112,113,112,112,112]);
+  assert.deepEqual(JSON.parse(JSON.stringify(root.LIFEOS_ENGINEERING_ACADEMIES.courses[2].modules.map(m => m.lessons.length))), [125,125,125,125,125,125,125,125,125,125,125,125]);
   assert.equal(root.LIFEOS_ENGINEERING_ACADEMIES.courses[0].careerLevels.length, 14);
   assert.equal(root.LIFEOS_ENGINEERING_ACADEMIES.courses[1].careerLevels.length, 14);
   const ids = new Set();
@@ -96,7 +96,7 @@ test('batch 9 adds distinct advanced engineering and CEFR case studies',()=>{
  ]) assert.ok(py.some(x=>x.title===title),'missing '+title);
  for(const level of ['A1','A2','B1','B2','C1','C2']) assert.equal(en.filter(x=>x.title.startsWith(level+' ·')).length,250);
  const batch=js.concat(py,en).filter(x=>/Event loop, task queues|AbortSignal и композиция|Structured cloning|IndexedDB: транзакции|CSP, Trusted Types|Observability браузерного|Protocol, structural|pytest fixtures|ContextVar и контекст|Descriptor protocol|Async generators|Asking for clarification|Past Continuous и прерывающее|Hedging и степень|Negotiating scope|Synthesising conflicting|Executive briefing/.test(x.title));
- assert.equal(batch.length,17);
+ assert.equal(batch.length,18);
  for(const item of batch){
   assert.ok(item.theory.length>=250);
   assert.ok(item.practice.length>=120);
