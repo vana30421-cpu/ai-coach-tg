@@ -415,3 +415,7 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Updated app build to LIFEOS-20261114-10, academy asset query to v11, effects bridge query to 20261114-5, and Service Worker cache to life-os-v205; added the new module to the offline precache.
 - Added tests/lifeos-programming-zero-start.test.js for lesson order, beginner prerequisites, expected curriculum counts, idempotence and preservation of English course.
 - Work is on branch fix/programming-zero-start-android-effects-2026-11-14. Automated CI, Pages deployment and physical Android APK / Telegram WebView verification are pending. Do not claim the APK issue is device-confirmed until tested.
+
+
+- Follow-up CSS root-cause verification: the global reduced-motion media query hid the entire #themeEffect overlay (`display:none`), so child-level visibility rules could not render anything. The final fix keeps the overlay mounted, hides only unrelated decorative particles, uses the existing per-particle static Y position, and restores the full animation shorthand only for the explicit in-app override. The global disable-motion selector remains authoritative.
+- Updated stylesheet query to `20261114-10` and refreshed the regression assertions for the current app/CSS/effects/Service Worker versions.
