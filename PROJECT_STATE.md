@@ -2,8 +2,17 @@
 
 Last updated: 2026-11-14
 Default branch: `main`
-Latest main commit: `81947999bf986af41cf0037353e9d2f252132082` (LIFEOS reliability/accessibility merge); latest verified application/test commit: `81947999bf986af41cf0037353e9d2f252132082`; latest successful Pages deployment: `4ddffb0ff50fcbb397664babef19c2f0ba468721` (deployment of the new merge is not yet verified).
+Latest verified application/test commit: `a4a51153f583ff7947b8ba07c2ecc48eb7c44087` (PR #52 dashboard plan and motion restoration); latest successful Pages deployment: `4ddffb0ff50fcbb397664babef19c2f0ba468721` (deployment of the new merge is not yet verified).
 Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https://github.com/vana30421-cpu/ai-coach-tg/pull/41)
+
+## 2026-11-14 — Dashboard tomorrow plan and motion restoration
+
+- PR #52 merged to `main`: `a4a51153f583ff7947b8ba07c2ecc48eb7c44087`.
+- Dashboard now has a date-keyed editable plan for tomorrow: three priorities, schedule/time blocks, and preparation notes. Plans are saved locally in `state.tomorrowPlans`, retained separately by date, and capped to the latest 90 dates.
+- Restored the ambient aurora animation on desktop. The OS `prefers-reduced-motion` preference and the app's explicit `life-disable-motion` class remain respected.
+- Front-end build advanced to `LIFEOS-20261114-8`; Service Worker cache advanced to `life-os-v203`.
+- Regression suite: 274 passed, 0 failed; browser/Worker syntax checks passed; Jarvis and Detox workflow checks passed.
+- Manual physical-device verification and confirmation of the new GitHub Pages deployment remain outstanding.
 
 ## Implemented in the merged change
 
