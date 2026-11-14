@@ -684,3 +684,33 @@ input:focus,textarea:focus,select:focus{outline:none!important;border-color:colo
   border:1px solid ButtonText!important;
  }
 }
+
+
+/* Android/WebView reduced-motion handling:
+   Keep ambient decoration visible but stationary unless the user explicitly opts in.
+   The previous reduced-motion rule stopped the animation while leaving particles at top:-8vh,
+   so every particle stayed outside the viewport and the Android screen looked effect-free. */
+@media(prefers-reduced-motion:reduce){
+ #themeEffect .life-effect{
+  top:var(--life-static-y,50vh)!important;
+  opacity:.28!important;
+  animation:none!important;
+  transform:none!important;
+ }
+ #themeEffect .lifeos-effect-aura{
+  animation:none!important;
+  opacity:.18!important;
+ }
+ body.life-motion-override:not(.life-disable-motion) #themeEffect .life-effect{
+  top:-8vh!important;
+  opacity:0!important;
+  animation:lifeFloat var(--duration,14s) linear var(--delay,0s) infinite!important;
+ }
+ body.life-motion-override:not(.life-disable-motion) #themeEffect .lifeos-effect-aura{
+  animation:lifeosAuraDrift 22s ease-in-out infinite alternate!important;
+ }
+ body.life-disable-motion.life-motion-override #themeEffect .life-effect,
+ body.life-disable-motion.life-motion-override #themeEffect .lifeos-effect-aura{
+  animation:none!important;
+ }
+}
