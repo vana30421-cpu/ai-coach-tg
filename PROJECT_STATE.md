@@ -430,3 +430,13 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - GitHub Actions on latest PR head 8834152c2bc650d67f1fa17c463fdcc1198c6a50: LIFEOS checks **275/275 passed**; LIFE OS Jarvis tests **275/275 passed** (runs 43609467770 and 43609467759). Browser/Worker syntax checks passed.
 - Academy script query v15; Service Worker cache life-os-v207.
 - PR #50 remains open and mergeable. No merge or deployment; Android Chrome / Telegram WebView manual verification remains outstanding.
+
+
+## 2026-11-14 — Curriculum batch 12: 3,000-lesson expansion
+
+- Added **exactly 3,000 additional lesson records** in one curriculum expansion: JavaScript +884, Python +885, English +1,231.
+- Current catalog totals by academy module construction: JavaScript **1,000/1,000**, Python **1,000/1,000**, English **1,349/1,500**; **3,349/3,500 total (95.69%)**. Remaining: **151 English lessons**.
+- Engineering tracks now reach their requested 1,000-record targets. English additions are distributed across A1–C2; resulting level totals are A1–C1: 225 each and C2: 224.
+- Each added record includes an objective, contextual explanation, applied example, practice task, four task instructions, deliverable, acceptance criteria, metric and quiz. The 3,000 additions are structured from curated domain × competency combinations; this is a large authored curriculum expansion, but it still requires expert editorial review for pedagogical uniqueness and accuracy before being described as fully polished.
+- Regression expectations updated for 3,349 total records, exact per-track counts, unique lesson IDs/titles, content depth and CEFR distribution. Academy asset query bumped to v16; Service Worker cache to life-os-v208 and registration query to 20261114-6.
+- Verification status: GitHub Actions has not yet been observed for this commit. Do not claim tests passed until workflow results are checked. No merge or Pages deployment performed. Android Chrome / Telegram WebView manual QA remains outstanding.
