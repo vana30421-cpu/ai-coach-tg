@@ -2,10 +2,12 @@
 const test=require('node:test');
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
-const app=fs.readFileSync(new URL('../app.js',import.meta.url),'utf8');
-const css=fs.readFileSync(new URL('../lifeos-ulty-design.css',import.meta.url),'utf8');
-const html=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8');
-const sw=fs.readFileSync(new URL('../sw.js',import.meta.url),'utf8');
+const path=require('node:path');
+const root=path.join(__dirname,'..');
+const app=fs.readFileSync(path.join(root,'app.js'),'utf8');
+const css=fs.readFileSync(path.join(root,'lifeos-ulty-design.css'),'utf8');
+const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const sw=fs.readFileSync(path.join(root,'sw.js'),'utf8');
 
 test('dashboard exposes an editable tomorrow plan with three priorities and schedule fields',()=>{
  assert.match(app,/План на завтра/);
