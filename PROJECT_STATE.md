@@ -338,3 +338,13 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - English CEFR distribution: A1 14, A2 14, B1 14, B2 14, C1 14, C2 13.
 - Regression expectations updated to 164 total and the per-course/CEFR counts above. Asset query bumped to v9 and Service Worker cache to life-os-v199.
 - GitHub source commits are recorded in this batch; runtime tests, Actions, Pages deployment, and Android/Telegram WebView checks are not yet verified. Do not describe the full curriculum as complete.
+
+
+## 2026-11-14 — 100-lesson academy milestone and guided practice
+- Published exactly 100 lessons in each requested academy: JavaScript 100/1,000 long-term target; Python 100/1,000; English 100/1,500. First milestone is 100 per track; the original larger curriculum targets remain unchanged.
+- JavaScript and Python now expose 14 career stages, from Intern through Junior/Middle/Senior subdivisions, Lead, Staff, Principal, Distinguished and Fellow/architecture tracks.
+- English is split into 12 visible sublevels: A1.1/A1.2, A2.1/A2.2, B1.1/B1.2, B2.1/B2.2, C1.1/C1.2 and C2.1/C2.2.
+- Every lesson now includes four actionable task instructions, a concrete deliverable and acceptance criteria. The lesson screen shows these instructions and a dedicated field to save the actual task result; completion requires a written result, recall, example, checklist and correct quiz answer.
+- Added a total of 136 authored records in this milestone (59 JavaScript, 60 Python, 17 English) to the previous 164 records. Removed unused overage records; published totals are exactly 300 lessons.
+- Regression tests now assert 100 lessons per track, 14 engineering stages, 12 English sublevels, exact CEFR distribution, and actionable task fields. Asset query bumped to v10; Service Worker cache to life-os-v200.
+- Runtime test execution, GitHub Actions result, Pages deployment, and manual Android/Telegram WebView verification must be confirmed separately. Do not claim success until verified.
