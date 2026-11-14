@@ -419,3 +419,13 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 
 - Follow-up CSS root-cause verification: the global reduced-motion media query hid the entire #themeEffect overlay (`display:none`), so child-level visibility rules could not render anything. The final fix keeps the overlay mounted, hides only unrelated decorative particles, uses the existing per-particle static Y position, and restores the full animation shorthand only for the explicit in-app override. The global disable-motion selector remains authoritative.
 - Updated stylesheet query to `20261114-10` and refreshed the regression assertions for the current app/CSS/effects/Service Worker versions.
+
+
+## 2026-11-14 — PR #54 merged: programming zero-start and Android effects
+
+- PR #54 merged to main by squash commit `8f6ceeb1d6101affc5daa4683136344755eae9e3`.
+- Added 10 absolute-beginner lessons each to JavaScript and Python before Intern; current totals are 110 lessons each, English remains 100. Existing lesson IDs and progress are preserved.
+- Fixed the actual Android reduced-motion root cause: the CSS media query hid the entire `#themeEffect` layer, making child particle visibility rules ineffective. The layer now remains mounted; particles are visible and stationary under system reduced-motion, animate only after explicit in-app opt-in, and remain disabled by the global motion-off setting.
+- Main-branch versions: app build `LIFEOS-20261114-10`, stylesheet query `20261114-10`, effects bridge query `20261114-5`, Service Worker cache `life-os-v205`.
+- GitHub Actions on the PR head: LIFEOS checks **280 passed / 0 failed**; LIFE OS Jarvis tests **280 passed / 0 failed**. Browser/Worker syntax checks passed.
+- Main branch files were re-fetched after merge and confirmed to contain the beginner module, CSS fix and new cache version. Pages deployment and physical Android APK / Telegram WebView behavior are not independently verified in this run.
