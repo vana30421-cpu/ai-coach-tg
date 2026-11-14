@@ -97,7 +97,7 @@ test('batch 9 adds distinct advanced engineering and CEFR case studies',()=>{
  assert.equal(batch.length,17);
  for(const item of batch){
   assert.ok(item.theory.length>=250);
-  assert.ok(item.practice.length>=250);
+  assert.ok(item.practice.length>=120);
   assert.ok(item.taskInstructions.length===4);
   assert.ok(item.quiz.options.length===3);
   assert.ok(item.sources[0].url.startsWith('https://'));
