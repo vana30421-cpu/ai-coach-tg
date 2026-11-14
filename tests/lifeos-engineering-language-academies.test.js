@@ -23,7 +23,7 @@ test('registers three distinct academies with the requested curriculum targets',
 test('every published lesson has theory, example, practical work, test, criterion and source', () => {
   const root = load();
   const lessons = root.LIFEOS_ENGINEERING_ACADEMIES.courses.flatMap(c => c.modules.flatMap(m => m.lessons));
-  assert.equal(lessons.length, 3349);
+  assert.equal(lessons.length, 3500);
   const byCourse = Object.fromEntries(root.LIFEOS_ENGINEERING_ACADEMIES.courses.map(c => [c.id, c.modules.reduce((n,m) => n + m.lessons.length, 0)]));
   assert.deepEqual(JSON.parse(JSON.stringify(byCourse)), { javascript_engineering_1000: 1000, python_engineering_1000: 1000, english_cefr_1500: 1349 });
   assert.equal(root.LIFEOS_ENGINEERING_ACADEMIES.courses[0].modules.length, 14);
@@ -94,7 +94,7 @@ test('batch 9 adds distinct advanced engineering and CEFR case studies',()=>{
   'Python · Descriptor protocol и управление атрибутами',
   'Python · Async generators и backpressure'
  ]) assert.ok(py.some(x=>x.title===title),'missing '+title);
- for(const level of ['A1','A2','B1','B2','C1','C2']) assert.equal(en.filter(x=>x.title.startsWith(level+' ·')).length,225-(level==='C2'?1:0));
+ for(const level of ['A1','A2','B1','B2','C1','C2']) assert.equal(en.filter(x=>x.title.startsWith(level+' ·')).length,250);
  const batch=js.concat(py,en).filter(x=>/Event loop, task queues|AbortSignal и композиция|Structured cloning|IndexedDB: транзакции|CSP, Trusted Types|Observability браузерного|Protocol, structural|pytest fixtures|ContextVar и контекст|Descriptor protocol|Async generators|Asking for clarification|Past Continuous и прерывающее|Hedging и степень|Negotiating scope|Synthesising conflicting|Executive briefing/.test(x.title));
  assert.equal(batch.length,17);
  for(const item of batch){
