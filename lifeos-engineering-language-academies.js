@@ -11,7 +11,11 @@ var refs={
  en:{title:'Council of Europe — CEFR',url:'https://www.coe.int/en/web/common-european-framework-reference-languages'}
 };
 function lesson(title,objective,theory,example,practice,question,options,correct,source,duration){
- var hash=2166136261;for(var i=0;i<title.length;i++){hash^=title.charCodeAt(i);hash=Math.imul(hash,16777619);}var id='lesson-'+(hash>>>0).toString(36);return {id:id,title:title,objective:objective,theory:theory+'\n\nРазбор примера: '+example,practice:practice,metric:'Выполни задание самостоятельно, объясни ключевое решение и пройди проверку без подсказки. Результат должен быть воспроизводимым.',checkQuestion:question,quiz:{question:question,options:options,correctIndex:correct,answerExplanation:'Верный ответ: '+options[correct]+'. Он соответствует учебной цели: '+objective},duration:duration||15,steps:['Изучи цель и объяснение.','Разбери пример построчно и предскажи результат до запуска.','Выполни практику самостоятельно; проверь граничные случаи.','Ответь на вопрос без подсказки и запиши вывод.'],sources:[source],commonMistakes:['Механически копировать пример без понимания причин.','Проверять только успешный сценарий и игнорировать граничные случаи.','Считать прочтение урока подтверждением освоения.']};
+ var hash=2166136261;for(var i=0;i<title.length;i++){hash^=title.charCodeAt(i);hash=Math.imul(hash,16777619);}var id='lesson-'+(hash>>>0).toString(36),kind=source===refs.js?'javascript':source===refs.py?'python':'english';
+ var taskInstructions=kind==='javascript'?['Открой редактор кода и создай отдельный файл lesson.js.','Реализуй задание из блока ниже; не копируй готовое решение.','Запусти файл в подходящей среде (Node.js или браузер) и проверь минимум три сценария: обычный, граничный и ошибочный.','Исправь ошибки и запиши, почему решение работает.']:kind==='python'?['Открой редактор и создай файл lesson.py.','Напиши решение по условию ниже; раздели логику на понятные функции.','Запусти python lesson.py и проверь обычный, граничный и ошибочный ввод.','Если уместно, добавь pytest-тесты; запиши ожидаемый и фактический результат.']:['Прочитай правило и выпиши 5 ключевых слов или конструкций.','Выполни письменное задание ниже, используя собственные примеры, а не копируя образец.','Прочитай результат вслух; проверь грамматику, смысл и естественность формулировок.','Исправь ошибки и сохрани финальный текст или запись ответа.'];
+ var deliverable=kind==='javascript'?'Файл lesson.js, рабочий результат запуска и три проверенных сценария.':kind==='python'?'Файл lesson.py, результат запуска и тесты/проверки трёх сценариев.':'Собственный письменный ответ и устная практика по теме урока.';
+ var acceptanceCriteria=kind==='javascript'?'Код запускается без ошибок; результат соответствует условию; обычный, граничный и ошибочный случаи проверены.':kind==='python'?'Скрипт запускается; входные данные обработаны явно; проверки подтверждают ожидаемый результат.':'Задание выполнено полностью; собственные примеры корректны; смысл понятен при чтении вслух.';
+ return {id:id,title:title,objective:objective,theory:theory+'\n\nРазбор примера: '+example,practice:practice,taskInstructions:taskInstructions,deliverable:deliverable,acceptanceCriteria:acceptanceCriteria,metric:'Выполни задание самостоятельно, сохрани указанный результат, проверь его по критериям и объясни ключевое решение без подсказки.',checkQuestion:question,quiz:{question:question,options:options,correctIndex:correct,answerExplanation:'Верный ответ: '+options[correct]+'. Он соответствует учебной цели: '+objective},duration:duration||15,steps:['Изучи цель и объяснение.','Разбери пример и предскажи результат до запуска.','Выполни задание и сохрани результат.','Проверь результат по критериям и ответь на вопрос без подсказки.'],sources:[source],commonMistakes:['Механически копировать пример без понимания причин.','Проверять только успешный сценарий и игнорировать граничные случаи.','Считать прочтение урока подтверждением освоения.']};
 }
 function module(id,title,lessons){return {id:id,emoji:'📘',title:title,lessons:lessons};}
 var jsLessons=[
@@ -249,13 +253,20 @@ lesson('C2 · Риторическая композиция и управлен�
 );
 
 var levels=[
-{code:'Intern',label:'Intern / Junior foundations',focus:'Основы языка, инструменты, отладка, тесты, алгоритмическое мышление и безопасная работа с Git.'},
-{code:'Junior',label:'Junior Engineer',focus:'Самостоятельные небольшие функции, API, тестирование, чтение чужого кода и обработка ошибок.'},
-{code:'Middle',label:'Middle Engineer',focus:'Проектирование модулей, производительность, конкурентность, надёжность и эксплуатация.'},
-{code:'Senior',label:'Senior Engineer',focus:'Системный дизайн, качество архитектуры, технические решения, наставничество и ответственность за сервис.'},
-{code:'Staff',label:'Staff Engineer',focus:'Межкомандная архитектура, техническая стратегия направления, стандарты и управление сложными изменениями.'},
-{code:'Principal',label:'Principal Engineer',focus:'Архитектура организации, стратегические технические ставки, платформы и долгосрочные риски.'},
-{code:'Distinguished',label:'Distinguished Engineer',focus:'Организационное и отраслевое техническое лидерство, исследовательские направления и влияние на экосистему.'}
+{code:'Intern',label:'Intern',focus:'Среда разработки, базовый синтаксис, значения, простые алгоритмы и запуск программ.'},
+{code:'Junior I',label:'Junior I',focus:'Переменные, ветвления, циклы, функции и простые структуры данных.'},
+{code:'Junior II',label:'Junior II',focus:'Модули, ошибки, тесты, HTTP/API и работа с внешними данными.'},
+{code:'Middle I',label:'Middle I',focus:'ООП, типизация, архитектура модулей, асинхронность и устойчивость.'},
+{code:'Middle II',label:'Middle II',focus:'Базы данных, конкурентность, профилирование, безопасность и интеграции.'},
+{code:'Senior I',label:'Senior I',focus:'Системный дизайн, наблюдаемость, надёжность и эксплуатация сервисов.'},
+{code:'Senior II',label:'Senior II',focus:'Масштабирование, отказоустойчивость, производительность и технические решения.'},
+{code:'Lead Engineer',label:'Lead Engineer',focus:'Техническое руководство команды, декомпозиция, ревью и поставка.'},
+{code:'Staff Engineer',label:'Staff Engineer',focus:'Межкомандная архитектура, платформы и технические стандарты.'},
+{code:'Senior Staff',label:'Senior Staff Engineer',focus:'Системные изменения, техническая стратегия нескольких команд.'},
+{code:'Principal',label:'Principal Engineer',focus:'Архитектура организации, долгосрочные ставки и управление рисками.'},
+{code:'Senior Principal',label:'Senior Principal Engineer',focus:'Технологическая стратегия домена и сложные организационные решения.'},
+{code:'Distinguished',label:'Distinguished Engineer',focus:'Отраслевое техническое лидерство, исследования и влияние на экосистему.'},
+{code:'Fellow',label:'Engineering Fellow',focus:'Формирование новых технических направлений и фундаментальных инженерных практик.'}
 ];
 var englishLevels=['A1','A2','B1','B2','C1','C2'];
 var courses=[
