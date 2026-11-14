@@ -33,22 +33,23 @@ test('ambient aurora animation is enabled while reduced-motion remains respected
 });
 
 test('front-end asset and offline cache versions are advanced together',()=>{
- assert.match(html,/lifeos-ulty-design\.css\?v=20261114-9/);
- assert.match(html,/LIFEOS-20261114-9/);
- assert.match(sw,/const CACHE='life-os-v204'/);
+ assert.match(html,/lifeos-ulty-design\.css\?v=20261114-10/);
+ assert.match(html,/LIFEOS-20261114-10/);
+ assert.match(sw,/const CACHE='life-os-v205'/);
 });
 
 
 test('Android reduced-motion keeps theme particles visible in the viewport without forced motion',()=>{
  assert.match(app,/--life-static-y/);
  assert.match(css,/#themeEffect \.life-effect\{[^}]*top:var\(--life-static-y,50vh\)!important;[^}]*animation:none!important/s);
+ assert.doesNotMatch(css,/#themeEffect,\.lifeos-fx-particle\{display:none!important\}/);
  assert.match(css,/body\.life-motion-override:not\(\.life-disable-motion\) #themeEffect \.life-effect\{[^}]*animation:lifeFloat[^}]*!important/s);
  assert.match(css,/body\.life-disable-motion\.life-motion-override #themeEffect \.life-effect[^}]*animation:none!important/s);
 });
 
 test('Android effects retain an explicit motion opt-in and new offline asset versions',()=>{
  assert.match(app,/effectsMotionOverride===true/);
- assert.match(html,/lifeos-ulty-design\.css\?v=20261114-9/);
- assert.match(html,/lifeos-effects-v2\.js\?v=20261114-4/);
- assert.match(sw,/const CACHE='life-os-v204'/);
+ assert.match(html,/lifeos-ulty-design\.css\?v=20261114-10/);
+ assert.match(html,/lifeos-effects-v2\.js\?v=20261114-5/);
+ assert.match(sw,/const CACHE='life-os-v205'/);
 });
