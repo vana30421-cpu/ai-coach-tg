@@ -464,3 +464,5 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 
 
 - Batch-13 CI first pass exposed two stale regression assertions (the previous 3,349 total and pre-completion CEFR level counts). Updated academy-wide and batch-9 assertions to the completed 3,500 / 250-per-level catalog. Re-running CI on the corrected PR head; no merge or deployment.
+
+- Batch-13 uniqueness QA caught a 32-bit title-hash collision in one generated lesson ID. All 151 final English lessons now use deterministic namespaced IDs (`lesson-b13-{level}-{index}`), preserving all pre-existing lesson IDs and progress. Re-running CI on the corrected source.
