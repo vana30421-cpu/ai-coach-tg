@@ -391,3 +391,14 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Totals: JavaScript **105/1,000**, Python **105/1,000**, English **106/1,500**; 316/3,500 authored lessons (9.03%). Remaining: JS 895, Python 895, English 1,394 (3,184 total).
 - Updated lesson count/CEFR distribution regression, asset query v11 and offline cache life-os-v203.
 - Verification pending Actions for this batch. No merge or deployment claimed; Android/Telegram WebView manual checks remain outstanding.
+
+
+## 2026-11-14 — Curriculum batch 9 verified
+
+- Final published totals after module wiring: JavaScript **106/1,000**, Python **105/1,000**, English **106/1,500**; **317/3,500 (9.06%)**. Remaining: JavaScript 894, Python 895, English 1,394 (3,183 total).
+- Batch 9 contains 17 authored case-based lessons: 6 JavaScript, 5 Python and 6 English (one per CEFR level). The new JS/Python lessons are explicitly attached to existing career-stage modules; no lesson records are orphaned.
+- Added regression checks for exact per-course totals, CEFR distribution, presence of all batch-9 lessons and minimum content/task depth.
+- Corrected two CI-discovered issues: appended lessons were not initially attached to the module slices, and the authored-task length assertion was too strict for concise speaking/listening assignments. The final suite verifies the module wiring.
+- GitHub Actions on c6bd4390a40a5d84f2913f11139c166ae68369f3: LIFEOS checks **273/273 passed**; LIFE OS Jarvis tests **273/273 passed**. Browser and Worker syntax checks passed.
+- Updated academy asset query to v12 and Service Worker cache to life-os-v204.
+- PR #50 remains open, ready for review; no merge or deployment. Android Chrome / Telegram WebView manual verification remains outstanding.
