@@ -357,3 +357,10 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - The first CI attempt exposed a duplicate Python lesson title/ID; renamed the duplicate and reran checks successfully. A cross-realm array assertion was also normalized in the test.
 - Published content remains exactly 100 JavaScript, 100 Python and 100 English lessons, 14 career-stage modules in each engineering track and 12 English sublevels. Long-term targets remain 1,000 / 1,000 / 1,500.
 - Task UI now displays step-by-step instructions, expected deliverable, acceptance criteria and a required saved task result. No user learning progress or existing records are reset.
+
+
+## 2026-11-14 — Practice bank expansion (in progress)
+- Added `lifeos-practice-exercise-bank.js` on branch `curriculum-quality-1000-20261114` with 800 distinct exercise records per track (JavaScript, Python, English), 2,400 total. Each record has its own domain, scenario, task type, prompt, deliverable, assessment criteria, time estimate and reference.
+- Added a separate practice UI with track selection, sequential navigation, result submission and isolated localStorage progress key `lifeos.practice.progress.v1`; existing lesson progress is not modified.
+- Added the script to the application entry point and offline cache; cache target advanced to life-os-v201.
+- Counts and UI behavior require automated regression and browser/device verification before merge/deploy. These exercises are a separate bank and do not increase the authored lesson counts (currently 100 per track).
