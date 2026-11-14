@@ -364,3 +364,6 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Added a separate practice UI with track selection, sequential navigation, result submission and isolated localStorage progress key `lifeos.practice.progress.v1`; existing lesson progress is not modified.
 - Added the script to the application entry point and offline cache; cache target advanced to life-os-v201.
 - Counts and UI behavior require automated regression and browser/device verification before merge/deploy. These exercises are a separate bank and do not increase the authored lesson counts (currently 100 per track).
+
+- Practice-bank regression: initial CI caught a missing English type alias; fixed in `e85ab108590ed1095517b27b78f5a08ad42886ce`. Both GitHub Actions workflows then passed: 270/270 tests, 0 failures (`LIFEOS checks` run 43606445910; `LIFE OS Jarvis tests` run 43606445844).
+- Pull request #50 is open as draft for review. The new exercise bank has not been merged or deployed; Android Chrome and Telegram WebView manual verification are still outstanding.
