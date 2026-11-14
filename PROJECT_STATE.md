@@ -380,3 +380,14 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Updated practice asset query to v2 and Service Worker cache to life-os-v202.
 - GitHub Actions `LIFEOS checks`: **272 passed, 0 failed** on commit `7a903674755376829853e06bf1abbae7027984ae`; browser script syntax checks passed in the same workflow. `LIFE OS Jarvis tests`: success on the same commit.
 - PR #50 is open and ready for review; no merge or Pages deployment has been performed. Physical Android Chrome / Telegram WebView interaction and offline reload still require device verification.
+
+
+## 2026-11-14 — Engineering & English curriculum batch 9
+
+- Added **17 authored lessons**: JavaScript +5, Python +5, English +6 (one per CEFR level).
+- JavaScript topics: event-loop scheduling/starvation, AbortSignal composition and cancellation semantics, structured cloning/transferables, IndexedDB version migrations and blocked connections, CSP/Trusted Types/DOM XSS, browser observability and privacy-safe telemetry.
+- Python topics: structural typing with Protocol, pytest fixtures/parametrization/property-based testing, ContextVar isolation in async tasks, descriptor precedence and instance storage, async generators/backpressure and cancellation.
+- English topics: A1 clarification/spelling, A2 Past Continuous narrative, B1 calibrated hedging, B2 scope/deadline negotiation, C1 synthesis of conflicting sources, C2 executive decision briefings.
+- Totals: JavaScript **105/1,000**, Python **105/1,000**, English **106/1,500**; 316/3,500 authored lessons (9.03%). Remaining: JS 895, Python 895, English 1,394 (3,184 total).
+- Updated lesson count/CEFR distribution regression, asset query v11 and offline cache life-os-v203.
+- Verification pending Actions for this batch. No merge or deployment claimed; Android/Telegram WebView manual checks remain outstanding.
