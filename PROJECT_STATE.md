@@ -117,7 +117,9 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 ## 2026-11-12 — Adaptive spaced repetition
 - Replaced the fixed four-day review interval for rich academy lessons with successful-retrieval intervals of 1, 3, 7, 14, and 30 days (then capped at 30 days).
 - Review count and actual interval are stored additively in the existing per-course progress record; previous completion, recall, example, and checklist fields are preserved.
-- Incorrect quiz answers still do not advance the schedule; a lesson is only recorded after the existing practice, recall, example, and quiz gates pass.- Updated the learning renderer asset version and offline cache namespace to life-os-v180.- Added regression coverage for interval progression, cap behavior, and preservation of existing progress fields.
+- Incorrect quiz answers still do not advance the schedule; a lesson is only recorded after the existing practice, recall, example, and quiz gates pass.
+- Updated the learning renderer asset version and offline cache namespace to life-os-v180.
+- Added regression coverage for interval progression, cap behavior, and preservation of existing progress fields.
 
 
 ## 2026-11-12 — Adaptive learning release verification
@@ -237,7 +239,8 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 
 ## 2026-11-14 — JavaScript, Python and English academy foundation
 
-- Added lifeos-engineering-language-academies.js and registered three new offline-first academies in the existing ALL_NEW_COURSES learning engine.- JavaScript path target: 1,000 lessons; Python path target: 1,000 lessons; English path target: 1,500 lessons across CEFR A1–C2.
+- Added lifeos-engineering-language-academies.js and registered three new offline-first academies in the existing ALL_NEW_COURSES learning engine.
+- JavaScript path target: 1,000 lessons; Python path target: 1,000 lessons; English path target: 1,500 lessons across CEFR A1–C2.
 - Career ladder metadata covers Intern, Junior, Middle, Senior, Staff, Principal and Distinguished Engineer.
 - Added 18 authored starter lessons (6 JavaScript, 6 Python, 6 English), each with objective, substantive explanation, worked example, practical assignment, mastery criterion, quiz, answer key, steps and official/reference source.
 - Integrated academy cards into the actual Learning renderer and added the module to Service Worker precache; cache advanced to life-os-v191.
