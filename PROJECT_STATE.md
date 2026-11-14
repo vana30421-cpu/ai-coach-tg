@@ -117,8 +117,7 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 ## 2026-11-12 — Adaptive spaced repetition
 - Replaced the fixed four-day review interval for rich academy lessons with successful-retrieval intervals of 1, 3, 7, 14, and 30 days (then capped at 30 days).
 - Review count and actual interval are stored additively in the existing per-course progress record; previous completion, recall, example, and checklist fields are preserved.
-- Incorrect quiz answers still do not advance the schedule; a lesson is only recorded after the existing practice, recall, example, and quiz gates pass.
-- Updated the learning renderer asset version and offline cache namespace to life-os-v180.
+- Incorrect quiz answers still do not advance the schedule; a lesson is only recorded after the existing practice, recall, example, and quiz gates pass.- Updated the learning renderer asset version and offline cache namespace to life-os-v180.
 - Added regression coverage for interval progression, cap behavior, and preservation of existing progress fields.
 
 
@@ -238,7 +237,6 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 
 
 ## 2026-11-14 — JavaScript, Python and English academy foundation
-
 - Added lifeos-engineering-language-academies.js and registered three new offline-first academies in the existing ALL_NEW_COURSES learning engine.
 - JavaScript path target: 1,000 lessons; Python path target: 1,000 lessons; English path target: 1,500 lessons across CEFR A1–C2.
 - Career ladder metadata covers Intern, Junior, Middle, Senior, Staff, Principal and Distinguished Engineer.
@@ -357,3 +355,12 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - The first CI attempt exposed a duplicate Python lesson title/ID; renamed the duplicate and reran checks successfully. A cross-realm array assertion was also normalized in the test.
 - Published content remains exactly 100 JavaScript, 100 Python and 100 English lessons, 14 career-stage modules in each engineering track and 12 English sublevels. Long-term targets remain 1,000 / 1,000 / 1,500.
 - Task UI now displays step-by-step instructions, expected deliverable, acceptance criteria and a required saved task result. No user learning progress or existing records are reset.
+
+## 2026-11-14 — Accessibility and reduced-motion pass (PR #51)
+- Added a shared keyboard-focus treatment for links, buttons, form controls, tabs, summaries and explicitly focusable elements.
+- Added consistent disabled-state affordances, system text selection styling and focus scroll margin for form controls.
+- Strengthened `prefers-reduced-motion`: short-circuits transitions/animations and hides decorative background particles.
+- Added `prefers-reduced-transparency` fallbacks for glass navigation and modal surfaces, plus `forced-colors` focus/border support.
+- Updated Service Worker cache namespace from `life-os-v200` to `life-os-v201`; the CSS asset is already part of the offline core asset list.
+- Changes are isolated to presentation/accessibility and cache versioning; no application data or state schema is changed.
+- PR #51 is open. CI has not yet reported a run for this branch; Android Chrome and Telegram WebView manual verification remain outstanding.
