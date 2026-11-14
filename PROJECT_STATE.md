@@ -402,3 +402,20 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Shipped UI accessibility improvements (visible keyboard focus, reduced motion/transparency and forced-colors support) and intelligence input hardening (strict calendar-date validation, blank numeric values remain missing, inactive task states excluded from workload/overdue counts).
 - Service Worker cache namespace is now `life-os-v202`. Existing user data and storage schema are unchanged.
 - Merge is confirmed. Pages deployment and live-site reflection of this merge have not yet been verified; Android Chrome and Telegram WebView manual QA remain outstanding.
+
+
+## 2026-11-14 — Programming from absolute zero + Android reduced-motion visibility
+
+- Added a dedicated beginner-first module to both JavaScript and Python academies: 10 authored lessons per language, before the existing Intern modules.
+- First lessons explain what code/programming is, how commands run, and how to read the first output command. The first exercises require no IDE, terminal, Node.js or local installation; they use prediction, line-by-line reading and small modifications.
+- Added plain-language explanations, worked code snippets with expected output, step-by-step tasks, deliverables, mastery criteria, quizzes, answer explanations and official documentation links.
+- Existing 100 lessons per academy and all lesson IDs/progress are preserved. Current JS/Python totals are 110 each; English remains 100. Long-term targets remain 1,000 / 1,000 / 1,500.
+- Android effects diagnosis: CSS hid all .life-effect particles under prefers-reduced-motion: reduce; the opt-in override restored display and animation duration but did not restore the animation shorthand after a later animation:none!important rule. Particle CSS also did not consume the per-particle --life-static-y value already set by the renderer.
+- Fixed the CSS to show particles at stable visible positions when reduced motion is active, animate them when the user explicitly opts in, and preserve the global life-disable-motion preference as the final override.
+- Updated app build to LIFEOS-20261114-10, academy asset query to v11, effects bridge query to 20261114-5, and Service Worker cache to life-os-v205; added the new module to the offline precache.
+- Added tests/lifeos-programming-zero-start.test.js for lesson order, beginner prerequisites, expected curriculum counts, idempotence and preservation of English course.
+- Work is on branch fix/programming-zero-start-android-effects-2026-11-14. Automated CI, Pages deployment and physical Android APK / Telegram WebView verification are pending. Do not claim the APK issue is device-confirmed until tested.
+
+
+- Follow-up CSS root-cause verification: the global reduced-motion media query hid the entire #themeEffect overlay (`display:none`), so child-level visibility rules could not render anything. The final fix keeps the overlay mounted, hides only unrelated decorative particles, uses the existing per-particle static Y position, and restores the full animation shorthand only for the explicit in-app override. The global disable-motion selector remains authoritative.
+- Updated stylesheet query to `20261114-10` and refreshed the regression assertions for the current app/CSS/effects/Service Worker versions.

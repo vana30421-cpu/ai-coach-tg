@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,viewport-fit=cover">
 <meta name="theme-color" content="#090d16">
-<meta name="lifeos-build" content="LIFEOS-20261114-9">
+<meta name="lifeos-build" content="LIFEOS-20261114-10">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Life OS">
@@ -595,7 +595,7 @@ body.theme-light{color-scheme:light}
 body.theme-light .card,body.theme-light .group-card,body.theme-light .method-card{color:var(--text)}
 #themeEffect{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;contain:strict}
 #app,.app-header,.tab-bar-wrap{position:relative;z-index:1}
-.life-effect{position:absolute;left:var(--x);top:-8%;display:block;width:5px;height:5px;border-radius:50%;background:var(--brand);opacity:.2;animation:lifeFloat var(--duration) linear var(--delay) infinite;will-change:transform,opacity}
+.life-effect{position:absolute;left:var(--x);top:var(--life-static-y,-8%);display:block;width:5px;height:5px;border-radius:50%;background:var(--brand);opacity:.2;animation:lifeFloat var(--duration) linear var(--delay) infinite;will-change:transform,opacity}
 .life-effect-stars,.life-effect-sparkles,.life-effect-spark{box-shadow:0 0 12px 3px color-mix(in srgb,var(--brand) 65%,transparent)}
 .life-effect-petals,.life-effect-leaves,.life-effect-snow,.life-effect-pumpkin,.life-effect-bats,.life-effect-ghosts,.life-effect-bones,.life-effect-candles,.life-effect-feathers{width:auto;height:auto;background:none;font-style:normal;font-size:16px;filter:drop-shadow(0 0 8px color-mix(in srgb,var(--brand) 40%,transparent))}
 .life-effect-rain{width:1px;height:24px;border-radius:4px;background:linear-gradient(transparent,var(--brand));opacity:.24}
@@ -636,7 +636,7 @@ input,select,textarea{background:color-mix(in srgb,var(--surface-2) 85%,transpar
 .walk-entry{border-left:3px solid var(--brand)}
 @media(max-width:560px){.walks-hero{padding:21px}.walks-hero::after{right:12px;top:20px;font-size:58px}.walks-metrics{gap:18px}.walks-metrics strong{font-size:22px}.walks-fields{gap:9px}.theme-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(hover:none){.card:hover,.group-card:hover,.method-card:hover{transform:none;box-shadow:var(--shadow-sm)}}
-@media(prefers-reduced-motion:reduce){.life-effect{display:none!important}}
+@media(prefers-reduced-motion:reduce){.life-effect{display:block!important;top:var(--life-static-y,50vh)!important;animation:none!important;opacity:.34!important}}
 
 
 .life-effect-aurora{width:58vw;height:18vh;top:4%;border-radius:50%;background:linear-gradient(110deg,color-mix(in srgb,var(--brand) 45%,transparent),color-mix(in srgb,var(--brand-2) 35%,transparent),transparent);filter:blur(28px);opacity:.3;animation:lifeAurora 18s ease-in-out var(--delay) infinite alternate}
@@ -809,7 +809,7 @@ body{background:radial-gradient(ellipse at 15% 0%,color-mix(in srgb,var(--brand)
 /* LIFE OS: explicit motion override and completion particles */
 .life-burst-particle{position:fixed;z-index:3;display:block;pointer-events:none;font-size:17px;color:var(--brand);text-shadow:0 0 12px var(--brand),0 0 24px var(--brand-2);animation:lifeBurst .9s cubic-bezier(.16,.75,.3,1) forwards;will-change:transform,opacity}
 @keyframes lifeBurst{0%{transform:translate3d(0,0,0) scale(.35) rotate(0);opacity:0}15%{opacity:1}100%{transform:translate3d(var(--dx),var(--dy),0) scale(1.15) rotate(150deg);opacity:0}}
-@media(prefers-reduced-motion:reduce){body.life-motion-override .life-effect{display:block!important;animation-duration:var(--duration,15s)!important;animation-iteration-count:infinite!important}body.life-motion-override .life-burst-particle{animation-duration:.9s!important;animation-iteration-count:1!important}}
+@media(prefers-reduced-motion:reduce){body.life-motion-override .life-effect{display:block!important;top:var(--life-static-y,-8%)!important;animation:lifeFloat var(--duration,15s) linear var(--delay,0s) infinite!important;opacity:.34!important}body.life-motion-override .life-burst-particle{animation:lifeBurst .9s cubic-bezier(.16,.75,.3,1) forwards!important}}
 
 body.life-disable-motion *,body.life-disable-motion *::before,body.life-disable-motion *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
 </style>
@@ -961,7 +961,7 @@ body{
   }
 }
 </style>
-<link rel="stylesheet" href="lifeos-ulty-design.css?v=20261114-9">
+<link rel="stylesheet" href="lifeos-ulty-design.css?v=20261114-10">
 <style>
 /* LIFEOS compact capsule header + reversible collapse */
 .app-header{padding:calc(var(--safe-top) + 3px) 0 5px!important;background:transparent!important;border:0!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
@@ -1042,7 +1042,7 @@ body.lifeos-header-hidden .app-main{padding-top:4px!important}
 <script defer src="lifeos-leisure.js?v=1"></script>
 
 <script defer src="lifeos-routines.js?v=20261111-2"></script>
-<script defer src="lifeos-effects-v2.js?v=20261114-4"></script>
+<script defer src="lifeos-effects-v2.js?v=20261114-5"></script>
 <script defer src="lifeos-emoji-engine.js?v=20261110-4"></script>
 <script defer src="lifeos-workspaces.js?v=20261110-3"></script>
 <script defer src="lifeos-systems.js?v=20261114-2"></script>
@@ -1054,7 +1054,8 @@ body.lifeos-header-hidden .app-main{padding-top:4px!important}
 <script defer src="lifeos-learning-plan.js?v=20261110-3"></script>
 <script defer src="lifeos-learning-content.js?v=20261110-3"></script>
 <script defer src="lifeos-applied-mastery.js?v=20261111-4"></script>
-<script defer src="lifeos-engineering-language-academies.js?v=10"></script>
+<script defer src="lifeos-engineering-language-academies.js?v=11"></script>
+<script defer src="lifeos-programming-zero-start.js?v=1"></script>
 <script defer src="lifeos-search.js?v=20261110-3"></script>
 <script defer src="lifeos-calendar-v2.js?v=20261111-1"></script>
 <script>
