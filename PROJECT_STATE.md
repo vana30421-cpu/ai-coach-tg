@@ -367,3 +367,15 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 
 - Practice-bank regression: initial CI caught a missing English type alias; fixed in `e85ab108590ed1095517b27b78f5a08ad42886ce`. Both GitHub Actions workflows then passed: 270/270 tests, 0 failures (`LIFEOS checks` run 43606445910; `LIFE OS Jarvis tests` run 43606445844).
 - Pull request #50 is open as draft for review. The new exercise bank has not been merged or deployed; Android Chrome and Telegram WebView manual verification are still outstanding.
+
+
+## 2026-11-14 — Practice bank quality pass v2
+
+- Reworked all 2,400 exercise prompts: every task now combines its domain scenario, explicit assessment mode, concrete verification situation, and a distinct case variant.
+- Engineering variants: baseline contract, boundary data, failure/recovery, changed requirement/backward compatibility, and production handoff. English variants: free execution, time pressure, audience/register shift, clarification/disagreement, and synthesis/transfer.
+- Added mode-specific task instructions for implementation, debugging, test design, refactoring, profiling, security, code review, architecture, and all eight English skills.
+- Expanded rubrics to explicit 0–5 dimensions; added variant metadata and made the selected variant visible in the practice dialog.
+- Preserved exercise IDs and local progress key `lifeos.practice.progress.v1`; saved answers remain compatible. Lesson progress is untouched.
+- Regression tests now check 2,400 records, five balanced variants (160 per variant per track), domain/mode-specific prompts, and assessment metadata.
+- Updated practice asset query to v2 and Service Worker cache to life-os-v202.
+- Verification: pending GitHub Actions for the v2 commit. No merge, Pages deployment, or physical Android / Telegram WebView verification is claimed.
