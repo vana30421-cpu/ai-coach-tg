@@ -472,3 +472,5 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Final UI copy now reports the completed English academy: 1,500 lessons, 250 per CEFR level. Collision-safe IDs and syntax correction are included in the current source; CI must confirm the latest head before merge.
 
 - Corrected the remaining literal escaped newline before the batch-13 array push; the previous syntax check pinpointed that exact character sequence. Fresh CI is required on the new head.
+
+- Final content QA found one English title duplicated an existing batch-12 lesson (“Negotiating scope…”). Renamed the new topic to “Negotiation planning: scope, deadlines and trade-offs” and restored the batch-9 regression's original unique-match expectation. All 151 additions remain distinct; CI rerun pending.
