@@ -474,3 +474,15 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Pages deployment/live URL reflection is not independently confirmed in this run. Android Chrome and Telegram Android WebView physical-device QA remain outstanding.
 - PR #50's large curriculum expansion remains a separate, non-mergeable PR; it was not merged as part of this release.
 - This release completes only the daily-value correction. It does not complete the full LIFEOS specification or the remaining content, media, benchmark and integration targets.
+
+
+## 2026-11-15 — Vision routine variety correction (PR pending)
+
+- Root cause: the visible "200 routines" catalogue was generated from only seven base protocols crossed with context labels. The displayed count overstated meaningful variety.
+- Added a curated core of 28 genuinely distinct, non-treatment comfort routines across blinking, distance breaks, screen ergonomics, lighting, activity changes, hygiene and symptom self-observation.
+- Kept the legacy 200-item array and IDs for compatibility with existing saved history; the UI now uses the curated 28-item core instead of context-renamed duplicates.
+- Added a date-rotated daily suggestion that avoids the last seven completed core routines. It is optional, has no streak/XP reward, and is hidden when the app has an active red-flag state.
+- Removed XP and pet-XP awards for health-related eye-comfort routines. Existing routine history remains preserved.
+- Bumped content asset query to `20261115-1`, app build to `LIFEOS-20261115-14`, Service Worker cache to `life-os-v209`, and registration query to `20261115-3`.
+- Added regression tests for 28 unique core routines, category/schema completeness, rotation logic, and absence of health-action rewards.
+- CI, Pages deployment and Android/Telegram WebView verification are pending. The catalog is for comfort and ergonomics, not treatment or myopia correction.
