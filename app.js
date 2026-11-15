@@ -2743,7 +2743,7 @@ function completeEyeExercise(){
  var v=ensureVisionState(),ex=currentVisionExercise,seconds=Number(ex.seconds)||30,comfort=(document.getElementById('eyeExerciseComfort')||{}).value||'same';
  if(!v.routineLog)v.routineLog=[];v.routineLog.push({exerciseId:ex.id,title:ex.title,date:today(),at:nowISO(),seconds:seconds,comfort:comfort});
  if(v.routineLog.length>500)v.routineLog=v.routineLog.slice(-500);
-  /* No XP or streak reward for a health-related comfort break. */
+  /* No gamification reward is attached to this health-related comfort break. */
  save();closeSheet();haptic('success');toast('Результат сохранён','success');currentVisionExercise=null;renderVision();
 }
 
