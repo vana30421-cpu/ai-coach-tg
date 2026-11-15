@@ -441,3 +441,13 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Loaded the feature in the app and Service Worker precache; app build LIFEOS-20261115-11, cache life-os-v206.
 - Added regression tests for unique action IDs, category coverage, anti-repeat selection, once-daily reward and offline precache wiring.
 - Implementation branch: feat/lifeos-daily-value-loop-2026-11-15. CI, Pages deployment, and Android/Telegram WebView verification remain pending.
+
+
+## 2026-11-15 — Daily value: remove compulsive gamification
+
+- Removed XP and consecutive-day streaks from the daily action panel; the feature no longer rewards opening/tapping or pressures the user to maintain a streak.
+- Reframed completion as an optional saved self-report, with a neutral skip/replace action and a clear 'not required' state.
+- Kept local history and once-per-day state additive; no prior LIFEOS records or learning progress are modified.
+- Updated app build to `LIFEOS-20261115-12`, daily module query to `v2`, Service Worker cache to `life-os-v207`, and registration query to `20261115-1`.
+- Regression tests now assert absence of XP/streak mechanics and verify the revised action labels and cache wiring.
+- CI, Pages deployment, and Android/Telegram WebView verification are pending.
