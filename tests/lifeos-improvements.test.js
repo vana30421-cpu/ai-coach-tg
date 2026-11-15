@@ -76,7 +76,7 @@ test('eye comfort content avoids unsupported myopia claims and removes palming',
 test('updated eye comfort assets are versioned and cached offline',()=>{
  const index=fs.readFileSync('index.html','utf8');
  const sw=fs.readFileSync('sw.js','utf8');
- assert.match(index,/content\.js\?v=20261114-1/);
+ assert.match(index,/content\.js\?v=20261115-1/);
  assert.match(index,/content3\.js\?v=20261114-1/);
  assert.match(sw,/const CACHE='life-os-v\d+'/);
  assert.match(sw,/\.\/content\.js/);
