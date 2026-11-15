@@ -441,3 +441,25 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Loaded the feature in the app and Service Worker precache; app build LIFEOS-20261115-11, cache life-os-v206.
 - Added regression tests for unique action IDs, category coverage, anti-repeat selection, once-daily reward and offline precache wiring.
 - Implementation branch: feat/lifeos-daily-value-loop-2026-11-15. CI, Pages deployment, and Android/Telegram WebView verification remain pending.
+
+
+## 2026-11-15 — Daily value: remove compulsive gamification
+
+- Removed XP and consecutive-day streaks from the daily action panel; the feature no longer rewards opening/tapping or pressures the user to maintain a streak.
+- Reframed completion as an optional saved self-report, with a neutral skip/replace action and a clear 'not required' state.
+- Kept local history and once-per-day state additive; no prior LIFEOS records or learning progress are modified.
+- Updated app build to `LIFEOS-20261115-12`, daily module query to `v2`, Service Worker cache to `life-os-v207`, and registration query to `20261115-1`.
+- Regression tests now assert absence of XP/streak mechanics and verify the revised action labels and cache wiring.
+- CI, Pages deployment, and Android/Telegram WebView verification are pending.
+
+
+## 2026-11-15 — Context-aware daily value (PR #56, extended)
+
+- Replaced the generic, randomly selected daily-task popup with a compact dashboard "Следующий полезный шаг" card.
+- The card reads the existing offline Intelligence Core and prioritizes its evidence-backed recommendations; when there is no signal, it falls back to the highest-priority existing pending task. If neither exists, it offers optional task capture rather than inventing an assignment.
+- Removed the floating daily-task launcher from the application entry point and Service Worker precache. The legacy module and its localStorage key are retained but are no longer loaded; no user records are deleted.
+- Kept the non-punitive direction from PR #56: no XP, streaks, daily penalties, or reward for opening the app.
+- Bumped app build to `LIFEOS-20261115-13`, Service Worker cache to `life-os-v208`, and registration query to `20261115-2`.
+- Added regression assertions for dashboard intelligence wiring, fallback to actual tasks, legacy-data preservation, and removal of the generic popup from load/precache.
+- Verification status: GitHub Actions must be checked on the latest PR head. Pages deployment and physical Android Chrome / Telegram WebView verification remain outstanding.
+- This is a focused product correction, not completion of the full LIFEOS specification. Outstanding work still includes the full psychology/communication banks, multimedia library, 50-app feature acceptance matrix, integrations, and physical-device QA.
