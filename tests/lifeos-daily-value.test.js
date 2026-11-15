@@ -15,11 +15,14 @@ test('daily value loop provides a varied, non-duplicated pool of practical actio
 test('daily value progress persists locally and rewards only once per day',()=>{
  assert.ok(mod.includes("KEY='lifeos_daily_value_v1'"));
  assert.ok(mod.includes('if(s.done)return'));
- assert.ok(mod.includes('s.xp=(Number(s.xp)||0)+10'));
+ assert.ok(!mod.includes('XP'));
+ assert.ok(!mod.includes('streak('));
+ assert.ok(mod.includes('Сохранить результат'));
+ assert.ok(mod.includes('Не подходит · другое'));
  assert.ok(mod.includes('s.completedDates'));
 });
 test('daily value module is loaded and precached offline',()=>{
- assert.ok(index.includes('lifeos-daily-value.js?v=1'));
+ assert.ok(index.includes('lifeos-daily-value.js?v=2'));
  assert.ok(sw.includes("'./lifeos-daily-value.js'"));
- assert.ok(/life-os-v206/.test(sw));
+ assert.ok(/life-os-v207/.test(sw));
 });
