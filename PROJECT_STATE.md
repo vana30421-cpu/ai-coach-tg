@@ -486,3 +486,15 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Bumped content asset query to `20261115-1`, app build to `LIFEOS-20261115-14`, Service Worker cache to `life-os-v209`, and registration query to `20261115-3`.
 - Added regression tests for 28 unique core routines, category/schema completeness, rotation logic, and absence of health-action rewards.
 - CI, Pages deployment and Android/Telegram WebView verification are pending. The catalog is for comfort and ergonomics, not treatment or myopia correction.
+
+
+## 2026-11-15 — PR #57 merged: real vision-routine variety
+
+- PR #57 merged to `main` as `2583100f827f76735d705967d1f80e93abc468b1`.
+- Root cause corrected: the old visible 200-entry list was generated from seven base routines crossed with context labels. The interface now uses a curated 28-item core with distinct actions; the legacy 200 IDs remain available for old history compatibility.
+- Added a date-rotated optional practice suggestion that avoids the last seven completed core routines.
+- Removed XP/pet-XP rewards for eye-comfort practices; routine logs remain preserved.
+- Final PR-head CI: LIFEOS checks passed (run 1849), Jarvis tests passed (run 1095), Detox verification passed (run 283).
+- Main-branch source verification confirms app build `LIFEOS-20261115-14`, content asset query `20261115-1`, Service Worker cache `life-os-v209`, and core catalogue export.
+- Pages deployment/live URL reflection and physical Android/Telegram WebView QA are still not independently confirmed.
+- PR #50 curriculum expansion remains open and non-mergeable; the full learning-content rebuild is not complete.
