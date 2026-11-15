@@ -429,3 +429,15 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Main-branch versions: app build `LIFEOS-20261114-10`, stylesheet query `20261114-10`, effects bridge query `20261114-5`, Service Worker cache `life-os-v205`.
 - GitHub Actions on the PR head: LIFEOS checks **280 passed / 0 failed**; LIFE OS Jarvis tests **280 passed / 0 failed**. Browser/Worker syntax checks passed.
 - Main branch files were re-fetched after merge and confirmed to contain the beginner module, CSS fix and new cache version. Pages deployment and physical Android APK / Telegram WebView behavior are not independently verified in this run.
+
+
+## 2026-11-15 — Daily value loop (PR in progress)
+
+- Added an offline-first daily action panel with 35 distinct, authored micro-actions across programming, school, focus, planning, communication, languages, memory, thinking, creation, wellbeing and other practical areas.
+- The daily suggestion rotates by date and avoids recently used task IDs; users can request a different action.
+- Added quick entry points for a 10-minute focus sprint and a structured fact/assumption review.
+- Added local XP, once-per-day completion, completion history and consecutive-day streak display. Progress uses a separate additive localStorage key; no existing user records or schemas are reset.
+- Added a short screen-break prompt that explicitly does not claim to treat or reverse myopia.
+- Loaded the feature in the app and Service Worker precache; app build LIFEOS-20261115-11, cache life-os-v206.
+- Added regression tests for unique action IDs, category coverage, anti-repeat selection, once-daily reward and offline precache wiring.
+- Implementation branch: feat/lifeos-daily-value-loop-2026-11-15. CI, Pages deployment, and Android/Telegram WebView verification remain pending.
