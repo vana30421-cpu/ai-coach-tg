@@ -1049,6 +1049,48 @@ function renderDashboard(){
   var html = '<div class="page">';
   html += '<div class="title-xl">' + greet + userName + '</div>';
 
+  /* Один следующий полезный шаг: реальные сигналы профиля, а не случайное задание. */
+  var nextStep = null, nextStepSource = 'local';
+  try {
+    var intelligenceCore = window.LIFEOS_INTELLIGENCE_CORE;
+    if (intelligenceCore && typeof intelligenceCore.analyze === 'function') {
+      var intelligenceResult = intelligenceCore.analyze(state, today());
+      if (intelligenceResult && Array.isArray(intelligenceResult.recommendations) && intelligenceResult.recommendations.length) {
+        nextStep = intelligenceResult.recommendations.slice().sort(function(a,b){
+          var rank = {high:0,medium:1,info:2};
+          return (rank[a.level]===undefined?3:rank[a.level])-(rank[b.level]===undefined?3:rank[b.level]);
+        })[0];
+        nextStepSource = 'intelligence';
+      }
+    }
+  } catch (nextStepError) { console.warn('[LIFEOS] Next-step analysis unavailable:', nextStepError); }
+  if (!nextStep) {
+    var nextPending = (Array.isArray(state.tasks)?state.tasks:[]).filter(function(t){return t && t.status==='pending';});
+    nextPending.sort(function(a,b){
+      var pa=typeof getEisenhowerPriority==='function'?getEisenhowerPriority(a):99;
+      var pb=typeof getEisenhowerPriority==='function'?getEisenhowerPriority(b):99;
+      return pa-pb;
+    });
+    if(nextPending.length){
+      var task=nextPending[0];
+      nextStep={id:'next-task',level:'info',title:task.title||'Продолжить задачу',detail:'В списке уже есть конкретное незавершённое дело. Продолжи его вместо случайного нового задания.',why:'Выбрана первая активная задача по текущему приоритету.',timeMinutes:Math.max(5,Math.min(90,Number(task.planned_time)||15)),successCriteria:'Сделан следующий проверяемый шаг по задаче.',target:'tasks'};
+    }
+  }
+  html += '<section class="card" aria-labelledby="lifeosNextStepTitle" style="border:1px solid color-mix(in srgb,var(--brand) 35%,var(--glass-border));background:linear-gradient(135deg,color-mix(in srgb,var(--brand) 12%,var(--bg-2)),var(--bg-2));">';
+  html += '<div class="row-between mb-2"><div><div class="footnote" style="text-transform:uppercase;letter-spacing:.08em;">LIFEOS · СЕЙЧАС</div><h2 id="lifeosNextStepTitle" style="margin:3px 0 0;">Следующий полезный шаг</h2></div><span class="badge badge-brand">Без обязательств</span></div>';
+  if(nextStep){
+    var nextTarget = ['tasks','sleep','stats'].indexOf(nextStep.target)>=0 ? nextStep.target : 'tasks';
+    html += '<div style="font-weight:800;font-size:16px;">'+esc(nextStep.title||'Продолжить важное')+'</div>';
+    html += '<div class="footnote mt-1">'+esc(nextStep.detail||'')+'</div>';
+    if(nextStep.why)html += '<div class="footnote mt-2">Почему сейчас: '+esc(nextStep.why)+'</div>';
+    html += '<div class="row-between mt-3"><span class="footnote">'+Math.max(1,Number(nextStep.timeMinutes)||5)+' мин · '+(nextStepSource==='intelligence'?'по данным LIFEOS':'по текущим задачам')+'</span><button class="btn btn-primary btn-sm" type="button" onclick="navigate(\''+nextTarget+'\')">Открыть →</button></div>';
+  } else {
+    html += '<div class="footnote">Срочных сигналов и незавершённых задач не найдено. Не нужно придумывать себе задания — добавь реальную цель, только если она тебе нужна.</div>';
+    html += '<button class="btn btn-primary btn-block mt-3" type="button" onclick="openEntityEditor(\'task\',null)">＋ Добавить свою задачу</button>';
+  }
+  html += '</section>';
+
+
   /* План на завтра: быстрый ввод прямо с главного экрана */
   var tomorrowDate = new Date();
   tomorrowDate.setDate(tomorrowDate.getDate()+1);
