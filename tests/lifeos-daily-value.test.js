@@ -5,24 +5,22 @@ const fs=require('node:fs');
 const mod=fs.readFileSync('lifeos-daily-value.js','utf8');
 const index=fs.readFileSync('index.html','utf8');
 const sw=fs.readFileSync('sw.js','utf8');
-test('daily value loop provides a varied, non-duplicated pool of practical actions',()=>{
- const ids=[...mod.matchAll(/\{id:'([^']+)'/g)].map(x=>x[1]);
- assert.ok(ids.length>=30,'at least 30 authored actions');
- assert.equal(new Set(ids).size,ids.length,'stable unique IDs');
- for(const category of ['Программирование','Учёба','Фокус','Планирование','Коммуникация','Самочувствие','Мышление'])assert.ok(mod.includes(category));
- assert.ok(mod.includes('blocked=recent.concat(exclude||[])'));
-});
-test('daily value progress persists locally and rewards only once per day',()=>{
+const app=fs.readFileSync('app.js','utf8');
+
+test('legacy daily-action data remains untouched for backward compatibility',()=>{
  assert.ok(mod.includes("KEY='lifeos_daily_value_v1'"));
- assert.ok(mod.includes('if(s.done)return'));
- assert.ok(!mod.includes('XP'));
- assert.ok(!mod.includes('streak('));
- assert.ok(mod.includes('Сохранить результат'));
- assert.ok(mod.includes('Не подходит · другое'));
- assert.ok(mod.includes('s.completedDates'));
+ assert.ok(!app.includes("localStorage.removeItem('lifeos_daily_value_v1')"));
+ assert.ok(!app.includes('lifeos_daily_value_v1'));
 });
-test('daily value module is loaded and precached offline',()=>{
- assert.ok(index.includes('lifeos-daily-value.js?v=2'));
- assert.ok(sw.includes("'./lifeos-daily-value.js'"));
- assert.ok(/life-os-v207/.test(sw));
+
+test('generic random daily popup is no longer loaded or precached',()=>{
+ assert.ok(!index.includes('lifeos-daily-value.js'));
+ assert.ok(!sw.includes("'./lifeos-daily-value.js'"));
+});
+
+test('dashboard offers a context-aware next step from real profile data',()=>{
+ assert.ok(app.includes('window.LIFEOS_INTELLIGENCE_CORE'));
+ assert.ok(app.includes('intelligenceCore.analyze(state, today())'));
+ assert.ok(app.includes('Следующий полезный шаг'));
+ assert.ok(app.includes('nextPending[0]'));
 });
