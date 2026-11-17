@@ -1,3 +1,11 @@
+## 2026-11-17 — Recovery coach integration
+
+- Added an offline-first recovery screen that is wired to the existing Recovery navigation route and reuses the existing sleep diary records without rewriting them.
+- Displays the adolescent sleep-duration target (8–10 hours), a user-editable bedtime defaulting to 23:00, recent recorded sleep-duration/quality averages, and a daily checklist for morning daylight, movement, adequate food/water, restorative breaks, screen wind-down and schedule consistency.
+- Checklist and bedtime settings are stored additively in LIFEOS state; no existing sleep records, IDs or schedule entries are modified. Missed checklist items are not penalized.
+- Added the module to the Service Worker precache; build marker updated to LIFEOS-20261117-1 and cache namespace to life-os-v210.
+- Automated recovery coach tests added. CI, deployment and physical Android / Telegram WebView verification are pending; do not mark as released/device-verified until those checks complete.
+
 ## 2026-11-14 — Android reduced-motion effects fix
 
 - Root cause: Android/WebView can report `prefers-reduced-motion: reduce`. Existing CSS disabled particle animation but left each particle at `top:-8vh`, so the particles remained above the viewport and appeared absent.
