@@ -831,7 +831,7 @@ function navigate(page, silent){
     vision60: renderVision60, vision62: renderVision62,
     ai: renderAI, jarvis: renderJarvis, health: renderHealth, water: renderWater, mood: renderMood,
     workouts: renderWorkouts, meditation: renderMeditation, meds: window.renderMeds || renderMeds,
-    recovery: window.renderRecovery || renderRecovery, medical: window.renderMedical || renderMedical,
+    discipline30: window.renderDiscipline30 || function(){document.getElementById('app').innerHTML='<div class="page"><div class="card">Модуль дисциплины не загрузился. Обнови страницу.</div></div>';}, recovery: window.renderRecovery || renderRecovery, medical: window.renderMedical || renderMedical,
     leisure: window.renderLeisure || function(){renderEntertainment();}, entertainment: window.renderEntertainment || renderEntertainment, resources: window.renderResources || renderResources,
     movies: window.renderMovies || renderMovies, series: window.renderSeries || renderSeries, books: window.renderBooks || renderBooks,
     musiclib: window.renderMusic || renderMusic, gameslib: window.renderGames || renderGames, podcastslib: window.renderPodcasts || renderPodcasts,
