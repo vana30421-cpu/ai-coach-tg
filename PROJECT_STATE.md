@@ -506,3 +506,15 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Main-branch source verification confirms app build `LIFEOS-20261115-14`, content asset query `20261115-1`, Service Worker cache `life-os-v209`, and core catalogue export.
 - Pages deployment/live URL reflection and physical Android/Telegram WebView QA are still not independently confirmed.
 - PR #50 curriculum expansion remains open and non-mergeable; the full learning-content rebuild is not complete.
+
+
+## 2026-11-20 — Discipline 30 program
+
+- Added an offline-first, 30-day behavioral training module for reducing automatic app switching, starting boring but important tasks, sustaining short focus blocks, and returning after distraction.
+- Four progressive phases: awareness/start (days 1–7), boredom tolerance (8–14), self-management (15–21), and consolidation (22–30); after day 30 the module continues in maintenance mode rather than resetting.
+- Daily task, planned start time, practice check-ins, reflection and distraction counts are stored additively in `state.discipline30`; missed days do not erase history or reset progress.
+- Added a dashboard entry, navigation route, and Service Worker precache asset (`life-os-v211`). Existing task, sleep, habit, and other user records are not rewritten.
+- Device-level app blocking/usage collection is not claimed; the module records user check-ins and works offline.
+- Automated CI and physical Android / Telegram WebView verification are pending until the feature branch checks complete.
+
+- Implementation tracked in PR #58: https://github.com/vana30421-cpu/ai-coach-tg/pull/58 (branch `feat/discipline-30-day-system`). The pull request is open; GitHub Actions status and physical-device verification have not yet been confirmed.
