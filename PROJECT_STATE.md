@@ -516,3 +516,5 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Added a dashboard entry, navigation route, and Service Worker precache asset (`life-os-v211`). Existing task, sleep, habit, and other user records are not rewritten.
 - Device-level app blocking/usage collection is not claimed; the module records user check-ins and works offline.
 - Automated CI and physical Android / Telegram WebView verification are pending until the feature branch checks complete.
+
+- Implementation tracked in PR #58: https://github.com/vana30421-cpu/ai-coach-tg/pull/58 (branch `feat/discipline-30-day-system`). The pull request is open; GitHub Actions status and physical-device verification have not yet been confirmed.
