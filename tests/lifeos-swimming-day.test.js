@@ -51,7 +51,7 @@ test('swimming-day UI persists selected weekdays, renders the matching date, and
  window.lifeOSSetSwimmingDay(1,true);
  assert.deepEqual(state.schedule.swimmingDays,[1]);
  assert.match(page.html,/Дневной сон — 10 минут/);
- assert.match(page.html,/оставшиеся уроки после бассейна/);
+ assert.match(page.html,/После бассейна — оставшиеся уроки/);
  window.save=()=>false;
  window.lifeOSSetSwimmingDay(2,true);
  assert.deepEqual(state.schedule.swimmingDays,[1]);
