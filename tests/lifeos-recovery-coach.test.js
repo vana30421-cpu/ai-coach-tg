@@ -9,7 +9,7 @@ test('recovery coach parses and is wired into the real recovery route and offlin
  assert.doesNotThrow(()=>new vm.Script(source));
  assert.match(index,/lifeos-recovery-coach\.js\?v=20261117-1/);
  assert.match(sw,/\.\/lifeos-recovery-coach\.js/);
- assert.match(sw,/const CACHE='life-os-v210'/);
+ assert.match(sw,/const CACHE='life-os-v211'/);
 });
 test('recovery checklist persists per date without changing sleep history',()=>{
  const state={sleepEntries:[{id:'sleep-1',date:'2026-11-17',hours:8,quality:8}],recoveryRoutineByDate:{}};
