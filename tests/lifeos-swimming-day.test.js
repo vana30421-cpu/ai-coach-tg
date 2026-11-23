@@ -10,7 +10,7 @@ const sw=fs.readFileSync(path.join(root,'sw.js'),'utf8');
 const state=fs.readFileSync(path.join(root,'PROJECT_STATE.md'),'utf8');
 
 test('swimming-day settings are additive and persisted in the existing schedule state',()=>{
- assert.match(moduleSource,/state\.schedule\.swimmingDays/);
+ assert.match(moduleSource,/current\.schedule\.swimmingDays/);
  assert.match(moduleSource,/window\.lifeOSSetSwimmingDay/);
  assert.match(moduleSource,/if\(!save\(\)\)/);
  assert.match(moduleSource,/window\.renderSchedule=function\(\)/);
@@ -36,4 +36,23 @@ test('new module is loaded after the schedule renderer and precached offline',()
  assert.match(sw,/const CACHE='life-os-v211'/);
  assert.match(sw,/\.\/lifeos-swimming-day\.js/);
  assert.match(state,/Swimming-day schedule template/);
+});
+
+test('swimming-day UI persists selected weekdays, renders the matching date, and rolls back failed saves',()=>{
+ const vm=require('node:vm');
+ const state={schedule:{times:{},customEvents:[]}};
+ const page={html:'',insertAdjacentHTML(_where,html){this.html+=html;}};
+ const app={querySelector(){return page;}};
+ const window={state,getLifeScheduleDate:()=> '2026-11-23',save:()=>true,toast:()=>{},renderSchedule(){app.innerHTML='<div class="page"></div>';page.html='';}};
+ const sandbox={window,document:{getElementById:()=>app},Date};
+ vm.runInNewContext(moduleSource,sandbox);
+ window.renderSchedule();
+ assert.match(page.html,/Отметь дни недели/);
+ window.lifeOSSetSwimmingDay(1,true);
+ assert.deepEqual(state.schedule.swimmingDays,[1]);
+ assert.match(page.html,/Дневной сон — 10 минут/);
+ assert.match(page.html,/оставшиеся уроки после бассейна/);
+ window.save=()=>false;
+ window.lifeOSSetSwimmingDay(2,true);
+ assert.deepEqual(state.schedule.swimmingDays,[1]);
 });
