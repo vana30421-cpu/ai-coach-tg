@@ -28,7 +28,8 @@ function renderPanel(){
     html+='<div class="footnote mt-3">'+(settings.swimmingDays.length?'На выбранную дату бассейн не запланирован.':'Отметь дни недели, когда у тебя бассейн.')+'</div>';
   }
   html+='</section>';
-  root.insertAdjacentHTML('beforeend',html);
+  var page=root.querySelector('.page')||root;
+  page.insertAdjacentHTML('beforeend',html);
 }
 window.lifeOSSetSwimmingDay=function(day,enabled){
   day=Number(day);if(!Number.isInteger(day)||day<0||day>6)return;
