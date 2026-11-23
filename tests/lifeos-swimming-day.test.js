@@ -54,5 +54,5 @@ test('swimming-day UI persists selected weekdays, renders the matching date, and
  assert.match(page.html,/После бассейна — оставшиеся уроки/);
  window.save=()=>false;
  window.lifeOSSetSwimmingDay(2,true);
- assert.deepEqual(state.schedule.swimmingDays,[1]);
+ assert.equal(JSON.stringify(state.schedule.swimmingDays),'[1]');
 });
