@@ -34,7 +34,7 @@ test('ambient aurora animation is enabled while reduced-motion remains respected
 
 test('front-end asset and offline cache versions are advanced together',()=>{
  assert.match(html,/lifeos-ulty-design\.css\?v=20261114-10/);
- assert.match(html,/LIFEOS-20261117-1/);
+ assert.match(html,/LIFEOS-20261123-1/);
  assert.match(sw,/const CACHE='life-os-v211'/);
 });
 
