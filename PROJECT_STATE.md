@@ -506,3 +506,11 @@ Merged PR: [#41 — Add LIFEOS applied mastery and five-minute learning](https:/
 - Main-branch source verification confirms app build `LIFEOS-20261115-14`, content asset query `20261115-1`, Service Worker cache `life-os-v209`, and core catalogue export.
 - Pages deployment/live URL reflection and physical Android/Telegram WebView QA are still not independently confirmed.
 - PR #50 curriculum expansion remains open and non-mergeable; the full learning-content rebuild is not complete.
+
+
+## 2026-11-23 — Swimming-day schedule template
+- Added an offline-first, configurable swimming-day template to the existing weekly schedule screen.
+- Users select swimming weekdays; the selected day shows a 10-minute nap, 10-minute after-school pause, 5-minute planning block, 5-minute pool-bag preparation, priority lessons before swimming, and remaining lessons after swimming.
+- No reduced-study-load rule or food, shower, or separate recovery blocks are added. Existing calendar events and sleep records are preserved.
+- Settings are stored additively under `state.schedule.swimmingDays`; the new script is included in the Service Worker precache (`life-os-v211`).
+- Regression coverage added. GitHub Actions, Pages deployment, and physical Android / Telegram WebView verification must be checked separately before calling this released.
