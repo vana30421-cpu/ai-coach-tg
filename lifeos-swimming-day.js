@@ -3,13 +3,14 @@
 var DAY_NAMES=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
 var DAY_VALUES=[1,2,3,4,5,6,0];
 function getSettings(){
-  if(!state.schedule||typeof state.schedule!=='object')state.schedule={times:{},customEvents:[]};
-  if(!Array.isArray(state.schedule.swimmingDays))state.schedule.swimmingDays=[];
-  state.schedule.swimmingDays=state.schedule.swimmingDays.filter(function(day){return Number.isInteger(day)&&day>=0&&day<=6;});
-  return state.schedule;
+  var current=window.state;
+  if(!current.schedule||typeof current.schedule!=='object')current.schedule={times:{},customEvents:[]};
+  if(!Array.isArray(current.schedule.swimmingDays))current.schedule.swimmingDays=[];
+  current.schedule.swimmingDays=current.schedule.swimmingDays.filter(function(day){return Number.isInteger(day)&&day>=0&&day<=6;});
+  return current.schedule;
 }
 function localDateKey(){
-  var value=typeof LIFE_SCHEDULE_DATE==='string'&&LIFE_SCHEDULE_DATE?LIFE_SCHEDULE_DATE:'';
+  var value=typeof window.getLifeScheduleDate==='function'?window.getLifeScheduleDate():'';
   if(value)return value;
   var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 }
@@ -31,12 +32,12 @@ function renderPanel(){
 }
 window.lifeOSSetSwimmingDay=function(day,enabled){
   day=Number(day);if(!Number.isInteger(day)||day<0||day>6)return;
-  var settings=getSettings(),days=settings.swimmingDays;
+  var settings=getSettings(),previous=settings.swimmingDays.slice(),days=settings.swimmingDays;
   if(enabled&&days.indexOf(day)<0)days.push(day);
   if(!enabled)settings.swimmingDays=days.filter(function(value){return value!==day;});
   settings.swimmingDays.sort(function(a,b){return DAY_VALUES.indexOf(a)-DAY_VALUES.indexOf(b);});
-  if(!save()){toast('Не удалось сохранить дни бассейна','error');return;}
-  renderSchedule();
+  if(!window.save()){settings.swimmingDays=previous;window.toast('Не удалось сохранить дни бассейна','error');return;}
+  window.renderSchedule();
 };
 var original=window.renderSchedule;
 if(typeof original==='function'){
