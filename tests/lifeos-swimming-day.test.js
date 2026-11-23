@@ -12,7 +12,7 @@ const state=fs.readFileSync(path.join(root,'PROJECT_STATE.md'),'utf8');
 test('swimming-day settings are additive and persisted in the existing schedule state',()=>{
  assert.match(moduleSource,/current\.schedule\.swimmingDays/);
  assert.match(moduleSource,/window\.lifeOSSetSwimmingDay/);
- assert.match(moduleSource,/if\(!save\(\)\)/);
+ assert.match(moduleSource,/if\(!window\.save\(\)\)/);
  assert.match(moduleSource,/window\.renderSchedule=function\(\)/);
 });
 
@@ -49,7 +49,7 @@ test('swimming-day UI persists selected weekdays, renders the matching date, and
  window.renderSchedule();
  assert.match(page.html,/Отметь дни недели/);
  window.lifeOSSetSwimmingDay(1,true);
- assert.deepEqual(state.schedule.swimmingDays,[1]);
+ assert.equal(JSON.stringify(state.schedule.swimmingDays),'[1]');
  assert.match(page.html,/Дневной сон — 10 минут/);
  assert.match(page.html,/После бассейна — оставшиеся уроки/);
  window.save=()=>false;
