@@ -6130,7 +6130,6 @@ window.renderDailyReport = renderDailyReport;
 window.renderWeeklyReport = renderWeeklyReport;
 window.renderSnapshot = renderSnapshot;
 window.renderRecommendations = renderRecommendations;
-window.getLifeScheduleDate = function(){ return LIFE_SCHEDULE_DATE || today(); };
 window.renderSchedule = renderSchedule;
 window.renderScheduleEditor = renderScheduleEditor;
 window.renderFocus = renderFocus;
