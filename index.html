@@ -1059,6 +1059,7 @@ body.lifeos-header-hidden .app-main{padding-top:4px!important}
 <script defer src="lifeos-programming-zero-start.js?v=1"></script>
 <script defer src="lifeos-search.js?v=20261110-3"></script>
 <script defer src="lifeos-calendar-v2.js?v=20261111-1"></script>
+<script defer src="lifeos-swimming-day.js?v=20261123-1"></script>
 <script>
 (function(){
   var failures=[],lastError=null;
@@ -1146,7 +1147,7 @@ body.lifeos-header-hidden .app-main{padding-top:4px!important}
   window.location.reload();
  });
  window.addEventListener('load',function(){
-  navigator.serviceWorker.register('./sw.js?v=20261117-1',{scope:'./',updateViaCache:'none'}).then(function(reg){
+  navigator.serviceWorker.register('./sw.js?v=20261123-1',{scope:'./',updateViaCache:'none'}).then(function(reg){
    registration=reg;
    activateWaiting();
    reg.addEventListener('updatefound',function(){
