@@ -1091,6 +1091,45 @@ function renderDashboard(){
   html += '</section>';
 
 
+  /* Ежедневный импульс: одна короткая практика и полезная идея, без штрафов за пропуск. */
+  var momentumDate = today();
+  var momentumLibrary = [
+    {id:'recall',title:'Вспомни без подсказки',idea:'Память укрепляется не только чтением: попробуй сначала самостоятельно восстановить материал.',action:'Выбери один знакомый урок и за 5 минут запиши по памяти три главные мысли.',target:'learning'},
+    {id:'focus',title:'Убери один источник отвлечения',idea:'Среда может облегчить полезное действие: заранее убери один заметный отвлекающий фактор.',action:'На ближайшие 5 минут отключи лишние вкладки и выбери одну конкретную задачу.',target:'focus'},
+    {id:'clarity',title:'Преврати цель в следующий шаг',idea:'Большая цель становится выполнимее, когда у неё есть действие, которое можно начать прямо сейчас.',action:'Открой одну цель и сформулируй первый шаг на 5–10 минут.',target:'tasks'},
+    {id:'reflection',title:'Найди один полезный вывод',idea:'Короткая рефлексия помогает превратить опыт дня в решение на будущее.',action:'Запиши одну вещь, которая сегодня сработала, и почему.',target:'journal'},
+    {id:'spacing',title:'Вернись к старой теме',idea:'Повторение через интервалы помогает не ограничиваться кратковременным узнаванием.',action:'Открой ранее пройденную тему и проверь себя без конспекта.',target:'learning'},
+    {id:'priority',title:'Выбери главное',idea:'Когда приоритетов слишком много, следующий шаг становится менее очевидным.',action:'Выбери один результат на сегодня и отложи второстепенное.',target:'planning'},
+    {id:'reset',title:'Сделай короткую перезагрузку',idea:'Небольшая пауза может помочь переключиться между разными видами нагрузки.',action:'На 5 минут отойди от экрана, пройдись и вернись к выбранному делу.',target:'recovery'}
+  ];
+  var momentumHash = momentumDate.split('-').join('').split('').reduce(function(sum,digit){return sum+Number(digit);},0);
+  var momentumItem = momentumLibrary[momentumHash % momentumLibrary.length];
+  var momentumState = state.dailyMomentum && typeof state.dailyMomentum==='object' ? state.dailyMomentum : {};
+  var momentumCompleted = momentumState.completed && momentumState.completed[momentumDate];
+  var momentumMonth = momentumDate.slice(0,7);
+  var momentumMonthCount = momentumState.completed ? Object.keys(momentumState.completed).filter(function(key){return key.slice(0,7)===momentumMonth;}).length : 0;
+  window.lifeOSCompleteDailyMomentum = function(){
+    var bucket = state.dailyMomentum && typeof state.dailyMomentum==='object' ? state.dailyMomentum : (state.dailyMomentum={});
+    if(!bucket.completed || typeof bucket.completed!=='object' || Array.isArray(bucket.completed))bucket.completed={};
+    if(bucket.completed[momentumDate])return;
+    bucket.completed[momentumDate]={id:momentumItem.id,completedAt:new Date().toISOString()};
+    var keys=Object.keys(bucket.completed).sort();
+    while(keys.length>90){delete bucket.completed[keys.shift()];}
+    if(!save()){delete bucket.completed[momentumDate];if(window.toast)window.toast('Не удалось сохранить прогресс','error');return;}
+    if(window.toast)window.toast('Отлично. Маленький шаг засчитан!','success');
+    renderDashboard();
+  };
+  html += '<section class="card" aria-labelledby="lifeosDailyMomentumTitle" style="border:1px solid color-mix(in srgb,var(--brand-2) 32%,var(--glass-border));background:linear-gradient(135deg,color-mix(in srgb,var(--brand-2) 10%,var(--bg-2)),var(--bg-2));">';
+  html += '<div class="row-between mb-2"><div><div class="footnote" style="text-transform:uppercase;letter-spacing:.08em;">LIFEOS · 5 МИНУТ ДЛЯ СЕБЯ</div><h2 id="lifeosDailyMomentumTitle" style="margin:3px 0 0;">✨ Импульс дня</h2></div><span class="badge badge-brand">'+momentumMonthCount+' в этом месяце</span></div>';
+  html += '<div style="font-weight:800;font-size:16px;">'+esc(momentumItem.title)+'</div><div class="footnote mt-1">'+esc(momentumItem.idea)+'</div>';
+  html += '<div class="card mt-2" style="background:var(--glass-1);box-shadow:none;"><div style="font-weight:700;">Твоя практика</div><div class="footnote mt-1">'+esc(momentumItem.action)+'</div></div>';
+  if(momentumCompleted){
+    html += '<div class="row-between mt-2"><span class="footnote" role="status">✓ На сегодня выполнено. Завтра будет новая практика.</span><button class="btn btn-ghost btn-sm" type="button" onclick="navigate(\''+momentumItem.target+'\')">Продолжить →</button></div>';
+  }else{
+    html += '<div class="row mt-3" style="gap:8px;"><button class="btn btn-primary" style="flex:1;" type="button" onclick="navigate(\''+momentumItem.target+'\')">Выполнить практику →</button><button class="btn btn-ghost" type="button" onclick="lifeOSCompleteDailyMomentum()">Готово ✓</button></div><div class="footnote mt-2">Без серий и наказаний: пропущенный день ничего не обнуляет.</div>';
+  }
+  html += '</section>';
+
   /* План на завтра: быстрый ввод прямо с главного экрана */
   var tomorrowDate = new Date();
   tomorrowDate.setDate(tomorrowDate.getDate()+1);
