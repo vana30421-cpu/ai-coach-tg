@@ -26,6 +26,15 @@ test('tomorrow plan uses a local calendar date and persists per date without rep
  assert.match(app,/esc\(tomorrowPlan\.(?:priority1|priority2|priority3|schedule|preparation)/);
 });
 
+test('dashboard daily momentum is additive, date-keyed, optional, and bounded',()=>{
+ assert.match(app,/Ежедневный импульс/);
+ assert.match(app,/state\.dailyMomentum/);
+ assert.match(app,/bucket\.completed\[momentumDate\]/);
+ assert.match(app,/while\(keys\.length>90\)/);
+ assert.match(app,/Без серий и наказаний/);
+ assert.match(app,/window\.lifeOSCompleteDailyMomentum/);
+});
+
 test('ambient aurora animation is enabled while reduced-motion remains respected',()=>{
  assert.match(css,/body::before\{[^}]*animation:auroraShift 25s ease-in-out infinite alternate!important/s);
  assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
