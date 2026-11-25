@@ -52,12 +52,12 @@
     var planning=[momentum,tomorrow,phase].filter(Boolean);
     var progress=[xp,spheres,tip,jarvis,reports].filter(Boolean);
     var tools=[quick].filter(Boolean);
-    groups.planning.items=planning;
-    groups.progress.items=progress;
-    groups.tools.items=tools;
     var used=primary.concat(planning,progress,tools);
     var extras=nodes.filter(function(n){return n!==title && used.indexOf(n)<0;});
     progress=progress.concat(extras);
+    groups.planning.items=planning;
+    groups.progress.items=progress;
+    groups.tools.items=tools;
 
     page.innerHTML='';
     page.setAttribute('data-home-organized','1');
