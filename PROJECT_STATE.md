@@ -1,3 +1,10 @@
+## 2026-11-25 — Home screen clarity pass (additive)
+
+- Fixed the recovery bedtime input validator to accept valid `HH:MM` values; regression coverage now exercises saving `22:45`.\n- Added a lightweight dashboard organizer that preserves the original renderer and moves existing dashboard cards into a clear hierarchy: next action, tasks, habits and focus first; planning, progress and extra tools collapsed below.
+- Added direct shortcuts to Tasks, Learning, Calendar and All sections. Existing cards, routes, state keys, user records and feature renderers are retained; this change only reorganizes dashboard presentation.
+- Added the organizer as a deferred script after the existing application modules and included it in the offline Service Worker precache. Cache namespace advanced to `life-os-v212`; script query version is `20261125-1`.
+- Automated regression coverage checks script order, offline precache, preserved renderer delegation and route shortcuts. CI, Pages deployment and physical Android / Telegram WebView verification remain pending.
+
 ## 2026-11-24 — Daily momentum experience (additive)\n\n- Added a date-keyed five-minute daily practice card to the existing dashboard, with rotating offline prompts for recall, focus, goal decomposition, reflection, spaced review, prioritization and recovery.\n- Completion is optional, stored additively under `state.dailyMomentum.completed`, capped to 90 records, and never resets or penalizes missed days. Existing tasks, goals, schedules, learning progress, gamification and user records are untouched.\n- Dashboard build marker and Service Worker cache were advanced together. Automated regression coverage added; CI, Pages deployment, live URL and physical Android / Telegram WebView verification must be checked before calling this release confirmed.\n\n## 2026-11-17 — Recovery coach integration
 
 - Added an offline-first recovery screen that is wired to the existing Recovery navigation route and reuses the existing sleep diary records without rewriting them.
