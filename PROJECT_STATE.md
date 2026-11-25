@@ -1,6 +1,6 @@
 ## 2026-11-25 — Home screen clarity pass (additive)
 
-- Added a lightweight dashboard organizer that preserves the original renderer and moves existing dashboard cards into a clear hierarchy: next action, tasks, habits and focus first; planning, progress and extra tools collapsed below.
+- Fixed the recovery bedtime input validator to accept valid `HH:MM` values; regression coverage now exercises saving `22:45`.\n- Added a lightweight dashboard organizer that preserves the original renderer and moves existing dashboard cards into a clear hierarchy: next action, tasks, habits and focus first; planning, progress and extra tools collapsed below.
 - Added direct shortcuts to Tasks, Learning, Calendar and All sections. Existing cards, routes, state keys, user records and feature renderers are retained; this change only reorganizes dashboard presentation.
 - Added the organizer as a deferred script after the existing application modules and included it in the offline Service Worker precache. Cache namespace advanced to `life-os-v212`; script query version is `20261125-1`.
 - Automated regression coverage checks script order, offline precache, preserved renderer delegation and route shortcuts. CI, Pages deployment and physical Android / Telegram WebView verification remain pending.
