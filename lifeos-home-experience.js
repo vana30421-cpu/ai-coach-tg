@@ -125,7 +125,7 @@
     categories.forEach(function(category){buckets[category.id]=[];});
     var seen={};
     tiles.forEach(function(tile){
-      var match=(tile.getAttribute('onclick')||'').match(/navigate\\(['"]([^'"]+)['"]\\)/);
+      var match=(tile.getAttribute('onclick')||'').match(/navigate\(['"]([^'"]+)['"]\)/);
       var key=match?match[1]:'';
       if(key && seen[key])return;
       if(key)seen[key]=true;
