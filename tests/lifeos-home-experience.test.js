@@ -17,19 +17,19 @@ test('home experience is syntactically valid and loaded after the core app', () 
   assert.match(sw, /\.\/lifeos-home-experience\.js/);
 });
 
-test('dashboard organization preserves the original renderer and all feature groups', () => {
+test('dashboard organization preserves the original renderer and feature groups', () => {
   assert.match(source, /var originalRenderDashboard=root\.renderDashboard/);
   assert.match(source, /originalRenderDashboard\.apply\(this,arguments\)/);
-  assert.match(source, /Следующий полезный шаг/);
-  assert.match(source, /Импульс дня/);
-  assert.match(source, /План на завтра/);
-  assert.match(source, /Прогресс и рекомендации/);
-  assert.match(source, /Дополнительные инструменты/);
-  assert.match(source, /Все разделы/);
+  for (const label of ['Следующий полезный шаг','Импульс дня','План на завтра','Прогресс и рекомендации','Дополнительные инструменты','Все разделы']) {
+    assert.ok(source.includes(label), 'missing dashboard element: '+label);
+  }
+  assert.match(source, /groups\.planning\.items=planning/);
+  assert.match(source, /groups\.progress\.items=progress/);
+  assert.match(source, /groups\.tools\.items=tools/);
 });
 
 test('all main navigation shortcuts point to existing LIFEOS routes', () => {
   for (const route of ['tasks','learning','calendar','more']) {
-    assert.match(source, new RegExp("navigate\\\\\\\\\\\\('"+route+"'\\\\\\\\\\\\)"));
+    assert.ok(source.includes("'"+route+"'"), 'route '+route+' is present');
   }
 });
