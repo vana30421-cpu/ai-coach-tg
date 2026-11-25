@@ -40,7 +40,7 @@
     var momentum=find(nodes,function(t){return t.indexOf('Импульс дня')>=0;});
     var tomorrow=find(nodes,function(t){return t.indexOf('План на завтра')>=0;});
     var reports=find(nodes,function(t){return t.indexOf('Отчёты')>=0;});
-    var quick=find(nodes,function(t){return t.indexOf('Быстро')>=0 && !!(n.querySelector && n.querySelector('.group-grid'));});
+    var quick=find(nodes,function(t,n){return t.indexOf('Быстро')>=0 && !!(n.querySelector && n.querySelector('.group-grid'));});
     var xp=find(nodes,function(t){return t.indexOf('XP до уровня')>=0;});
     var spheres=find(nodes,function(t){return t.indexOf('Баланс сфер')>=0;});
     var tip=find(nodes,function(t){return t.indexOf('Совет коуча')>=0;});
@@ -52,7 +52,10 @@
     var planning=[momentum,tomorrow,phase].filter(Boolean);
     var progress=[xp,spheres,tip,jarvis,reports].filter(Boolean);
     var tools=[quick].filter(Boolean);
-    groups.planning.items=planning;\n    groups.progress.items=progress;\n    groups.tools.items=tools;\n    var used=primary.concat(planning,progress,tools);
+    groups.planning.items=planning;
+    groups.progress.items=progress;
+    groups.tools.items=tools;
+    var used=primary.concat(planning,progress,tools);
     var extras=nodes.filter(function(n){return n!==title && used.indexOf(n)<0;});
     progress=progress.concat(extras);
 
