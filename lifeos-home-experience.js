@@ -91,6 +91,18 @@
     originalRenderDashboard.apply(this,arguments);
     try{arrange();}catch(error){console.warn('[LIFEOS] Home organization skipped:',error);}
   };
+  try{
+    var observedApp=document.getElementById('app');
+    if(observedApp && typeof root.MutationObserver==='function'){
+      var observer=new root.MutationObserver(function(){
+        var pageName=observedApp.getAttribute('data-page');
+        if(!pageName || pageName==='dashboard'){
+          try{arrange();}catch(error){console.warn('[LIFEOS] Home reorganization skipped:',error);}
+        }
+      });
+      observer.observe(observedApp,{childList:true,subtree:true});
+    }
+  }catch(observerError){console.warn('[LIFEOS] Home observer unavailable:',observerError);}
   root.__lifeosHomeExperienceInstalled=true;
   try{
     var app=document.getElementById('app');
