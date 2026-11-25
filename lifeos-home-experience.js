@@ -87,6 +87,83 @@
     });
   }
 
+  function arrangeMore(){
+    var hub=document.querySelector('#app .more-hub');
+    if(!hub || hub.getAttribute('data-home-organized')==='1')return;
+    var title=hub.querySelector('.title-xl');
+    var subtitle=hub.querySelector('.subtitle');
+    var search=hub.querySelector('.more-search');
+    var count=hub.querySelector('.more-count');
+    var tiles=Array.prototype.slice.call(hub.querySelectorAll('[data-more-item]'));
+    var categories=[
+      {id:'work',title:'📌 Главное и работа'},
+      {id:'growth',title:'🧠 Саморазвитие'},
+      {id:'learning',title:'🎓 Обучение'},
+      {id:'health',title:'❤️ Здоровье и цифровой баланс'},
+      {id:'progress',title:'📈 Прогресс и мотивация'},
+      {id:'leisure',title:'🎬 Отдых'},
+      {id:'assistants',title:'✧ AI и помощники'},
+      {id:'knowledge',title:'📚 Личные знания'},
+      {id:'system',title:'⚙️ Настройки и система'},
+      {id:'other',title:'🧩 Остальное'}
+    ];
+    var categoryByKey={
+      dashboard:'work',tasks:'work',projects:'work',schedule:'work',focus:'work',eveningReview:'work',
+      spheres:'growth',coach:'growth',coachChat:'growth',habitList:'growth',habitCatalog:'growth',brain:'growth',antistress:'growth',
+      learning:'learning',levels:'learning',english:'learning',skills:'learning',games:'learning',materials:'learning',
+      health:'health',water:'health',mood:'health',sleep:'health',sleepCalendar:'health',
+      vision:'health',vision60:'health',vision62:'health',visiontrack:'health',visiontips:'health',
+      detox:'health',detox60:'health',detoxcourse:'health',screentracker:'health',
+      dailyReport:'progress',weeklyReview:'progress',monthlyReview:'progress',achievements:'progress',stats:'progress',
+      gamesHub:'progress',leagues:'progress',pet:'progress',fsrs:'progress',
+      walks:'leisure',leisure:'leisure',
+      ai:'assistants',telegramSetup:'assistants',
+      obsidian:'knowledge',journal:'knowledge',obsidianIntegration:'knowledge',
+      settings:'system',notifications:'system',profile:'system',storage:'system'
+    };
+    var buckets={};
+    categories.forEach(function(category){buckets[category.id]=[];});
+    var seen={};
+    tiles.forEach(function(tile){
+      var match=(tile.getAttribute('onclick')||'').match(/navigate\\(['"]([^'"]+)['"]\\)/);
+      var key=match?match[1]:'';
+      if(key && seen[key])return;
+      if(key)seen[key]=true;
+      var category=categoryByKey[key]||'other';
+      buckets[category].push(tile);
+    });
+    if(!seen.tasks){
+      var taskTile=document.createElement('button');
+      taskTile.type='button';
+      taskTile.className='more-tile';
+      taskTile.setAttribute('data-more-item','');
+      taskTile.setAttribute('data-search','работа задачи');
+      taskTile.setAttribute('onclick',"navigate('tasks')");
+      taskTile.innerHTML='<span class="more-tile-icon">☑️</span><span class="more-tile-label">Задачи</span><span class="more-tile-arrow">›</span>';
+      buckets.work.unshift(taskTile);
+    }
+    hub.innerHTML='';
+    hub.setAttribute('data-home-organized','1');
+    [title,subtitle,search,count].forEach(function(node){if(node)hub.appendChild(node);});
+    categories.forEach(function(category){
+      var items=buckets[category.id];
+      if(!items.length)return;
+      var section=document.createElement('section');
+      section.className='card more-group';
+      section.setAttribute('data-more-group','');
+      var heading=document.createElement('h2');
+      heading.className='more-group-title';
+      heading.textContent=category.title;
+      var grid=document.createElement('div');
+      grid.className='more-grid';
+      section.appendChild(heading);
+      section.appendChild(grid);
+      items.forEach(function(tile){grid.appendChild(tile);});
+      hub.appendChild(section);
+    });
+    if(typeof root.filterMoreSections==='function')root.filterMoreSections(search&&search.querySelector('input')?search.querySelector('input').value:'');
+  }
+
   root.renderDashboard=function(){
     originalRenderDashboard.apply(this,arguments);
     try{arrange();}catch(error){console.warn('[LIFEOS] Home organization skipped:',error);}
@@ -98,6 +175,8 @@
         var pageName=observedApp.getAttribute('data-page');
         if(!pageName || pageName==='dashboard'){
           try{arrange();}catch(error){console.warn('[LIFEOS] Home reorganization skipped:',error);}
+        }else if(pageName==='more'){
+          try{arrangeMore();}catch(error){console.warn('[LIFEOS] Menu reorganization skipped:',error);}
         }
       });
       observer.observe(observedApp,{childList:true,subtree:true});
@@ -107,5 +186,6 @@
   try{
     var app=document.getElementById('app');
     if(app && (!app.getAttribute('data-page') || app.getAttribute('data-page')==='dashboard'))root.renderDashboard();
+    else if(app && app.getAttribute('data-page')==='more')arrangeMore();
   }catch(e){}
 })(typeof window!=='undefined'?window:globalThis);
