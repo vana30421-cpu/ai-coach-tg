@@ -30,6 +30,6 @@ test('dashboard organization preserves the original renderer and feature groups'
 
 test('all main navigation shortcuts point to existing LIFEOS routes', () => {
   for (const route of ['tasks','learning','calendar','more']) {
-    assert.ok(source.includes("'"+route+"'"), 'route '+route+' is present');
+    assert.ok(source.includes("\\'"+route+"\\'"), 'route '+route+' is present');
   }
 });
