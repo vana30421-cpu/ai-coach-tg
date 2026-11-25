@@ -10,7 +10,7 @@
     tools:{title:'🧰 Дополнительные инструменты',hint:'Быстрые действия и остальные функции',items:[]}
   };
 
-  function textOf(node){return String(node && (node.innerText || node.textContent) || '').replace(/\\s+/g,' ').trim();}
+  function textOf(node){return String(node && (node.innerText || node.textContent) || '').replace(/\s+/g,' ').trim();}
   function makeDetails(group){
     var details=document.createElement('details');
     details.className='lifeos-home-fold';
@@ -35,7 +35,7 @@
     var title=find(nodes,function(t,n){return n.classList && n.classList.contains('title-xl');}) || nodes[0];
     var next=find(nodes,function(t){return t.indexOf('Следующий полезный шаг')>=0;});
     var tasks=find(nodes,function(t){return t.indexOf('Задачи')>=0 && t.indexOf('Все →')>=0;});
-    var habits=find(nodes,function(t){return t.indexOf('Привычки')>=0 && /\\d+\\s*\\//.test(t);});
+    var habits=find(nodes,function(t){return t.indexOf('Привычки')>=0 && t.indexOf('/')>=0;});
     var focus=find(nodes,function(t){return t.indexOf('⏱ Фокус')>=0 || t.indexOf('▶ 25 мин')>=0;});
     var momentum=find(nodes,function(t){return t.indexOf('Импульс дня')>=0;});
     var tomorrow=find(nodes,function(t){return t.indexOf('План на завтра')>=0;});
