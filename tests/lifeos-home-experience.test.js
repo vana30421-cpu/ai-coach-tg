@@ -33,3 +33,12 @@ test('all main navigation shortcuts point to existing LIFEOS routes', () => {
     assert.ok(source.includes("\\'"+route+"\\'"), 'route '+route+' is present');
   }
 });
+
+test('all-sections menu is categorized, searchable, and retains a direct Tasks entry', () => {
+  assert.ok(source.includes('function arrangeMore(){'));
+  assert.ok(source.includes('var categoryByKey='));
+  assert.ok(source.includes("if(!seen.tasks)"));
+  assert.ok(source.includes("data-more-group"));
+  assert.ok(source.includes("MutationObserver"));
+  assert.ok(source.includes("navigate('tasks')"));
+});
