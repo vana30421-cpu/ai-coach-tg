@@ -43,8 +43,8 @@ test('ambient aurora animation is enabled while reduced-motion remains respected
 
 test('front-end asset and offline cache versions are advanced together',()=>{
  assert.match(html,/lifeos-ulty-design\.css\?v=20261114-10/);
- assert.match(html,/LIFEOS-20261115-14/);
- assert.match(sw,/const CACHE='life-os-v209'/);
+ assert.match(html,/LIFEOS-20261124-1/);
+ assert.match(sw,/const CACHE='life-os-v212'/);
 });
 
 
@@ -60,5 +60,5 @@ test('Android effects retain an explicit motion opt-in and new offline asset ver
  assert.match(app,/effectsMotionOverride===true/);
  assert.match(html,/lifeos-ulty-design\.css\?v=20261114-10/);
  assert.match(html,/lifeos-effects-v2\.js\?v=20261114-5/);
- assert.match(sw,/const CACHE='life-os-v209'/);
+ assert.match(sw,/const CACHE='life-os-v212'/);
 });
